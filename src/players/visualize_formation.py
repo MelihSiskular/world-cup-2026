@@ -1008,7 +1008,7 @@ def parse_args():
         "--input",
         type=Path,
         default=Path(
-            "../data/processed/weekly_team_analysis/teams_by_formation.csv"
+            "../../data/processed/weekly_team_analysis/teams_by_formation.csv"
         ),
     )
 
@@ -1016,7 +1016,7 @@ def parse_args():
         "--output",
         type=Path,
         default=Path(
-            "../docs/images/formation_visuals_v3"
+            "../../docs/images/formation_visuals_v3"
         ),
     )
 

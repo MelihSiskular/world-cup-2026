@@ -34,7 +34,7 @@ TOURNAMENT_PAGE = (
 )
 BASE_API = "https://www.sofascore.com/api/v1"
 
-EVENT_IDS_FILE = Path("../event_ids.txt")
+EVENT_IDS_FILE = Path("../../data/event_ids.txt")
 OUTPUT_DIR = Path("../world_cup_data")
 RAW_DIR = OUTPUT_DIR / "raw"
 

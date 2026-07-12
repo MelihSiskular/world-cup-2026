@@ -1,12 +1,13 @@
-# Python
+# PYTHON
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+*.so
 
-# Virtual environments
-venv/
+# Venv
 .venv/
+venv/
 env/
 
 # IDE
@@ -14,39 +15,32 @@ env/
 .vscode/
 *.iml
 
-# macOS
 .DS_Store
+Thumbs.db
+
+
+src/get_data/
+src/test.py
+src/goal_minute/analyze_goal_timing.py
+
+
+data/raw/
+
+# Event ID dosyası nerede bulunursa bulunsun gizlensin
+event_ids.txt
+**/event_ids.txt
+data/processed/goal_minute_analysis/custom_goal_minute_distribution.csv
+data/processed/goal_minute_analysis/goal_minute_distribution.csv
+data/processed/player_matches_analysis/player_stats_long.csv
+data/processed/player_matches_analysis/player_tournament_summary.csv
+data/processed/weekly_team_analysis/formation_summary.csv
+data/processed/weekly_team_analysis/stage_summary.csv
+
+docs/images/formation_visuals_v3/
+
+*.zip
+*.log
 
 # Environment variables
 .env
 .env.*
-
-# Raw and generated data
-world_cup_data/raw/*
-world_cup_data/weekly_team_analysis/*
-world_cup_data/formation_visuals_v3/*
-
-# Generated datasets
-world_cup_data/*.csv
-world_cup_data/*.json
-world_cup_data/*.parquet
-world_cup_data/*.zip
-world_cup_data/*.pdf
-world_cup_data/*.png
-
-# Local event list
-event_ids.txt
-
-# Logs
-*.log
-
-# Keep empty folders
-!world_cup_data/raw/.gitkeep
-!world_cup_data/weekly_team_analysis/.gitkeep
-!world_cup_data/formation_visuals_v3/.gitkeep
-
-# README sample images should remain tracked
-!docs/images/
-!docs/images/*.png
-!docs/images/*.jpg
-!docs/images/*.jpeg

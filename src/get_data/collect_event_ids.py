@@ -119,7 +119,7 @@ def collect_from_last_pages(context, page, max_pages=20):
 def collect_from_next_pages(context, page, max_pages=5):
     """
     Canlı / yaklaşan maçlar için.
-    Senin analizinde scheduled maçlar zaten main.py'de atlanacak,
+    Senin analizinde scheduled maçlar zaten analyze_goal_timing.py'de atlanacak,
     ama canlı maç varsa yakalamak için burada topluyoruz.
     """
 

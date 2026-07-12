@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-CSV_FILE = "world_cup_2026_goals_sofascore.csv"
+CSV_FILE = "/Users/melihsiskular/PycharmProjects/wc2026/data/processed/goal_minute_analysis/world_cup_2026_goals_sofascore.csv"
 
 df = pd.read_csv(CSV_FILE)
 
@@ -10,9 +10,6 @@ df = pd.read_csv(CSV_FILE)
 # =========================
 # DAKİKA ARALIĞI AYARI
 # =========================
-
-# Burayı istediğin gibi değiştirebilirsin.
-# Bu aralıklar "ana dakika" üzerinden çalışır.
 intervals = [
     (0, 10, "0-10"),
     (11, 20, "11-20"),
@@ -22,11 +19,9 @@ intervals = [
     (46, 56, "46-56"),
     (57, 67, "57-67"),
     (68, 78, "68-78"),
-    (79, 90, "79-90"),
-    (91, 100, "91-100"),
-    (101, 105, "101-105+"),
-    (106, 116, "106-116"),
-    (117, 120, "117-120+"),
+    (79, 90, "79-90+"),
+    (91, 105, "91-105+"),
+    (106, 120, "106-120+"),
 ]
 
 
@@ -68,7 +63,7 @@ print("\nDakika aralığı dağılımı:")
 print(summary)
 
 summary.to_csv(
-    "custom_goal_minute_distribution.csv",
+    "/Users/melihsiskular/PycharmProjects/wc2026/data/processed/goal_minute_analysis/custom_goal_minute_distribution.csv",
     index=False,
     encoding="utf-8-sig"
 )
@@ -136,7 +131,7 @@ plt.tight_layout()
 
 # savefig, show'dan önce olmalı
 plt.savefig(
-    "world_cup_data/goal_minute_distribution_chart.png",
+    "/Users/melihsiskular/PycharmProjects/wc2026/docs/images/goal_minute/goal_minute_distribution_chart.png",
     dpi=300,
     bbox_inches="tight"
 )

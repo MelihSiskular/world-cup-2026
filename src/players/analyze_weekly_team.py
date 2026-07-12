@@ -7,7 +7,7 @@ Dünya Kupası oyuncu-maç verisinden:
 4. Sonuçları CSV olarak kaydeder.
 
 Örnek çalıştırma:
-    python weekly_team_analysis.py \
+    python analyze_weekly_team.py \
         --input world_cup_data/player_match_stats.csv \
         --output world_cup_data/weekly_team_analysis \
         --top-n 10 \
@@ -484,13 +484,13 @@ def parse_args():
     parser.add_argument(
         "--input",
         type=Path,
-        default=Path("../data/processed/player_matches_analysis/player_match_stats.csv"),
+        default=Path("../../data/processed/player_matches_analysis/player_match_stats.csv"),
         help="player_match_stats.csv dosyasının yolu",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("../data/processed/weekly_team_analysis"),
+        default=Path("../../data/processed/weekly_team_analysis"),
         help="Çıktı klasörü",
     )
     parser.add_argument(

@@ -10,10 +10,10 @@ from playwright.sync_api import sync_playwright
 
 TOURNAMENT_PAGE = "https://www.sofascore.com/football/tournament/world/world-championship/16#id:58210"
 BASE_API = "https://www.sofascore.com/api/v1"
-EVENT_IDS_FILE = "event_ids.txt"
+EVENT_IDS_FILE = "/Users/melihsiskular/PycharmProjects/wc2026/data/event_ids.txt"
 
-OUTPUT_GOALS_CSV = "world_cup_2026_goals_sofascore.csv"
-OUTPUT_SUMMARY_CSV = "goal_minute_distribution.csv"
+OUTPUT_GOALS_CSV = "/Users/melihsiskular/PycharmProjects/wc2026/data/processed/goal_minute_analysis/world_cup_2026_goals_sofascore.csv"
+OUTPUT_SUMMARY_CSV = "/Users/melihsiskular/PycharmProjects/wc2026/data/processed/goal_minute_analysis/goal_minute_distribution.csv"
 
 COLUMNS = [
     "event_id",

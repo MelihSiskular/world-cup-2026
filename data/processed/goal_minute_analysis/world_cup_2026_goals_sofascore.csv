@@ -1,0 +1,293 @@
+﻿event_id,match,home_team,away_team,score,status,round,round_name,date_utc,scoring_country,scorer,player_country,assist,minute,added_time,minute_display,minute_abs,own_goal,penalty,source_url
+15186710,Mexico - South Africa,Mexico,South Africa,2-0,finished,1,,2026-06-11,Mexico,Raúl Jiménez,Mexico,Roberto Alvarado,67,,67,67,False,False,https://www.sofascore.com/event/15186710
+15186710,Mexico - South Africa,Mexico,South Africa,2-0,finished,1,,2026-06-11,Mexico,Julián Quiñones,Mexico,Erik Lira,9,,9,9,False,False,https://www.sofascore.com/event/15186710
+15186720,South Korea - Czechia,South Korea,Czechia,2-1,finished,1,,2026-06-12,South Korea,Hyeon-gyu Oh,South Korea,Hwang In-beom,80,,80,80,False,False,https://www.sofascore.com/event/15186720
+15186720,South Korea - Czechia,South Korea,Czechia,2-1,finished,1,,2026-06-12,South Korea,Hwang In-beom,South Korea,Kang-in Lee,67,,67,67,False,False,https://www.sofascore.com/event/15186720
+15186720,South Korea - Czechia,South Korea,Czechia,2-1,finished,1,,2026-06-12,Czechia,Ladislav Krejčí,Czechia,Vladimír Coufal,59,,59,59,False,False,https://www.sofascore.com/event/15186720
+15186836,Canada - Bosnia & Herzegovina,Canada,Bosnia & Herzegovina,1-1,finished,1,,2026-06-12,Canada,Cyle Larin,Canada,Promise David,78,,78,78,False,False,https://www.sofascore.com/event/15186836
+15186836,Canada - Bosnia & Herzegovina,Canada,Bosnia & Herzegovina,1-1,finished,1,,2026-06-12,Bosnia & Herzegovina,Jovo Lukić,Bosnia & Herzegovina,Sead Kolašinac,21,,21,21,False,False,https://www.sofascore.com/event/15186836
+15186873,USA - Paraguay,USA,Paraguay,4-1,finished,1,,2026-06-13,USA,Giovanni Reyna,USA,Alexander Freeman,90,8.0,90+8,98,False,False,https://www.sofascore.com/event/15186873
+15186873,USA - Paraguay,USA,Paraguay,4-1,finished,1,,2026-06-13,Paraguay,Mauricio,Paraguay,Julio Enciso,73,,73,73,False,False,https://www.sofascore.com/event/15186873
+15186873,USA - Paraguay,USA,Paraguay,4-1,finished,1,,2026-06-13,USA,Folarin Balogun,USA,Malik Tillman,45,5.0,45+5,50,False,False,https://www.sofascore.com/event/15186873
+15186873,USA - Paraguay,USA,Paraguay,4-1,finished,1,,2026-06-13,USA,Folarin Balogun,USA,Christian Pulišić,31,,31,31,False,False,https://www.sofascore.com/event/15186873
+15186873,USA - Paraguay,USA,Paraguay,4-1,finished,1,,2026-06-13,Paraguay,Damián Bobadilla,USA,,7,,7,7,True,False,https://www.sofascore.com/event/15186873
+15186526,Qatar - Switzerland,Qatar,Switzerland,1-1,finished,1,,2026-06-13,Switzerland,Miro Muheim,Qatar,,90,4.0,90+4,94,True,False,https://www.sofascore.com/event/15186526
+15186526,Qatar - Switzerland,Qatar,Switzerland,1-1,finished,1,,2026-06-13,Switzerland,Breel Embolo,Switzerland,,17,,17,17,False,True,https://www.sofascore.com/event/15186526
+15186850,Brazil - Morocco,Brazil,Morocco,1-1,finished,1,,2026-06-13,Brazil,Vinícius Júnior,Brazil,Bruno Guimarães,32,,32,32,False,False,https://www.sofascore.com/event/15186850
+15186850,Brazil - Morocco,Brazil,Morocco,1-1,finished,1,,2026-06-13,Morocco,Ismael Saibari,Morocco,Brahim Díaz,21,,21,21,False,False,https://www.sofascore.com/event/15186850
+15186853,Haiti - Scotland,Haiti,Scotland,0-1,finished,1,,2026-06-14,Scotland,John McGinn,Scotland,,28,,28,28,False,False,https://www.sofascore.com/event/15186853
+15186874,Australia - Türkiye,Australia,Türkiye,2-0,finished,1,,2026-06-14,Australia,Connor Metcalfe,Australia,,75,,75,75,False,False,https://www.sofascore.com/event/15186874
+15186874,Australia - Türkiye,Australia,Türkiye,2-0,finished,1,,2026-06-14,Australia,Nestory Irankunda,Australia,Paul Okon-Engstler,27,,27,27,False,False,https://www.sofascore.com/event/15186874
+15186899,Germany - Curaçao,Germany,Curaçao,7-1,finished,1,,2026-06-14,Germany,Kai Havertz,Germany,Deniz Undav,88,,88,88,False,False,https://www.sofascore.com/event/15186899
+15186899,Germany - Curaçao,Germany,Curaçao,7-1,finished,1,,2026-06-14,Germany,Deniz Undav,Germany,Joshua Kimmich,78,,78,78,False,False,https://www.sofascore.com/event/15186899
+15186899,Germany - Curaçao,Germany,Curaçao,7-1,finished,1,,2026-06-14,Germany,Nathaniel Brown,Germany,Deniz Undav,68,,68,68,False,False,https://www.sofascore.com/event/15186899
+15186899,Germany - Curaçao,Germany,Curaçao,7-1,finished,1,,2026-06-14,Germany,Jamal Musiala,Germany,Joshua Kimmich,47,,47,47,False,False,https://www.sofascore.com/event/15186899
+15186899,Germany - Curaçao,Germany,Curaçao,7-1,finished,1,,2026-06-14,Germany,Kai Havertz,Germany,,45,5.0,45+5,50,False,True,https://www.sofascore.com/event/15186899
+15186899,Germany - Curaçao,Germany,Curaçao,7-1,finished,1,,2026-06-14,Germany,Nico Schlotterbeck,Germany,Nathaniel Brown,38,,38,38,False,False,https://www.sofascore.com/event/15186899
+15186899,Germany - Curaçao,Germany,Curaçao,7-1,finished,1,,2026-06-14,Curaçao,Livano Comenencia,Curaçao,,21,,21,21,False,False,https://www.sofascore.com/event/15186899
+15186899,Germany - Curaçao,Germany,Curaçao,7-1,finished,1,,2026-06-14,Germany,Felix Nmecha,Germany,Florian Wirtz,6,,6,6,False,False,https://www.sofascore.com/event/15186899
+15186945,Netherlands - Japan,Netherlands,Japan,2-2,finished,1,,2026-06-14,Japan,Daichi Kamada,Japan,Koki Ogawa,89,,89,89,False,False,https://www.sofascore.com/event/15186945
+15186945,Netherlands - Japan,Netherlands,Japan,2-2,finished,1,,2026-06-14,Netherlands,Crysencio Summerville,Netherlands,Ryan Gravenberch,64,,64,64,False,False,https://www.sofascore.com/event/15186945
+15186945,Netherlands - Japan,Netherlands,Japan,2-2,finished,1,,2026-06-14,Japan,Keito Nakamura,Japan,Takefusa Kubo,57,,57,57,False,False,https://www.sofascore.com/event/15186945
+15186945,Netherlands - Japan,Netherlands,Japan,2-2,finished,1,,2026-06-14,Netherlands,Virgil van Dijk,Netherlands,Ryan Gravenberch,51,,51,51,False,False,https://www.sofascore.com/event/15186945
+15186904,Côte d'Ivoire - Ecuador,Côte d'Ivoire,Ecuador,1-0,finished,1,,2026-06-14,Côte d'Ivoire,Amad Diallo,Côte d'Ivoire,Wilfried Singo,90,,90,90,False,False,https://www.sofascore.com/event/15186904
+15186951,Sweden - Tunisia,Sweden,Tunisia,5-1,finished,1,,2026-06-15,Sweden,Yasin Ayari,Sweden,Lucas Bergvall,90,6.0,90+6,96,False,False,https://www.sofascore.com/event/15186951
+15186951,Sweden - Tunisia,Sweden,Tunisia,5-1,finished,1,,2026-06-15,Sweden,Mattias Svanberg,Sweden,Alexander Isak,84,,84,84,False,False,https://www.sofascore.com/event/15186951
+15186951,Sweden - Tunisia,Sweden,Tunisia,5-1,finished,1,,2026-06-15,Sweden,Viktor Gyökeres,Sweden,Alexander Isak,59,,59,59,False,False,https://www.sofascore.com/event/15186951
+15186951,Sweden - Tunisia,Sweden,Tunisia,5-1,finished,1,,2026-06-15,Tunisia,Omar Rekik,Tunisia,Hannibal Mejbri,43,,43,43,False,False,https://www.sofascore.com/event/15186951
+15186951,Sweden - Tunisia,Sweden,Tunisia,5-1,finished,1,,2026-06-15,Sweden,Alexander Isak,Sweden,Viktor Gyökeres,30,,30,30,False,False,https://www.sofascore.com/event/15186951
+15186951,Sweden - Tunisia,Sweden,Tunisia,5-1,finished,1,,2026-06-15,Sweden,Yasin Ayari,Sweden,,7,,7,7,False,False,https://www.sofascore.com/event/15186951
+15186837,Belgium - Egypt,Belgium,Egypt,1-1,finished,1,,2026-06-15,Egypt,Mohamed Hany,Belgium,,66,,66,66,True,False,https://www.sofascore.com/event/15186837
+15186837,Belgium - Egypt,Belgium,Egypt,1-1,finished,1,,2026-06-15,Egypt,Emam Ashour,Egypt,Mohamed Salah,20,,20,20,False,False,https://www.sofascore.com/event/15186837
+15186811,Saudi Arabia - Uruguay,Saudi Arabia,Uruguay,1-1,finished,1,,2026-06-15,Uruguay,Maximiliano Araújo,Uruguay,,80,,80,80,False,False,https://www.sofascore.com/event/15186811
+15186811,Saudi Arabia - Uruguay,Saudi Arabia,Uruguay,1-1,finished,1,,2026-06-15,Saudi Arabia,Abdulelah Al-Amri,Saudi Arabia,,41,,41,41,False,False,https://www.sofascore.com/event/15186811
+15186832,Iran - New Zealand,Iran,New Zealand,2-2,finished,1,,2026-06-16,Iran,Mohammad Mohebi,Iran,Ramin Rezaeian,64,,64,64,False,False,https://www.sofascore.com/event/15186832
+15186832,Iran - New Zealand,Iran,New Zealand,2-2,finished,1,,2026-06-16,New Zealand,Elijah Just,New Zealand,Chris Wood,54,,54,54,False,False,https://www.sofascore.com/event/15186832
+15186832,Iran - New Zealand,Iran,New Zealand,2-2,finished,1,,2026-06-16,Iran,Ramin Rezaeian,Iran,,32,,32,32,False,False,https://www.sofascore.com/event/15186832
+15186832,Iran - New Zealand,Iran,New Zealand,2-2,finished,1,,2026-06-16,New Zealand,Elijah Just,New Zealand,Chris Wood,7,,7,7,False,False,https://www.sofascore.com/event/15186832
+15186501,France - Senegal,France,Senegal,3-1,finished,1,,2026-06-16,France,Kylian Mbappé,France,,90,6.0,90+6,96,False,False,https://www.sofascore.com/event/15186501
+15186501,France - Senegal,France,Senegal,3-1,finished,1,,2026-06-16,Senegal,Ibrahim Mbaye,Senegal,Iliman Ndiaye,90,5.0,90+5,95,False,False,https://www.sofascore.com/event/15186501
+15186501,France - Senegal,France,Senegal,3-1,finished,1,,2026-06-16,France,Bradley Barcola,France,Adrien Rabiot,82,,82,82,False,False,https://www.sofascore.com/event/15186501
+15186501,France - Senegal,France,Senegal,3-1,finished,1,,2026-06-16,France,Kylian Mbappé,France,Michael Olise,66,,66,66,False,False,https://www.sofascore.com/event/15186501
+15186773,Iraq - Norway,Iraq,Norway,1-4,finished,1,,2026-06-16,Iraq,Aymen Hussein,Norway,,90,6.0,90+6,96,True,False,https://www.sofascore.com/event/15186773
+15186773,Iraq - Norway,Iraq,Norway,1-4,finished,1,,2026-06-16,Norway,Leo Østigård,Norway,Martin Ødegaard,76,,76,76,False,False,https://www.sofascore.com/event/15186773
+15186773,Iraq - Norway,Iraq,Norway,1-4,finished,1,,2026-06-16,Norway,Erling Haaland,Norway,,43,,43,43,False,False,https://www.sofascore.com/event/15186773
+15186773,Iraq - Norway,Iraq,Norway,1-4,finished,1,,2026-06-16,Iraq,Aymen Hussein,Iraq,Amir Al-Ammari,39,,39,39,False,False,https://www.sofascore.com/event/15186773
+15186773,Iraq - Norway,Iraq,Norway,1-4,finished,1,,2026-06-16,Norway,Erling Haaland,Norway,David Møller Wolfe,29,,29,29,False,False,https://www.sofascore.com/event/15186773
+15186854,Argentina - Algeria,Argentina,Algeria,3-0,finished,1,,2026-06-17,Argentina,Lionel Messi,Argentina,Nicolás González,76,,76,76,False,False,https://www.sofascore.com/event/15186854
+15186854,Argentina - Algeria,Argentina,Algeria,3-0,finished,1,,2026-06-17,Argentina,Lionel Messi,Argentina,,60,,60,60,False,False,https://www.sofascore.com/event/15186854
+15186854,Argentina - Algeria,Argentina,Algeria,3-0,finished,1,,2026-06-17,Argentina,Lionel Messi,Argentina,Rodrigo De Paul,17,,17,17,False,False,https://www.sofascore.com/event/15186854
+15186751,Austria - Jordan,Austria,Jordan,3-1,finished,1,,2026-06-17,Austria,Marko Arnautović,Austria,,90,12.0,90+12,102,False,True,https://www.sofascore.com/event/15186751
+15186751,Austria - Jordan,Austria,Jordan,3-1,finished,1,,2026-06-17,Jordan,Yazan Al-Arab,Austria,,76,,76,76,True,False,https://www.sofascore.com/event/15186751
+15186751,Austria - Jordan,Austria,Jordan,3-1,finished,1,,2026-06-17,Jordan,Ali Olwan,Jordan,Noor Al-Rawabdeh,50,,50,50,False,False,https://www.sofascore.com/event/15186751
+15186751,Austria - Jordan,Austria,Jordan,3-1,finished,1,,2026-06-17,Austria,Romano Schmid,Austria,Xaver Schlager,21,,21,21,False,False,https://www.sofascore.com/event/15186751
+15186709,Portugal - DR Congo,Portugal,DR Congo,1-1,finished,1,,2026-06-17,DR Congo,Yoane Wissa,DR Congo,Arthur Masuaku,45,5.0,45+5,50,False,False,https://www.sofascore.com/event/15186709
+15186709,Portugal - DR Congo,Portugal,DR Congo,1-1,finished,1,,2026-06-17,Portugal,João Neves,Portugal,Pedro Neto,6,,6,6,False,False,https://www.sofascore.com/event/15186709
+15186504,England - Croatia,England,Croatia,4-2,finished,1,,2026-06-17,England,Marcus Rashford,England,Bukayo Saka,85,,85,85,False,False,https://www.sofascore.com/event/15186504
+15186504,England - Croatia,England,Croatia,4-2,finished,1,,2026-06-17,England,Jude Bellingham,England,Elliot Anderson,47,,47,47,False,False,https://www.sofascore.com/event/15186504
+15186504,England - Croatia,England,Croatia,4-2,finished,1,,2026-06-17,Croatia,Petar Musa,Croatia,Ivan Perišić,45,5.0,45+5,50,False,False,https://www.sofascore.com/event/15186504
+15186504,England - Croatia,England,Croatia,4-2,finished,1,,2026-06-17,England,Harry Kane,England,Declan Rice,42,,42,42,False,False,https://www.sofascore.com/event/15186504
+15186504,England - Croatia,England,Croatia,4-2,finished,1,,2026-06-17,Croatia,Martin Baturina,Croatia,Petar Sučić,36,,36,36,False,False,https://www.sofascore.com/event/15186504
+15186504,England - Croatia,England,Croatia,4-2,finished,1,,2026-06-17,England,Harry Kane,England,,12,,12,12,False,True,https://www.sofascore.com/event/15186504
+15186687,Ghana - Panama,Ghana,Panama,1-0,finished,1,,2026-06-17,Ghana,Caleb Yirenkyi,Ghana,Brandon Thomas-Asante,90,5.0,90+5,95,False,False,https://www.sofascore.com/event/15186687
+15186722,Uzbekistan - Colombia,Uzbekistan,Colombia,1-3,finished,1,,2026-06-18,Colombia,Jaminton Campaz,Colombia,Cucho Hernández,90,9.0,90+9,99,False,False,https://www.sofascore.com/event/15186722
+15186722,Uzbekistan - Colombia,Uzbekistan,Colombia,1-3,finished,1,,2026-06-18,Colombia,Luis Díaz,Colombia,Gustavo Puerta,65,,65,65,False,False,https://www.sofascore.com/event/15186722
+15186722,Uzbekistan - Colombia,Uzbekistan,Colombia,1-3,finished,1,,2026-06-18,Uzbekistan,Abbosbek Fayzullaev,Uzbekistan,,60,,60,60,False,False,https://www.sofascore.com/event/15186722
+15186722,Uzbekistan - Colombia,Uzbekistan,Colombia,1-3,finished,1,,2026-06-18,Colombia,Daniel Muñoz,Colombia,Luis Díaz,40,,40,40,False,False,https://www.sofascore.com/event/15186722
+15186731,Czechia - South Africa,Czechia,South Africa,1-1,finished,2,,2026-06-18,South Africa,Teboho Mokoena,South Africa,,83,,83,83,False,True,https://www.sofascore.com/event/15186731
+15186731,Czechia - South Africa,Czechia,South Africa,1-1,finished,2,,2026-06-18,Czechia,Michal Sadílek,Czechia,Alexandr Sojka,6,,6,6,False,False,https://www.sofascore.com/event/15186731
+15186806,Switzerland - Bosnia & Herzegovina,Switzerland,Bosnia & Herzegovina,4-1,finished,2,,2026-06-18,Switzerland,Granit Xhaka,Switzerland,,90,7.0,90+7,97,False,True,https://www.sofascore.com/event/15186806
+15186806,Switzerland - Bosnia & Herzegovina,Switzerland,Bosnia & Herzegovina,4-1,finished,2,,2026-06-18,Bosnia & Herzegovina,Ermin Mahmić,Bosnia & Herzegovina,,90,3.0,90+3,93,False,False,https://www.sofascore.com/event/15186806
+15186806,Switzerland - Bosnia & Herzegovina,Switzerland,Bosnia & Herzegovina,4-1,finished,2,,2026-06-18,Switzerland,Johan Manzambi,Switzerland,Rubén Vargas,90,,90,90,False,False,https://www.sofascore.com/event/15186806
+15186806,Switzerland - Bosnia & Herzegovina,Switzerland,Bosnia & Herzegovina,4-1,finished,2,,2026-06-18,Switzerland,Rubén Vargas,Switzerland,Breel Embolo,84,,84,84,False,False,https://www.sofascore.com/event/15186806
+15186806,Switzerland - Bosnia & Herzegovina,Switzerland,Bosnia & Herzegovina,4-1,finished,2,,2026-06-18,Switzerland,Johan Manzambi,Switzerland,,74,,74,74,False,False,https://www.sofascore.com/event/15186806
+15186798,Canada - Qatar,Canada,Qatar,6-0,finished,2,,2026-06-18,Canada,Jonathan David,Canada,Nathan-Dylan Saliba,90,2.0,90+2,92,False,False,https://www.sofascore.com/event/15186798
+15186798,Canada - Qatar,Canada,Qatar,6-0,finished,2,,2026-06-18,Qatar,Mohamed Naceur Almanai,Canada,,75,,75,75,True,False,https://www.sofascore.com/event/15186798
+15186798,Canada - Qatar,Canada,Qatar,6-0,finished,2,,2026-06-18,Canada,Nathan-Dylan Saliba,Canada,,64,,64,64,False,False,https://www.sofascore.com/event/15186798
+15186798,Canada - Qatar,Canada,Qatar,6-0,finished,2,,2026-06-18,Canada,Jonathan David,Canada,,45,3.0,45+3,48,False,False,https://www.sofascore.com/event/15186798
+15186798,Canada - Qatar,Canada,Qatar,6-0,finished,2,,2026-06-18,Canada,Jonathan David,Canada,,29,,29,29,False,False,https://www.sofascore.com/event/15186798
+15186798,Canada - Qatar,Canada,Qatar,6-0,finished,2,,2026-06-18,Canada,Cyle Larin,Canada,,16,,16,16,False,False,https://www.sofascore.com/event/15186798
+15186490,Mexico - South Korea,Mexico,South Korea,1-0,finished,2,,2026-06-19,Mexico,Luis Romo,Mexico,,50,,50,50,False,False,https://www.sofascore.com/event/15186490
+15186878,USA - Australia,USA,Australia,2-0,finished,2,,2026-06-19,USA,Alexander Freeman,USA,,43,,43,43,False,False,https://www.sofascore.com/event/15186878
+15186878,USA - Australia,USA,Australia,2-0,finished,2,,2026-06-19,Australia,Cameron Burgess,USA,,11,,11,11,True,False,https://www.sofascore.com/event/15186878
+15186859,Scotland - Morocco,Scotland,Morocco,0-1,finished,2,,2026-06-19,Morocco,Ismael Saibari,Morocco,Brahim Díaz,2,,2,2,False,False,https://www.sofascore.com/event/15186859
+15186856,Brazil - Haiti,Brazil,Haiti,3-0,finished,2,,2026-06-20,Brazil,Vinícius Júnior,Brazil,Lucas Paquetá,45,3.0,45+3,48,False,False,https://www.sofascore.com/event/15186856
+15186856,Brazil - Haiti,Brazil,Haiti,3-0,finished,2,,2026-06-20,Brazil,Matheus Cunha,Brazil,Vinícius Júnior,36,,36,36,False,False,https://www.sofascore.com/event/15186856
+15186856,Brazil - Haiti,Brazil,Haiti,3-0,finished,2,,2026-06-20,Brazil,Matheus Cunha,Brazil,,23,,23,23,False,False,https://www.sofascore.com/event/15186856
+15186879,Türkiye - Paraguay,Türkiye,Paraguay,0-1,finished,2,,2026-06-20,Paraguay,Matías Galarza,Paraguay,Julio Enciso,2,,2,2,False,False,https://www.sofascore.com/event/15186879
+15186957,Netherlands - Sweden,Netherlands,Sweden,5-1,finished,2,,2026-06-20,Netherlands,Crysencio Summerville,Netherlands,Memphis Depay,89,,89,89,False,False,https://www.sofascore.com/event/15186957
+15186957,Netherlands - Sweden,Netherlands,Sweden,5-1,finished,2,,2026-06-20,Sweden,Anthony Elanga,Sweden,Alexander Isak,59,,59,59,False,False,https://www.sofascore.com/event/15186957
+15186957,Netherlands - Sweden,Netherlands,Sweden,5-1,finished,2,,2026-06-20,Netherlands,Cody Gakpo,Netherlands,Crysencio Summerville,54,,54,54,False,False,https://www.sofascore.com/event/15186957
+15186957,Netherlands - Sweden,Netherlands,Sweden,5-1,finished,2,,2026-06-20,Netherlands,Cody Gakpo,Netherlands,Denzel Dumfries,47,,47,47,False,False,https://www.sofascore.com/event/15186957
+15186957,Netherlands - Sweden,Netherlands,Sweden,5-1,finished,2,,2026-06-20,Netherlands,Brian Brobbey,Netherlands,Denzel Dumfries,17,,17,17,False,False,https://www.sofascore.com/event/15186957
+15186957,Netherlands - Sweden,Netherlands,Sweden,5-1,finished,2,,2026-06-20,Netherlands,Brian Brobbey,Netherlands,Cody Gakpo,5,,5,5,False,False,https://www.sofascore.com/event/15186957
+15186905,Germany - Côte d'Ivoire,Germany,Côte d'Ivoire,2-1,finished,2,,2026-06-20,Germany,Deniz Undav,Germany,Felix Nmecha,90,4.0,90+4,94,False,False,https://www.sofascore.com/event/15186905
+15186905,Germany - Côte d'Ivoire,Germany,Côte d'Ivoire,2-1,finished,2,,2026-06-20,Germany,Deniz Undav,Germany,Nadiem Amiri,68,,68,68,False,False,https://www.sofascore.com/event/15186905
+15186905,Germany - Côte d'Ivoire,Germany,Côte d'Ivoire,2-1,finished,2,,2026-06-20,Côte d'Ivoire,Franck Kessié,Côte d'Ivoire,,30,,30,30,False,False,https://www.sofascore.com/event/15186905
+15186963,Tunisia - Japan,Tunisia,Japan,0-4,finished,2,,2026-06-21,Japan,Ayase Ueda,Japan,Kaishu Sano,83,,83,83,False,False,https://www.sofascore.com/event/15186963
+15186963,Tunisia - Japan,Tunisia,Japan,0-4,finished,2,,2026-06-21,Japan,Junya Ito,Japan,Ayase Ueda,69,,69,69,False,False,https://www.sofascore.com/event/15186963
+15186963,Tunisia - Japan,Tunisia,Japan,0-4,finished,2,,2026-06-21,Japan,Ayase Ueda,Japan,Ko Itakura,31,,31,31,False,False,https://www.sofascore.com/event/15186963
+15186963,Tunisia - Japan,Tunisia,Japan,0-4,finished,2,,2026-06-21,Japan,Daichi Kamada,Japan,Keito Nakamura,4,,4,4,False,False,https://www.sofascore.com/event/15186963
+15186840,Spain - Saudi Arabia,Spain,Saudi Arabia,4-0,finished,2,,2026-06-21,Saudi Arabia,Hassan Tambakti,Spain,,49,,49,49,True,False,https://www.sofascore.com/event/15186840
+15186840,Spain - Saudi Arabia,Spain,Saudi Arabia,4-0,finished,2,,2026-06-21,Spain,Mikel Oyarzabal,Spain,Dani Olmo,24,,24,24,False,False,https://www.sofascore.com/event/15186840
+15186840,Spain - Saudi Arabia,Spain,Saudi Arabia,4-0,finished,2,,2026-06-21,Spain,Mikel Oyarzabal,Spain,Aymeric Laporte,21,,21,21,False,False,https://www.sofascore.com/event/15186840
+15186840,Spain - Saudi Arabia,Spain,Saudi Arabia,4-0,finished,2,,2026-06-21,Spain,Lamine Yamal,Spain,Mikel Oyarzabal,10,,10,10,False,False,https://www.sofascore.com/event/15186840
+15186800,Uruguay - Cabo Verde,Uruguay,Cabo Verde,2-2,finished,2,,2026-06-21,Cabo Verde,Hélio Varela,Cabo Verde,,61,,61,61,False,False,https://www.sofascore.com/event/15186800
+15186800,Uruguay - Cabo Verde,Uruguay,Cabo Verde,2-2,finished,2,,2026-06-21,Uruguay,Agustín Canobbio,Uruguay,Maximiliano Araújo,45,6.0,45+6,51,False,False,https://www.sofascore.com/event/15186800
+15186800,Uruguay - Cabo Verde,Uruguay,Cabo Verde,2-2,finished,2,,2026-06-21,Uruguay,Maximiliano Araújo,Uruguay,,44,,44,44,False,False,https://www.sofascore.com/event/15186800
+15186800,Uruguay - Cabo Verde,Uruguay,Cabo Verde,2-2,finished,2,,2026-06-21,Cabo Verde,Kevin Lenini,Cabo Verde,,21,,21,21,False,False,https://www.sofascore.com/event/15186800
+15186827,New Zealand - Egypt,New Zealand,Egypt,1-3,finished,2,,2026-06-22,Egypt,Mahmoud Trézéguet,Egypt,Mohamed Salah,82,,82,82,False,False,https://www.sofascore.com/event/15186827
+15186827,New Zealand - Egypt,New Zealand,Egypt,1-3,finished,2,,2026-06-22,Egypt,Mohamed Salah,Egypt,Mostafa Ziko,67,,67,67,False,False,https://www.sofascore.com/event/15186827
+15186827,New Zealand - Egypt,New Zealand,Egypt,1-3,finished,2,,2026-06-22,Egypt,Mostafa Ziko,Egypt,Mohamed Hany,58,,58,58,False,False,https://www.sofascore.com/event/15186827
+15186827,New Zealand - Egypt,New Zealand,Egypt,1-3,finished,2,,2026-06-22,New Zealand,Finn Surman,New Zealand,Tim Payne,15,,15,15,False,False,https://www.sofascore.com/event/15186827
+15186502,Argentina - Austria,Argentina,Austria,2-0,finished,2,,2026-06-22,Argentina,Lionel Messi,Argentina,,90,5.0,90+5,95,False,False,https://www.sofascore.com/event/15186502
+15186502,Argentina - Austria,Argentina,Austria,2-0,finished,2,,2026-06-22,Argentina,Lionel Messi,Argentina,Facundo Medina,38,,38,38,False,False,https://www.sofascore.com/event/15186502
+15186769,France - Iraq,France,Iraq,3-0,finished,2,,2026-06-22,France,Ousmane Dembélé,France,Michael Olise,66,,66,66,False,False,https://www.sofascore.com/event/15186769
+15186769,France - Iraq,France,Iraq,3-0,finished,2,,2026-06-22,France,Kylian Mbappé,France,Ousmane Dembélé,54,,54,54,False,False,https://www.sofascore.com/event/15186769
+15186769,France - Iraq,France,Iraq,3-0,finished,2,,2026-06-22,France,Kylian Mbappé,France,Michael Olise,14,,14,14,False,False,https://www.sofascore.com/event/15186769
+15186770,Norway - Senegal,Norway,Senegal,3-2,finished,2,,2026-06-23,Senegal,Ismaïla Sarr,Senegal,Nicolas Jackson,90,3.0,90+3,93,False,False,https://www.sofascore.com/event/15186770
+15186770,Norway - Senegal,Norway,Senegal,3-2,finished,2,,2026-06-23,Norway,Erling Haaland,Norway,Patrick Berg,58,,58,58,False,False,https://www.sofascore.com/event/15186770
+15186770,Norway - Senegal,Norway,Senegal,3-2,finished,2,,2026-06-23,Senegal,Ismaïla Sarr,Senegal,Sadio Mané,53,,53,53,False,False,https://www.sofascore.com/event/15186770
+15186770,Norway - Senegal,Norway,Senegal,3-2,finished,2,,2026-06-23,Norway,Erling Haaland,Norway,Martin Ødegaard,48,,48,48,False,False,https://www.sofascore.com/event/15186770
+15186770,Norway - Senegal,Norway,Senegal,3-2,finished,2,,2026-06-23,Norway,Marcus Pedersen,Norway,,43,,43,43,False,False,https://www.sofascore.com/event/15186770
+15186740,Jordan - Algeria,Jordan,Algeria,1-2,finished,2,,2026-06-23,Algeria,Amine Gouiri,Algeria,,82,,82,82,False,False,https://www.sofascore.com/event/15186740
+15186740,Jordan - Algeria,Jordan,Algeria,1-2,finished,2,,2026-06-23,Algeria,Ahmed Nadhir Benbouali,Algeria,Riyad Mahrez,69,,69,69,False,False,https://www.sofascore.com/event/15186740
+15186740,Jordan - Algeria,Jordan,Algeria,1-2,finished,2,,2026-06-23,Jordan,Nizar Al-Rashdan,Jordan,Mousa Tamari,36,,36,36,False,False,https://www.sofascore.com/event/15186740
+15186858,Portugal - Uzbekistan,Portugal,Uzbekistan,5-0,finished,2,,2026-06-23,Portugal,Rafael Leão,Portugal,,87,,87,87,False,False,https://www.sofascore.com/event/15186858
+15186858,Portugal - Uzbekistan,Portugal,Uzbekistan,5-0,finished,2,,2026-06-23,Uzbekistan,Abduvokhid Nematov,Portugal,,60,,60,60,True,False,https://www.sofascore.com/event/15186858
+15186858,Portugal - Uzbekistan,Portugal,Uzbekistan,5-0,finished,2,,2026-06-23,Portugal,Cristiano Ronaldo,Portugal,Bruno Fernandes,39,,39,39,False,False,https://www.sofascore.com/event/15186858
+15186858,Portugal - Uzbekistan,Portugal,Uzbekistan,5-0,finished,2,,2026-06-23,Portugal,Nuno Mendes,Portugal,,17,,17,17,False,False,https://www.sofascore.com/event/15186858
+15186858,Portugal - Uzbekistan,Portugal,Uzbekistan,5-0,finished,2,,2026-06-23,Portugal,Cristiano Ronaldo,Portugal,João Cancelo,6,,6,6,False,False,https://www.sofascore.com/event/15186858
+15186520,Panama - Croatia,Panama,Croatia,0-1,finished,2,,2026-06-23,Croatia,Ante Budimir,Croatia,Josip Stanišić,54,,54,54,False,False,https://www.sofascore.com/event/15186520
+15186713,Colombia - DR Congo,Colombia,DR Congo,1-0,finished,2,,2026-06-24,Colombia,Daniel Muñoz,Colombia,Juan Fernando Quintero,76,,76,76,False,False,https://www.sofascore.com/event/15186713
+15186829,Bosnia & Herzegovina - Qatar,Bosnia & Herzegovina,Qatar,3-1,finished,3,,2026-06-24,Bosnia & Herzegovina,Ermin Mahmić,Bosnia & Herzegovina,Dennis Hadžikadunić,80,,80,80,False,False,https://www.sofascore.com/event/15186829
+15186829,Bosnia & Herzegovina - Qatar,Bosnia & Herzegovina,Qatar,3-1,finished,3,,2026-06-24,Qatar,Hassan Al Haydos,Qatar,Edmilson Junior,42,,42,42,False,False,https://www.sofascore.com/event/15186829
+15186829,Bosnia & Herzegovina - Qatar,Bosnia & Herzegovina,Qatar,3-1,finished,3,,2026-06-24,Qatar,Mahmud Abunada,Bosnia & Herzegovina,,34,,34,34,True,False,https://www.sofascore.com/event/15186829
+15186829,Bosnia & Herzegovina - Qatar,Bosnia & Herzegovina,Qatar,3-1,finished,3,,2026-06-24,Bosnia & Herzegovina,Kerim Alajbegović,Bosnia & Herzegovina,Ivan Bašić,29,,29,29,False,False,https://www.sofascore.com/event/15186829
+15186821,Switzerland - Canada,Switzerland,Canada,2-1,finished,3,,2026-06-24,Canada,Promise David,Canada,Nathan-Dylan Saliba,76,,76,76,False,False,https://www.sofascore.com/event/15186821
+15186821,Switzerland - Canada,Switzerland,Canada,2-1,finished,3,,2026-06-24,Switzerland,Johan Manzambi,Switzerland,Breel Embolo,57,,57,57,False,False,https://www.sofascore.com/event/15186821
+15186821,Switzerland - Canada,Switzerland,Canada,2-1,finished,3,,2026-06-24,Switzerland,Rubén Vargas,Switzerland,Johan Manzambi,46,,46,46,False,False,https://www.sofascore.com/event/15186821
+15186864,Morocco - Haiti,Morocco,Haiti,4-2,finished,3,,2026-06-24,Morocco,Gessime Yassine,Morocco,Soufiane Rahimi,89,,89,89,False,False,https://www.sofascore.com/event/15186864
+15186864,Morocco - Haiti,Morocco,Haiti,4-2,finished,3,,2026-06-24,Morocco,Soufiane Rahimi,Morocco,Chadi Riad,78,,78,78,False,False,https://www.sofascore.com/event/15186864
+15186864,Morocco - Haiti,Morocco,Haiti,4-2,finished,3,,2026-06-24,Morocco,Ismael Saibari,Morocco,Achraf Hakimi,45,1.0,45+1,46,False,False,https://www.sofascore.com/event/15186864
+15186864,Morocco - Haiti,Morocco,Haiti,4-2,finished,3,,2026-06-24,Haiti,Wilson Isidor,Haiti,Jean-Kévin Duverne,43,,43,43,False,False,https://www.sofascore.com/event/15186864
+15186864,Morocco - Haiti,Morocco,Haiti,4-2,finished,3,,2026-06-24,Morocco,Achraf Hakimi,Morocco,,39,,39,39,False,False,https://www.sofascore.com/event/15186864
+15186864,Morocco - Haiti,Morocco,Haiti,4-2,finished,3,,2026-06-24,Morocco,Yassine Bounou,Haiti,,10,,10,10,True,False,https://www.sofascore.com/event/15186864
+15186861,Scotland - Brazil,Scotland,Brazil,0-3,finished,3,,2026-06-24,Brazil,Matheus Cunha,Brazil,Bruno Guimarães,60,,60,60,False,False,https://www.sofascore.com/event/15186861
+15186861,Scotland - Brazil,Scotland,Brazil,0-3,finished,3,,2026-06-24,Brazil,Vinícius Júnior,Brazil,Bruno Guimarães,45,3.0,45+3,48,False,False,https://www.sofascore.com/event/15186861
+15186861,Scotland - Brazil,Scotland,Brazil,0-3,finished,3,,2026-06-24,Brazil,Vinícius Júnior,Brazil,Rayan,7,,7,7,False,False,https://www.sofascore.com/event/15186861
+15186744,South Africa - South Korea,South Africa,South Korea,1-0,finished,3,,2026-06-25,South Africa,Thapelo Maseko,South Africa,Tshepang Moremi,63,,63,63,False,False,https://www.sofascore.com/event/15186744
+15186732,Czechia - Mexico,Czechia,Mexico,0-3,finished,3,,2026-06-25,Mexico,Álvaro Fidalgo,Mexico,Roberto Alvarado,90,4.0,90+4,94,False,False,https://www.sofascore.com/event/15186732
+15186732,Czechia - Mexico,Czechia,Mexico,0-3,finished,3,,2026-06-25,Mexico,Julián Quiñones,Mexico,Jorge Sánchez,61,,61,61,False,False,https://www.sofascore.com/event/15186732
+15186732,Czechia - Mexico,Czechia,Mexico,0-3,finished,3,,2026-06-25,Mexico,Mateo Chávez,Mexico,Luis Romo,55,,55,55,False,False,https://www.sofascore.com/event/15186732
+15186908,Curaçao - Côte d'Ivoire,Curaçao,Côte d'Ivoire,0-2,finished,3,,2026-06-25,Côte d'Ivoire,Nicolas Pépé,Côte d'Ivoire,Ibrahim Sangaré,64,,64,64,False,False,https://www.sofascore.com/event/15186908
+15186908,Curaçao - Côte d'Ivoire,Curaçao,Côte d'Ivoire,0-2,finished,3,,2026-06-25,Côte d'Ivoire,Nicolas Pépé,Côte d'Ivoire,Yan Diomande,7,,7,7,False,False,https://www.sofascore.com/event/15186908
+15186907,Ecuador - Germany,Ecuador,Germany,2-1,finished,3,,2026-06-25,Ecuador,Gonzalo Plata,Ecuador,Kevin Rodriguez,77,,77,77,False,False,https://www.sofascore.com/event/15186907
+15186907,Ecuador - Germany,Ecuador,Germany,2-1,finished,3,,2026-06-25,Ecuador,Nilson Angulo,Ecuador,Pedro Vite,9,,9,9,False,False,https://www.sofascore.com/event/15186907
+15186907,Ecuador - Germany,Ecuador,Germany,2-1,finished,3,,2026-06-25,Germany,Leroy Sané,Germany,Florian Wirtz,2,,2,2,False,False,https://www.sofascore.com/event/15186907
+15186972,Japan - Sweden,Japan,Sweden,1-1,finished,3,,2026-06-25,Sweden,Anthony Elanga,Sweden,Viktor Gyökeres,62,,62,62,False,False,https://www.sofascore.com/event/15186972
+15186972,Japan - Sweden,Japan,Sweden,1-1,finished,3,,2026-06-25,Japan,Daizen Maeda,Japan,Ritsu Doan,56,,56,56,False,False,https://www.sofascore.com/event/15186972
+15186973,Tunisia - Netherlands,Tunisia,Netherlands,1-3,finished,3,,2026-06-25,Netherlands,Jan Paul van Hecke,Netherlands,Tijjani Reijnders,62,,62,62,False,False,https://www.sofascore.com/event/15186973
+15186973,Tunisia - Netherlands,Tunisia,Netherlands,1-3,finished,3,,2026-06-25,Tunisia,Hazem Mastouri,Tunisia,Hannibal Mejbri,54,,54,54,False,False,https://www.sofascore.com/event/15186973
+15186973,Tunisia - Netherlands,Tunisia,Netherlands,1-3,finished,3,,2026-06-25,Netherlands,Brian Brobbey,Netherlands,Virgil van Dijk,7,,7,7,False,False,https://www.sofascore.com/event/15186973
+15186973,Tunisia - Netherlands,Tunisia,Netherlands,1-3,finished,3,,2026-06-25,Tunisia,Ellyes Skhiri,Netherlands,,3,,3,3,True,False,https://www.sofascore.com/event/15186973
+15186887,Türkiye - USA,Türkiye,USA,3-2,finished,3,,2026-06-26,Türkiye,Kaan Ayhan,Türkiye,,90,8.0,90+8,98,False,False,https://www.sofascore.com/event/15186887
+15186887,Türkiye - USA,Türkiye,USA,3-2,finished,3,,2026-06-26,USA,Sebastian Berhalter,USA,,49,,49,49,False,False,https://www.sofascore.com/event/15186887
+15186887,Türkiye - USA,Türkiye,USA,3-2,finished,3,,2026-06-26,Türkiye,Barış Alper Yılmaz,Türkiye,Orkun Kökçü,31,,31,31,False,False,https://www.sofascore.com/event/15186887
+15186887,Türkiye - USA,Türkiye,USA,3-2,finished,3,,2026-06-26,Türkiye,Arda Güler,Türkiye,Barış Alper Yılmaz,10,,10,10,False,False,https://www.sofascore.com/event/15186887
+15186887,Türkiye - USA,Türkiye,USA,3-2,finished,3,,2026-06-26,USA,Auston Trusty,USA,Sebastian Berhalter,3,,3,3,False,False,https://www.sofascore.com/event/15186887
+15186771,Senegal - Iraq,Senegal,Iraq,5-0,finished,3,,2026-06-26,Senegal,Iliman Ndiaye,Senegal,Pape Gueye,82,,82,82,False,False,https://www.sofascore.com/event/15186771
+15186771,Senegal - Iraq,Senegal,Iraq,5-0,finished,3,,2026-06-26,Senegal,Pape Gueye,Senegal,Iliman Ndiaye,71,,71,71,False,False,https://www.sofascore.com/event/15186771
+15186771,Senegal - Iraq,Senegal,Iraq,5-0,finished,3,,2026-06-26,Senegal,Pape Gueye,Senegal,Ismaïla Sarr,59,,59,59,False,False,https://www.sofascore.com/event/15186771
+15186771,Senegal - Iraq,Senegal,Iraq,5-0,finished,3,,2026-06-26,Senegal,Ismaïla Sarr,Senegal,Lamine Camara,56,,56,56,False,False,https://www.sofascore.com/event/15186771
+15186771,Senegal - Iraq,Senegal,Iraq,5-0,finished,3,,2026-06-26,Senegal,Habib Diarra,Senegal,Abdoulaye Seck,4,,4,4,False,False,https://www.sofascore.com/event/15186771
+15186537,Norway - France,Norway,France,1-4,finished,3,,2026-06-26,France,Désiré Doué,France,Bradley Barcola,90,4.0,90+4,94,False,False,https://www.sofascore.com/event/15186537
+15186537,Norway - France,Norway,France,1-4,finished,3,,2026-06-26,France,Ousmane Dembélé,France,Aurélien Tchouaméni,32,,32,32,False,False,https://www.sofascore.com/event/15186537
+15186537,Norway - France,Norway,France,1-4,finished,3,,2026-06-26,Norway,Thelo Aasgaard,Norway,Andreas Schjelderup,21,,21,21,False,False,https://www.sofascore.com/event/15186537
+15186537,Norway - France,Norway,France,1-4,finished,3,,2026-06-26,France,Ousmane Dembélé,France,Kylian Mbappé,20,,20,20,False,False,https://www.sofascore.com/event/15186537
+15186537,Norway - France,Norway,France,1-4,finished,3,,2026-06-26,France,Ousmane Dembélé,France,Kylian Mbappé,7,,7,7,False,False,https://www.sofascore.com/event/15186537
+15186841,Uruguay - Spain,Uruguay,Spain,0-1,finished,3,,2026-06-27,Spain,Alex Baena,Spain,Marcos Llorente,42,,42,42,False,False,https://www.sofascore.com/event/15186841
+15186822,New Zealand - Belgium,New Zealand,Belgium,1-5,finished,3,,2026-06-27,Belgium,Alexis Saelemaekers,Belgium,Romelu Lukaku,90,4.0,90+4,94,False,False,https://www.sofascore.com/event/15186822
+15186822,New Zealand - Belgium,New Zealand,Belgium,1-5,finished,3,,2026-06-27,Belgium,Romelu Lukaku,Belgium,Nicolas Raskin,86,,86,86,False,False,https://www.sofascore.com/event/15186822
+15186822,New Zealand - Belgium,New Zealand,Belgium,1-5,finished,3,,2026-06-27,New Zealand,Elijah Just,New Zealand,,84,,84,84,False,False,https://www.sofascore.com/event/15186822
+15186822,New Zealand - Belgium,New Zealand,Belgium,1-5,finished,3,,2026-06-27,Belgium,Kevin De Bruyne,Belgium,,66,,66,66,False,False,https://www.sofascore.com/event/15186822
+15186822,New Zealand - Belgium,New Zealand,Belgium,1-5,finished,3,,2026-06-27,Belgium,Leandro Trossard,Belgium,Hans Vanaken,50,,50,50,False,False,https://www.sofascore.com/event/15186822
+15186822,New Zealand - Belgium,New Zealand,Belgium,1-5,finished,3,,2026-06-27,Belgium,Leandro Trossard,Belgium,,28,,28,28,False,False,https://www.sofascore.com/event/15186822
+15186828,Egypt - Iran,Egypt,Iran,1-1,finished,3,,2026-06-27,Iran,Ramin Rezaeian,Iran,,14,,14,14,False,False,https://www.sofascore.com/event/15186828
+15186828,Egypt - Iran,Egypt,Iran,1-1,finished,3,,2026-06-27,Egypt,Mahmoud Saber,Egypt,Mahmoud Trézéguet,5,,5,5,False,False,https://www.sofascore.com/event/15186828
+15186624,Croatia - Ghana,Croatia,Ghana,2-1,finished,3,,2026-06-27,Croatia,Nikola Vlašić,Croatia,Luka Modrić,83,,83,83,False,False,https://www.sofascore.com/event/15186624
+15186624,Croatia - Ghana,Croatia,Ghana,2-1,finished,3,,2026-06-27,Ghana,Derrick Luckassen,Ghana,Ernest Nuamah,73,,73,73,False,False,https://www.sofascore.com/event/15186624
+15186624,Croatia - Ghana,Croatia,Ghana,2-1,finished,3,,2026-06-27,Croatia,Petar Sučić,Croatia,Mateo Kovačić,31,,31,31,False,False,https://www.sofascore.com/event/15186624
+15186676,Panama - England,Panama,England,0-2,finished,3,,2026-06-27,England,Harry Kane,England,Jude Bellingham,67,,67,67,False,False,https://www.sofascore.com/event/15186676
+15186676,Panama - England,Panama,England,0-2,finished,3,,2026-06-27,England,Jude Bellingham,England,Bukayo Saka,62,,62,62,False,False,https://www.sofascore.com/event/15186676
+15186717,DR Congo - Uzbekistan,DR Congo,Uzbekistan,3-1,finished,3,,2026-06-27,DR Congo,Yoane Wissa,DR Congo,Meschak Elia,90,1.0,90+1,91,False,False,https://www.sofascore.com/event/15186717
+15186717,DR Congo - Uzbekistan,DR Congo,Uzbekistan,3-1,finished,3,,2026-06-27,DR Congo,Fiston Mayele,DR Congo,,78,,78,78,False,False,https://www.sofascore.com/event/15186717
+15186717,DR Congo - Uzbekistan,DR Congo,Uzbekistan,3-1,finished,3,,2026-06-27,DR Congo,Yoane Wissa,DR Congo,,68,,68,68,False,True,https://www.sofascore.com/event/15186717
+15186717,DR Congo - Uzbekistan,DR Congo,Uzbekistan,3-1,finished,3,,2026-06-27,Uzbekistan,Eldor Shomurodov,Uzbekistan,Akmal Mozgovoy,10,,10,10,False,False,https://www.sofascore.com/event/15186717
+15186747,Algeria - Austria,Algeria,Austria,3-3,finished,3,,2026-06-28,Austria,Saša Kalajdžić,Austria,Michael Gregoritsch,90,6.0,90+6,96,False,False,https://www.sofascore.com/event/15186747
+15186747,Algeria - Austria,Algeria,Austria,3-3,finished,3,,2026-06-28,Algeria,Riyad Mahrez,Algeria,Houssem Aouar,90,3.0,90+3,93,False,False,https://www.sofascore.com/event/15186747
+15186747,Algeria - Austria,Algeria,Austria,3-3,finished,3,,2026-06-28,Algeria,Riyad Mahrez,Algeria,Houssem Aouar,60,,60,60,False,False,https://www.sofascore.com/event/15186747
+15186747,Algeria - Austria,Algeria,Austria,3-3,finished,3,,2026-06-28,Austria,Marcel Sabitzer,Austria,Konrad Laimer,55,,55,55,False,False,https://www.sofascore.com/event/15186747
+15186747,Algeria - Austria,Algeria,Austria,3-3,finished,3,,2026-06-28,Algeria,Rafik Belghali,Algeria,,45,,45,45,False,False,https://www.sofascore.com/event/15186747
+15186747,Algeria - Austria,Algeria,Austria,3-3,finished,3,,2026-06-28,Austria,Marko Arnautović,Austria,David Alaba,28,,28,28,False,False,https://www.sofascore.com/event/15186747
+15186734,Jordan - Argentina,Jordan,Argentina,1-3,finished,3,,2026-06-28,Argentina,Lionel Messi,Argentina,,80,,80,80,False,False,https://www.sofascore.com/event/15186734
+15186734,Jordan - Argentina,Jordan,Argentina,1-3,finished,3,,2026-06-28,Jordan,Mousa Tamari,Jordan,Ehsan Haddad,55,,55,55,False,False,https://www.sofascore.com/event/15186734
+15186734,Jordan - Argentina,Jordan,Argentina,1-3,finished,3,,2026-06-28,Argentina,Lautaro Martínez,Argentina,,31,,31,31,False,True,https://www.sofascore.com/event/15186734
+15186734,Jordan - Argentina,Jordan,Argentina,1-3,finished,3,,2026-06-28,Argentina,Giovani Lo Celso,Argentina,,19,,19,19,False,False,https://www.sofascore.com/event/15186734
+12813000,South Africa - Canada,South Africa,Canada,0-1,finished,6,Round of 32,2026-06-28,Canada,Stephen Eustaquio,Canada,,90,2.0,90+2,92,False,False,https://www.sofascore.com/event/12813000
+12813012,Brazil - Japan,Brazil,Japan,2-1,finished,6,Round of 32,2026-06-29,Brazil,Gabriel Martinelli,Brazil,Bruno Guimarães,90,5.0,90+5,95,False,False,https://www.sofascore.com/event/12813012
+12813012,Brazil - Japan,Brazil,Japan,2-1,finished,6,Round of 32,2026-06-29,Brazil,Casemiro,Brazil,Gabriel Magalhães,56,,56,56,False,False,https://www.sofascore.com/event/12813012
+12813012,Brazil - Japan,Brazil,Japan,2-1,finished,6,Round of 32,2026-06-29,Japan,Kaishu Sano,Japan,,29,,29,29,False,False,https://www.sofascore.com/event/12813012
+12813014,Germany - Paraguay,Germany,Paraguay,4-5,finished,6,Round of 32,2026-06-29,Germany,Kai Havertz,Germany,Florian Wirtz,54,,54,54,False,False,https://www.sofascore.com/event/12813014
+12813014,Germany - Paraguay,Germany,Paraguay,4-5,finished,6,Round of 32,2026-06-29,Paraguay,Julio Enciso,Paraguay,Matías Galarza,42,,42,42,False,False,https://www.sofascore.com/event/12813014
+12812998,Netherlands - Morocco,Netherlands,Morocco,3-4,finished,6,Round of 32,2026-06-30,Morocco,Issa Diop,Morocco,Chemsdine Talbi,90,1.0,90+1,91,False,False,https://www.sofascore.com/event/12812998
+12812998,Netherlands - Morocco,Netherlands,Morocco,3-4,finished,6,Round of 32,2026-06-30,Netherlands,Cody Gakpo,Netherlands,Crysencio Summerville,72,,72,72,False,False,https://www.sofascore.com/event/12812998
+12812989,Côte d'Ivoire - Norway,Côte d'Ivoire,Norway,1-2,finished,6,Round of 32,2026-06-30,Norway,Erling Haaland,Norway,Patrick Berg,86,,86,86,False,False,https://www.sofascore.com/event/12812989
+12812989,Côte d'Ivoire - Norway,Côte d'Ivoire,Norway,1-2,finished,6,Round of 32,2026-06-30,Côte d'Ivoire,Amad Diallo,Côte d'Ivoire,Nicolas Pépé,74,,74,74,False,False,https://www.sofascore.com/event/12812989
+12812989,Côte d'Ivoire - Norway,Côte d'Ivoire,Norway,1-2,finished,6,Round of 32,2026-06-30,Norway,Antonio Nusa,Norway,Martin Ødegaard,39,,39,39,False,False,https://www.sofascore.com/event/12812989
+12812995,France - Sweden,France,Sweden,3-0,finished,6,Round of 32,2026-06-30,France,Kylian Mbappé,France,Michael Olise,74,,74,74,False,False,https://www.sofascore.com/event/12812995
+12812995,France - Sweden,France,Sweden,3-0,finished,6,Round of 32,2026-06-30,France,Bradley Barcola,France,Michael Olise,53,,53,53,False,False,https://www.sofascore.com/event/12812995
+12812995,France - Sweden,France,Sweden,3-0,finished,6,Round of 32,2026-06-30,France,Kylian Mbappé,France,Ousmane Dembélé,45,,45,45,False,False,https://www.sofascore.com/event/12812995
+12813001,Mexico - Ecuador,Mexico,Ecuador,2-0,finished,6,Round of 32,2026-07-01,Mexico,Raúl Jiménez,Mexico,Julián Quiñones,31,,31,31,False,False,https://www.sofascore.com/event/12813001
+12813001,Mexico - Ecuador,Mexico,Ecuador,2-0,finished,6,Round of 32,2026-07-01,Mexico,Julián Quiñones,Mexico,Roberto Alvarado,22,,22,22,False,False,https://www.sofascore.com/event/12813001
+12813020,England - DR Congo,England,DR Congo,2-1,finished,6,Round of 32,2026-07-01,England,Harry Kane,England,Anthony Gordon,86,,86,86,False,False,https://www.sofascore.com/event/12813020
+12813020,England - DR Congo,England,DR Congo,2-1,finished,6,Round of 32,2026-07-01,England,Harry Kane,England,Anthony Gordon,75,,75,75,False,False,https://www.sofascore.com/event/12813020
+12813020,England - DR Congo,England,DR Congo,2-1,finished,6,Round of 32,2026-07-01,DR Congo,Brian Cipenga,DR Congo,Chancel Mbemba,7,,7,7,False,False,https://www.sofascore.com/event/12813020
+12813013,Belgium - Senegal,Belgium,Senegal,3-2,finished,6,Round of 32,2026-07-01,Belgium,Youri Tielemans,Belgium,,120,5.0,120+5,125,False,True,https://www.sofascore.com/event/12813013
+12813013,Belgium - Senegal,Belgium,Senegal,3-2,finished,6,Round of 32,2026-07-01,Belgium,Youri Tielemans,Belgium,Leandro Trossard,89,,89,89,False,False,https://www.sofascore.com/event/12813013
+12813013,Belgium - Senegal,Belgium,Senegal,3-2,finished,6,Round of 32,2026-07-01,Belgium,Romelu Lukaku,Belgium,Thomas Meunier,86,,86,86,False,False,https://www.sofascore.com/event/12813013
+12813013,Belgium - Senegal,Belgium,Senegal,3-2,finished,6,Round of 32,2026-07-01,Senegal,Ismaïla Sarr,Senegal,Moussa Niakhaté,51,,51,51,False,False,https://www.sofascore.com/event/12813013
+12813013,Belgium - Senegal,Belgium,Senegal,3-2,finished,6,Round of 32,2026-07-01,Senegal,Habib Diarra,Senegal,,24,,24,24,False,False,https://www.sofascore.com/event/12813013
+12812992,USA - Bosnia & Herzegovina,USA,Bosnia & Herzegovina,2-0,finished,6,Round of 32,2026-07-02,USA,Malik Tillman,USA,,82,,82,82,False,False,https://www.sofascore.com/event/12812992
+12812992,USA - Bosnia & Herzegovina,USA,Bosnia & Herzegovina,2-0,finished,6,Round of 32,2026-07-02,USA,Folarin Balogun,USA,,45,,45,45,False,False,https://www.sofascore.com/event/12812992
+12813004,Spain - Austria,Spain,Austria,3-0,finished,6,Round of 32,2026-07-02,Spain,Mikel Oyarzabal,Spain,Marc Cucurella,89,,89,89,False,False,https://www.sofascore.com/event/12813004
+12813004,Spain - Austria,Spain,Austria,3-0,finished,6,Round of 32,2026-07-02,Spain,Pedro Porro,Spain,Alex Baena,66,,66,66,False,False,https://www.sofascore.com/event/12813004
+12813004,Spain - Austria,Spain,Austria,3-0,finished,6,Round of 32,2026-07-02,Spain,Mikel Oyarzabal,Spain,Marc Cucurella,36,,36,36,False,False,https://www.sofascore.com/event/12813004
+12812997,Portugal - Croatia,Portugal,Croatia,2-1,finished,6,Round of 32,2026-07-02,Portugal,Gonçalo Ramos,Portugal,Rafael Leão,90,4.0,90+4,94,False,False,https://www.sofascore.com/event/12812997
+12812997,Portugal - Croatia,Portugal,Croatia,2-1,finished,6,Round of 32,2026-07-02,Portugal,Cristiano Ronaldo,Portugal,,68,,68,68,False,True,https://www.sofascore.com/event/12812997
+12812997,Portugal - Croatia,Portugal,Croatia,2-1,finished,6,Round of 32,2026-07-02,Croatia,Ivan Perišić,Croatia,,53,,53,53,False,False,https://www.sofascore.com/event/12812997
+12813019,Switzerland - Algeria,Switzerland,Algeria,2-0,finished,6,Round of 32,2026-07-03,Switzerland,Dan Ndoye,Switzerland,,46,,46,46,False,False,https://www.sofascore.com/event/12813019
+12813019,Switzerland - Algeria,Switzerland,Algeria,2-0,finished,6,Round of 32,2026-07-03,Switzerland,Breel Embolo,Switzerland,Johan Manzambi,10,,10,10,False,False,https://www.sofascore.com/event/12813019
+12813018,Australia - Egypt,Australia,Egypt,3-5,finished,6,Round of 32,2026-07-03,Egypt,Mohamed Hany,Australia,,55,,55,55,True,False,https://www.sofascore.com/event/12813018
+12813018,Australia - Egypt,Australia,Egypt,3-5,finished,6,Round of 32,2026-07-03,Egypt,Emam Ashour,Egypt,Karim Hafez,13,,13,13,False,False,https://www.sofascore.com/event/12813018
+12812999,Argentina - Cabo Verde,Argentina,Cabo Verde,3-2,finished,6,Round of 32,2026-07-03,Cabo Verde,Diney Borges,Argentina,,111,,111,111,True,False,https://www.sofascore.com/event/12812999
+12812999,Argentina - Cabo Verde,Argentina,Cabo Verde,3-2,finished,6,Round of 32,2026-07-03,Cabo Verde,Sidny Lopes Cabral,Cabo Verde,Yannick Semedo,103,,103,103,False,False,https://www.sofascore.com/event/12812999
+12812999,Argentina - Cabo Verde,Argentina,Cabo Verde,3-2,finished,6,Round of 32,2026-07-03,Argentina,Lisandro Martínez,Argentina,Alexis Mac Allister,92,,92,92,False,False,https://www.sofascore.com/event/12812999
+12812999,Argentina - Cabo Verde,Argentina,Cabo Verde,3-2,finished,6,Round of 32,2026-07-03,Cabo Verde,Deroy Duarte,Cabo Verde,Ryan Mendes,59,,59,59,False,False,https://www.sofascore.com/event/12812999
+12812999,Argentina - Cabo Verde,Argentina,Cabo Verde,3-2,finished,6,Round of 32,2026-07-03,Argentina,Lionel Messi,Argentina,Lisandro Martínez,29,,29,29,False,False,https://www.sofascore.com/event/12812999
+12813011,Colombia - Ghana,Colombia,Ghana,1-0,finished,6,Round of 32,2026-07-04,Colombia,Jhon Arias,Colombia,Luis Javier Suárez,14,,14,14,False,False,https://www.sofascore.com/event/12813011
+12813009,Canada - Morocco,Canada,Morocco,0-3,finished,5,Round of 16,2026-07-04,Morocco,Soufiane Rahimi,Morocco,Brahim Díaz,90,8.0,90+8,98,False,False,https://www.sofascore.com/event/12813009
+12813009,Canada - Morocco,Canada,Morocco,0-3,finished,5,Round of 16,2026-07-04,Morocco,Azzedine Ounahi,Morocco,Brahim Díaz,82,,82,82,False,False,https://www.sofascore.com/event/12813009
+12813009,Canada - Morocco,Canada,Morocco,0-3,finished,5,Round of 16,2026-07-04,Morocco,Azzedine Ounahi,Morocco,Achraf Hakimi,50,,50,50,False,False,https://www.sofascore.com/event/12813009
+12813010,Paraguay - France,Paraguay,France,0-1,finished,5,Round of 16,2026-07-04,France,Kylian Mbappé,France,,70,,70,70,False,True,https://www.sofascore.com/event/12813010
+12813006,Brazil - Norway,Brazil,Norway,1-2,finished,5,Round of 16,2026-07-05,Brazil,Neymar,Brazil,,90,10.0,90+10,100,False,True,https://www.sofascore.com/event/12813006
+12813006,Brazil - Norway,Brazil,Norway,1-2,finished,5,Round of 16,2026-07-05,Norway,Erling Haaland,Norway,Andreas Schjelderup,90,,90,90,False,False,https://www.sofascore.com/event/12813006
+12813006,Brazil - Norway,Brazil,Norway,1-2,finished,5,Round of 16,2026-07-05,Norway,Erling Haaland,Norway,Andreas Schjelderup,79,,79,79,False,False,https://www.sofascore.com/event/12813006
+12813007,Mexico - England,Mexico,England,2-3,finished,5,Round of 16,2026-07-06,Mexico,Raúl Jiménez,Mexico,,69,,69,69,False,True,https://www.sofascore.com/event/12813007
+12813007,Mexico - England,Mexico,England,2-3,finished,5,Round of 16,2026-07-06,England,Harry Kane,England,,60,,60,60,False,True,https://www.sofascore.com/event/12813007
+12813007,Mexico - England,Mexico,England,2-3,finished,5,Round of 16,2026-07-06,Mexico,Julián Quiñones,Mexico,,42,,42,42,False,False,https://www.sofascore.com/event/12813007
+12813007,Mexico - England,Mexico,England,2-3,finished,5,Round of 16,2026-07-06,England,Jude Bellingham,England,Harry Kane,38,,38,38,False,False,https://www.sofascore.com/event/12813007
+12813007,Mexico - England,Mexico,England,2-3,finished,5,Round of 16,2026-07-06,England,Jude Bellingham,England,Bukayo Saka,36,,36,36,False,False,https://www.sofascore.com/event/12813007
+12812990,Portugal - Spain,Portugal,Spain,0-1,finished,5,Round of 16,2026-07-06,Spain,Mikel Merino,Spain,Ferran Torres,90,1.0,90+1,91,False,False,https://www.sofascore.com/event/12812990
+12813002,USA - Belgium,USA,Belgium,1-4,finished,5,Round of 16,2026-07-07,Belgium,Romelu Lukaku,Belgium,Hans Vanaken,90,3.0,90+3,93,False,False,https://www.sofascore.com/event/12813002
+12813002,USA - Belgium,USA,Belgium,1-4,finished,5,Round of 16,2026-07-07,Belgium,Hans Vanaken,Belgium,Charles De Ketelaere,57,,57,57,False,False,https://www.sofascore.com/event/12813002
+12813002,USA - Belgium,USA,Belgium,1-4,finished,5,Round of 16,2026-07-07,Belgium,Charles De Ketelaere,Belgium,Leandro Trossard,33,,33,33,False,False,https://www.sofascore.com/event/12813002
+12813002,USA - Belgium,USA,Belgium,1-4,finished,5,Round of 16,2026-07-07,USA,Malik Tillman,USA,,31,,31,31,False,False,https://www.sofascore.com/event/12813002
+12813002,USA - Belgium,USA,Belgium,1-4,finished,5,Round of 16,2026-07-07,Belgium,Charles De Ketelaere,Belgium,Nicolas Raskin,9,,9,9,False,False,https://www.sofascore.com/event/12813002
+12812993,Argentina - Egypt,Argentina,Egypt,3-2,finished,5,Round of 16,2026-07-07,Argentina,Enzo Fernández,Argentina,Lautaro Martínez,90,2.0,90+2,92,False,False,https://www.sofascore.com/event/12812993
+12812993,Argentina - Egypt,Argentina,Egypt,3-2,finished,5,Round of 16,2026-07-07,Argentina,Lionel Messi,Argentina,Gonzalo Montiel,83,,83,83,False,False,https://www.sofascore.com/event/12812993
+12812993,Argentina - Egypt,Argentina,Egypt,3-2,finished,5,Round of 16,2026-07-07,Argentina,Cristian Romero,Argentina,Lionel Messi,79,,79,79,False,False,https://www.sofascore.com/event/12812993
+12812993,Argentina - Egypt,Argentina,Egypt,3-2,finished,5,Round of 16,2026-07-07,Egypt,Mostafa Ziko,Egypt,Haissem Hassan,67,,67,67,False,False,https://www.sofascore.com/event/12812993
+12812993,Argentina - Egypt,Argentina,Egypt,3-2,finished,5,Round of 16,2026-07-07,Egypt,Yasser Ibrahim,Egypt,Marwan Attia,15,,15,15,False,False,https://www.sofascore.com/event/12812993
+12813016,France - Morocco,France,Morocco,2-0,finished,27,Quarterfinals,2026-07-09,France,Ousmane Dembélé,France,Kylian Mbappé,66,,66,66,False,False,https://www.sofascore.com/event/12813016
+12813016,France - Morocco,France,Morocco,2-0,finished,27,Quarterfinals,2026-07-09,France,Kylian Mbappé,France,Désiré Doué,60,,60,60,False,False,https://www.sofascore.com/event/12813016
+12812994,Spain - Belgium,Spain,Belgium,2-1,finished,27,Quarterfinals,2026-07-10,Spain,Mikel Merino,Spain,,88,,88,88,False,False,https://www.sofascore.com/event/12812994
+12812994,Spain - Belgium,Spain,Belgium,2-1,finished,27,Quarterfinals,2026-07-10,Belgium,Charles De Ketelaere,Belgium,Timothy Castagne,41,,41,41,False,False,https://www.sofascore.com/event/12812994
+12812994,Spain - Belgium,Spain,Belgium,2-1,finished,27,Quarterfinals,2026-07-10,Spain,Fabián Ruiz,Spain,,30,,30,30,False,False,https://www.sofascore.com/event/12812994
+12813017,Norway - England,Norway,England,1-2,finished,27,Quarterfinals,2026-07-11,England,Jude Bellingham,England,,93,,93,93,False,False,https://www.sofascore.com/event/12813017
+12813017,Norway - England,Norway,England,1-2,finished,27,Quarterfinals,2026-07-11,England,Jude Bellingham,England,Anthony Gordon,45,2.0,45+2,47,False,False,https://www.sofascore.com/event/12813017
+12813017,Norway - England,Norway,England,1-2,finished,27,Quarterfinals,2026-07-11,Norway,Andreas Schjelderup,Norway,Martin Ødegaard,36,,36,36,False,False,https://www.sofascore.com/event/12813017
+12813015,Argentina - Switzerland,Argentina,Switzerland,3-1,finished,27,Quarterfinals,2026-07-12,Argentina,Lautaro Martínez,Argentina,,120,1.0,120+1,121,False,False,https://www.sofascore.com/event/12813015
+12813015,Argentina - Switzerland,Argentina,Switzerland,3-1,finished,27,Quarterfinals,2026-07-12,Argentina,Julián Alvarez,Argentina,José Manuel López,112,,112,112,False,False,https://www.sofascore.com/event/12813015
+12813015,Argentina - Switzerland,Argentina,Switzerland,3-1,finished,27,Quarterfinals,2026-07-12,Switzerland,Dan Ndoye,Switzerland,Ricardo Rodríguez,67,,67,67,False,False,https://www.sofascore.com/event/12813015
+12813015,Argentina - Switzerland,Argentina,Switzerland,3-1,finished,27,Quarterfinals,2026-07-12,Argentina,Alexis Mac Allister,Argentina,Lionel Messi,10,,10,10,False,False,https://www.sofascore.com/event/12813015
