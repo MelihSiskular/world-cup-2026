@@ -7,9 +7,7 @@ CSV_FILE = "/Users/melihsiskular/PycharmProjects/wc2026/data/processed/goal_minu
 df = pd.read_csv(CSV_FILE)
 
 
-# =========================
-# DAKİKA ARALIĞI AYARI
-# =========================
+#Burada görmek istediğin şekilde aralıkları belirle
 intervals = [
     (0, 10, "0-10"),
     (11, 20, "11-20"),
@@ -69,9 +67,7 @@ summary.to_csv(
 )
 
 
-# =========================
-# GRAFİK
-# =========================
+#Çizim
 
 plt.figure(figsize=(12, 7))
 
@@ -129,11 +125,11 @@ for bar, goal, pct in zip(
 
 plt.tight_layout()
 
-# savefig, show'dan önce olmalı
+"""
 plt.savefig(
     "/Users/melihsiskular/PycharmProjects/wc2026/docs/images/goal_minute/goal_minute_distribution_chart.png",
     dpi=300,
     bbox_inches="tight"
 )
-
+"""
 plt.show()

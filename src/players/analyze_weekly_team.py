@@ -1,17 +1,9 @@
 """
 Dünya Kupası oyuncu-maç verisinden:
 
-1. Turnuva aşamalarını kronolojik sıraya koyar.
-2. Her aşama ve pozisyon için en yüksek ratingli ilk N oyuncuyu çıkarır.
-3. Farklı formasyonlara göre aşamanın takımını oluşturur.
-4. Sonuçları CSV olarak kaydeder.
-
-Örnek çalıştırma:
-    python analyze_weekly_team.py \
-        --input world_cup_data/player_match_stats.csv \
-        --output world_cup_data/weekly_team_analysis \
-        --top-n 10 \
-        --min-minutes 1
+- Her aşama ve pozisyon için en yüksek ratingli ilk N oyuncuyu çıkarır.
+- Farklı formasyonlara göre aşamanın takımını oluşturur.
+- Sonuçları CSV olarak kaydeder.
 """
 
 from __future__ import annotations
@@ -24,12 +16,11 @@ import pandas as pd
 
 POSITIONS = ["G", "D", "M", "F"]
 
-# Veride yalnızca G/D/M/F bulunduğu için formasyonlar bu dört
-# geniş pozisyon grubu üzerinden kuruluyor.
+# Veride yalnızca G/D/M/F bulunduğu için formasyonlar bu dört kullandım
 FORMATIONS = {
     "4-3-3": {"G": 1, "D": 4, "M": 3, "F": 3},
     "4-4-2": {"G": 1, "D": 4, "M": 4, "F": 2},
-    "4-2-3-1": {"G": 1, "D": 4, "M": 5, "F": 1},
+    "4-2-3-1": {"G": 1, "D": 4, "M": 2, "F": 4},
     "3-4-3": {"G": 1, "D": 3, "M": 4, "F": 3},
     "3-5-2": {"G": 1, "D": 3, "M": 5, "F": 2},
     "5-3-2": {"G": 1, "D": 5, "M": 3, "F": 2},
@@ -38,7 +29,6 @@ FORMATIONS = {
 
 
 def clean_text(value) -> str:
-    """NaN dâhil metin değerlerini güvenli biçimde temizler."""
     if pd.isna(value):
         return ""
     return str(value).strip()
@@ -46,9 +36,8 @@ def clean_text(value) -> str:
 
 def resolve_stage(round_number, round_name):
     """
-    SofaScore round_number değerlerini kronolojik turnuva aşamasına çevirir.
 
-    Kullanıcının verisindeki yapı:
+    Sofascore üzerinden gelenleri sıraladım:
         1  -> Grup 1. maç
         2  -> Grup 2. maç
         3  -> Grup 3. maç
@@ -109,7 +98,7 @@ def load_and_prepare(input_file: Path, min_minutes: float) -> pd.DataFrame:
             "Gerekli kolonlar eksik: " + ", ".join(missing)
         )
 
-    # Sayısal kolonları güvenli biçimde dönüştür.
+
     numeric_columns = [
         "event_id",
         "player_id",
@@ -127,8 +116,7 @@ def load_and_prepare(input_file: Path, min_minutes: float) -> pd.DataFrame:
             df[column] = 0
         df[column] = pd.to_numeric(df[column], errors="coerce")
 
-    # Maçta kullanıldığı pozisyonu öncelikli al.
-    # Eksikse oyuncunun temel pozisyonuna dön.
+
     lineup_position = (
         df["lineup_position"]
         if "lineup_position" in df.columns
@@ -179,7 +167,6 @@ def load_and_prepare(input_file: Path, min_minutes: float) -> pd.DataFrame:
         & df["stat_minutesPlayed"].fillna(0).gt(0)
     ].copy()
 
-    # Boş katkı istatistikleri sıralama için sıfır kabul edilir.
     for column in [
         "stat_goals",
         "stat_goalAssist",
@@ -192,14 +179,7 @@ def load_and_prepare(input_file: Path, min_minutes: float) -> pd.DataFrame:
 
 
 def sort_player_pool(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Rating eşitliğinde kullanılan sıralama:
-    1. Daha yüksek rating
-    2. Daha fazla dakika
-    3. Daha fazla gol
-    4. Daha fazla asist
-    5. İsim alfabetik
-    """
+
     return df.sort_values(
         by=[
             "stage_order",
