@@ -99,7 +99,7 @@ print(
 
 ### Example
 The best line-up for 4-3-3 formation in first week
-![](docs/images/formation_visuals_v3/individual/01_Grup_1_Maçları_4-3-3.png)
+![](docs/images/01_Grup_1_Maçları_4-3-3.png)
 ---
 
 ## Generated Datasets
