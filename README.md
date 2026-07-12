@@ -37,8 +37,9 @@ Goal-related datasets are used to analyze:
 ### Example
 ![](docs/images/goal_minute/team_goal_buckets_chart.png)
 
+### Example
 ![](docs/images/goal_minute/goal_minute_distribution_chart.png)
-*Last Match Based On QF*
+
 ---
 
 ## Player Performance Analysis
@@ -96,6 +97,7 @@ print(
 | 9 | Harry Kane | England | Croatia | 90 | 7.8 |
 | 10 | Kang-in Lee | South Korea | Czechia | 90 | 7.7 |
 
+### Example
 ![](docs/images/formation_visuals_v3/individual/01_Grup_1_Maçları_3-4-3.png)
 
 ---
