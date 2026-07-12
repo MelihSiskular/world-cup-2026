@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# macOS
+.DS_Store
+
+# Environment variables
+.env
+.env.*
+
+# Raw and generated data
+world_cup_data/raw/*
+world_cup_data/weekly_team_analysis/*
+world_cup_data/formation_visuals_v3/*
+
+# Generated datasets
+world_cup_data/*.csv
+world_cup_data/*.json
+world_cup_data/*.parquet
+world_cup_data/*.zip
+world_cup_data/*.pdf
+world_cup_data/*.png
+
+# Local event list
+event_ids.txt
+
+# Logs
+*.log
+
+# Keep empty folders
+!world_cup_data/raw/.gitkeep
+!world_cup_data/weekly_team_analysis/.gitkeep
+!world_cup_data/formation_visuals_v3/.gitkeep
+
+# README sample images should remain tracked
+!docs/images/
+!docs/images/*.png
+!docs/images/*.jpg
+!docs/images/*.jpeg
