@@ -13,14 +13,7 @@ The project focuses on two main areas:
 
 This project collects and processes World Cup match data to create analytical datasets, rankings, visualizations, and team-of-the-week selections.
 
-The goal is to transform raw football match events into meaningful insights about:
-
-- Goal scoring patterns
-- Team scoring behavior
-- Individual player performances
-- Position-based rankings
-- Team of the Week selections
-- Formation visualizations
+The goal is to transform raw football match events into meaningful insights about following topics.
 
 ---
 
@@ -98,7 +91,8 @@ print(
 | 10 | Kang-in Lee | South Korea | Czechia | 90 | 7.7 |
 
 ### Example
-The best line-up for 4-3-3 formation in first week
+
+The following example the best line-up for 4-3-3 formation in first group match
 ![](docs/images/01_Grup_1_Maçları_4-3-3.png)
 ---
 
@@ -164,12 +158,8 @@ Examples of questions that can be answered using this project:
 
 ---
 
-## Disclaimer
-
-This project was created for educational and portfolio purposes.
-
----
-
 ## AUTHOR
 
 - Melih Şişkular
+
+This project was created for educational and portfolio purposes.
