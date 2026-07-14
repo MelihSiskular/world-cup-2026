@@ -6,6 +6,7 @@ The project focuses on two main areas:
 
 -  Goal Analysis
 -  Player Performance Analysis
+-  Player Similarity Engine
 
 ---
 
@@ -17,7 +18,7 @@ The goal is to transform raw football match events into meaningful insights abou
 
 ---
 
-## Goal Analysis
+# Goal Analysis
 
 Goal-related datasets are used to analyze:
 
@@ -35,7 +36,7 @@ Goal-related datasets are used to analyze:
 
 ---
 
-## Player Performance Analysis
+# Player Performance Analysis
 
 Player-level match statistics are used to evaluate:
 
@@ -96,6 +97,57 @@ The following example the best line-up for 4-3-3 formation in first group match
 ![](docs/images/01_Grup_1_Maçları_4-3-3.png)
 ---
 
+# Player Similarity Report: Michael Olise
+
+## Player Profile
+
+| Player | Team | Position | Age | Minutes | Rating | Market Value |
+|---|---|---|---:|---:|---:|---:|
+| Michael Olise | France | M | 24.6 | 488 | 7.57 | EUR 144.0M |
+
+This report identifies statistically similar players within the same broad
+position group. The model uses position-specific, reliability-adjusted per-90
+features, StandardScaler and cosine similarity.
+
+### Example
+
+```python
+
+python -m src.player_similarity.breakdown.create_similarity_report \
+
+    --player "Michael Olise"
+```
+
+
+## Closest Players
+
+| Rank | Player | Team | Age | Minutes | Rating | Market Value | Similarity |
+|---:|---|---|---:|---:|---:|---:|---:|
+| 1 | Florian Wirtz | Germany | 23.2 | 363 | 7.68 | EUR 95.0M | 86.55% |
+| 2 | Sadio Mané | Senegal | 34.3 | 364 | 6.90 | EUR 5.6M | 69.09% |
+| 3 | Andreas Schjelderup | Norway | 22.1 | 251 | 7.37 | EUR 31.0M | 68.79% |
+| 4 | Nicolás González | Argentina | 28.3 | 182 | 6.87 | EUR 23.0M | 67.50% |
+| 5 | Lamine Yamal | Spain | 19.0 | 405 | 7.25 | EUR 215.0M | 64.76% |
+| 6 | Martin Ødegaard | Norway | 27.6 | 471 | 6.93 | EUR 71.0M | 63.68% |
+| 7 | Johan Manzambi | Switzerland | 20.7 | 200 | 7.77 | EUR 54.0M | 63.35% |
+| 8 | Mohamed Salah | Egypt | 34.1 | 428 | 7.24 | EUR 21.0M | 60.36% |
+| 9 | Bruno Guimarães | Brazil | 28.7 | 419 | 7.15 | EUR 72.0M | 60.35% |
+| 10 | Brahim Díaz | Morocco | 26.9 | 462 | 6.85 | EUR 37.0M | 59.94% |
+
+## Quick Summary
+
+- **Most similar player:** Florian Wirtz
+- **Highest overall similarity:** 86.55%
+- **Strongest matching areas:** Overall Quality (100.0%), Carrying & Dribbling (97.1%), Creativity (93.5%)
+- **Candidate list size:** 10
+- **Minimum similarity included:** 20.0%
+
+## Detailed One-to-One Comparisons
+![Michael Olise vs Florian Wirtz](/Users/melihsiskular/PycharmProjects/wc2026/docs/images/player_similarity/scout_reports/michael_olise_vs_florian_wirtz_scout_report.png)
+
+---
+
+
 ## Generated Datasets
 
 ### Goal Analysis
@@ -127,7 +179,8 @@ The following example the best line-up for 4-3-3 formation in first group match
 ```text
 src/
 ├── goal_minute/
-├── players/
+├── player_similarity/
+├──players/
 
 data/
 └── processed/
@@ -152,14 +205,19 @@ Examples of questions that can be answered using this project:
 
 ## Future Improvements
 - Tournament prediction models
-- Player similarity analysis
+- Deep Player similarity analysis
 - Team strength ratings
 - Interactive dashboards
 
 ---
 
-## AUTHOR
+
+## Data Source
+
+Match events and player statistics are collected from SofaScore and transformed into analytical datasets for educational and research purposes.
+
+---
+
+## Author
 
 - Melih Şişkular
-
-This project was created for educational and portfolio purposes.

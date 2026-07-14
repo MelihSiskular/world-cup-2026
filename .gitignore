@@ -18,6 +18,11 @@ env/
 .DS_Store
 Thumbs.db
 
+src/player_similarity/matrix
+src/player_similarity/build_player_profiles.py
+src/player_similarity/similarity_engine.py
+src/player_similarity/breakdown/build_similarity_breakdown.py
+src/player_similarity/breakdown/create_similarity_markdown_report.py
 
 src/get_data/
 src/test.py
@@ -35,6 +40,10 @@ data/processed/player_matches_analysis/player_stats_long.csv
 data/processed/player_matches_analysis/player_tournament_summary.csv
 data/processed/weekly_team_analysis/formation_summary.csv
 data/processed/weekly_team_analysis/stage_summary.csv
+data/processed/player_similarity/reports
+data/processed/player_similarity/player_profiles.csv
+data/processed/player_similarity/player_similarity_matrix_long.csv
+data/processed/player_similarity/results
 
 docs/images/formation_visuals_v3/
 

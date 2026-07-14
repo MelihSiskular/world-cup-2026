@@ -167,6 +167,7 @@ def load_and_prepare(input_file: Path, min_minutes: float) -> pd.DataFrame:
         & df["stat_minutesPlayed"].fillna(0).gt(0)
     ].copy()
 
+
     for column in [
         "stat_goals",
         "stat_goalAssist",
