@@ -1,0 +1,21 @@
+﻿position,archetype_cluster,archetype,player_count,representative_player,strengths,weaknesses,centroid_shot_stopping,centroid_box_command,centroid_short_distribution,centroid_long_distribution,centroid_sweeping,centroid_security,centroid_defending,centroid_duels,centroid_aerial,centroid_passing,centroid_progression,centroid_wide_attack,centroid_passing_volume,centroid_creativity,centroid_dribbling,centroid_defensive_work,centroid_scoring_threat,centroid_wide_creation,centroid_ball_security,centroid_finishing,centroid_shooting_volume,centroid_link_play,centroid_aerial_presence,centroid_off_ball_threat
+D,2,Aerial Enforcer,34,Kevin Danso,"Aerial, Duels, Security","Defending, Wide Attack",,,,,,0.5027,-0.4833,0.6092,0.9502,0.2398,-0.0474,-0.1671,,,,,,,,,,,,
+D,0,Attacking Full-Back,28,Arthur Masuaku,"Wide Attack, Defending, Progression","Security, Passing",,,,,,-0.9808,-0.1748,-0.38,-0.3889,-0.407,-0.3242,1.7299,,,,,,,,,,,,
+D,3,Ball-Carrying Defender,26,Davinson Sánchez,"Progression, Passing, Security","Defending, Wide Attack",,,,,,0.7298,-0.5252,-0.4902,-0.061,1.209,1.2961,-0.4919,,,,,,,,,,,,
+D,1,Defensive Stopper - Aerial,27,Amar Dedić,"Defending, Aerial, Duels","Wide Attack, Progression",,,,,,0.0236,1.0899,0.4843,0.5808,-0.7054,-0.7219,-0.7329,,,,,,,,,,,,
+D,5,Defensive Stopper - Duels,21,Milad Mohammadi,"Defending, Duels, Wide Attack","Aerial, Passing",,,,,,-0.4572,0.8126,0.361,-1.568,-0.7268,-0.237,0.0369,,,,,,,,,,,,
+D,6,Progressive Defender,20,Chris Richards,"Progression, Duels, Aerial","Security, Wide Attack",,,,,,-0.7796,0.6534,0.8214,0.672,0.5818,1.2305,-0.1786,,,,,,,,,,,,
+D,4,Safe-Possession Defender,33,Lucas Herrington,"Security, Passing, Wide Attack","Duels, Defending",,,,,,0.4834,-0.7447,-1.0428,-0.4855,-0.1672,-0.7015,-0.2237,,,,,,,,,,,,
+F,1,Dribbling Forward,22,Anthony Gordon,"Dribbling, Link Play, Creativity","Ball Security, Aerial Presence",,,,,,,,,,,,,,0.6372,1.0673,,,,-0.6319,-0.2693,-0.0883,1.0217,-0.582,0.6025
+F,2,Poacher - Ball Security,20,Enner Valencia,"Finishing, Ball Security, Shooting Volume","Dribbling, Off Ball Threat",,,,,,,,,,,,,,-0.3995,-0.7744,,,,0.7088,0.8293,0.6807,-0.3938,-0.1489,-0.482
+F,0,Poacher - Shooting Volume,3,Kylian Mbappé,"Finishing, Shooting Volume, Creativity","Ball Security, Aerial Presence",,,,,,,,,,,,,,1.8238,1.7401,,,,-0.3469,2.6818,2.679,1.4477,-0.2269,1.723
+F,3,Target Forward,30,Nestory Irankunda,"Aerial Presence, Ball Security, Off Ball Threat","Shooting Volume, Link Play",,,,,,,,,,,,,,-0.3833,-0.4405,,,,0.0255,-0.6235,-0.6569,-0.6315,0.5487,-0.2928
+G,1,Balanced Goalkeeper,16,Orlando Mosquera,"Security, Short Distribution, Shot Stopping","Box Command, Sweeping",-0.3769,-0.9751,0.2849,-0.5242,-0.568,0.5516,,,,,,,,,,,,,,,,,,
+G,2,Commanding Goalkeeper,18,Thibaut Courtois,"Box Command, Long Distribution, Sweeping","Shot Stopping, Security",0.0434,0.866,0.4595,0.6561,0.4815,0.3673,,,,,,,,,,,,,,,,,,
+G,0,Traditional Shot Stopper,14,Aymen Dahmen,"Shot Stopping, Sweeping, Box Command","Security, Short Distribution",0.375,0.001,-0.9164,-0.2446,0.03,-1.1026,,,,,,,,,,,,,,,,,,
+M,5,Ball-Winning Midfielder,45,Tyler Adams,"Defensive Work, Ball Security, Passing Volume","Wide Creation, Creativity",,,,,,,,,,,-0.5048,,0.15,-0.7539,-0.3817,0.8692,-0.6836,-0.9056,0.7401,,,,,
+M,3,Goal-Threat Midfielder,27,Gonzalo Plata,"Scoring Threat, Wide Creation, Progression","Ball Security, Defensive Work",,,,,,,,,,,0.5138,,-0.2036,0.4596,0.4955,-0.2969,1.8153,0.5408,-0.7727,,,,,
+M,1,Possession-Secure Midfielder,54,Jamiro Monteiro,"Ball Security, Wide Creation, Scoring Threat","Defensive Work, Progression",,,,,,,,,,,-0.6667,,-0.3696,-0.1795,-0.5309,-0.8334,-0.1261,-0.0394,0.2631,,,,,
+M,2,Press-Resistant Carrier,29,Martin Baturina,"Dribbling, Defensive Work, Scoring Threat","Passing Volume, Ball Security",,,,,,,,,,,-0.1498,,-1.2126,-0.5096,1.023,0.2856,-0.073,-0.2729,-1.132,,,,,
+M,4,Tempo Controller,28,Manu Koné,"Passing Volume, Progression, Ball Security","Scoring Threat, Wide Creation",,,,,,,,,,,1.048,,1.3009,-0.2989,-0.0416,-0.0449,-0.3508,-0.3426,0.5567,,,,,
+M,0,Wide Creator,29,Nicolás González,"Creativity, Wide Creation, Progression","Ball Security, Scoring Threat",,,,,,,,,,,0.6844,,0.6015,1.8743,0.1368,0.2374,0.0172,1.5787,-0.3245,,,,,

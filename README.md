@@ -1,12 +1,13 @@
 # ⚽ FIFA World Cup 2026 Analytics
 
-A data analytics project built around the 2026 FIFA World Cup using player-level and goal-level statistics collected from SofaScore.
+A comprehensive data analytics project built around the 2026 FIFA World Cup using player-level and goal-level statistics collected from SofaScore.
 
-The project focuses on two main areas:
+The project focuses on these main areas:
 
 -  Goal Analysis
 -  Player Performance Analysis
 -  Player Similarity Engine
+-  Player Archetypes 
 
 ---
 
@@ -18,7 +19,7 @@ The goal is to transform raw football match events into meaningful insights abou
 
 ---
 
-# Goal Analysis
+# 1 - Goal Analysis
 
 Goal-related datasets are used to analyze:
 
@@ -36,7 +37,7 @@ Goal-related datasets are used to analyze:
 
 ---
 
-# Player Performance Analysis
+# 2 - Player Performance Analysis
 
 Player-level match statistics are used to evaluate:
 
@@ -77,7 +78,7 @@ print(
     ]
 )
 ```
-### Sample Output
+
 | Rank | Player | Team | Opponent | Minutes | Rating |
 |---:|---|---|---|---:|---:|
 | 1 | Lionel Messi | Argentina | Algeria | 80 | 10.0 |
@@ -97,9 +98,9 @@ The following example the best line-up for 4-3-3 formation in first group match
 ![](docs/images/01_Grup_1_Maçları_4-3-3.png)
 ---
 
-# Player Similarity Report: Michael Olise
+# 3 - Player Similarity Engine: Michael Olise
 
-## Player Profile
+### Player Profile
 
 | Player | Team | Position | Age | Minutes | Rating | Market Value |
 |---|---|---|---:|---:|---:|---:|
@@ -119,7 +120,7 @@ python -m src.player_similarity.breakdown.create_similarity_report \
 ```
 
 
-## Closest Players
+### Closest Players
 
 | Rank | Player | Team | Age | Minutes | Rating | Market Value | Similarity |
 |---:|---|---|---:|---:|---:|---:|---:|
@@ -134,7 +135,7 @@ python -m src.player_similarity.breakdown.create_similarity_report \
 | 9 | Bruno Guimarães | Brazil | 28.7 | 419 | 7.15 | EUR 72.0M | 60.35% |
 | 10 | Brahim Díaz | Morocco | 26.9 | 462 | 6.85 | EUR 37.0M | 59.94% |
 
-## Quick Summary
+### Quick Summary
 
 - **Most similar player:** Florian Wirtz
 - **Highest overall similarity:** 86.55%
@@ -146,6 +147,72 @@ python -m src.player_similarity.breakdown.create_similarity_report \
 ![Michael Olise vs Florian Wirtz](/Users/melihsiskular/PycharmProjects/wc2026/docs/images/player_similarity/scout_reports/michael_olise_vs_florian_wirtz_scout_report.png)
 
 ---
+
+# 4 - Player Archetypes
+
+Players are automatically grouped into football-specific archetypes using unsupervised machine learning.
+
+Different position groups are clustered independently:
+
+- Goalkeepers
+- Defenders
+- Midfielders
+- Forwards
+
+### Examples:
+
+Player | Team | Position | Archetype | Key Strengths |
+|---|---|---|---|---|
+| Michael Olise | France | M | Wide Creator | Creativity, Progression, Dribbling |
+| Florian Wirtz | Germany | M | Wide Creator | Creativity, Passing, Progression |
+| Rodri | Spain | M | Tempo Controller | Passing Volume, Progression, Ball Security |
+| Leandro Paredes | Argentina | M | Tempo Controller | Progression, Passing Volume, Ball Security |
+| Jude Bellingham | England | M | Goal-Threat Midfielder | Scoring Threat, Dribbling, Creativity |
+| Declan Rice | England | M | Ball-Winning Midfielder | Defensive Work, Duels, Recoveries |
+| Pau Cubarsí | Spain | D | Ball-Carrying Defender | Progression, Passing, Ball Carrying |
+| Nuno Mendes | Portugal | D | Attacking Full-Back | Wide Attack, Progression, Crossing |
+| Thibaut Courtois | Belgium | G | Commanding Goalkeeper | Box Command, Long Distribution, Sweeping |
+| Kylian Mbappé | France | F | Poacher - Shooting Volume | Finishing, Shooting Volume, Dribbling |
+
+### Example Player Query
+
+```bash
+python -m src.player_archetypes.show_player \
+  --player "Michael Olise"
+```
+
+```text
+Player:        Michael Olise
+Team:          France
+Position:      M
+Archetype:     Wide Creator
+Cluster Size:  29
+
+Top Archetype Strengths:
+- Creativity
+- Progression
+- Wide Creation
+- Dribbling
+
+Closest Members:
+1. Florian Wirtz
+2. Sadio Mané
+3. Andreas Schjelderup
+4. Nicolás González
+5. Martin Ødegaard
+```
+
+### Examples - Archtype Map
+![](docs/images/player_archetypes/forward_archetype_map.png)
+
+Each point represents one player. Players positioned close to each other have
+similar statistical role profiles. The `X` markers represent archetype centers.
+
+> Archetypes describe tournament-based statistical production. They should not
+> be interpreted as definitive tactical roles without positional tracking,
+> touch maps and longer-term performance data.
+
+
 
 
 ## Generated Datasets
@@ -162,6 +229,12 @@ python -m src.player_similarity.breakdown.create_similarity_report \
 - `top_players_by_stage_position.csv`
 - `teams_by_formation.csv`
 
+### Player Similartiy
+- `player_similarity_breakdown_long.csv`
+
+### Player Archetypes
+- `archetype_summary.csv`
+- `player_archetypes.csv`
 ---
 
 ## Technologies
@@ -171,6 +244,12 @@ python -m src.player_similarity.breakdown.create_similarity_report \
 - Playwright
 - Matplotlib
 - Pillow
+- Numpy
+- Scikit-Learn
+- Cosine Similarity
+- K-Menas Clustering
+- PCA
+
 
 ---
 
@@ -179,8 +258,9 @@ python -m src.player_similarity.breakdown.create_similarity_report \
 ```text
 src/
 ├── goal_minute/
+├── player_archetypes/
 ├── player_similarity/
-├──players/
+├── players/
 
 data/
 └── processed/
@@ -195,20 +275,10 @@ docs/
 
 Examples of questions that can be answered using this project:
 
-- Which teams score the most goals?
-- Which minute ranges produce the most goals?
-- Which defenders performed best during the group stage?
-- How would a Team of the Week look in a 4-3-3 formation?
-- Which players consistently achieved the highest ratings?
-
----
-
-## Future Improvements
-- Tournament prediction models
-- Deep Player similarity analysis
-- Team strength ratings
-- Interactive dashboards
-
+- Which minute ranges produced the highest number of goals?
+- How would a Team of the Week look in different formations?- Which defenders performed best during the group stage?
+- Who are the closest alternatives to well known players?
+- Which players have the most unique statistical profiles?
 ---
 
 
