@@ -144,8 +144,7 @@ python -m src.player_similarity.breakdown.create_similarity_report \
 - **Minimum similarity included:** 20.0%
 
 ## Detailed One-to-One Comparisons
-![](/Users/melihsiskular/PycharmProjects/wc2026/docs/images/player_similarity/scout_reports/michael_olise_vs_florian_wirtz_scout_report.png)
-
+![](docs/images/player_similarity/scout_reports/michael_olise_vs_florian_wirtz_scout_report.png)
 ---
 
 # 4 - Player Archetypes
