@@ -98,7 +98,7 @@ The following example the best line-up for 4-3-3 formation in first group match
 ![](docs/images/01_Grup_1_Maçları_4-3-3.png)
 ---
 
-# 3 - Player Similarity Engine: Michael Olise
+# 3 - Player Similarity Engine
 
 ### Player Profile
 
@@ -246,7 +246,7 @@ similar statistical role profiles. The `X` markers represent archetype centers.
 - Numpy
 - Scikit-Learn
 - Cosine Similarity
-- K-Menas Clustering
+- K-Means Clustering
 - PCA
 
 
