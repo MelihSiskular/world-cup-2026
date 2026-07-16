@@ -51,6 +51,7 @@ data/processed/player_similarity/player_similarity_matrix_long.csv
 data/processed/player_similarity/results
 data/processed/player_archetypes/transfer_recommendations
 data/processed/player_archetypes/model_info.json
+data/processed/player_positioning/player_average_positions.csv
 
 docs/images/player_roles/role_radars/advanced_central_playmaker_radar.png
 docs/images/player_roles/role_maps/f_role_map.png
