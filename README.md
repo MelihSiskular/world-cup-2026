@@ -1,6 +1,10 @@
 # ⚽ FIFA World Cup 2026 Analytics
 
-A comprehensive data analytics project built around the 2026 FIFA World Cup using player-level and goal-level statistics collected from SofaScore.
+## Project Overview
+
+This project is a football analytics and player intelligence platform built using FIFA World Cup 2026 data.
+
+By combining match statistics, market values, positional information and machine learning, the project moves beyond traditional player rankings to explore deeper football questions:
 
 The project focuses on these main areas:
 
@@ -13,13 +17,6 @@ The project focuses on these main areas:
 
 ---
 
-## Project Overview
-
-This project collects and processes World Cup match data to create analytical datasets, rankings, visualizations, and team-of-the-week selections.
-
-The goal is to transform raw football match events into meaningful insights about following topics.
-
----
 
 # 1 - Goal Analysis
 
@@ -143,7 +140,7 @@ python -m src.player_similarity.breakdown.create_similarity_report \
 - **Highest overall similarity:** 86.55%
 - **Strongest matching areas:** Overall Quality (100.0%), Carrying & Dribbling (97.1%), Creativity (93.5%)
 - **Candidate list size:** 10
-- **Minimum similarity included:** 20.0%
+
 
 ## Detailed One-to-One Comparisons
 ![](docs/images/player_similarity/scout_reports/michael_olise_vs_florian_wirtz_scout_report.png)
@@ -239,7 +236,7 @@ Player | Team | Position | Lateral Profile | Vertical Profie       | Mobility   
 *The system automatically converts raw average-position coordinates into interpretable spatial behavior profiles.*
 
 # 6 - Player Role Discovery
-# 6 - Player Role Discovery
+
 
 Player roles are discovered by combining statistical archetypes and spatial behaviour to identify football-specific role identities.
 Instead of describing a player only through statistics, the project attempts to answer:
