@@ -8,6 +8,8 @@ The project focuses on these main areas:
 -  Player Performance Analysis
 -  Player Similarity Engine
 -  Player Archetypes 
+-  Player Positioning Analysis
+-  Player Role Discovery
 
 ---
 
@@ -211,8 +213,142 @@ similar statistical role profiles. The `X` markers represent archetype centers.
 > be interpreted as definitive tactical roles without positional tracking,
 > touch maps and longer-term performance data.
 
+> The important point to emphasize here is the existence of a role called 'Poacher - Shooting Volume', which includes only three players: Messi, Mbappe, and Vini Jr." We able to say that they are something else.
 
 
+# 5 - Player Positioning Analysis
+Player positioning data is average-position maps and aggregated across the tournament.
+With this positioning engine analyzes following topics.
+
+* Average player locations
+* Horizontal lane occupation
+* Vertical pitch occupation
+* Spatial spread and mobility
+* Position stability 
+
+### Example Spatial Profiles
+
+Player | Team | Position | Lateral Profile | Vertical Profie       | Mobility            |
+|---|---|---|-----------------|-----------------------|---------------------| 
+| Michael Olise | France | M | Central Lane    | Advanced Middle Third | Positionally Stable |
+| Rodri | Spain | M | Central Lane    | Final Third           | Roaming             |
+| Jude Bellingham | England | M | Central Lane    | Middle Third          | Positionally Stable |
+| Nuno Mendes | Portugal | D | Left Wide Lane  | Advanced Middle Third | Dynamic             |
+| Kylian Mbappé | France | F | Left Half Space | Final Third           | Roaming             |
+ 
+*The system automatically converts raw average-position coordinates into interpretable spatial behavior profiles.*
+
+# 6 - Player Role Discovery
+# 6 - Player Role Discovery
+
+Player roles are discovered by combining statistical archetypes and spatial behaviour to identify football-specific role identities.
+Instead of describing a player only through statistics, the project attempts to answer:
+> What role does this player actually perform on the pitch?
+
+### Example Role Query
+```python
+python -m src.player_roles.show_player_role \
+  --player "Michael Olise"
+```
+
+```output
+Player: Michael Olise
+
+Role:
+Advanced Central Playmaker
+
+Archetype:
+Wide Creator
+
+Spatial Profile:
+Advanced Central Zone
+
+Confidence:
+87.2%
+```
+
+### Example Role Explorer
+
+```python
+python -m src.player_roles.show_role \
+  --role "Central Tempo Controller"
+```
+```out
+==============================================================================
+ROLE EXPLORER REPORT
+==============================================================================
+
+Role:                    Central Tempo Controller
+Position Group:          M
+Player Count:            18
+Common Archetype:        Tempo Controller
+Common Spatial Role:     Central Build-Up Zone
+Common Lateral Profile:  Central Lane
+Common Vertical Profile: Advanced Middle Third
+Common Mobility Profile: Positionally Stable
+
+ROLE AVERAGES
+------------------------------------------------------------------------------
+Average Age:             28.14
+Average Rating:          7.12
+Average Market Value:    €32.6M
+Average Mean X:          51.14
+Average Mean Y:          51.68
+Average Spatial Spread:  5.97
+Average Confidence:      81.19%
+
+TOP PLAYERS
+------------------------------------------------------------------------------
+           player_name          team  age minutes rating market_value        archetype             spatial_role confidence role_score
+          Granit Xhaka   Switzerland 33.8     600   7.53        €8.5M Tempo Controller       Central Half-Space     86.73%      85.94
+                 Rodri         Spain 30.1     537   7.69       €45.0M Tempo Controller    Central Build-Up Zone     86.69%      84.33
+       Elliot Anderson       England 23.7     533   7.25       €68.0M Tempo Controller    Central Build-Up Zone     86.84%      82.94
+         Adrien Rabiot        France 31.3     450   7.08       €17.3M Tempo Controller          Left Half-Space     87.24%      79.86
+               Vitinha      Portugal 26.4     381   7.29      €130.0M Tempo Controller    Central Build-Up Zone     87.97%      78.56
+       Rodrigo De Paul     Argentina 32.1     407   7.08       €14.5M Tempo Controller         Right Half-Space     87.47%      78.54
+       Leandro Paredes     Argentina 32.0     334   7.57        €5.3M Tempo Controller    Central Build-Up Zone     88.50%      78.10
+             Manu Koné        France 25.2     341   7.04       €47.0M Tempo Controller    Central Build-Up Zone     86.41%      75.68
+    Idrissa Gana Gueye       Senegal 36.8     364   7.19        €485K Tempo Controller    Central Build-Up Zone     79.57%      73.50
+       Frenkie de Jong   Netherlands 29.2     331   7.07       €32.0M Tempo Controller    Central Build-Up Zone     79.57%      72.04
+   Aleksandar Pavlović       Germany 22.2     274   6.82       €96.0M Tempo Controller    Central Build-Up Zone     82.93%      71.07
+```
+*The Central Tempo Controller role contains midfielders who operate mainly in
+central build-up areas and influence the speed and direction of possession.*
+
+*Players such as Rodri, Granit Xhaka, Vitinha, Leandro Paredes and Frenkie de Jong
+appear in this role because they combine a Tempo Controller statistical
+archetype with a central and positionally stable spatial profile.*
+
+**Role Confidence** *measures how closely a player matches the discovered role profile.* 
+
+**Role Score** *combines role confidence, tournament rating and minutes played to rank the strongest representatives of a role.*
+
+### Example Role Visualization 
+
+```python
+python -m src.player_roles.visualize_role \
+  --role "Central Tempo Controller"
+```
+![](docs/images/player_roles/role_radars/central_tempo_controller_radar.png)
+In this example, the **Central Tempo Controller** role is characterized by:
+
+- Elite Passing Volume (%93)
+
+- Strong Progression ability (%90)
+
+- Above-average Ball Security (%70)
+
+- Limited Scoring Threat and Dribbling involvement
+
+This profile represents midfielders who primarily control possession, circulate the ball, and drive build-up play from central areas. Typical examples include players such as Rodri, Vitinha, Leandro Paredes and Granit Xhaka.
+
+Percentile values are calculated relative to players within the same position group.
+
+### Example Role Maps
+![](docs/images/player_roles/role_maps/f_role_map_index_players_1.png)
+*Role Maps bridge the gap between statistical archetypes and on-pitch positioning, producing interpretable football roles from tournament data.*
+
+---
 
 ## Generated Datasets
 
@@ -234,6 +370,13 @@ similar statistical role profiles. The `X` markers represent archetype centers.
 ### Player Archetypes
 - `archetype_summary.csv`
 - `player_archetypes.csv`
+
+### Player Positioning Analysis
+- `player_spatial_profiles.csv`
+
+### Player Roles
+- `player_roles.csv`
+
 ---
 
 ## Technologies
@@ -278,6 +421,7 @@ Examples of questions that can be answered using this project:
 - How would a Team of the Week look in different formations?- Which defenders performed best during the group stage?
 - Who are the closest alternatives to well known players?
 - Which players have the most unique statistical profiles?
+- How do player roles distribute across the pitch?
 ---
 
 

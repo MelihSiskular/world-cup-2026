@@ -13,10 +13,10 @@ import pandas as pd
 """
 Run
 
-python -m src.player_roles.create_role_map_v4 \
+python -m src.player_roles.create_role_map \
   --position M
   
-python -m src.player_roles.create_role_map_v4 \
+python -m src.player_roles.create_role_map \
   --position M \
   --index-player-count 1
 
@@ -723,17 +723,7 @@ def draw_overview(
         color="#b5d0c0",
     )
 
-    figure.text(
-        0.40,
-        0.025,
-        (
-            "Pitch dimensions use a 105 Ã 68 ratio. "
-            "Each point is a tournament-wide weighted average position."
-        ),
-        ha="center",
-        fontsize=9,
-        color="#91ad9d",
-    )
+
 
     figure.tight_layout(
         rect=[0.02, 0.045, 0.99, 0.86]

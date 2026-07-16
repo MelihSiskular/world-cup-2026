@@ -30,6 +30,10 @@ src/goal_minute/analyze_goal_timing.py
 
 src/player_archetypes/build player_archetypes.py
 
+src/player_positioning/build_spatial_profiles.py
+
+
+
 data/raw/
 
 # Event ID dosyası nerede bulunursa bulunsun gizlensin
@@ -48,6 +52,9 @@ data/processed/player_similarity/results
 data/processed/player_archetypes/transfer_recommendations
 data/processed/player_archetypes/model_info.json
 
+docs/images/player_roles/role_radars/advanced_central_playmaker_radar.png
+docs/images/player_roles/role_maps/f_role_map.png
+docs/images/player_roles/role_maps/m_role_map_index_players_1.png
 docs/images/formation_visuals_v3/
 docs/images/player_archetypes/defender_archetype_map.png
 docs/images/player_archetypes/midfielder_archetype_map.png
