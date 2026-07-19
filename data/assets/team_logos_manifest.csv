@@ -1,0 +1,49 @@
+﻿asset_type,asset_id,asset_name,status,http_status,output_path,error,elapsed_seconds
+team,4475,Norway,downloaded,200,data/assets/team_logos/4475.png,,0.592
+team,4479,Bosnia & Herzegovina,downloaded,200,data/assets/team_logos/4479.png,,0.597
+team,4481,France,downloaded,200,data/assets/team_logos/4481.png,,0.592
+team,4688,Sweden,downloaded,200,data/assets/team_logos/4688.png,,0.6
+team,4691,Algeria,downloaded,200,data/assets/team_logos/4691.png,,1.068
+team,4695,Scotland,downloaded,200,data/assets/team_logos/4695.png,,1.082
+team,4698,Spain,downloaded,200,data/assets/team_logos/4698.png,,1.076
+team,4699,Switzerland,downloaded,200,data/assets/team_logos/4699.png,,1.085
+team,4700,Türkiye,downloaded,200,data/assets/team_logos/4700.png,,1.429
+team,4704,Portugal,downloaded,200,data/assets/team_logos/4704.png,,1.604
+team,4705,Netherlands,downloaded,200,data/assets/team_logos/4705.png,,1.607
+team,4711,Germany,downloaded,200,data/assets/team_logos/4711.png,,1.611
+team,4713,England,downloaded,200,data/assets/team_logos/4713.png,,1.645
+team,4714,Czechia,downloaded,200,data/assets/team_logos/4714.png,,2.069
+team,4715,Croatia,downloaded,200,data/assets/team_logos/4715.png,,2.084
+team,4717,Belgium,downloaded,200,data/assets/team_logos/4717.png,,2.088
+team,4718,Austria,downloaded,200,data/assets/team_logos/4718.png,,2.093
+team,4723,Uzbekistan,downloaded,200,data/assets/team_logos/4723.png,,2.43
+team,4724,USA,downloaded,200,data/assets/team_logos/4724.png,,2.639
+team,4725,Uruguay,downloaded,200,data/assets/team_logos/4725.png,,2.654
+team,4729,Tunisia,downloaded,200,data/assets/team_logos/4729.png,,2.649
+team,4735,South Korea,downloaded,200,data/assets/team_logos/4735.png,,2.661
+team,4736,South Africa,downloaded,200,data/assets/team_logos/4736.png,,3.007
+team,4739,Senegal,downloaded,200,data/assets/team_logos/4739.png,,3.183
+team,4741,Australia,downloaded,200,data/assets/team_logos/4741.png,,3.193
+team,4748,Brazil,downloaded,200,data/assets/team_logos/4748.png,,3.121
+team,4752,Canada,downloaded,200,data/assets/team_logos/4752.png,,3.293
+team,4753,Cabo Verde,downloaded,200,data/assets/team_logos/4753.png,,3.455
+team,4757,Ecuador,downloaded,200,data/assets/team_logos/4757.png,,3.721
+team,4758,Egypt,downloaded,200,data/assets/team_logos/4758.png,,3.68
+team,4764,Ghana,downloaded,200,data/assets/team_logos/4764.png,,3.726
+team,4766,Iran,downloaded,200,data/assets/team_logos/4766.png,,3.781
+team,4767,Iraq,downloaded,200,data/assets/team_logos/4767.png,,4.058
+team,4768,Côte d'Ivoire,downloaded,200,data/assets/team_logos/4768.png,,4.231
+team,4770,Japan,downloaded,200,data/assets/team_logos/4770.png,,4.234
+team,4771,Jordan,downloaded,200,data/assets/team_logos/4771.png,,4.24
+team,4778,Morocco,downloaded,200,data/assets/team_logos/4778.png,,4.294
+team,4781,Mexico,downloaded,200,data/assets/team_logos/4781.png,,4.63
+team,4784,New Zealand,downloaded,200,data/assets/team_logos/4784.png,,4.711
+team,4789,Paraguay,downloaded,200,data/assets/team_logos/4789.png,,4.716
+team,4792,Qatar,downloaded,200,data/assets/team_logos/4792.png,,4.725
+team,4819,Argentina,downloaded,200,data/assets/team_logos/4819.png,,4.95
+team,4820,Colombia,downloaded,200,data/assets/team_logos/4820.png,,5.12
+team,4823,DR Congo,downloaded,200,data/assets/team_logos/4823.png,,5.129
+team,4834,Saudi Arabia,downloaded,200,data/assets/team_logos/4834.png,,5.128
+team,5164,Panama,downloaded,200,data/assets/team_logos/5164.png,,5.229
+team,7229,Haiti,downloaded,200,data/assets/team_logos/7229.png,,5.423
+team,55827,Curaçao,downloaded,200,data/assets/team_logos/55827.png,,5.434

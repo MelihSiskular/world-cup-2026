@@ -2,11 +2,12 @@
 
 ## Project Overview
 
-This project is a football analytics and player intelligence platform built using FIFA World Cup 2026 data.
+>Machine Learning powered football analytics platform built from FIFA World Cup 2026 tournament data.
 
-By combining match statistics, market values, positional information and machine learning, the project moves beyond traditional player rankings to explore deeper football questions:
 
+By integrating match statistics, market values, positional information, heatmaps and unsupervised learning techniques, the platform explores player performance, tactical roles, similarity networks and transfer opportunities beyond traditional football metrics. 
 The project focuses on these main areas:
+
 
 -  Goal Analysis
 -  Player Performance Analysis
@@ -14,6 +15,8 @@ The project focuses on these main areas:
 -  Player Archetypes 
 -  Player Positioning Analysis
 -  Player Role Discovery
+-  Player Heatmap Visualization
+-  Transfer Intelligence Engine
 
 ---
 
@@ -347,6 +350,75 @@ Percentile values are calculated relative to players within the same position gr
 
 ---
 
+# 7 - Player Heatmap Visualization
+
+Average positions alone cannot fully describe how players occupy space.
+
+To better capture on-pitch behaviour, the project generates normalized player heatmaps and compares them across the tournament.
+
+The heatmap engine measures:
+
+- Heatmap similarity
+- Shared zone occupation
+- Peak zone similarity
+- Lateral occupation similarity
+- Vertical occupation similarity
+- Spatial entropy similarity
+
+This allows the project to answer:
+
+> Do two players actually use the same areas of the pitch?
+> 
+> With same intensity?
+
+### Example - Michael Olise Heatmap
+![](docs/images/player_heatmaps/single/michael_olise_tournament_heatmap.png)
+
+### Example - Michael Olise vs Pedri Heatmap
+![](docs/images/player_heatmaps/compare/michael_olise_vs_pedri_compare.png)
+
+---
+
+# 8 - Transfer Intelligence Engine
+
+The Transfer Intelligence Engine combines every previous layer of analysis.
+
+Inputs:
+
+- Statistical Similarity
+- Archetype Compatibility
+- Role Compatibility
+- Spatial Similarity
+- Heatmap Similarity
+- Market Value
+- Age Profile
+- Tournament Quality
+- Data Reliability
+
+The objective is not to find the most similar player.
+
+The objective is to find the most suitable replacement.
+
+The Engine produces four recommendation categories
+
+![](docs/images/transfer_intelligence/premium_dashboards/michael_olise_value_transfer_dashboard.png)
+
+## Example Transfer Query
+
+python -m src.transfer_intelligence.find_replacements \
+  --player "Michael Olise"
+
+
+ Player          | Team              |
+|-----------------|-------------------|
+| Best Overall    | Stephen Eustaquio |
+| Best Value      | Hakan Çalhanoğlu  | 
+| Premium Option  | Pedri             |
+| Closest Role Profile     | Dani Olmo         |            
+
+ 
+---
+I'm so happy that this project evolved from a world cup analytics dataset into a football scouting and recruitment intelligence platform
 ## Generated Datasets
 
 ### Goal Analysis
@@ -374,6 +446,12 @@ Percentile values are calculated relative to players within the same position gr
 ### Player Roles
 - `player_roles.csv`
 
+### Player Heatmaps
+- `player_heatmaps_match_level`
+
+### Transfer Intelligence
+- `transfer_feature_table`
+
 ---
 
 ## Technologies
@@ -398,9 +476,12 @@ Percentile values are calculated relative to players within the same position gr
 src/
 ├── goal_minute/
 ├── player_archetypes/
+├── player_heatmaps/
+├── player_positioning
 ├── player_roles
 ├── player_similarity/
 ├── players/
+├── transfer_intelligence
 
 data/
 └── processed/
@@ -420,6 +501,7 @@ Examples of questions that can be answered using this project:
 - Who are the closest alternatives to well known players?
 - Which players have the most unique statistical profiles?
 - How do player roles distribute across the pitch?
+- Which Player I should transfer to my team and why?
 ---
 
 

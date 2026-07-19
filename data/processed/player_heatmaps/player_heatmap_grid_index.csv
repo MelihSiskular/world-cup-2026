@@ -1,0 +1,979 @@
+﻿player_id,player_name,team_name,matches_with_heatmap,heatmap_point_count,grid_x,grid_y,npz_key
+827606,Rodri,Spain,6,770,21,14,827606
+814594,Achraf Hakimi,Morocco,6,672,21,14,814594
+1402913,Pau Cubarsí,Spain,6,650,21,14,1402913
+117777,Granit Xhaka,Switzerland,6,628,21,14,117777
+383560,Manuel Akanji,Switzerland,6,616,21,14,383560
+149734,Aymeric Laporte,Spain,6,609,21,14,149734
+1128530,Neil El Aynaoui,Morocco,6,609,21,14,1128530
+994546,Elliot Anderson,England,6,588,21,14,994546
+282229,Nico Elvedi,Switzerland,6,583,21,14,282229
+248331,Brandon Mechele,Belgium,6,548,21,14,248331
+992587,Pedri,Spain,6,537,21,14,992587
+798583,Dayot Upamecano,France,6,534,21,14,798583
+895324,Alexis Mac Allister,Argentina,6,520,21,14,895324
+978838,Michael Olise,France,6,509,21,14,978838
+877994,Marc Guéhi,England,6,504,21,14,877994
+12994,Lionel Messi,Argentina,6,485,21,14,12994
+115516,Remo Freuler,Switzerland,6,469,21,14,115516
+827212,Jules Koundé,France,6,450,21,14,827212
+794939,Marc Cucurella,Spain,6,441,21,14,794939
+67769,Ricardo Rodríguez,Switzerland,6,437,21,14,67769
+991421,Azzedine Ounahi,Morocco,6,428,21,14,991421
+847030,Noussair Mazraoui,Morocco,6,421,21,14,847030
+329417,Timothy Castagne,Belgium,6,395,21,14,329417
+1402912,Lamine Yamal,Spain,6,388,21,14,1402912
+997152,Maxim De Cuyper,Belgium,6,379,21,14,997152
+991011,Jude Bellingham,England,6,378,21,14,991011
+1126569,Bilal El Khannouss,Morocco,6,376,21,14,1126569
+135666,Leandro Trossard,Belgium,6,363,21,14,135666
+818244,Ousmane Dembélé,France,6,359,21,14,818244
+556866,Gregor Kobel,Switzerland,6,350,21,14,556866
+1142703,Nico O'Reilly,England,6,344,21,14,1142703
+889378,Nicolas Raskin,Belgium,6,340,21,14,889378
+138530,Jordan Pickford,England,6,326,21,14,138530
+797291,Unai Simón,Spain,6,326,21,14,797291
+826643,Kylian Mbappé,France,6,321,21,14,826643
+1154605,Désiré Doué,France,6,302,21,14,1154605
+360938,Yassine Bounou,Morocco,6,295,21,14,360938
+835485,Brahim Díaz,Morocco,6,294,21,14,835485
+70988,Thibaut Courtois,Belgium,6,286,21,14,70988
+355174,Patrick Berg,Norway,6,278,21,14,355174
+789071,Dani Olmo,Spain,6,268,21,14,789071
+944327,Dan Ndoye,Switzerland,6,267,21,14,944327
+228364,Fredrik Aursnes,Norway,6,264,21,14,228364
+944656,Julián Alvarez,Argentina,6,249,21,14,944656
+118085,Hans Vanaken,Belgium,6,246,21,14,118085
+158263,Emiliano Martínez,Argentina,6,237,21,14,158263
+191210,Mike Maignan,France,6,237,21,14,191210
+823622,Mikel Oyarzabal,Spain,6,229,21,14,823622
+945798,Djed Spence,England,6,223,21,14,945798
+784655,Fabián Ruiz,Spain,6,220,21,14,784655
+108579,Harry Kane,England,6,213,21,14,108579
+352296,Breel Embolo,Switzerland,6,201,21,14,352296
+1100952,Andreas Schjelderup,Norway,6,200,21,14,1100952
+1121923,Antonio Nusa,Norway,6,198,21,14,1121923
+996952,Bradley Barcola,France,6,192,21,14,996952
+872919,Rubén Vargas,Switzerland,6,190,21,14,872919
+934235,Bukayo Saka,England,6,187,21,14,934235
+1065216,Oscar Bobb,Norway,6,187,21,14,1065216
+823984,Lautaro Martínez,Argentina,6,165,21,14,823984
+855833,Ferran Torres,Spain,6,151,21,14,855833
+592010,Mikel Merino,Spain,6,123,21,14,592010
+953995,Soufiane Rahimi,Morocco,6,111,21,14,953995
+78893,Romelu Lukaku,Belgium,6,89,21,14,78893
+793167,Sander Berge,Norway,5,541,21,14,793167
+869792,Gabriel Magalhães,Brazil,5,534,21,14,869792
+255389,Leandro Paredes,Argentina,5,529,21,14,255389
+974505,Enzo Fernández,Argentina,5,523,21,14,974505
+859999,Lisandro Martínez,Argentina,5,517,21,14,859999
+566102,Davinson Sánchez,Colombia,5,497,21,14,566102
+547410,Martin Ødegaard,Norway,5,484,21,14,547410
+1013699,Marwan Attia,Egypt,5,483,21,14,1013699
+902029,Vitinha,Portugal,5,474,21,14,902029
+155995,Marquinhos,Brazil,5,461,21,14,155995
+1087359,Renato Veiga,Portugal,5,453,21,14,1087359
+829932,Cristian Romero,Argentina,5,451,21,14,829932
+826545,Mohamed Hany,Egypt,5,445,21,14,826545
+989768,Nuno Mendes,Portugal,5,435,21,14,989768
+1184541,Alexander Freeman,USA,5,428,21,14,1184541
+825719,Issa Diop,Morocco,5,424,21,14,825719
+576384,Kristoffer Ajer,Norway,5,421,21,14,576384
+886223,Stephen Eustaquio,Canada,5,414,21,14,886223
+1174889,Gustavo Puerta,Colombia,5,414,21,14,1174889
+333441,Yasser Ibrahim,Egypt,5,411,21,14,333441
+331737,Youri Tielemans,Belgium,5,405,21,14,331737
+250737,Adrien Rabiot,France,5,403,21,14,250737
+124992,Danilo,Brazil,5,402,21,14,124992
+827679,Ezri Konsa,England,5,402,21,14,827679
+355796,Jefferson Lerma,Colombia,5,390,21,14,355796
+243583,Douglas Santos,Brazil,5,382,21,14,243583
+933264,Torbjørn Heggem,Norway,5,381,21,14,933264
+984419,Alistair Johnston,Canada,5,380,21,14,984419
+818481,Jhon Lucumí,Colombia,5,374,21,14,818481
+1564180,Ayyoub Bouaddi,Morocco,5,369,21,14,1564180
+249399,Rodrigo De Paul,Argentina,5,361,21,14,249399
+295339,Rami Rabia,Egypt,5,361,21,14,295339
+844096,Jhon Arias,Colombia,5,354,21,14,844096
+122951,Casemiro,Brazil,5,350,21,14,122951
+1190933,João Neves,Portugal,5,344,21,14,1190933
+881931,Weston McKennie,USA,5,339,21,14,881931
+975798,Malik Tillman,USA,5,339,21,14,975798
+1413129,Luc De Fougerolles,Canada,5,337,21,14,1413129
+989801,Juan Cáceres,Paraguay,5,329,21,14,989801
+829207,Richie Laryea,Canada,5,328,21,14,829207
+967032,Emam Ashour,Egypt,5,328,21,14,967032
+865500,Roberto Alvarado,Mexico,5,327,21,14,865500
+870360,Daniel Muñoz,Colombia,5,327,21,14,870360
+866469,Bruno Guimarães,Brazil,5,318,21,14,866469
+856714,Declan Rice,England,5,311,21,14,856714
+107414,James Rodríguez,Colombia,5,308,21,14,107414
+546416,Andrés Cubas,Paraguay,5,308,21,14,546416
+883537,Luis Díaz,Colombia,5,302,21,14,883537
+138892,João Cancelo,Portugal,5,298,21,14,138892
+910031,Alex Baena,Spain,5,295,21,14,910031
+1031283,David Møller Wolfe,Norway,5,295,21,14,1031283
+831799,Nahuel Molina,Argentina,5,293,21,14,831799
+770253,Jesús Gallardo,Mexico,5,290,21,14,770253
+868812,Vinícius Júnior,Brazil,5,280,21,14,868812
+22209,Ørjan Nyland,Norway,5,273,21,14,22209
+159665,Mohamed Salah,Egypt,5,268,21,14,159665
+991709,Orlando Gill,Paraguay,5,255,21,14,991709
+125787,Camilo Vargas,Colombia,5,254,21,14,125787
+1048378,Mostafa Shobeir,Egypt,5,235,21,14,1048378
+309078,Alexander Sørloth,Norway,5,233,21,14,309078
+973290,Tajon Buchanan,Canada,5,233,21,14,973290
+990408,Raúl Rangel,Mexico,5,233,21,14,990408
+879349,Pedro Neto,Portugal,5,232,21,14,879349
+960441,Charles De Ketelaere,Belgium,5,231,21,14,960441
+934386,Jérémy Doku,Belgium,5,228,21,14,934386
+333275,Junior Alonso,Paraguay,5,227,21,14,333275
+944660,Thiago Almada,Argentina,5,224,21,14,944660
+935564,Jonathan David,Canada,5,222,21,14,935564
+1014845,Sebastian Berhalter,USA,5,220,21,14,1014845
+1418782,Mostafa Ziko,Egypt,5,213,21,14,1418782
+914902,Anthony Gordon,England,5,210,21,14,914902
+843115,Diogo Costa,Portugal,5,206,21,14,843115
+158243,Nicolás Tagliafico,Argentina,5,205,21,14,158243
+973556,Julio Enciso,Paraguay,5,204,21,14,973556
+966547,Noni Madueke,England,5,199,21,14,966547
+220833,Gustavo Gómez,Paraguay,5,197,21,14,220833
+1063767,Ismael Saibari,Morocco,5,193,21,14,1063767
+243609,Alisson,Brazil,5,192,21,14,243609
+906021,Sergiño Dest,USA,5,188,21,14,906021
+155736,Maxime Crépeau,Canada,5,187,21,14,155736
+929620,Fabian Rieder,Switzerland,5,182,21,14,929620
+873554,Omar Marmoush,Egypt,5,180,21,14,873554
+886363,Matheus Cunha,Brazil,5,176,21,14,886363
+901325,Nicolás González,Argentina,5,172,21,14,901325
+839956,Erling Haaland,Norway,5,158,21,14,839956
+851284,Rafael Leão,Portugal,5,149,21,14,851284
+1172477,Tani Oluwaseyi,Canada,5,148,21,14,1172477
+805427,Gustavo Velázquez,Paraguay,5,144,21,14,805427
+157377,Silvan Widmer,Switzerland,5,138,21,14,157377
+879746,Leo Østigård,Norway,5,136,21,14,879746
+989056,Giovanni Reyna,USA,5,135,21,14,989056
+1605921,Samir El Mourabet,Morocco,5,133,21,14,1605921
+914213,Luis Javier Suárez,Colombia,5,132,21,14,914213
+948261,Morgan Rogers,England,5,116,21,14,948261
+976313,Jacob Shaffelburg,Canada,5,111,21,14,976313
+1015292,Richard Ríos,Colombia,5,110,21,14,1015292
+1142675,Chemsdine Talbi,Morocco,5,107,21,14,1142675
+986395,Ricardo Pepi,USA,5,105,21,14,986395
+979128,Rayan Cherki,France,5,89,21,14,979128
+577726,Ramy Bensebaini,Algeria,4,504,21,14,577726
+259117,Joshua Kimmich,Germany,4,477,21,14,259117
+122810,Aïssa Mandi,Algeria,4,476,21,14,122810
+962012,Jan Paul van Hecke,Netherlands,4,464,21,14,962012
+227672,Jonathan Tah,Germany,4,461,21,14,227672
+151545,Virgil van Dijk,Netherlands,4,438,21,14,151545
+1002524,Pedro Vite,Ecuador,4,429,21,14,1002524
+1019322,Florian Wirtz,Germany,4,403,21,14,1019322
+873534,Krépin Diatta,Senegal,4,398,21,14,873534
+931844,Chris Richards,USA,4,398,21,14,931844
+913654,Pedro Porro,Spain,4,392,21,14,913654
+118179,Tim Ream,USA,4,380,21,14,118179
+758168,Moussa Niakhaté,Senegal,4,377,21,14,758168
+1507710,Ime Okon,South Africa,4,359,21,14,1507710
+803174,Antonee Robinson,USA,4,358,21,14,803174
+1155423,Alessandro Circati,Australia,4,357,21,14,1155423
+318941,Rúben Dias,Portugal,4,351,21,14,318941
+954836,Josip Šutalo,Croatia,4,347,21,14,954836
+106337,Idrissa Gana Gueye,Senegal,4,346,21,14,106337
+941168,William Saliba,France,4,345,21,14,941168
+288205,Bruno Fernandes,Portugal,4,344,21,14,288205
+368120,Nabil Bentaleb,Algeria,4,339,21,14,368120
+1192318,Farès Chaïbi,Algeria,4,339,21,14,1192318
+1142251,Aleksandar Pavlović,Germany,4,338,21,14,1142251
+800419,Tyler Adams,USA,4,337,21,14,800419
+784677,Diney Borges,Cabo Verde,4,331,21,14,784677
+974087,Manu Koné,France,4,327,21,14,974087
+2058228,Mbekezeli Mbokazi,South Africa,4,325,21,14,2058228
+15466,Luka Modrić,Croatia,4,321,21,14,15466
+795222,Frenkie de Jong,Netherlands,4,319,21,14,795222
+96538,Lucas Digne,France,4,318,21,14,96538
+965263,Gustaf Lagerbielke,Sweden,4,318,21,14,965263
+889785,Johan Vásquez,Mexico,4,317,21,14,889785
+931278,Rayan Aït-Nouri,Algeria,4,317,21,14,931278
+808680,Harry Souttar,Australia,4,315,21,14,808680
+1119487,Nathan Ngoy,Belgium,4,312,21,14,1119487
+936047,Khuliso Mudau,South Africa,4,308,21,14,936047
+918506,Mohanad Lasheen,Egypt,4,307,21,14,918506
+142622,Antonio Rüdiger,Germany,4,301,21,14,142622
+770677,Denis Zakaria,Switzerland,4,300,21,14,770677
+344847,Johan Mojica,Colombia,4,295,21,14,344847
+759520,Denzel Dumfries,Netherlands,4,295,21,14,759520
+839981,Lucas Paquetá,Brazil,4,295,21,14,839981
+873106,Hiroki Itō,Japan,4,293,21,14,873106
+1105836,Matías Galarza,Paraguay,4,292,21,14,1105836
+801411,Derek Cornelius,Canada,4,291,21,14,801411
+147138,Pico,Cabo Verde,4,288,21,14,147138
+2087085,Yan Diomande,Côte d'Ivoire,4,288,21,14,2087085
+539792,Ronwen Williams,South Africa,4,287,21,14,539792
+293519,Leroy Sané,Germany,4,286,21,14,293519
+906838,Kevin Lenini,Cabo Verde,4,286,21,14,906838
+844942,Gideon Mensah,Ghana,4,285,21,14,844942
+843754,Ibrahim Sangaré,Côte d'Ivoire,4,284,21,14,843754
+831488,Nikola Katić,Bosnia & Herzegovina,4,283,21,14,831488
+1064218,Chadi Riad,Morocco,4,283,21,14,1064218
+794338,Daichi Kamada,Japan,4,280,21,14,794338
+142148,Sead Kolašinac,Bosnia & Herzegovina,4,275,21,14,142148
+847938,Aiden O'Neill,Australia,4,275,21,14,847938
+174975,Arthur Masuaku,DR Congo,4,271,21,14,174975
+217704,Sadio Mané,Senegal,4,271,21,14,217704
+1103488,Rafik Belghali,Algeria,4,269,21,14,1103488
+38710,Ivan Perišić,Croatia,4,267,21,14,38710
+66492,David Alaba,Austria,4,267,21,14,66492
+143334,Victor Lindelöf,Sweden,4,266,21,14,143334
+359226,Franck Kessié,Côte d'Ivoire,4,263,21,14,359226
+136710,Mateo Kovačić,Croatia,4,261,21,14,136710
+1002033,Guéla Doué,Côte d'Ivoire,4,259,21,14,1002033
+307436,Vozinha,Cabo Verde,4,255,21,14,307436
+818406,César Montes,Mexico,4,254,21,14,818406
+238612,Chancel Mbemba,DR Congo,4,253,21,14,238612
+1065588,Diego Gómez,Paraguay,4,247,21,14,1065588
+355492,Konrad Laimer,Austria,4,246,21,14,355492
+879694,Pape Gueye,Senegal,4,246,21,14,879694
+1407524,Ibrahim Maza,Algeria,4,246,21,14,1407524
+1144138,Jordan Bos,Australia,4,245,21,14,1144138
+907463,Felix Nmecha,Germany,4,243,21,14,907463
+355486,Stefan Posch,Austria,4,240,21,14,355486
+834308,Gabriel Gudmundsson,Sweden,4,239,21,14,834308
+863653,Aaron Wan-Bissaka,DR Congo,4,238,21,14,863653
+794953,Kevin Danso,Austria,4,233,21,14,794953
+837099,Aubrey Modiba,South Africa,4,233,21,14,837099
+1010231,Jamal Musiala,Germany,4,232,21,14,1010231
+791079,Xaver Schlager,Austria,4,231,21,14,791079
+817979,Axel Tuanzebe,DR Congo,4,231,21,14,817979
+1036269,Yasin Ayari,Sweden,4,226,21,14,1036269
+158213,Riyad Mahrez,Algeria,4,225,21,14,158213
+800951,Julian Ryerson,Norway,4,225,21,14,800951
+822729,Alan Franco,Ecuador,4,225,21,14,822729
+976575,Nicolas Seiwald,Austria,4,224,21,14,976575
+832868,Jorge Sánchez,Mexico,4,221,21,14,832868
+836705,Kai Havertz,Germany,4,221,21,14,836705
+892624,Samuel Moutoussamy,DR Congo,4,221,21,14,892624
+1389846,Lamine Camara,Senegal,4,221,21,14,1389846
+70996,Kevin De Bruyne,Belgium,4,219,21,14,70996
+133908,Marcel Sabitzer,Austria,4,219,21,14,133908
+847151,Edson Álvarez,Mexico,4,219,21,14,847151
+325061,Nikola Vasilj,Bosnia & Herzegovina,4,216,21,14,325061
+843114,Julián Quiñones,Mexico,4,216,21,14,843114
+1888002,Christ Inao Oulaï,Côte d'Ivoire,4,216,21,14,1888002
+961684,Anass Salah-Eddine,Morocco,4,214,21,14,961684
+904897,Ryan Gravenberch,Netherlands,4,212,21,14,904897
+973437,Odilon Kossounou,Côte d'Ivoire,4,203,21,14,973437
+862967,Cody Gakpo,Netherlands,4,202,21,14,862967
+181581,Jackson Irvine,Australia,4,199,21,14,181581
+593526,Nicolas Pépé,Côte d'Ivoire,4,197,21,14,593526
+599192,Lionel Mpasi Nzau,DR Congo,4,195,21,14,599192
+8959,Manuel Neuer,Germany,4,192,21,14,8959
+918913,Hamdy Fathy,Egypt,4,190,21,14,918913
+282073,Alexander Schlager,Austria,4,188,21,14,282073
+333373,Miguel Almirón,Paraguay,4,187,21,14,333373
+52797,Ryan Mendes,Cabo Verde,4,186,21,14,52797
+74915,Nicolás Otamendi,Argentina,4,186,21,14,74915
+190419,Dominik Livaković,Croatia,4,186,21,14,190419
+815080,Jamiro Monteiro,Cabo Verde,4,185,21,14,815080
+1464966,Rayan,Brazil,4,185,21,14,1464966
+1425366,Kerim Alajbegović,Bosnia & Herzegovina,4,184,21,14,1425366
+994363,Bart Verbruggen,Netherlands,4,183,21,14,994363
+905352,Keito Nakamura,Japan,4,182,21,14,905352
+1177240,Patrick Beach,Australia,4,182,21,14,1177240
+845286,Ismaïla Sarr,Senegal,4,180,21,14,845286
+913679,Pathé Ismaël Ciss,Senegal,4,180,21,14,913679
+790965,Ritsu Doan,Japan,4,179,21,14,790965
+1171539,Noah Sadiki,DR Congo,4,179,21,14,1171539
+830127,Romano Schmid,Austria,4,176,21,14,830127
+905351,Zion Suzuki,Japan,4,175,21,14,905351
+1172773,Luis Romo,Mexico,4,175,21,14,1172773
+805137,Omar Alderete,Paraguay,4,172,21,14,805137
+984505,Oswin Appollis,South Africa,4,172,21,14,984505
+921089,Deroy Duarte,Cabo Verde,4,170,21,14,921089
+1102659,Benjamin Tahirović,Bosnia & Herzegovina,4,170,21,14,1102659
+287833,Steven Moreira,Cabo Verde,4,169,21,14,287833
+888854,Connor Metcalfe,Australia,4,169,21,14,888854
+783278,Junya Ito,Japan,4,165,21,14,783278
+817957,Christian Pulišić,USA,4,165,21,14,817957
+1116571,Nilson Angulo,Ecuador,4,165,21,14,1116571
+805123,Yoane Wissa,DR Congo,4,164,21,14,805123
+877977,Yahia Fofana,Côte d'Ivoire,4,164,21,14,877977
+934354,Antoine Semenyo,Ghana,4,164,21,14,934354
+934409,Marcus Pedersen,Norway,4,163,21,14,934409
+804508,Viktor Gyökeres,Sweden,4,162,21,14,804508
+1014410,Thalente Mbatha,South Africa,4,162,21,14,1014410
+1464637,Ali Ahmed,Canada,4,160,21,14,1464637
+295361,Mahmoud Trézéguet,Egypt,4,157,21,14,295361
+1411105,Paul Okon-Engstler,Australia,4,152,21,14,1411105
+1146018,Paul Wanner,Austria,4,150,21,14,1146018
+283833,Ivan Šunjić,Bosnia & Herzegovina,4,149,21,14,283833
+971037,Amad Diallo,Côte d'Ivoire,4,149,21,14,971037
+1986794,Caleb Yirenkyi,Ghana,4,148,21,14,1986794
+1914576,Gilberto Mora,Mexico,4,147,21,14,1914576
+103045,Jordan Ayew,Ghana,4,146,21,14,103045
+917005,Crysencio Summerville,Netherlands,4,145,21,14,917005
+588618,Hernán Galíndez,Ecuador,4,144,21,14,588618
+973436,Matthew Freese,USA,4,144,21,14,973436
+1391251,Lucas Bergvall,Sweden,4,144,21,14,1391251
+905639,Kwasi Sibo,Ghana,4,142,21,14,905639
+878081,Ermedin Demirović,Bosnia & Herzegovina,4,140,21,14,878081
+799054,Djibril Sow,Switzerland,4,139,21,14,799054
+1136110,Esmir Bajraktarević,Bosnia & Herzegovina,4,135,21,14,1136110
+750,Cristiano Ronaldo,Portugal,4,132,21,14,750
+1590918,Ibrahim Mbaye,Senegal,4,132,21,14,1590918
+964994,Joško Gvardiol,Croatia,4,131,21,14,964994
+986233,Mauricio,Paraguay,4,130,21,14,986233
+252821,Nélson Semedo,Portugal,4,128,21,14,252821
+1391541,Ngal'ayel Mukau,DR Congo,4,127,21,14,1391541
+850891,Michel Aebischer,Switzerland,4,126,21,14,850891
+905347,Yukinari Sugawara,Japan,4,126,21,14,905347
+934237,Folarin Balogun,USA,4,125,21,14,934237
+1129610,Amar Memić,Bosnia & Herzegovina,4,124,21,14,1129610
+1518931,Johan Manzambi,Switzerland,4,124,21,14,1518931
+985823,Ayase Ueda,Japan,4,122,21,14,985823
+1085381,Nicolas Jackson,Senegal,4,122,21,14,1085381
+1022170,Evidence Makgopa,South Africa,4,119,21,14,1022170
+979222,Francisco Conceição,Portugal,4,117,21,14,979222
+1144687,Nestory Irankunda,Australia,4,117,21,14,1144687
+1023088,Brian Gutiérrez,Mexico,4,115,21,14,1023088
+106456,Enner Valencia,Ecuador,4,114,21,14,106456
+221162,Juan Fernando Quintero,Colombia,4,114,21,14,221162
+922573,Gabriel Martinelli,Brazil,4,106,21,14,922573
+923973,Amadou Onana,Belgium,4,105,21,14,923973
+1086223,Ange-Yoan Bonny,Côte d'Ivoire,4,99,21,14,1086223
+859026,Amine Gouiri,Algeria,4,98,21,14,859026
+918517,Benjamin Nygren,Sweden,4,92,21,14,918517
+803033,Teun Koopmeiners,Netherlands,4,90,21,14,803033
+1383695,Elliot Stroud,Sweden,4,89,21,14,1383695
+1015261,Damián Bobadilla,Paraguay,4,88,21,14,1015261
+190437,Mario Pašalić,Croatia,4,87,21,14,190437
+331209,Bernardo Silva,Portugal,4,87,21,14,331209
+822933,Gonzalo Montiel,Argentina,4,85,21,14,822933
+864921,Eberechi Eze,England,4,84,21,14,864921
+1431770,Kevin Rodriguez,Ecuador,4,84,21,14,1431770
+798177,Laros Duarte,Cabo Verde,4,83,21,14,798177
+1103589,Abdul Fatawu Issahaku,Ghana,4,83,21,14,1103589
+209374,Nuno Da Costa,Cabo Verde,4,81,21,14,209374
+877452,José Canale,Paraguay,4,76,21,14,877452
+790179,Cyle Larin,Canada,4,72,21,14,790179
+901891,Alexis Saelemaekers,Belgium,4,72,21,14,901891
+789453,Gabriel Ávalos,Paraguay,4,70,21,14,789453
+991024,Iqraam Rayners,South Africa,4,62,21,14,991024
+794298,Deniz Undav,Germany,4,60,21,14,794298
+990550,Zeki Amdouni,Switzerland,4,58,21,14,990550
+1174937,Endrick,Brazil,4,58,21,14,1174937
+910048,Brian Brobbey,Netherlands,4,55,21,14,910048
+21927,Marko Arnautović,Austria,4,54,21,14,21927
+1119328,Promise David,Canada,4,54,21,14,1119328
+547494,Zizo,Egypt,4,53,21,14,547494
+1064039,Danilo Santos,Brazil,4,53,21,14,1064039
+1085400,Nico Williams,Spain,4,49,21,14,1085400
+354046,Joris Kayembe,DR Congo,4,48,21,14,354046
+996958,Malo Gusto,France,4,45,21,14,996958
+1961596,Hamza Abdelkarim,Egypt,4,43,21,14,1961596
+178963,Abdülkerim Bardakcı,Türkiye,3,342,21,14,178963
+1103520,Gi-Hyuk Lee,South Korea,3,334,21,14,1103520
+987650,Moisés Caicedo,Ecuador,3,331,21,14,987650
+805078,Mathías Olivera,Uruguay,3,317,21,14,805078
+907152,Lewis Ferguson,Scotland,3,302,21,14,907152
+1091116,Arda Güler,Türkiye,3,300,21,14,1091116
+791190,Rodrigo Bentancur,Uruguay,3,296,21,14,791190
+1002448,Han-Beom Lee,South Korea,3,296,21,14,1002448
+881117,Teboho Mokoena,South Africa,3,294,21,14,881117
+896569,Kim Min-jae,South Korea,3,287,21,14,896569
+859025,Aurélien Tchouaméni,France,3,285,21,14,859025
+979480,Willian Pacho,Ecuador,3,281,21,14,979480
+889689,Hwang In-beom,South Korea,3,279,21,14,889689
+847467,Marin Pongračić,Croatia,3,272,21,14,847467
+1105688,José Córdoba,Panama,3,267,21,14,1105688
+1118177,Tarik Muharemović,Bosnia & Herzegovina,3,267,21,14,1118177
+1002620,Marko Stamenić,New Zealand,3,255,21,14,1002620
+924889,Sebastián Cáceres,Uruguay,3,246,21,14,924889
+856250,Ladislav Krejčí,Czechia,3,244,21,14,856250
+917087,Kang-in Lee,South Korea,3,243,21,14,917087
+880622,Ahmed Fatouh,Egypt,3,242,21,14,880622
+1013842,Emmanuel Agbadou,Côte d'Ivoire,3,237,21,14,1013842
+831781,Ghislain Konan,Côte d'Ivoire,3,236,21,14,831781
+937937,Gonzalo Plata,Ecuador,3,231,21,14,937937
+871886,Ao Tanaka,Japan,3,230,21,14,871886
+1381224,Merchas Doski,Iraq,3,227,21,14,1381224
+223340,Shoja Khalilzadeh,Iran,3,226,21,14,223340
+826169,Hannes Delcroix,Haiti,3,225,21,14,826169
+1002837,Piero Hincapié,Ecuador,3,224,21,14,1002837
+885908,Reece James,England,3,223,21,14,885908
+1159759,Nathaniel Brown,Germany,3,223,21,14,1159759
+1631451,Akam Hashem,Iraq,3,223,21,14,1631451
+1009386,Hannibal Mejbri,Tunisia,3,222,21,14,1009386
+944068,Erik Lira,Mexico,3,220,21,14,944068
+1167100,Finn Surman,New Zealand,3,220,21,14,1167100
+839493,Amir Murillo,Panama,3,219,21,14,839493
+839638,Ricardo Adé,Haiti,3,219,21,14,839638
+1110369,Martin Expérience,Haiti,3,217,21,14,1110369
+1117723,Sidny Lopes Cabral,Cabo Verde,3,215,21,14,1117723
+316148,Thomas Partey,Ghana,3,213,21,14,316148
+822684,Sphephelo Sithole,South Africa,3,213,21,14,822684
+74545,Leandro Bacuna,Curaçao,3,210,21,14,74545
+795696,Jack Hendry,Scotland,3,210,21,14,795696
+965778,Arthur Theate,Belgium,3,210,21,14,965778
+358822,Rustam Ashurmatov,Uzbekistan,3,209,21,14,358822
+359334,Saeid Ezatolahi,Iran,3,209,21,14,359334
+1149011,Kenan Yıldız,Türkiye,3,208,21,14,1149011
+262911,Andy Robertson,Scotland,3,207,21,14,262911
+822749,Joe Bell,New Zealand,3,207,21,14,822749
+311456,Guillermo Varela,Uruguay,3,206,21,14,311456
+985131,Carlos Harvey,Panama,3,206,21,14,985131
+932486,Ali Nemati,Iran,3,205,21,14,932486
+788971,Juninho Bacuna,Curaçao,3,204,21,14,788971
+233746,Boualem Khoukhi,Qatar,3,202,21,14,233746
+1102791,Amar Dedić,Bosnia & Herzegovina,3,202,21,14,1102791
+966849,Saud Abdulhamid,Saudi Arabia,3,201,21,14,966849
+128587,Thomas Meunier,Belgium,3,200,21,14,128587
+1157713,Isak Hien,Sweden,3,198,21,14,1157713
+897291,Ismail Jakobs,Senegal,3,196,21,14,897291
+1114775,Mohannad Abu Taha,Jordan,3,196,21,14,1114775
+358890,Otabek Shukurov,Uzbekistan,3,194,21,14,358890
+860307,Facundo Medina,Argentina,3,193,21,14,860307
+1173167,Danley Jean Jacques,Haiti,3,193,21,14,1173167
+831808,Federico Valverde,Uruguay,3,192,21,14,831808
+881307,Seung Ho Paik,South Korea,3,191,21,14,881307
+1028307,Kaishu Sano,Japan,3,191,21,14,1028307
+888906,Yazan Al-Arab,Jordan,3,190,21,14,888906
+803021,Sherel Constancio Floranus,Curaçao,3,189,21,14,803021
+927407,Josip Stanišić,Croatia,3,189,21,14,927407
+138024,Vladimír Coufal,Czechia,3,188,21,14,138024
+828524,Mohamed Kanno,Saudi Arabia,3,188,21,14,828524
+846425,Manuel Ugarte,Uruguay,3,188,21,14,846425
+804434,Takehiro Tomiyasu,Japan,3,185,21,14,804434
+812533,Mehdi Taremi,Iran,3,185,21,14,812533
+915325,Amir Al-Ammari,Iraq,3,184,21,14,915325
+927845,Noor Al-Rawabdeh,Jordan,3,183,21,14,927845
+1014324,Nizar Al-Rashdan,Jordan,3,182,21,14,1014324
+905267,Elijah Just,New Zealand,3,180,21,14,905267
+386958,Shogo Taniguchi,Japan,3,179,21,14,386958
+833352,Yoel Bárcenas,Panama,3,179,21,14,833352
+872607,Nasser Al-Dawsari,Saudi Arabia,3,177,21,14,872607
+38624,Michael Boxall,New Zealand,3,176,21,14,38624
+1000809,Amine Ben Hmida,Tunisia,3,176,21,14,1000809
+1019333,Young-woo Seol,South Korea,3,176,21,14,1019333
+235686,Kim Seung-gyu,South Korea,3,175,21,14,235686
+786133,Ramin Rezaeian,Iran,3,175,21,14,786133
+1187275,Joel Ordóñez,Ecuador,3,174,21,14,1187275
+998247,Micky van de Ven,Netherlands,3,173,21,14,998247
+1218056,Jonas Adjei Adjetey,Ghana,3,173,21,14,1218056
+825838,Armando Obispo,Curaçao,3,171,21,14,825838
+227946,Angus Gunn,Scotland,3,170,21,14,227946
+577736,Karim Hafez,Egypt,3,169,21,14,577736
+1014225,Zidane Iqbal,Iraq,3,169,21,14,1014225
+957615,Robin Hranáč,Czechia,3,168,21,14,957615
+149663,Nathan Aké,Netherlands,3,167,21,14,149663
+879618,Montassar Talbi,Tunisia,3,167,21,14,879618
+1114497,Abdallah Nasib,Jordan,3,165,21,14,1114497
+879346,Scott McTominay,Scotland,3,163,21,14,879346
+920514,Jerome Opoku,Ghana,3,163,21,14,920514
+1093229,Nathan-Dylan Saliba,Canada,3,163,21,14,1093229
+788027,Theo Hernández,France,3,162,21,14,788027
+1091303,Petar Sučić,Croatia,3,161,21,14,1091303
+591706,Ellyes Skhiri,Tunisia,3,160,21,14,591706
+791355,Eldor Shomurodov,Uzbekistan,3,160,21,14,791355
+905264,Liberato Cacace,New Zealand,3,160,21,14,905264
+881831,Abdulelah Al-Amri,Saudi Arabia,3,159,21,14,881831
+1194333,Abdukodir Khusanov,Uzbekistan,3,159,21,14,1194333
+874568,Juan Sanabria,Uruguay,3,158,21,14,874568
+197904,Max Crocombe,New Zealand,3,157,21,14,197904
+919027,Ali Abdi,Tunisia,3,157,21,14,919027
+1471764,El Hadji Malick Diouf,Senegal,3,157,21,14,1471764
+884189,Pedro Miguel,Qatar,3,156,21,14,884189
+160893,Salem Al-Dawsari,Saudi Arabia,3,155,21,14,160893
+155882,Tim Payne,New Zealand,3,153,21,14,155882
+826202,Yan Valery,Tunisia,3,153,21,14,826202
+812531,Milad Mohammadi,Iran,3,152,21,14,812531
+846413,Agustín Canobbio,Uruguay,3,152,21,14,846413
+1049701,Ivan Bašić,Bosnia & Herzegovina,3,151,21,14,1049701
+1136642,Livano Comenencia,Curaçao,3,151,21,14,1136642
+1179164,Thapelo Maseko,South Africa,3,151,21,14,1179164
+1155625,Cristian Volpato,Australia,3,150,21,14,1155625
+791374,Alireza Beiranvand,Iran,3,149,21,14,791374
+841006,Cristian Martínez,Panama,3,149,21,14,841006
+576220,Aziz Behich,Australia,3,148,21,14,576220
+825845,Tahith Chong,Curaçao,3,148,21,14,825845
+980916,Alexander Bernhardsson,Sweden,3,148,21,14,980916
+1012458,Mahmud Abunada,Qatar,3,148,21,14,1012458
+37224,Johny Placide,Haiti,3,146,21,14,37224
+40859,Eloy Room,Curaçao,3,146,21,14,40859
+1020141,Nathan Patterson,Scotland,3,146,21,14,1020141
+1892282,Issa Laye,Qatar,3,145,21,14,1892282
+822743,Sarpreet Singh,New Zealand,3,144,21,14,822743
+851671,João Félix,Portugal,3,144,21,14,851671
+886041,Orlando Mosquera,Panama,3,144,21,14,886041
+359272,Sofyan Amrabat,Morocco,3,143,21,14,359272
+842253,José Luis Rodríguez,Panama,3,143,21,14,842253
+989882,Ramiz Zerrouki,Algeria,3,142,21,14,989882
+996805,Mohammad Mohebi,Iran,3,142,21,14,996805
+794541,Akram Afif,Qatar,3,141,21,14,794541
+812997,Ehsan Haddad,Jordan,3,141,21,14,812997
+902083,Liam Millar,Canada,3,141,21,14,902083
+927366,Matěj Kovář,Czechia,3,141,21,14,927366
+1090019,Martin Baturina,Croatia,3,141,21,14,1090019
+791416,Mohammed Al-Owais,Saudi Arabia,3,140,21,14,791416
+1469180,Moise Bombito,Canada,3,140,21,14,1469180
+989236,Israel Reyes,Mexico,3,139,21,14,989236
+814590,Marcus Rashford,England,3,138,21,14,814590
+822753,Callum McCowatt,New Zealand,3,138,21,14,822753
+920815,Ibrahim Bayesh,Iraq,3,137,21,14,920815
+929193,Maximiliano Araújo,Uruguay,3,137,21,14,929193
+754330,Uğurcan Çakır,Türkiye,3,134,21,14,754330
+1177177,Deveron Fonville,Curaçao,3,133,21,14,1177177
+802133,Luca Zidane,Algeria,3,132,21,14,802133
+907461,Orkun Kökçü,Türkiye,3,132,21,14,907461
+980728,Ali Olwan,Jordan,3,132,21,14,980728
+1006147,Anis Ben Slimane,Tunisia,3,132,21,14,1006147
+825731,Michal Sadílek,Czechia,3,131,21,14,825731
+979232,Anthony Elanga,Sweden,3,130,21,14,979232
+580226,Mory Diaw,Senegal,3,128,21,14,580226
+954066,Ruben Providence,Haiti,3,128,21,14,954066
+985923,Hicham Boudaoui,Algeria,3,128,21,14,985923
+836683,Mert Müldür,Türkiye,3,127,21,14,836683
+548050,Saman Ghoddos,Iran,3,126,21,14,548050
+1106234,Musab Al Juwayr,Saudi Arabia,3,126,21,14,1106234
+192442,Raúl Jiménez,Mexico,3,125,21,14,192442
+1022679,Moteb Al-Harbi,Saudi Arabia,3,124,21,14,1022679
+50480,Chris Wood,New Zealand,3,123,21,14,50480
+250223,John McGinn,Scotland,3,122,21,14,250223
+823631,Dodi Lukebakio,Belgium,3,122,21,14,823631
+846081,Houssem Aouar,Algeria,3,122,21,14,846081
+893549,Tijjani Reijnders,Netherlands,3,122,21,14,893549
+823941,Alexander Isak,Sweden,3,121,21,14,823941
+881837,Hassan Tambakti,Saudi Arabia,3,121,21,14,881837
+818667,Ali Lajami,Saudi Arabia,3,118,21,14,818667
+879802,John Yeboah,Ecuador,3,117,21,14,879802
+1804369,Mohammed Abu Al-Shamat,Saudi Arabia,3,117,21,14,1804369
+893307,Firas Al-Buraikan,Saudi Arabia,3,115,21,14,893307
+926479,Akmal Mozgovoy,Uzbekistan,3,115,21,14,926479
+957604,Pavel Šulc,Czechia,3,115,21,14,957604
+1403491,Alexandr Sojka,Czechia,3,115,21,14,1403491
+1118429,Abbosbek Fayzullaev,Uzbekistan,3,113,21,14,1118429
+1087805,Marvin Senaya,Ghana,3,112,21,14,1087805
+828294,Yazeed Abu Laila,Jordan,3,110,21,14,828294
+889052,Willy Semedo,Cabo Verde,3,110,21,14,889052
+963399,Nathanaël Mbuku,DR Congo,3,110,21,14,963399
+1049534,Jaouen Hadjam,Algeria,3,110,21,14,1049534
+1514870,Tyler Bindon,New Zealand,3,109,21,14,1514870
+28381,Fernando Muslera,Uruguay,3,107,21,14,28381
+867179,Abdullah Al-Khaibari,Saudi Arabia,3,106,21,14,867179
+1010010,Ali Al-Hamadi,Iraq,3,106,21,14,1010010
+911427,Ahmed Fathi,Qatar,3,105,21,14,911427
+1154861,Ben Gannon-Doak,Scotland,3,104,21,14,1154861
+97409,Jürgen Locadia,Curaçao,3,102,21,14,97409
+797734,Edmilson Junior,Qatar,3,102,21,14,797734
+838629,Álvaro Fidalgo,Mexico,3,102,21,14,838629
+1014276,Sherzod Nasrullaev,Uzbekistan,3,102,21,14,1014276
+1035986,Josué Casimir,Haiti,3,102,21,14,1035986
+111505,Son Heung-min,South Korea,3,100,21,14,111505
+794373,Carlens Arcus,Haiti,3,100,21,14,794373
+832420,Daizen Maeda,Japan,3,100,21,14,832420
+1564998,Relebohile Mofokeng,South Africa,3,100,21,14,1564998
+1411145,Niko Sigur,Canada,3,99,21,14,1411145
+904424,Elisha Owusu,Ghana,3,98,21,14,904424
+75756,Kenny McLean,Scotland,3,95,21,14,75756
+357596,Nikola Vlašić,Croatia,3,95,21,14,357596
+904096,Barış Alper Yılmaz,Türkiye,3,95,21,14,904096
+914309,Iliman Ndiaye,Senegal,3,95,21,14,914309
+917305,Edo Kayembe,DR Congo,3,95,21,14,917305
+1128532,Habib Diarra,Senegal,3,94,21,14,1128532
+877513,Nicolás de la Cruz,Uruguay,3,92,21,14,877513
+1457083,Benjamin Asare,Ghana,3,92,21,14,1457083
+876600,Mousa Tamari,Jordan,3,90,21,14,876600
+1066802,Marco Pašalić,Croatia,3,88,21,14,1066802
+803039,Donyell Malen,Netherlands,3,87,21,14,803039
+846122,Lukáš Provod,Czechia,3,86,21,14,846122
+976104,Federico Viñas,Uruguay,3,85,21,14,976104
+14990,Edin Džeko,Bosnia & Herzegovina,3,84,21,14,14990
+812557,Mahmoud Al-Mardi,Jordan,3,84,21,14,812557
+1218066,Anis Hadj Moussa,Algeria,3,83,21,14,1218066
+993899,Shahriar Moghanlou,Iran,3,80,21,14,993899
+322391,Ryan Christie,Scotland,3,77,21,14,322391
+115665,Cédric Bakambu,DR Congo,3,76,21,14,115665
+799041,Tomáš Souček,Czechia,3,76,21,14,799041
+963801,Adam Hložek,Czechia,3,76,21,14,963801
+111483,Michael Gregoritsch,Austria,3,74,21,14,111483
+786186,Hwang Hee-chan,South Korea,3,74,21,14,786186
+1010126,Lenny Joseph,Haiti,3,72,21,14,1010126
+1113488,Ismael Gharbi,Tunisia,3,71,21,14,1113488
+1202024,Ernest Nuamah,Ghana,3,71,21,14,1202024
+243585,Fabinho,Brazil,3,70,21,14,243585
+877980,Wilson Isidor,Haiti,3,69,21,14,877980
+37318,Ante Budimir,Croatia,3,68,21,14,37318
+280609,Patrik Schick,Czechia,3,68,21,14,280609
+798303,Miro Muheim,Switzerland,3,68,21,14,798303
+994556,Carney Chukwuemeka,Austria,3,68,21,14,994556
+1638338,Gessime Yassine,Morocco,3,68,21,14,1638338
+184661,Leon Goretzka,Germany,3,67,21,14,184661
+924871,Darwin Núñez,Uruguay,3,66,21,14,924871
+943278,Frantzdy Pierrot,Haiti,3,66,21,14,943278
+1014561,Jassem Gaber Abdulsallam,Qatar,3,66,21,14,1014561
+1021272,Daniel Svensson,Sweden,3,66,21,14,1021272
+1094395,Hélio Varela,Cabo Verde,3,65,21,14,1094395
+932233,Brian Rodríguez,Uruguay,3,64,21,14,932233
+1049669,Jayden Adams,South Africa,3,64,21,14,1049669
+1155358,Dailon Rocha Livramento,Cabo Verde,3,63,21,14,1155358
+1019321,Igor Matanović,Croatia,3,62,21,14,1019321
+991451,Louicius Don Deedson,Haiti,3,60,21,14,991451
+333571,Ryan Thomas,New Zealand,3,59,21,14,333571
+149479,Rani Khedira,Tunisia,3,57,21,14,149479
+1019061,Mohamed Touré,Australia,3,57,21,14,1019061
+877299,Jaminton Campaz,Colombia,3,56,21,14,877299
+936184,José Fajardo,Panama,3,56,21,14,936184
+1937497,Odeh Fakhoury,Jordan,3,55,21,14,1937497
+1034082,Ardon Jashari,Switzerland,3,54,21,14,1034082
+1568123,Bazoumana Touré,Côte d'Ivoire,3,54,21,14,1568123
+1010634,Hyeon-gyu Oh,South Korea,3,53,21,14,1010634
+1122425,Benjamin Old,New Zealand,3,52,21,14,1122425
+870038,Saša Kalajdžić,Austria,3,51,21,14,870038
+1217929,Azarias Londoño,Panama,3,46,21,14,1217929
+1101887,Ahmed Qasem,Iraq,3,44,21,14,1101887
+1119345,Obed Vargas,Mexico,3,42,21,14,1119345
+1149353,Ermin Mahmić,Bosnia & Herzegovina,3,42,21,14,1149353
+915991,Abdullah Al-Hamdan,Saudi Arabia,3,40,21,14,915991
+979315,Elye Wahi,Côte d'Ivoire,3,39,21,14,979315
+1083016,Mohamed Naceur Almanai,Qatar,3,38,21,14,1083016
+1002506,Jesse Randall,New Zealand,3,36,21,14,1002506
+1457997,Ali Al Azaizeh,Jordan,3,35,21,14,1457997
+798178,Gervane Kastaneer,Curaçao,3,33,21,14,798178
+957143,Sebastian Tounekti,Tunisia,3,33,21,14,957143
+1149144,Matías Fernández-Pardo,Belgium,3,33,21,14,1149144
+67647,Andrej Kramarić,Croatia,3,31,21,14,67647
+138833,Memphis Depay,Netherlands,3,31,21,14,138833
+281253,Jhon Córdoba,Colombia,3,31,21,14,281253
+945204,Elias Achouri,Tunisia,3,29,21,14,945204
+1472288,Prince Kwabena Adu,Ghana,3,28,21,14,1472288
+352290,Cédric Itten,Switzerland,3,27,21,14,352290
+980664,Saleem Obaid,Jordan,3,27,21,14,980664
+892141,Santiago Giménez,Mexico,3,25,21,14,892141
+804770,Jordy Caicedo,Ecuador,3,23,21,14,804770
+919198,Firas Chaouat,Tunisia,3,22,21,14,919198
+848276,Jean-Philippe Mateta,France,3,15,21,14,848276
+135700,Hakan Çalhanoğlu,Türkiye,2,257,21,14,135700
+825844,Ferdi Kadıoğlu,Türkiye,2,219,21,14,825844
+841802,Andrés Andrade,Panama,2,203,21,14,841802
+353138,Marcos Llorente,Spain,2,193,21,14,353138
+806968,Merih Demiral,Türkiye,2,192,21,14,806968
+843746,Stjepan Radeljić,Bosnia & Herzegovina,2,188,21,14,843746
+576266,Philipp Lienhart,Austria,2,177,21,14,576266
+940871,Nico Schlotterbeck,Germany,2,177,21,14,940871
+1006509,Jiovany Ramos,Panama,2,170,21,14,1006509
+952600,İsmail Yüksek,Türkiye,2,168,21,14,952600
+1143667,Redouane Halhal,Morocco,2,167,21,14,1143667
+1134351,Ismael Koné,Canada,2,166,21,14,1134351
+363782,Derrick Luckassen,Ghana,2,164,21,14,363782
+1646783,Lucas Herrington,Australia,2,162,21,14,1646783
+978285,Wilfried Singo,Côte d'Ivoire,2,159,21,14,978285
+845273,Jean-Ricner Bellegarde,Haiti,2,157,21,14,845273
+95791,Grant Hanley,Scotland,2,142,21,14,95791
+790989,Ko Itakura,Japan,2,142,21,14,790989
+976251,Omar Rekik,Tunisia,2,142,21,14,976251
+1597255,Bekhruz Karimov,Uzbekistan,2,133,21,14,1597255
+841793,César Blackman,Panama,2,131,21,14,841793
+893008,Zeki Çelik,Türkiye,2,131,21,14,893008
+1160969,Brian Cipenga,DR Congo,2,130,21,14,1160969
+126071,Kalidou Koulibaly,Senegal,2,122,21,14,126071
+296438,Joshua Brenet,Curaçao,2,120,21,14,296438
+845930,Jean-Kévin Duverne,Haiti,2,119,21,14,845930
+954524,Abdulla Abdullaev,Uzbekistan,2,119,21,14,954524
+978728,Jacob Widell Zetterström,Sweden,2,118,21,14,978728
+907217,Jacob Italiano,Australia,2,116,21,14,907217
+1001675,João Paulo,Cabo Verde,2,116,21,14,1001675
+152077,John Stones,England,2,113,21,14,152077
+1122369,Husam Ali Mohammad Abudahab,Jordan,2,113,21,14,1122369
+888187,Khozhiakbar Alizhonov,Uzbekistan,2,111,21,14,888187
+1843356,Zaid Ismail,Iraq,2,111,21,14,1843356
+151440,Tomáš Holeš,Czechia,2,105,21,14,151440
+1003339,Jarell Quansah,England,2,104,21,14,1003339
+537552,Jae-sung Lee,South Korea,2,102,21,14,537552
+138126,Phillipp Mwene,Austria,2,101,21,14,138126
+793857,Azizjon Ganiev,Uzbekistan,2,100,21,14,793857
+822459,Auston Trusty,USA,2,99,21,14,822459
+856076,David Raum,Germany,2,97,21,14,856076
+303826,Karim Boudiaf,Qatar,2,95,21,14,303826
+845074,Edouard Mendy,Senegal,2,95,21,14,845074
+981483,Eren Elmalı,Türkiye,2,95,21,14,981483
+1150051,Zaid Tahseen,Iraq,2,95,21,14,1150051
+888896,Ahmed Basil,Iraq,2,91,21,14,888896
+795005,Salih Özcan,Türkiye,2,90,21,14,795005
+805465,Pervis Estupiñán,Ecuador,2,90,21,14,805465
+831005,Raphinha,Brazil,2,90,21,14,831005
+1002355,Lee Tae-seok,South Korea,2,87,21,14,1002355
+118204,Jaroslav Zelený,Czechia,2,86,21,14,118204
+186719,Florian Grillitsch,Austria,2,86,21,14,186719
+22596,Kristoffer Nordfeldt,Sweden,2,85,21,14,22596
+1000465,Abduvokhid Nematov,Uzbekistan,2,84,21,14,1000465
+1171451,Nico Paz,Argentina,2,84,21,14,1171451
+358084,Cameron Burgess,Australia,2,83,21,14,358084
+1019957,Steve Kapuadi,DR Congo,2,82,21,14,1019957
+237098,Lawrence Shankland,Scotland,2,79,21,14,237098
+942836,Haissem Hassan,Egypt,2,79,21,14,942836
+1198374,Aymen Dahmen,Tunisia,2,79,21,14,1198374
+196454,Jalal Hassan,Iraq,2,78,21,14,196454
+366592,Kieran Tierney,Scotland,2,78,21,14,366592
+358880,Dostonbek Khamdamov,Uzbekistan,2,77,21,14,358880
+952114,Lukáš Červ,Czechia,2,77,21,14,952114
+791092,Lawrence Ati Zigi,Ghana,2,76,21,14,791092
+1002920,Joe Scally,USA,2,76,21,14,1002920
+1066729,Ali Jasim,Iraq,2,76,21,14,1066729
+1026069,Jin-seob Park,South Korea,2,75,21,14,1026069
+796497,Sultan Al-Brake,Qatar,2,74,21,14,796497
+986400,Nawaf Boushal,Saudi Arabia,2,74,21,14,986400
+1396639,Ayoub Al Oui,Qatar,2,74,21,14,1396639
+873221,Ayumu Seko,Japan,2,73,21,14,873221
+1009476,Jin-gyu Kim,South Korea,2,73,21,14,1009476
+845802,Jovane Cabral,Cabo Verde,2,72,21,14,845802
+1002711,Pape Matar Sarr,Senegal,2,72,21,14,1002711
+1403414,Jakhongir Urozov,Uzbekistan,2,72,21,14,1403414
+227894,Jesper Karlström,Sweden,2,70,21,14,227894
+191188,Seko Fofana,Côte d'Ivoire,2,69,21,14,191188
+796500,Assim Madibo,Qatar,2,68,21,14,796500
+857738,Yunus Akgün,Türkiye,2,68,21,14,857738
+962056,Hussein Ali,Iraq,2,68,21,14,962056
+942213,Tsuyoshi Watanabe,Japan,2,67,21,14,942213
+1127823,Luca Jaquez,Switzerland,2,66,21,14,1127823
+933433,Homam Al-Amin,Qatar,2,65,21,14,933433
+799046,Waldemar Anton,Germany,2,63,21,14,799046
+812952,Hossein Kanaani,Iran,2,63,21,14,812952
+1103693,Pablo Gavi,Spain,2,63,21,14,1103693
+1130946,Elias Saad,Tunisia,2,63,21,14,1130946
+823992,Odiljon Khamrobekov,Uzbekistan,2,62,21,14,823992
+1063327,Hossam Abdelmaguid,Egypt,2,61,21,14,1063327
+1092638,Jeremy Antonisse,Curaçao,2,61,21,14,1092638
+788284,Ajdin Hrustić,Australia,2,60,21,14,788284
+843200,Diogo Dalot,Portugal,2,59,21,14,843200
+876599,Jørgen Strand Larsen,Norway,2,57,21,14,876599
+855810,Timothy Weah,USA,2,56,21,14,855810
+924973,Kristian Thorstvedt,Norway,2,56,21,14,924973
+1836024,Saleh Hardani,Iran,2,55,21,14,1836024
+124712,Neymar,Brazil,2,54,21,14,124712
+303258,Jason Geria,Australia,2,54,21,14,303258
+812999,Aymen Hussein,Iraq,2,54,21,14,812999
+1014286,Malick Thiaw,Germany,2,53,21,14,1014286
+985156,Yusuf Abdurisag,Qatar,2,52,21,14,985156
+1018822,Zineddine Belaid,Algeria,2,52,21,14,1018822
+818064,Yannick Semedo,Cabo Verde,2,51,21,14,818064
+1187376,Dominique Simon,Haiti,2,51,21,14,1187376
+927797,Jovo Lukić,Bosnia & Herzegovina,2,50,21,14,927797
+827668,Petar Musa,Croatia,2,48,21,14,827668
+783374,Iñaki Williams,Ghana,2,46,21,14,783374
+984624,Yéremy Pino,Spain,2,46,21,14,984624
+988893,Armin Gigović,Bosnia & Herzegovina,2,46,21,14,988893
+1440948,Can Uzun,Türkiye,2,45,21,14,1440948
+362504,Rebin Sulaka,Iraq,2,43,21,14,362504
+1196902,Ehsan Hajsafi,Iran,2,43,21,14,1196902
+1546739,Alexandro Maidana,Paraguay,2,43,21,14,1546739
+773409,Che Adams,Scotland,2,42,21,14,773409
+988656,Gustavo Caballero,Paraguay,2,42,21,14,988656
+959805,Quinten Timber,Netherlands,2,41,21,14,959805
+280955,Rúben Neves,Portugal,2,40,21,14,280955
+333261,Antonio Sanabria,Paraguay,2,40,21,14,333261
+1473092,Kojo Peprah Oppong,Ghana,2,39,21,14,1473092
+795282,Guillermo Martínez,Mexico,2,38,21,14,795282
+862078,Meschak Elia,DR Congo,2,38,21,14,862078
+1188191,Oumar Diakité,Côte d'Ivoire,2,38,21,14,1188191
+344953,Théo Bongonda,DR Congo,2,37,21,14,344953
+1007556,Fiston Mayele,DR Congo,2,36,21,14,1007556
+758664,Charles Pickel,DR Congo,2,35,21,14,758664
+796328,Ismael Díaz,Panama,2,34,21,14,796328
+903324,Kerem Aktürkoğlu,Türkiye,2,34,21,14,903324
+978062,Alexander Prass,Austria,2,34,21,14,978062
+881844,Ángelo Preciado,Ecuador,2,33,21,14,881844
+987504,Patrick Wimmer,Austria,2,33,21,14,987504
+1022820,Taha Abdi Ali,Sweden,2,33,21,14,1022820
+787429,Garry Rodrigues,Cabo Verde,2,32,21,14,787429
+1111215,Gilson Tavares,Cabo Verde,2,32,21,14,1111215
+1167312,Alex Arce,Paraguay,2,32,21,14,1167312
+1118467,Nishan Velupillay,Australia,2,31,21,14,1118467
+846204,Lyndon Dykes,Scotland,2,30,21,14,846204
+887055,Cucho Hernández,Colombia,2,29,21,14,887055
+1096517,Tete Yengi,Australia,2,29,21,14,1096517
+331837,Alireza Jahanbakhsh,Iran,2,28,21,14,331837
+1008597,Mohamed Belhadj Mahmoud,Tunisia,2,28,21,14,1008597
+327755,Nadiem Amiri,Germany,2,27,21,14,327755
+850404,Orbelín Pineda,Mexico,2,27,21,14,850404
+93953,Hassan Al Haydos,Qatar,2,26,21,14,93953
+1035280,Telmo Arcanjo,Cabo Verde,2,26,21,14,1035280
+1898148,Ayoube Amaimouni Echghouyab,Morocco,2,26,21,14,1898148
+188307,Tomáš Chorý,Czechia,2,25,21,14,188307
+905472,Amirhossein Hosseinzadeh,Iran,2,25,21,14,905472
+985882,Oston Urunov,Uzbekistan,2,25,21,14,985882
+1002508,Ji-sung Eom,South Korea,2,25,21,14,1002508
+1026519,Marko Farji,Iraq,2,25,21,14,1026519
+934510,Gonçalo Ramos,Portugal,2,24,21,14,934510
+1094482,Adil Boulbina,Algeria,2,24,21,14,1094482
+1171902,Junnosuke Suzuki,Japan,2,24,21,14,1171902
+867714,Francis De Vries,New Zealand,2,23,21,14,867714
+985161,Tomás Rodríguez,Panama,2,23,21,14,985161
+159931,Cecilio Waterman,Panama,2,22,21,14,159931
+826242,Ala'a Al-Hejji,Saudi Arabia,2,22,21,14,826242
+926506,Mohamed Abdelmonem,Egypt,2,22,21,14,926506
+1014281,Gue-sung Cho,South Korea,2,22,21,14,1014281
+159935,Éric Davis,Panama,2,21,21,14,159935
+1036004,Jearl Margaritha,Curaçao,2,21,21,14,1036004
+229278,Ahmed Alaaeldin,Qatar,2,20,21,14,229278
+825945,Simon Banza,DR Congo,2,20,21,14,825945
+846061,Brandon Thomas-Asante,Ghana,2,20,21,14,846061
+35612,Axel Witsel,Belgium,2,19,21,14,35612
+99090,Dan Burn,England,2,18,21,14,99090
+946888,Éderson,Brazil,2,18,21,14,946888
+1101745,Tshepang Moremi,South Africa,2,17,21,14,1101745
+273031,Jonathan Osorio,Canada,2,16,21,14,273031
+840227,Tony Ralston,Scotland,2,16,21,14,840227
+875136,Noa Lang,Netherlands,2,16,21,14,875136
+1094179,José Manuel López,Argentina,2,16,21,14,1094179
+930245,Evann Guessand,Côte d'Ivoire,2,15,21,14,930245
+1066915,Kevin Castaño,Colombia,2,15,21,14,1066915
+851596,Justin Kluivert,Netherlands,2,13,21,14,851596
+831860,Koki Ogawa,Japan,2,11,21,14,831860
+986341,Mohammad Abu Zrayq,Jordan,2,11,21,14,986341
+844447,Dženis Burnić,Bosnia & Herzegovina,2,10,21,14,844447
+983542,Tomás Araújo,Portugal,1,120,21,14,983542
+822600,Exequiel Palacios,Argentina,1,115,21,14,822600
+858977,Christopher Operi,Côte d'Ivoire,1,102,21,14,858977
+830659,Marcos Senesi,Argentina,1,88,21,14,830659
+868843,Miles Robinson,USA,1,88,21,14,868843
+1394342,Ousmane Diomande,Côte d'Ivoire,1,85,21,14,1394342
+999396,Oğuz Aydın,Türkiye,1,80,21,14,999396
+1065989,Thelo Aasgaard,Norway,1,77,21,14,1065989
+922759,Mark McKenzie,USA,1,74,21,14,922759
+879674,Maxence Lacroix,France,1,69,21,14,879674
+1513625,Wagner Pina,Cabo Verde,1,69,21,14,1513625
+857740,Ozan Kabak,Türkiye,1,68,21,14,857740
+158583,Santiago Arias,Colombia,1,67,21,14,158583
+891442,David Douděra,Czechia,1,67,21,14,891442
+358108,Scott McKenna,Scotland,1,66,21,14,358108
+798835,Giovani Lo Celso,Argentina,1,65,21,14,798835
+902117,Nkosinathi Sibisi,South Africa,1,64,21,14,902117
+966869,Aaron Hickey,Scotland,1,63,21,14,966869
+1405212,Luka Vušković,Croatia,1,62,21,14,1405212
+973431,Brenden Aaronson,USA,1,58,21,14,973431
+1099352,Giuliano Simeone,Argentina,1,57,21,14,1099352
+991364,Kai Trewin,Australia,1,56,21,14,991364
+1144329,Štěpán Chaloupek,Czechia,1,55,21,14,1144329
+1019312,Jens Castrop,South Korea,1,53,21,14,1019312
+227196,Riechedly Bazoer,Curaçao,1,52,21,14,227196
+1158813,Mo Abualnadi,Jordan,1,52,21,14,1158813
+1171024,Mohammad Ghorbani,Iran,1,52,21,14,1171024
+875295,Matías Viña,Uruguay,1,51,21,14,875295
+925740,Jordy Alcivar,Ecuador,1,51,21,14,925740
+884944,Jurien Gaari,Curaçao,1,50,21,14,884944
+851676,Frans Putros,Iraq,1,49,21,14,851676
+833943,Matt Turner,USA,1,48,21,14,833943
+928021,Jorge Gutiérrez,Panama,1,48,21,14,928021
+937255,Mathieu Choinière,Canada,1,48,21,14,937255
+1049515,Alidu Seidu,Ghana,1,48,21,14,1049515
+791592,Utkir Yusupov,Uzbekistan,1,47,21,14,791592
+796326,Fidel Escobar,Panama,1,47,21,14,796326
+798176,Egil Selvik,Norway,1,47,21,14,798176
+1101624,Mahmoud Saber,Egypt,1,47,21,14,1101624
+583896,Abdoulaye Seck,Senegal,1,46,21,14,583896
+901882,Angelo Stiller,Germany,1,46,21,14,901882
+1638685,Mateo Chávez,Mexico,1,44,21,14,1638685
+897882,Abdelaziz Hatem,Qatar,1,43,21,14,897882
+822110,Deiver Machado,Colombia,1,42,21,14,822110
+1163991,Munaf Younus,Iraq,1,40,21,14,1163991
+1991585,Hazem Mastouri,Tunisia,1,39,21,14,1991585
+109002,Vladimír Darida,Czechia,1,38,21,14,109002
+122570,Mathew Leckie,Australia,1,38,21,14,122570
+757770,Luis Chávez,Mexico,1,38,21,14,757770
+818568,Sultan Mandash,Saudi Arabia,1,38,21,14,818568
+888949,Roger Ibañez,Brazil,1,38,21,14,888949
+1500291,Arjan Malić,Bosnia & Herzegovina,1,38,21,14,1500291
+921263,Kim Moon-hwan,South Korea,1,37,21,14,921263
+825771,Marco Friedl,Austria,1,36,21,14,825771
+1106546,Yaimar Medina,Ecuador,1,36,21,14,1106546
+1142233,Diego Moreira,Belgium,1,36,21,14,1142233
+2018130,Abdelmouhib Chamakh,Tunisia,1,35,21,14,2018130
+812953,Mahdi Torabi,Iran,1,34,21,14,812953
+1007589,Oussama Benbot,Algeria,1,34,21,14,1007589
+1022374,Henrik Sælebakke Falchener,Norway,1,34,21,14,1022374
+795154,Fredrik André Bjørkan,Norway,1,33,21,14,795154
+1170977,Aria Yousefi,Iran,1,33,21,14,1170977
+1173223,Besfort Zeneli,Sweden,1,33,21,14,1173223
+845271,Dylan Bronn,Tunisia,1,32,21,14,845271
+1019442,Kamaldeen Sulemana,Ghana,1,32,21,14,1019442
+1088727,Denis Višinský,Czechia,1,32,21,14,1088727
+919793,Ayoub El Kaabi,Morocco,1,30,21,14,919793
+936451,Kevin Yakob,Iraq,1,30,21,14,936451
+1122552,Alan Minda,Ecuador,1,30,21,14,1122552
+843665,Alphonso Davies,Canada,1,29,21,14,843665
+881182,Mehdi Ghayedi,Iran,1,29,21,14,881182
+1177807,Ahmed Nadhir Benbouali,Algeria,1,29,21,14,1177807
+280991,Morten Thorsby,Norway,1,28,21,14,280991
+581060,Sergio Rochet,Uruguay,1,28,21,14,581060
+880218,Takefusa Kubo,Japan,1,28,21,14,880218
+1127057,Valentín Barco,Argentina,1,28,21,14,1127057
+1381227,Ahmed Hasan Maknazi,Iraq,1,28,21,14,1381227
+981574,Aimar Sher,Iraq,1,27,21,14,981574
+252215,Wout Weghorst,Netherlands,1,26,21,14,252215
+1100965,Samed Baždar,Bosnia & Herzegovina,1,26,21,14,1100965
+1103531,Yang Hyun-Jun,South Korea,1,26,21,14,1103531
+305282,Jean Michaël Seri,Côte d'Ivoire,1,25,21,14,305282
+981168,Samir Sophian Chergui,Algeria,1,25,21,14,981168
+936542,Ahmed Al-Ganehi,Qatar,1,24,21,14,936542
+990201,Jamie Leweling,Germany,1,24,21,14,990201
+1016907,Igor Thiago,Brazil,1,24,21,14,1016907
+830431,Francisco Trincão,Portugal,1,23,21,14,830431
+1148402,Al-Hashmi Al-Hussain,Qatar,1,23,21,14,1148402
+48480,Pascal Groß,Germany,1,22,21,14,48480
+792386,Farrukh Sayfiev,Uzbekistan,1,22,21,14,792386
+2427970,Bara Sapoko Ndiaye,Senegal,1,22,21,14,2427970
+785512,Jamshid Iskandarov,Uzbekistan,1,21,21,14,785512
+791368,Ali Alipour,Iran,1,21,21,14,791368
+802830,Dennis Hadžikadunić,Bosnia & Herzegovina,1,21,21,14,802830
+920476,Saad Al Rousan,Jordan,1,21,21,14,920476
+979861,Isidro Pitta,Paraguay,1,21,21,14,979861
+788936,Alejandro Romero,Paraguay,1,20,21,14,788936
+865523,Noah Okafor,Switzerland,1,20,21,14,865523
+959750,Callan Elliot,New Zealand,1,20,21,14,959750
+1134470,Zakaria El Ouahdi,Morocco,1,20,21,14,1134470
+1142672,Warren Zaïre-Emery,France,1,20,21,14,1142672
+1493689,Assane Diao,Senegal,1,20,21,14,1493689
+964753,Senne Lammens,Belgium,1,19,21,14,964753
+1395881,Joaquin Seys,Belgium,1,19,21,14,1395881
+1464025,Kendry Páez,Ecuador,1,19,21,14,1464025
+42694,Jordan Henderson,England,1,18,21,14,42694
+307082,Awer Mabil,Australia,1,18,21,14,307082
+834492,Ali Yousif,Iraq,1,18,21,14,834492
+980628,Maximilian Beier,Germany,1,18,21,14,980628
+988351,Samú Costa,Portugal,1,18,21,14,988351
+1035995,Luiz Henrique,Brazil,1,18,21,14,1035995
+1199057,Sontje Hansen,Curaçao,1,18,21,14,1199057
+826215,Ibrahima Konaté,France,1,17,21,14,826215
+84854,Alex Sandro,Brazil,1,16,21,14,84854
+901907,Lyle Foster,South Africa,1,16,21,14,901907
+360718,Carl Starfelt,Sweden,1,15,21,14,360718
+790108,Alex Zendejas,USA,1,15,21,14,790108
+815637,Alexis Vega,Mexico,1,15,21,14,815637
+1002489,Jayden Nelson,Canada,1,15,21,14,1002489
+1110842,Simon Adingra,Côte d'Ivoire,1,15,21,14,1110842
+1469336,Tyrese Noslin,Curaçao,1,15,21,14,1469336
+963084,David Zima,Czechia,1,14,21,14,963084
+978518,Jackson Porozo,Ecuador,1,14,21,14,978518
+1153079,Jorrel Hato,Netherlands,1,14,21,14,1153079
+156102,Aníbal Godoy,Panama,1,13,21,14,156102
+871965,Azizbek Amanov,Uzbekistan,1,13,21,14,871965
+1106352,Youssef Amyn,Iraq,1,13,21,14,1106352
+1210653,Kamogelo Sebelebele,South Africa,1,13,21,14,1210653
+34639,Yuto Nagatomo,Japan,1,12,21,14,34639
+559504,Themba Zwane,South Africa,1,12,21,14,559504
+949156,Luka Sučić,Croatia,1,12,21,14,949156
+980623,Nick Woltemade,Germany,1,12,21,14,980623
+1107591,Mohamed Amoura,Algeria,1,12,21,14,1107591
+319847,Ken Sema,Sweden,1,11,21,14,319847
+786034,Mohammad Al Daoud,Jordan,1,11,21,14,786034
+787422,Christian Fassnacht,Switzerland,1,11,21,14,787422
+828012,Derrick Etienne,Haiti,1,11,21,14,828012
+845798,Guus Til,Netherlands,1,11,21,14,845798
+1130939,Maghnes Akliouche,France,1,11,21,14,1130939
+1392829,Amine Sbai,Morocco,1,11,21,14,1392829
+796023,Duckens Nazon,Haiti,1,10,21,14,796023
+883206,Braian Ojeda,Paraguay,1,10,21,14,883206
+919225,Mortadha Ben Ouanes,Tunisia,1,10,21,14,919225
+925910,Shuto Machino,Japan,1,10,21,14,925910
+1026541,Sondre Langås,Norway,1,10,21,14,1026541
+1139989,Mohammad Ali Hasheesh,Jordan,1,10,21,14,1139989
