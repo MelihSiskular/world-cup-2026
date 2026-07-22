@@ -21,6 +21,14 @@ from wc26.analytics.transfer_intelligence.matching import (
     attach_similarity,
     resolve_player,
 )
+from wc26.analytics.transfer_intelligence.scoring import (
+    calculate_age_suitability,
+    calculate_market_value_advantage,
+    calculate_mode_score,
+    calculate_role_fit,
+    calculate_spatial_similarity,
+    same_value_score,
+)
 from wc26.analytics.transfer_intelligence.utils import (
     format_market_value,
     format_optional_score,
@@ -28,6 +36,15 @@ from wc26.analytics.transfer_intelligence.utils import (
     safe_float,
     slugify,
 )
+
+
+def test_legacy_module_reexports_scoring_functions() -> None:
+    assert legacy.same_value_score is same_value_score
+    assert legacy.calculate_role_fit is calculate_role_fit
+    assert legacy.calculate_spatial_similarity is calculate_spatial_similarity
+    assert legacy.calculate_market_value_advantage is calculate_market_value_advantage
+    assert legacy.calculate_age_suitability is calculate_age_suitability
+    assert legacy.calculate_mode_score is calculate_mode_score
 
 
 def test_legacy_module_reexports_matching_functions() -> None:

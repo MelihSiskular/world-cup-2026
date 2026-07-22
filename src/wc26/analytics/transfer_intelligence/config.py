@@ -1,7 +1,7 @@
 """Configuration for transfer recommendation scenarios."""
 
 from pathlib import Path
-from typing import Final
+from typing import Final, TypedDict
 
 DEFAULT_FEATURES: Final[Path] = Path(
     "data/processed/transfer_intelligence/transfer_feature_table.csv"
@@ -22,9 +22,32 @@ DEFAULT_HEATMAP_PROFILES: Final[Path] = Path(
 DEFAULT_OUTPUT_DIR: Final[Path] = Path("data/processed/transfer_intelligence/replacement_results")
 
 
+class ModeWeights(TypedDict):
+    statistical_similarity_pct: float
+    role_fit_pct: float
+    spatial_similarity_pct: float
+    effective_heatmap_score_pct: float
+    player_quality_score: float
+    data_reliability_score: float
+    market_value_advantage_pct: float
+    age_suitability_pct: float
+
+
+class ModeConfig(TypedDict):
+    minimum_similarity: float
+    minimum_role_fit: float
+    minimum_quality: float
+    minimum_reliability: float
+    minimum_age: float | None
+    maximum_age: float | None
+    same_role_bonus: float
+    same_archetype_bonus: float
+    weights: ModeWeights
+
+
 # Heatmap receives a meaningful but controlled weight.
 # Each mode reflects a different recruitment scenario.
-MODE_CONFIG: Final[dict[str, dict[str, object]]] = {
+MODE_CONFIG: Final[dict[str, ModeConfig]] = {
     "immediate": {
         "minimum_similarity": 30.0,
         "minimum_role_fit": 35.0,
@@ -132,4 +155,6 @@ __all__ = [
     "DEFAULT_SIMILARITY",
     "HEATMAP_METRIC_COLUMNS",
     "MODE_CONFIG",
+    "ModeConfig",
+    "ModeWeights",
 ]
