@@ -33,6 +33,7 @@ from wc26.analytics.transfer_intelligence.matching import (
 )
 from wc26.analytics.transfer_intelligence.recommendations import (
     filter_for_mode,
+    generate_mode_results,
 )
 from wc26.analytics.transfer_intelligence.scoring import (
     calculate_age_suitability,
@@ -49,6 +50,10 @@ from wc26.analytics.transfer_intelligence.utils import (
     safe_float,
     slugify,
 )
+
+
+def test_legacy_module_reexports_result_generation() -> None:
+    assert legacy.generate_mode_results is generate_mode_results
 
 
 def test_legacy_module_reexports_explanation_functions() -> None:

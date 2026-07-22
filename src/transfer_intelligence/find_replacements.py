@@ -25,7 +25,6 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 from wc26.analytics.transfer_intelligence.candidates import (
@@ -77,6 +76,9 @@ from wc26.analytics.transfer_intelligence.matching import (
 from wc26.analytics.transfer_intelligence.recommendations import (
     filter_for_mode as filter_for_mode,
 )
+from wc26.analytics.transfer_intelligence.recommendations import (
+    generate_mode_results as generate_mode_results,
+)
 from wc26.analytics.transfer_intelligence.scoring import (
     calculate_age_suitability as calculate_age_suitability,
 )
@@ -84,7 +86,7 @@ from wc26.analytics.transfer_intelligence.scoring import (
     calculate_market_value_advantage as calculate_market_value_advantage,
 )
 from wc26.analytics.transfer_intelligence.scoring import (
-    calculate_mode_score,
+    calculate_mode_score as calculate_mode_score,
 )
 from wc26.analytics.transfer_intelligence.scoring import (
     calculate_role_fit as calculate_role_fit,
@@ -106,68 +108,6 @@ from wc26.analytics.transfer_intelligence.utils import (
 from wc26.analytics.transfer_intelligence.utils import (
     safe_float as safe_float,
 )
-
-
-def generate_mode_results(
-    base_candidates: pd.DataFrame,
-    mode: str,
-    target_heatmap_profile: dict[str, float],
-) -> pd.DataFrame:
-    result = filter_for_mode(
-        base_candidates,
-        mode,
-    )
-
-    if result.empty:
-        return result
-
-    result[f"{mode}_score"] = calculate_mode_score(
-        result,
-        mode,
-    )
-
-    result["recommendation_type"] = result.apply(
-        lambda row: classify_candidate(
-            row,
-            mode,
-        ),
-        axis=1,
-    )
-
-    result["recommendation_strength"] = result[f"{mode}_score"].map(recommendation_strength)
-
-    result["why_recommended"] = result.apply(
-        lambda row: build_reason(
-            row,
-            mode,
-            target_heatmap_profile,
-        ),
-        axis=1,
-    )
-
-    result = result.sort_values(
-        [
-            f"{mode}_score",
-            "role_fit_pct",
-            "effective_heatmap_score_pct",
-            "statistical_similarity_pct",
-            "player_quality_score",
-        ],
-        ascending=[
-            False,
-            False,
-            False,
-            False,
-            False,
-        ],
-    ).reset_index(drop=True)
-
-    result[f"{mode}_rank"] = np.arange(
-        1,
-        len(result) + 1,
-    )
-
-    return result
 
 
 def print_report(

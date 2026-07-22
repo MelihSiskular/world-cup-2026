@@ -3,12 +3,33 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
+from wc26.analytics.transfer_intelligence import (
+    recommendations,
+)
 from wc26.analytics.transfer_intelligence.config import (
     MODE_CONFIG,
+)
+from wc26.analytics.transfer_intelligence.explanations import (
+    build_reason,
+    classify_candidate,
+    recommendation_strength,
 )
 from wc26.analytics.transfer_intelligence.recommendations import (
     filter_for_mode,
 )
+from wc26.analytics.transfer_intelligence.scoring import (
+    calculate_mode_score,
+)
+
+
+def test_result_generation_uses_scoring_function() -> None:
+    assert recommendations.calculate_mode_score is calculate_mode_score
+
+
+def test_result_generation_uses_explanation_functions() -> None:
+    assert recommendations.classify_candidate is classify_candidate
+    assert recommendations.build_reason is build_reason
+    assert recommendations.recommendation_strength is recommendation_strength
 
 
 def candidate_row(
