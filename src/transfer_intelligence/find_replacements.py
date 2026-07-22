@@ -39,6 +39,8 @@ from wc26.analytics.transfer_intelligence.config import (
     MODE_CONFIG,
 )
 from wc26.analytics.transfer_intelligence.utils import (
+    format_market_value,
+    format_optional_score,
     normalize_text,
     safe_float,
     slugify,
@@ -952,13 +954,7 @@ def calculate_mode_score(
 
     return score.clip(0, 100).round(2)
 
-def format_optional_score(
-    value: Any,
-) -> str:
-    if value is None or pd.isna(value):
-        return "N/A"
 
-    return f"{float(value):.2f}"
 
 
 def classify_candidate(
@@ -1612,28 +1608,7 @@ def generate_mode_results(
 
     return result
 
-def format_market_value(
-    value: Any,
-) -> str:
-    if pd.isna(value):
-        return "-"
 
-    value = float(value)
-    euro = "\u20ac"
-
-    if value >= 1_000_000:
-        return (
-            f"{euro}"
-            f"{value / 1_000_000:.1f}M"
-        )
-
-    if value >= 1_000:
-        return (
-            f"{euro}"
-            f"{value / 1_000:.0f}K"
-        )
-
-    return f"{euro}{value:.0f}"
 def print_report(
     target: pd.Series,
     results: dict[str, pd.DataFrame],

@@ -11,6 +11,8 @@ from wc26.analytics.transfer_intelligence.config import (
     MODE_CONFIG,
 )
 from wc26.analytics.transfer_intelligence.utils import (
+    format_market_value,
+    format_optional_score,
     normalize_text,
     safe_float,
     slugify,
@@ -21,6 +23,8 @@ def test_legacy_module_reexports_utility_functions() -> None:
     assert legacy.slugify is slugify
     assert legacy.safe_float is safe_float
     assert legacy.normalize_text is normalize_text
+    assert legacy.format_optional_score is format_optional_score
+    assert legacy.format_market_value is format_market_value
 
 
 def test_legacy_module_reexports_configuration() -> None:

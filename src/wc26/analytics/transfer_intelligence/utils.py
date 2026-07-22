@@ -52,7 +52,36 @@ def normalize_text(value: Any) -> str:
 
 
 __all__ = [
+    "format_market_value",
+    "format_optional_score",
     "normalize_text",
     "safe_float",
     "slugify",
 ]
+
+
+def format_optional_score(
+    value: Any,
+) -> str:
+    if value is None or pd.isna(value):
+        return "N/A"
+
+    return f"{float(value):.2f}"
+
+
+def format_market_value(
+    value: Any,
+) -> str:
+    if pd.isna(value):
+        return "-"
+
+    value = float(value)
+    euro = "\u20ac"
+
+    if value >= 1_000_000:
+        return f"{euro}{value / 1_000_000:.1f}M"
+
+    if value >= 1_000:
+        return f"{euro}{value / 1_000:.0f}K"
+
+    return f"{euro}{value:.0f}"
