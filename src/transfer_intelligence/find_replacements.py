@@ -24,6 +24,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+# Compatibility re-exports for existing imports and tests.
+# Remove these only as part of an explicitly breaking release.
 from wc26.analytics.transfer_intelligence.candidates import (
     prepare_candidate_base as prepare_candidate_base,
 )
