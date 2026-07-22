@@ -35,6 +35,9 @@ from wc26.analytics.transfer_intelligence.recommendations import (
     filter_for_mode,
     generate_mode_results,
 )
+from wc26.analytics.transfer_intelligence.reporting import (
+    print_report,
+)
 from wc26.analytics.transfer_intelligence.scoring import (
     calculate_age_suitability,
     calculate_market_value_advantage,
@@ -50,6 +53,10 @@ from wc26.analytics.transfer_intelligence.utils import (
     safe_float,
     slugify,
 )
+
+
+def test_legacy_module_reexports_reporting_function() -> None:
+    assert legacy.print_report is print_report
 
 
 def test_legacy_module_reexports_result_generation() -> None:

@@ -79,6 +79,9 @@ from wc26.analytics.transfer_intelligence.recommendations import (
 from wc26.analytics.transfer_intelligence.recommendations import (
     generate_mode_results as generate_mode_results,
 )
+from wc26.analytics.transfer_intelligence.reporting import (
+    print_report as print_report,
+)
 from wc26.analytics.transfer_intelligence.scoring import (
     calculate_age_suitability as calculate_age_suitability,
 )
@@ -98,9 +101,10 @@ from wc26.analytics.transfer_intelligence.scoring import (
     same_value_score as same_value_score,
 )
 from wc26.analytics.transfer_intelligence.utils import (
-    format_market_value,
-    format_optional_score,
-    slugify,
+    format_market_value as format_market_value,
+)
+from wc26.analytics.transfer_intelligence.utils import (
+    format_optional_score as format_optional_score,
 )
 from wc26.analytics.transfer_intelligence.utils import (
     normalize_text as normalize_text,
@@ -108,87 +112,9 @@ from wc26.analytics.transfer_intelligence.utils import (
 from wc26.analytics.transfer_intelligence.utils import (
     safe_float as safe_float,
 )
-
-
-def print_report(
-    target: pd.Series,
-    results: dict[str, pd.DataFrame],
-    top_n: int,
-) -> None:
-    print("=" * 120)
-    print("FOOTBALL SCOUTING DECISION ENGINE V4")
-    print("=" * 120)
-    print()
-    print(f"Target Player:  {target['player_name']}")
-    print(f"Position:       {target['position']}")
-    print(f"Archetype:      {target['archetype']}")
-    print(f"Final Role:     {target['final_role']}")
-    print(f"Age:            {target['age']}")
-    print(f"Market Value:   {format_market_value(target['market_value'])}")
-
-    titles = {
-        "immediate": ("IMMEDIATE REPLACEMENTS"),
-        "development": ("DEVELOPMENT PROSPECTS"),
-        "value": ("BEST VALUE OPTIONS"),
-        "short_term": ("SHORT-TERM EXPERIENCED OPTIONS"),
-    }
-
-    for mode, title in titles.items():
-        print()
-        print(title)
-        print("-" * 120)
-
-        result = results[mode]
-
-        if result.empty:
-            print("No eligible candidates.")
-            continue
-
-        columns = [
-            f"{mode}_rank",
-            "player_name",
-            "national_team_name",
-            "age",
-            "market_value",
-            "final_role",
-            "statistical_similarity_pct",
-            "role_fit_pct",
-            "spatial_similarity_pct",
-            "heatmap_similarity_score_pct",
-            "occupation_overlap_pct",
-            f"{mode}_score",
-            "recommendation_type",
-            "why_recommended",
-        ]
-
-        display = result.head(top_n)[columns].rename(
-            columns={
-                "national_team_name": "team",
-                "statistical_similarity_pct": ("stat_sim"),
-                "spatial_similarity_pct": ("spatial_sim"),
-                "heatmap_similarity_score_pct": "heatmap_sim",
-                "occupation_overlap_pct": ("heatmap_overlap"),
-                f"{mode}_score": ("decision_score"),
-            }
-        )
-
-        formatters = {
-            "age": lambda value: f"{value:.1f}",
-            "market_value": format_market_value,
-            "stat_sim": format_optional_score,
-            "role_fit_pct": format_optional_score,
-            "spatial_sim": format_optional_score,
-            "heatmap_sim": format_optional_score,
-            "heatmap_overlap": format_optional_score,
-            "decision_score": format_optional_score,
-        }
-
-        print(
-            display.to_string(
-                index=False,
-                formatters=formatters,
-            )
-        )
+from wc26.analytics.transfer_intelligence.utils import (
+    slugify,
+)
 
 
 def parse_args() -> argparse.Namespace:
