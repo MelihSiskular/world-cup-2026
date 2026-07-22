@@ -10,6 +10,11 @@ from wc26.analytics.transfer_intelligence.config import (
     HEATMAP_METRIC_COLUMNS,
     MODE_CONFIG,
 )
+from wc26.analytics.transfer_intelligence.datasets import (
+    load_heatmap_profiles,
+    load_heatmap_similarity,
+    load_similarity,
+)
 from wc26.analytics.transfer_intelligence.utils import (
     format_market_value,
     format_optional_score,
@@ -17,6 +22,12 @@ from wc26.analytics.transfer_intelligence.utils import (
     safe_float,
     slugify,
 )
+
+
+def test_legacy_module_reexports_dataset_loaders() -> None:
+    assert legacy.load_similarity is load_similarity
+    assert legacy.load_heatmap_similarity is load_heatmap_similarity
+    assert legacy.load_heatmap_profiles is load_heatmap_profiles
 
 
 def test_legacy_module_reexports_utility_functions() -> None:
