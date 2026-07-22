@@ -18,6 +18,13 @@ from wc26.analytics.transfer_intelligence.datasets import (
     load_heatmap_similarity,
     load_similarity,
 )
+from wc26.analytics.transfer_intelligence.explanations import (
+    build_reason,
+    classify_candidate,
+    dominant_heatmap_zone,
+    heatmap_difference_reason,
+    recommendation_strength,
+)
 from wc26.analytics.transfer_intelligence.matching import (
     attach_heatmap_profiles,
     attach_heatmap_similarity,
@@ -42,6 +49,14 @@ from wc26.analytics.transfer_intelligence.utils import (
     safe_float,
     slugify,
 )
+
+
+def test_legacy_module_reexports_explanation_functions() -> None:
+    assert legacy.classify_candidate is classify_candidate
+    assert legacy.dominant_heatmap_zone is dominant_heatmap_zone
+    assert legacy.heatmap_difference_reason is heatmap_difference_reason
+    assert legacy.build_reason is build_reason
+    assert legacy.recommendation_strength is recommendation_strength
 
 
 def test_legacy_module_reexports_recommendation_filter() -> None:
