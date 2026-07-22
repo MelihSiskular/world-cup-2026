@@ -71,3 +71,20 @@ docs/images/player_archetypes/goalkeeper_archetype_map.png
 # Environment variables
 .env
 .env.*
+
+# Python environments
+.venv/
+
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Development tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Coverage
+.coverage
+htmlcov/
