@@ -59,6 +59,9 @@ from wc26.analytics.transfer_intelligence.matching import (
 from wc26.analytics.transfer_intelligence.matching import (
     resolve_player,
 )
+from wc26.analytics.transfer_intelligence.recommendations import (
+    filter_for_mode as filter_for_mode,
+)
 from wc26.analytics.transfer_intelligence.scoring import (
     calculate_age_suitability as calculate_age_suitability,
 )
@@ -86,54 +89,6 @@ from wc26.analytics.transfer_intelligence.utils import (
 from wc26.analytics.transfer_intelligence.utils import (
     normalize_text as normalize_text,
 )
-
-
-def filter_for_mode(
-    candidates: pd.DataFrame,
-    mode: str,
-) -> pd.DataFrame:
-    config = MODE_CONFIG[mode]
-    result = candidates.copy()
-
-    similarity = pd.to_numeric(
-        result["statistical_similarity_pct"],
-        errors="coerce",
-    )
-
-    role_fit = pd.to_numeric(
-        result["role_fit_pct"],
-        errors="coerce",
-    )
-
-    quality = pd.to_numeric(
-        result["player_quality_score"],
-        errors="coerce",
-    )
-
-    reliability = pd.to_numeric(
-        result["data_reliability_score"],
-        errors="coerce",
-    )
-
-    ages = pd.to_numeric(
-        result["age"],
-        errors="coerce",
-    )
-
-    mask = (
-        similarity.ge(config["minimum_similarity"])
-        & role_fit.ge(config["minimum_role_fit"])
-        & quality.ge(config["minimum_quality"])
-        & reliability.ge(config["minimum_reliability"])
-    )
-
-    if config["minimum_age"] is not None:
-        mask &= ages.ge(config["minimum_age"])
-
-    if config["maximum_age"] is not None:
-        mask &= ages.le(config["maximum_age"])
-
-    return result[mask].copy()
 
 
 def classify_candidate(

@@ -24,6 +24,9 @@ from wc26.analytics.transfer_intelligence.matching import (
     attach_similarity,
     resolve_player,
 )
+from wc26.analytics.transfer_intelligence.recommendations import (
+    filter_for_mode,
+)
 from wc26.analytics.transfer_intelligence.scoring import (
     calculate_age_suitability,
     calculate_market_value_advantage,
@@ -39,6 +42,10 @@ from wc26.analytics.transfer_intelligence.utils import (
     safe_float,
     slugify,
 )
+
+
+def test_legacy_module_reexports_recommendation_filter() -> None:
+    assert legacy.filter_for_mode is filter_for_mode
 
 
 def test_legacy_module_reexports_candidate_preparation() -> None:
