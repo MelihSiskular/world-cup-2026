@@ -8,6 +8,9 @@ from src.transfer_intelligence import find_replacements as legacy
 from wc26.analytics.transfer_intelligence.candidates import (
     prepare_candidate_base,
 )
+from wc26.analytics.transfer_intelligence.cli import (
+    parse_args,
+)
 from wc26.analytics.transfer_intelligence.config import (
     DEFAULT_FEATURES,
     HEATMAP_METRIC_COLUMNS,
@@ -53,6 +56,10 @@ from wc26.analytics.transfer_intelligence.utils import (
     safe_float,
     slugify,
 )
+
+
+def test_legacy_module_reexports_cli_parser() -> None:
+    assert legacy.parse_args is parse_args
 
 
 def test_legacy_module_reexports_reporting_function() -> None:

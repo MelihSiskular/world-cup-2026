@@ -22,24 +22,34 @@ python -m src.transfer_intelligence.find_replacements \
 
 from __future__ import annotations
 
-import argparse
-from pathlib import Path
-
 import pandas as pd
 
 from wc26.analytics.transfer_intelligence.candidates import (
     prepare_candidate_base as prepare_candidate_base,
 )
+from wc26.analytics.transfer_intelligence.cli import (
+    parse_args as parse_args,
+)
 from wc26.analytics.transfer_intelligence.config import (
-    DEFAULT_FEATURES,
-    DEFAULT_HEATMAP_PROFILES,
-    DEFAULT_HEATMAP_SIMILARITY,
-    DEFAULT_OUTPUT_DIR,
-    DEFAULT_SIMILARITY,
-    MODE_CONFIG,
+    DEFAULT_FEATURES as DEFAULT_FEATURES,
+)
+from wc26.analytics.transfer_intelligence.config import (
+    DEFAULT_HEATMAP_PROFILES as DEFAULT_HEATMAP_PROFILES,
+)
+from wc26.analytics.transfer_intelligence.config import (
+    DEFAULT_HEATMAP_SIMILARITY as DEFAULT_HEATMAP_SIMILARITY,
+)
+from wc26.analytics.transfer_intelligence.config import (
+    DEFAULT_OUTPUT_DIR as DEFAULT_OUTPUT_DIR,
+)
+from wc26.analytics.transfer_intelligence.config import (
+    DEFAULT_SIMILARITY as DEFAULT_SIMILARITY,
 )
 from wc26.analytics.transfer_intelligence.config import (
     HEATMAP_METRIC_COLUMNS as HEATMAP_METRIC_COLUMNS,
+)
+from wc26.analytics.transfer_intelligence.config import (
+    MODE_CONFIG as MODE_CONFIG,
 )
 from wc26.analytics.transfer_intelligence.datasets import (
     load_heatmap_profiles,
@@ -115,78 +125,6 @@ from wc26.analytics.transfer_intelligence.utils import (
 from wc26.analytics.transfer_intelligence.utils import (
     slugify,
 )
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        "--player",
-        required=True,
-    )
-
-    parser.add_argument(
-        "--features",
-        type=Path,
-        default=DEFAULT_FEATURES,
-    )
-
-    parser.add_argument(
-        "--similarity",
-        type=Path,
-        default=DEFAULT_SIMILARITY,
-    )
-
-    parser.add_argument(
-        "--heatmap-similarity",
-        type=Path,
-        default=DEFAULT_HEATMAP_SIMILARITY,
-    )
-
-    parser.add_argument(
-        "--heatmap-profiles",
-        type=Path,
-        default=DEFAULT_HEATMAP_PROFILES,
-    )
-
-    parser.add_argument(
-        "--output-dir",
-        type=Path,
-        default=DEFAULT_OUTPUT_DIR,
-    )
-
-    parser.add_argument(
-        "--minimum-minutes",
-        type=float,
-        default=150,
-    )
-
-    parser.add_argument(
-        "--minimum-role-confidence",
-        type=float,
-        default=50,
-    )
-
-    parser.add_argument(
-        "--maximum-market-value",
-        type=float,
-        default=None,
-    )
-
-    parser.add_argument(
-        "--neutral-heatmap-score",
-        type=float,
-        default=70.0,
-        help=("Neutral score assigned when a candidate has no available heatmap comparison."),
-    )
-
-    parser.add_argument(
-        "--top-n",
-        type=int,
-        default=10,
-    )
-
-    return parser.parse_args()
 
 
 def main() -> None:
