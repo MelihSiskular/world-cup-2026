@@ -15,6 +15,12 @@ from wc26.analytics.transfer_intelligence.datasets import (
     load_heatmap_similarity,
     load_similarity,
 )
+from wc26.analytics.transfer_intelligence.matching import (
+    attach_heatmap_profiles,
+    attach_heatmap_similarity,
+    attach_similarity,
+    resolve_player,
+)
 from wc26.analytics.transfer_intelligence.utils import (
     format_market_value,
     format_optional_score,
@@ -22,6 +28,13 @@ from wc26.analytics.transfer_intelligence.utils import (
     safe_float,
     slugify,
 )
+
+
+def test_legacy_module_reexports_matching_functions() -> None:
+    assert legacy.resolve_player is resolve_player
+    assert legacy.attach_similarity is attach_similarity
+    assert legacy.attach_heatmap_similarity is attach_heatmap_similarity
+    assert legacy.attach_heatmap_profiles is attach_heatmap_profiles
 
 
 def test_legacy_module_reexports_dataset_loaders() -> None:
