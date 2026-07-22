@@ -8,7 +8,7 @@ name = "wc26-transfer-intelligence"
 version = "0.1.0"
 description = "Football analytics and recruitment intelligence platform built from FIFA World Cup 2026 data."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 authors = [
     { name = "Melih Şişkular" }
 ]
@@ -61,7 +61,7 @@ select = [
 
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
 files = ["src/wc26"]
 strict = true
 ignore_missing_imports = true
