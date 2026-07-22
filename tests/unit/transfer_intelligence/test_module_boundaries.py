@@ -5,6 +5,9 @@ from pathlib import Path
 import pytest
 from src.transfer_intelligence import find_replacements as legacy
 
+from wc26.analytics.transfer_intelligence.candidates import (
+    prepare_candidate_base,
+)
 from wc26.analytics.transfer_intelligence.config import (
     DEFAULT_FEATURES,
     HEATMAP_METRIC_COLUMNS,
@@ -36,6 +39,10 @@ from wc26.analytics.transfer_intelligence.utils import (
     safe_float,
     slugify,
 )
+
+
+def test_legacy_module_reexports_candidate_preparation() -> None:
+    assert legacy.prepare_candidate_base is prepare_candidate_base
 
 
 def test_legacy_module_reexports_scoring_functions() -> None:

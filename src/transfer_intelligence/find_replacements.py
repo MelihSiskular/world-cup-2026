@@ -19,6 +19,7 @@ Run
 python -m src.transfer_intelligence.find_replacements \
   --player "Michael Olise"
 """
+
 from __future__ import annotations
 
 import argparse
@@ -27,14 +28,19 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from wc26.analytics.transfer_intelligence.candidates import (
+    prepare_candidate_base as prepare_candidate_base,
+)
 from wc26.analytics.transfer_intelligence.config import (
     DEFAULT_FEATURES,
     DEFAULT_HEATMAP_PROFILES,
     DEFAULT_HEATMAP_SIMILARITY,
     DEFAULT_OUTPUT_DIR,
     DEFAULT_SIMILARITY,
-    HEATMAP_METRIC_COLUMNS as HEATMAP_METRIC_COLUMNS,
     MODE_CONFIG,
+)
+from wc26.analytics.transfer_intelligence.config import (
+    HEATMAP_METRIC_COLUMNS as HEATMAP_METRIC_COLUMNS,
 )
 from wc26.analytics.transfer_intelligence.datasets import (
     load_heatmap_profiles,
@@ -42,138 +48,44 @@ from wc26.analytics.transfer_intelligence.datasets import (
     load_similarity,
 )
 from wc26.analytics.transfer_intelligence.matching import (
-    attach_heatmap_profiles,
-    attach_heatmap_similarity,
-    attach_similarity,
+    attach_heatmap_profiles as attach_heatmap_profiles,
+)
+from wc26.analytics.transfer_intelligence.matching import (
+    attach_heatmap_similarity as attach_heatmap_similarity,
+)
+from wc26.analytics.transfer_intelligence.matching import (
+    attach_similarity as attach_similarity,
+)
+from wc26.analytics.transfer_intelligence.matching import (
     resolve_player,
 )
 from wc26.analytics.transfer_intelligence.scoring import (
-    calculate_age_suitability,
-    calculate_market_value_advantage,
+    calculate_age_suitability as calculate_age_suitability,
+)
+from wc26.analytics.transfer_intelligence.scoring import (
+    calculate_market_value_advantage as calculate_market_value_advantage,
+)
+from wc26.analytics.transfer_intelligence.scoring import (
     calculate_mode_score,
-    calculate_role_fit,
-    calculate_spatial_similarity,
+)
+from wc26.analytics.transfer_intelligence.scoring import (
+    calculate_role_fit as calculate_role_fit,
+)
+from wc26.analytics.transfer_intelligence.scoring import (
+    calculate_spatial_similarity as calculate_spatial_similarity,
+)
+from wc26.analytics.transfer_intelligence.scoring import (
     same_value_score as same_value_score,
 )
 from wc26.analytics.transfer_intelligence.utils import (
     format_market_value,
     format_optional_score,
-    normalize_text as normalize_text,
     safe_float,
     slugify,
 )
-
-
-def prepare_candidate_base(
-    players: pd.DataFrame,
-    similarity: pd.DataFrame,
-    heatmap_similarity: pd.DataFrame,
-    heatmap_profiles: pd.DataFrame,
-    target: pd.Series,
-    minimum_minutes: float,
-    minimum_role_confidence: float,
-    maximum_market_value: float | None,
-    neutral_heatmap_score: float,
-) -> tuple[pd.DataFrame, dict[str, float]]:
-    candidates = players[
-        players["position"].eq(
-            target["position"]
-        )
-        & ~players["player_id"].eq(
-            target["player_id"]
-        )
-    ].copy()
-
-    candidates = candidates[
-        pd.to_numeric(
-            candidates["minutes"],
-            errors="coerce",
-        ).ge(minimum_minutes)
-    ]
-
-    candidates = candidates[
-        pd.to_numeric(
-            candidates["role_confidence_score"],
-            errors="coerce",
-        ).ge(minimum_role_confidence)
-    ]
-
-    if maximum_market_value is not None:
-        candidates = candidates[
-            pd.to_numeric(
-                candidates["market_value"],
-                errors="coerce",
-            ).le(maximum_market_value)
-        ]
-
-    candidates = attach_similarity(
-        candidates,
-        target,
-        similarity,
-    )
-
-    candidates = candidates[
-        candidates[
-            "statistical_similarity_pct"
-        ].notna()
-    ].copy()
-
-    candidates = attach_heatmap_similarity(
-        candidates,
-        target,
-        heatmap_similarity,
-        neutral_score=neutral_heatmap_score,
-    )
-
-    candidates, target_heatmap_profile = (
-        attach_heatmap_profiles(
-            candidates,
-            target,
-            heatmap_profiles,
-        )
-    )
-
-    candidates["role_fit_pct"] = (
-        calculate_role_fit(
-            candidates,
-            target,
-        )
-    )
-
-    candidates[
-        "spatial_similarity_pct"
-    ] = calculate_spatial_similarity(
-        candidates,
-        target,
-    )
-
-    candidates[
-        "market_value_advantage_pct"
-    ] = calculate_market_value_advantage(
-        candidates,
-        target,
-    )
-
-    candidates[
-        "age_suitability_pct"
-    ] = calculate_age_suitability(
-        candidates,
-        target,
-    )
-
-    candidates["same_final_role"] = (
-        candidates["final_role"].eq(
-            target["final_role"]
-        )
-    )
-
-    candidates["same_archetype"] = (
-        candidates["archetype"].eq(
-            target["archetype"]
-        )
-    )
-
-    return candidates, target_heatmap_profile
+from wc26.analytics.transfer_intelligence.utils import (
+    normalize_text as normalize_text,
+)
 
 
 def filter_for_mode(
@@ -209,45 +121,28 @@ def filter_for_mode(
     )
 
     mask = (
-        similarity.ge(
-            config["minimum_similarity"]
-        )
-        & role_fit.ge(
-            config["minimum_role_fit"]
-        )
-        & quality.ge(
-            config["minimum_quality"]
-        )
-        & reliability.ge(
-            config["minimum_reliability"]
-        )
+        similarity.ge(config["minimum_similarity"])
+        & role_fit.ge(config["minimum_role_fit"])
+        & quality.ge(config["minimum_quality"])
+        & reliability.ge(config["minimum_reliability"])
     )
 
     if config["minimum_age"] is not None:
-        mask &= ages.ge(
-            config["minimum_age"]
-        )
+        mask &= ages.ge(config["minimum_age"])
 
     if config["maximum_age"] is not None:
-        mask &= ages.le(
-            config["maximum_age"]
-        )
+        mask &= ages.le(config["maximum_age"])
 
     return result[mask].copy()
 
 
-
 def classify_candidate(
-        row: pd.Series,
-        mode: str,
+    row: pd.Series,
+    mode: str,
 ) -> str:
-    same_role = bool(
-        row["same_final_role"]
-    )
+    same_role = bool(row["same_final_role"])
 
-    same_archetype = bool(
-        row["same_archetype"]
-    )
+    same_archetype = bool(row["same_archetype"])
 
     has_heatmap = bool(
         row.get(
@@ -256,50 +151,30 @@ def classify_candidate(
         )
     )
 
-    similarity = safe_float(
-        row["statistical_similarity_pct"]
-    )
+    similarity = safe_float(row["statistical_similarity_pct"])
 
-    role_fit = safe_float(
-        row["role_fit_pct"]
-    )
+    role_fit = safe_float(row["role_fit_pct"])
 
-    heatmap_fit = safe_float(
-        row["effective_heatmap_score_pct"]
-    )
+    heatmap_fit = safe_float(row["effective_heatmap_score_pct"])
 
-    quality = safe_float(
-        row["player_quality_score"]
-    )
+    quality = safe_float(row["player_quality_score"])
 
-    value_advantage = safe_float(
-        row["market_value_advantage_pct"]
-    )
+    value_advantage = safe_float(row["market_value_advantage_pct"])
 
     # ----------------------------------------------------------
     # Immediate replacement
     # ----------------------------------------------------------
     if mode == "immediate":
         if (
-                same_role
-                and role_fit >= 85
-                and quality >= 65
-                and (
-                not has_heatmap
-                or heatmap_fit >= 75
-        )
+            same_role
+            and role_fit >= 85
+            and quality >= 65
+            and (not has_heatmap or heatmap_fit >= 75)
         ):
             return "Direct tactical replacement"
 
-        if (
-                has_heatmap
-                and similarity >= 75
-                and heatmap_fit >= 80
-        ):
-            return (
-                "High-continuity "
-                "playing-profile alternative"
-            )
+        if has_heatmap and similarity >= 75 and heatmap_fit >= 80:
+            return "High-continuity playing-profile alternative"
 
         if role_fit >= 65:
             return "Strong tactical alternative"
@@ -310,28 +185,14 @@ def classify_candidate(
     # Development prospect
     # ----------------------------------------------------------
     if mode == "development":
-        if (
-                same_role
-                and role_fit >= 75
-        ):
+        if same_role and role_fit >= 75:
             return "Long-term direct replacement"
 
-        if (
-                similarity >= 60
-                and same_archetype
-        ):
-            return (
-                "High-upside statistical prospect"
-            )
+        if similarity >= 60 and same_archetype:
+            return "High-upside statistical prospect"
 
-        if (
-                has_heatmap
-                and heatmap_fit >= 85
-        ):
-            return (
-                "Developmental "
-                "occupation-profile match"
-            )
+        if has_heatmap and heatmap_fit >= 85:
+            return "Developmental occupation-profile match"
 
         return "Long-term tactical project"
 
@@ -339,23 +200,11 @@ def classify_candidate(
     # Value alternative
     # ----------------------------------------------------------
     if mode == "value":
-        if (
-                same_role
-                and value_advantage >= 65
-        ):
-            return (
-                "Best-value direct replacement"
-            )
+        if same_role and value_advantage >= 65:
+            return "Best-value direct replacement"
 
-        if (
-                has_heatmap
-                and heatmap_fit >= 85
-                and value_advantage >= 60
-        ):
-            return (
-                "High-value "
-                "occupation-profile match"
-            )
+        if has_heatmap and heatmap_fit >= 85 and value_advantage >= 60:
+            return "High-value occupation-profile match"
 
         if value_advantage >= 80:
             return "Low-cost adaptable option"
@@ -366,36 +215,18 @@ def classify_candidate(
     # Short-term experienced option
     # ----------------------------------------------------------
     if mode == "short_term":
-        if (
-                same_role
-                and role_fit >= 75
-        ):
-            return (
-                "Experienced direct replacement"
-            )
+        if same_role and role_fit >= 75:
+            return "Experienced direct replacement"
 
-        if (
-                same_archetype
-                and similarity >= 55
-        ):
+        if same_archetype and similarity >= 55:
             return "Experienced profile match"
 
-        if (
-                has_heatmap
-                and heatmap_fit >= 85
-        ):
-            return (
-                "Experienced "
-                "occupation-profile match"
-            )
+        if has_heatmap and heatmap_fit >= 85:
+            return "Experienced occupation-profile match"
 
-        return (
-            "Short-term tactical alternative"
-        )
+        return "Short-term tactical alternative"
 
-    raise ValueError(
-        f"Unsupported recommendation mode: {mode}"
-    )
+    raise ValueError(f"Unsupported recommendation mode: {mode}")
 
 
 def dominant_heatmap_zone(
@@ -403,44 +234,18 @@ def dominant_heatmap_zone(
     prefix: str = "",
 ) -> tuple[str, str]:
     lateral = {
-        "left wide lane": safe_float(
-            profile.get(f"{prefix}left_wide_share")
-        ),
-        "left half-space": safe_float(
-            profile.get(
-                f"{prefix}left_half_space_share"
-            )
-        ),
-        "central lane": safe_float(
-            profile.get(f"{prefix}central_share")
-        ),
-        "right half-space": safe_float(
-            profile.get(
-                f"{prefix}right_half_space_share"
-            )
-        ),
-        "right wide lane": safe_float(
-            profile.get(f"{prefix}right_wide_share")
-        ),
+        "left wide lane": safe_float(profile.get(f"{prefix}left_wide_share")),
+        "left half-space": safe_float(profile.get(f"{prefix}left_half_space_share")),
+        "central lane": safe_float(profile.get(f"{prefix}central_share")),
+        "right half-space": safe_float(profile.get(f"{prefix}right_half_space_share")),
+        "right wide lane": safe_float(profile.get(f"{prefix}right_wide_share")),
     }
 
     vertical = {
-        "build-up third": safe_float(
-            profile.get(f"{prefix}build_up_share")
-        ),
-        "middle third": safe_float(
-            profile.get(
-                f"{prefix}middle_third_share"
-            )
-        ),
-        "advanced middle third": safe_float(
-            profile.get(
-                f"{prefix}advanced_middle_share"
-            )
-        ),
-        "final third": safe_float(
-            profile.get(f"{prefix}final_third_share")
-        ),
+        "build-up third": safe_float(profile.get(f"{prefix}build_up_share")),
+        "middle third": safe_float(profile.get(f"{prefix}middle_third_share")),
+        "advanced middle third": safe_float(profile.get(f"{prefix}advanced_middle_share")),
+        "final third": safe_float(profile.get(f"{prefix}final_third_share")),
     }
 
     lateral_zone = max(
@@ -460,13 +265,10 @@ def heatmap_difference_reason(
     row: pd.Series,
     target_heatmap_profile: dict[str, float],
 ) -> str | None:
-    if (
-        not target_heatmap_profile
-        or not bool(
-            row.get(
-                "has_heatmap_similarity",
-                False,
-            )
+    if not target_heatmap_profile or not bool(
+        row.get(
+            "has_heatmap_similarity",
+            False,
         )
     ):
         return None
@@ -478,49 +280,25 @@ def heatmap_difference_reason(
             1,
         ): value
         for column, value in row.items()
-        if str(column).startswith(
-            "heatmap_"
-        )
+        if str(column).startswith("heatmap_")
     }
 
-    target_lateral, target_vertical = (
-        dominant_heatmap_zone(
-            target_heatmap_profile
-        )
-    )
+    target_lateral, target_vertical = dominant_heatmap_zone(target_heatmap_profile)
 
-    candidate_lateral, candidate_vertical = (
-        dominant_heatmap_zone(
-            candidate_profile
-        )
-    )
+    candidate_lateral, candidate_vertical = dominant_heatmap_zone(candidate_profile)
 
-    if (
-        target_lateral == candidate_lateral
-        and target_vertical
-        == candidate_vertical
-    ):
-        return (
-            f"replicates the target's {target_lateral} "
-            f"and {target_vertical} occupation"
-        )
+    if target_lateral == candidate_lateral and target_vertical == candidate_vertical:
+        return f"replicates the target's {target_lateral} and {target_vertical} occupation"
 
     if target_lateral == candidate_lateral:
-        return (
-            f"uses the same {target_lateral}, "
-            f"but operates more in the {candidate_vertical}"
-        )
+        return f"uses the same {target_lateral}, but operates more in the {candidate_vertical}"
 
     if target_vertical == candidate_vertical:
         return (
-            f"matches the target's {target_vertical} depth "
-            f"with more {candidate_lateral} occupation"
+            f"matches the target's {target_vertical} depth with more {candidate_lateral} occupation"
         )
 
-    return (
-        f"operates mainly in the {candidate_lateral} "
-        f"and {candidate_vertical}"
-    )
+    return f"operates mainly in the {candidate_lateral} and {candidate_vertical}"
 
 
 def build_reason(
@@ -528,9 +306,7 @@ def build_reason(
     mode: str,
     target_heatmap_profile: dict[str, float],
 ) -> str:
-    reasons: list[
-        tuple[int, str, str]
-    ] = []
+    reasons: list[tuple[int, str, str]] = []
 
     if bool(row["same_final_role"]):
         reasons.append(
@@ -550,49 +326,28 @@ def build_reason(
             )
         )
 
-    statistical = safe_float(
-        row["statistical_similarity_pct"]
-    )
+    statistical = safe_float(row["statistical_similarity_pct"])
 
-    role_fit = safe_float(
-        row["role_fit_pct"]
-    )
+    role_fit = safe_float(row["role_fit_pct"])
 
-    spatial = safe_float(
-        row["spatial_similarity_pct"]
-    )
+    spatial = safe_float(row["spatial_similarity_pct"])
 
-    heatmap = safe_float(
-        row.get(
-            "heatmap_similarity_score_pct"
-        )
-    )
+    heatmap = safe_float(row.get("heatmap_similarity_score_pct"))
 
-    overlap = safe_float(
-        row["occupation_overlap_pct"]
-    )
+    overlap = safe_float(row["occupation_overlap_pct"])
 
-    lateral = safe_float(
-        row["lateral_profile_similarity_pct"]
-    )
+    lateral = safe_float(row["lateral_profile_similarity_pct"])
 
-    vertical = safe_float(
-        row["vertical_profile_similarity_pct"]
-    )
+    vertical = safe_float(row["vertical_profile_similarity_pct"])
 
-    value = safe_float(
-        row["market_value_advantage_pct"]
-    )
+    value = safe_float(row["market_value_advantage_pct"])
 
     if statistical >= 75:
         reasons.append(
             (
                 88,
                 "statistics",
-                (
-                    "very strong statistical similarity "
-                    f"({statistical:.1f}%)"
-                ),
+                (f"very strong statistical similarity ({statistical:.1f}%)"),
             )
         )
     elif statistical >= 55:
@@ -600,10 +355,7 @@ def build_reason(
             (
                 74,
                 "statistics",
-                (
-                    "good statistical similarity "
-                    f"({statistical:.1f}%)"
-                ),
+                (f"good statistical similarity ({statistical:.1f}%)"),
             )
         )
 
@@ -612,10 +364,7 @@ def build_reason(
             (
                 96,
                 "role",
-                (
-                    "elite tactical fit "
-                    f"({role_fit:.1f}%)"
-                ),
+                (f"elite tactical fit ({role_fit:.1f}%)"),
             )
         )
     elif role_fit >= 65:
@@ -623,10 +372,7 @@ def build_reason(
             (
                 82,
                 "role",
-                (
-                    "strong tactical fit "
-                    f"({role_fit:.1f}%)"
-                ),
+                (f"strong tactical fit ({role_fit:.1f}%)"),
             )
         )
 
@@ -635,10 +381,7 @@ def build_reason(
             (
                 76,
                 "average_position",
-                (
-                    "similar average-position profile "
-                    f"({spatial:.1f}%)"
-                ),
+                (f"similar average-position profile ({spatial:.1f}%)"),
             )
         )
 
@@ -653,10 +396,7 @@ def build_reason(
                 (
                     94,
                     "heatmap",
-                    (
-                        "elite heatmap occupation similarity "
-                        f"({heatmap:.1f}%)"
-                    ),
+                    (f"elite heatmap occupation similarity ({heatmap:.1f}%)"),
                 )
             )
         elif heatmap >= 82:
@@ -664,10 +404,7 @@ def build_reason(
                 (
                     84,
                     "heatmap",
-                    (
-                        "strong heatmap occupation similarity "
-                        f"({heatmap:.1f}%)"
-                    ),
+                    (f"strong heatmap occupation similarity ({heatmap:.1f}%)"),
                 )
             )
         elif heatmap >= 72:
@@ -675,10 +412,7 @@ def build_reason(
                 (
                     70,
                     "heatmap",
-                    (
-                        "useful heatmap occupation similarity "
-                        f"({heatmap:.1f}%)"
-                    ),
+                    (f"useful heatmap occupation similarity ({heatmap:.1f}%)"),
                 )
             )
 
@@ -687,10 +421,7 @@ def build_reason(
                 (
                     86,
                     "heatmap_overlap",
-                    (
-                        "high shared-zone occupation "
-                        f"({overlap:.1f}%)"
-                    ),
+                    (f"high shared-zone occupation ({overlap:.1f}%)"),
                 )
             )
 
@@ -758,9 +489,7 @@ def build_reason(
             )
 
     if mode == "short_term":
-        reliability = safe_float(
-            row["data_reliability_score"]
-        )
+        reliability = safe_float(row["data_reliability_score"])
 
         if reliability >= 65:
             reasons.append(
@@ -790,9 +519,7 @@ def build_reason(
             break
 
     if not selected:
-        selected.append(
-            "balanced profile across the decision criteria"
-        )
+        selected.append("balanced profile across the decision criteria")
 
     return "; ".join(selected)
 
@@ -828,16 +555,12 @@ def generate_mode_results(
     if result.empty:
         return result
 
-    result[f"{mode}_score"] = (
-        calculate_mode_score(
-            result,
-            mode,
-        )
+    result[f"{mode}_score"] = calculate_mode_score(
+        result,
+        mode,
     )
 
-    result[
-        "recommendation_type"
-    ] = result.apply(
+    result["recommendation_type"] = result.apply(
         lambda row: classify_candidate(
             row,
             mode,
@@ -845,23 +568,15 @@ def generate_mode_results(
         axis=1,
     )
 
-    result[
-        "recommendation_strength"
-    ] = result[
-        f"{mode}_score"
-    ].map(
-        recommendation_strength
-    )
+    result["recommendation_strength"] = result[f"{mode}_score"].map(recommendation_strength)
 
-    result["why_recommended"] = (
-        result.apply(
-            lambda row: build_reason(
-                row,
-                mode,
-                target_heatmap_profile,
-            ),
-            axis=1,
-        )
+    result["why_recommended"] = result.apply(
+        lambda row: build_reason(
+            row,
+            mode,
+            target_heatmap_profile,
+        ),
+        axis=1,
     )
 
     result = result.sort_values(
@@ -895,49 +610,21 @@ def print_report(
     top_n: int,
 ) -> None:
     print("=" * 120)
-    print(
-        "FOOTBALL SCOUTING DECISION ENGINE V4"
-    )
+    print("FOOTBALL SCOUTING DECISION ENGINE V4")
     print("=" * 120)
     print()
-    print(
-        f"Target Player:  "
-        f"{target['player_name']}"
-    )
-    print(
-        f"Position:       "
-        f"{target['position']}"
-    )
-    print(
-        f"Archetype:      "
-        f"{target['archetype']}"
-    )
-    print(
-        f"Final Role:     "
-        f"{target['final_role']}"
-    )
-    print(
-        f"Age:            "
-        f"{target['age']}"
-    )
-    print(
-        f"Market Value:   "
-        f"{format_market_value(target['market_value'])}"
-    )
+    print(f"Target Player:  {target['player_name']}")
+    print(f"Position:       {target['position']}")
+    print(f"Archetype:      {target['archetype']}")
+    print(f"Final Role:     {target['final_role']}")
+    print(f"Age:            {target['age']}")
+    print(f"Market Value:   {format_market_value(target['market_value'])}")
 
     titles = {
-        "immediate": (
-            "IMMEDIATE REPLACEMENTS"
-        ),
-        "development": (
-            "DEVELOPMENT PROSPECTS"
-        ),
-        "value": (
-            "BEST VALUE OPTIONS"
-        ),
-        "short_term": (
-            "SHORT-TERM EXPERIENCED OPTIONS"
-        ),
+        "immediate": ("IMMEDIATE REPLACEMENTS"),
+        "development": ("DEVELOPMENT PROSPECTS"),
+        "value": ("BEST VALUE OPTIONS"),
+        "short_term": ("SHORT-TERM EXPERIENCED OPTIONS"),
     }
 
     for mode, title in titles.items():
@@ -948,9 +635,7 @@ def print_report(
         result = results[mode]
 
         if result.empty:
-            print(
-                "No eligible candidates."
-            )
+            print("No eligible candidates.")
             continue
 
         columns = [
@@ -970,25 +655,14 @@ def print_report(
             "why_recommended",
         ]
 
-        display = result.head(
-            top_n
-        )[columns].rename(
+        display = result.head(top_n)[columns].rename(
             columns={
                 "national_team_name": "team",
-                "statistical_similarity_pct": (
-                    "stat_sim"
-                ),
-                "spatial_similarity_pct": (
-                    "spatial_sim"
-                ),
+                "statistical_similarity_pct": ("stat_sim"),
+                "spatial_similarity_pct": ("spatial_sim"),
                 "heatmap_similarity_score_pct": "heatmap_sim",
-
-                "occupation_overlap_pct": (
-                    "heatmap_overlap"
-                ),
-                f"{mode}_score": (
-                    "decision_score"
-                ),
+                "occupation_overlap_pct": ("heatmap_overlap"),
+                f"{mode}_score": ("decision_score"),
             }
         )
 
@@ -1071,10 +745,7 @@ def parse_args() -> argparse.Namespace:
         "--neutral-heatmap-score",
         type=float,
         default=70.0,
-        help=(
-            "Neutral score assigned when a candidate has no "
-            "available heatmap comparison."
-        ),
+        help=("Neutral score assigned when a candidate has no available heatmap comparison."),
     )
 
     parser.add_argument(
@@ -1099,21 +770,11 @@ def main() -> None:
         errors="coerce",
     )
 
-    similarity = load_similarity(
-        args.similarity
-    )
+    similarity = load_similarity(args.similarity)
 
-    heatmap_similarity = (
-        load_heatmap_similarity(
-            args.heatmap_similarity
-        )
-    )
+    heatmap_similarity = load_heatmap_similarity(args.heatmap_similarity)
 
-    heatmap_profiles = (
-        load_heatmap_profiles(
-            args.heatmap_profiles
-        )
-    )
+    heatmap_profiles = load_heatmap_profiles(args.heatmap_profiles)
 
     target = resolve_player(
         players,
@@ -1130,15 +791,9 @@ def main() -> None:
         heatmap_profiles=heatmap_profiles,
         target=target,
         minimum_minutes=args.minimum_minutes,
-        minimum_role_confidence=(
-            args.minimum_role_confidence
-        ),
-        maximum_market_value=(
-            args.maximum_market_value
-        ),
-        neutral_heatmap_score=(
-            args.neutral_heatmap_score
-        ),
+        minimum_role_confidence=(args.minimum_role_confidence),
+        maximum_market_value=(args.maximum_market_value),
+        neutral_heatmap_score=(args.neutral_heatmap_score),
     )
 
     results = {
@@ -1155,21 +810,13 @@ def main() -> None:
         exist_ok=True,
     )
 
-    player_slug = slugify(
-        target["player_name"]
-    )
+    player_slug = slugify(target["player_name"])
 
     for mode, result in results.items():
         if result.empty:
             continue
 
-        output_path = (
-            args.output_dir
-            / (
-                f"{player_slug}_{mode}"
-                "_recommendations.csv"
-            )
-        )
+        output_path = args.output_dir / (f"{player_slug}_{mode}_recommendations.csv")
 
         result.to_csv(
             output_path,
@@ -1184,10 +831,7 @@ def main() -> None:
     )
 
     print()
-    print(
-        f"Output directory: "
-        f"{args.output_dir}"
-    )
+    print(f"Output directory: {args.output_dir}")
 
 
 if __name__ == "__main__":
