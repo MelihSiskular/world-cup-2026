@@ -21,7 +21,6 @@ def test_find_project_root_from_nested_directory(tmp_path: Path) -> None:
     assert find_project_root(nested_directory) == tmp_path
 
 
-
 def test_project_paths_are_derived_from_root(tmp_path: Path) -> None:
     (tmp_path / "pyproject.toml").write_text(
         "[project]\nname = 'example'\nversion = '0.1.0'\n",
