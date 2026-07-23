@@ -8,6 +8,9 @@ from wc26.analytics.transfer_intelligence.cli import parse_args
 from wc26.analytics.transfer_intelligence.exporting import (
     export_transfer_csv,
 )
+from wc26.analytics.transfer_intelligence.reporting import (
+    print_transfer_report,
+)
 from wc26.analytics.transfer_intelligence.service import (
     TransferAnalysisRequest,
     run_transfer_analysis,
@@ -34,6 +37,11 @@ def main() -> None:
     )
 
     result = run_transfer_analysis(request)
+
+    print_transfer_report(
+        result,
+        request.top_n,
+    )
 
     export_transfer_csv(
         result,

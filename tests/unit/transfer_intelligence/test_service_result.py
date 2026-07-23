@@ -7,7 +7,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from pytest import MonkeyPatch
+from pytest import CaptureFixture, MonkeyPatch
 
 from wc26.analytics.transfer_intelligence import service
 from wc26.analytics.transfer_intelligence.config import (
@@ -22,6 +22,7 @@ from wc26.analytics.transfer_intelligence.models import (
 def test_run_transfer_analysis_returns_structured_result(
     monkeypatch: MonkeyPatch,
     tmp_path: Path,
+    capsys: CaptureFixture[str],
 ) -> None:
     players = pd.DataFrame(
         {
@@ -119,11 +120,6 @@ def test_run_transfer_analysis_returns_structured_result(
         "generate_mode_results",
         fake_generate_mode_results,
     )
-    monkeypatch.setattr(
-        service,
-        "print_report",
-        lambda *args, **kwargs: None,
-    )
 
     request = TransferAnalysisRequest(
         player="Michael Olise",
@@ -178,3 +174,8 @@ def test_run_transfer_analysis_returns_structured_result(
     )
 
     assert not request.output_dir.exists()
+
+    captured = capsys.readouterr()
+
+    assert captured.out == ""
+    assert captured.err == ""

@@ -36,9 +36,6 @@ from wc26.analytics.transfer_intelligence.models import (
 from wc26.analytics.transfer_intelligence.recommendations import (
     generate_mode_results,
 )
-from wc26.analytics.transfer_intelligence.reporting import (
-    print_report,
-)
 
 
 def _to_json_value(value: object) -> JsonValue:
@@ -177,12 +174,6 @@ def run_transfer_analysis(
     analysis_result = _build_analysis_result(
         target,
         results,
-    )
-
-    print_report(
-        target,
-        results,
-        request.top_n,
     )
 
     return analysis_result

@@ -9,14 +9,12 @@ from pytest import MonkeyPatch
 
 from wc26.analytics.transfer_intelligence import entrypoint
 from wc26.analytics.transfer_intelligence.models import (
+    TransferAnalysisRequest,
     TransferAnalysisResult,
 )
-from wc26.analytics.transfer_intelligence.service import (
-    TransferAnalysisRequest,
-)
 
 
-def test_main_builds_request_and_runs_service(
+def test_main_builds_request_and_orchestrates_outputs(
     monkeypatch: MonkeyPatch,
     tmp_path: Path,
 ) -> None:
@@ -39,8 +37,6 @@ def test_main_builds_request_and_runs_service(
         neutral_heatmap_score=72.0,
         top_n=7,
     )
-    captured_request: TransferAnalysisRequest | None = None
-    export_calls: list[tuple[TransferAnalysisResult, Path]] = []
 
     analysis_result = TransferAnalysisResult(
         target={
@@ -49,6 +45,14 @@ def test_main_builds_request_and_runs_service(
         modes=(),
     )
 
+    captured_request: TransferAnalysisRequest | None = None
+
+    report_calls: list[tuple[TransferAnalysisResult, int]] = []
+
+    export_calls: list[tuple[TransferAnalysisResult, Path]] = []
+
+    operation_order: list[str] = []
+
     def fake_parse_args() -> argparse.Namespace:
         return args
 
@@ -56,14 +60,31 @@ def test_main_builds_request_and_runs_service(
         request: TransferAnalysisRequest,
     ) -> TransferAnalysisResult:
         nonlocal captured_request
+
+        operation_order.append("service")
         captured_request = request
 
         return analysis_result
+
+    def fake_print_transfer_report(
+        result: TransferAnalysisResult,
+        top_n: int,
+    ) -> None:
+        operation_order.append("report")
+
+        report_calls.append(
+            (
+                result,
+                top_n,
+            )
+        )
 
     def fake_export_transfer_csv(
         result: TransferAnalysisResult,
         output_path: Path,
     ) -> tuple[Path, ...]:
+        operation_order.append("export")
+
         export_calls.append(
             (
                 result,
@@ -85,11 +106,17 @@ def test_main_builds_request_and_runs_service(
     )
     monkeypatch.setattr(
         entrypoint,
+        "print_transfer_report",
+        fake_print_transfer_report,
+    )
+    monkeypatch.setattr(
+        entrypoint,
         "export_transfer_csv",
         fake_export_transfer_csv,
     )
 
     entrypoint.main()
+
     assert captured_request == TransferAnalysisRequest(
         player="Michael Olise",
         features=features,
@@ -103,3 +130,23 @@ def test_main_builds_request_and_runs_service(
         neutral_heatmap_score=72.0,
         top_n=7,
     )
+
+    assert report_calls == [
+        (
+            analysis_result,
+            7,
+        )
+    ]
+
+    assert export_calls == [
+        (
+            analysis_result,
+            output_dir,
+        )
+    ]
+
+    assert operation_order == [
+        "service",
+        "report",
+        "export",
+    ]
