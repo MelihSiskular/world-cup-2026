@@ -8,6 +8,9 @@ from pathlib import Path
 from pytest import MonkeyPatch
 
 from wc26.analytics.transfer_intelligence import entrypoint
+from wc26.analytics.transfer_intelligence.models import (
+    TransferAnalysisResult,
+)
 from wc26.analytics.transfer_intelligence.service import (
     TransferAnalysisRequest,
 )
@@ -44,9 +47,14 @@ def test_main_builds_request_and_runs_service(
 
     def fake_run_transfer_analysis(
         request: TransferAnalysisRequest,
-    ) -> None:
+    ) -> TransferAnalysisResult:
         nonlocal captured_request
         captured_request = request
+
+        return TransferAnalysisResult(
+            target={},
+            modes=(),
+        )
 
     monkeypatch.setattr(entrypoint, "parse_args", fake_parse_args)
     monkeypatch.setattr(
