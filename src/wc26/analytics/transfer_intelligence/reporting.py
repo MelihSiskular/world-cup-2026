@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import pandas as pd
 
+from wc26.analytics.transfer_intelligence.models import (
+    TransferAnalysisResult,
+)
 from wc26.analytics.transfer_intelligence.utils import (
     format_market_value,
     format_optional_score,
@@ -91,6 +94,29 @@ def print_report(
         )
 
 
+def print_transfer_report(
+    result: TransferAnalysisResult,
+    top_n: int,
+) -> None:
+    """Print a structured transfer analysis result."""
+
+    target = pd.Series(result.target)
+
+    mode_frames = {
+        mode_result.mode: pd.DataFrame(
+            [recommendation.to_dict() for recommendation in mode_result.recommendations]
+        )
+        for mode_result in result.modes
+    }
+
+    print_report(
+        target,
+        mode_frames,
+        top_n,
+    )
+
+
 __all__ = [
     "print_report",
+    "print_transfer_report",
 ]

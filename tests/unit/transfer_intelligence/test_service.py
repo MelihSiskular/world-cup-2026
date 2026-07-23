@@ -21,16 +21,14 @@ def test_transfer_request_is_immutable() -> None:
         similarity=Path("similarity.csv"),
         heatmap_similarity=Path("heatmap_similarity.csv"),
         heatmap_profiles=Path("heatmap_profiles.csv"),
-        output_dir=Path("results"),
-        minimum_minutes=180.0,
+        minimum_minutes=150.0,
         minimum_role_confidence=50.0,
         maximum_market_value=None,
-        neutral_heatmap_score=50.0,
-        top_n=10,
+        neutral_heatmap_score=70.0,
     )
 
     with pytest.raises(FrozenInstanceError):
-        request.top_n = 20  # type: ignore[misc]
+        request.player = "Dani Olmo"
 
 
 def test_legacy_main_delegates_to_console(

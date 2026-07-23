@@ -69,17 +69,26 @@ entrypoint.py
         ↓
 TransferAnalysisRequest
         ↓
-service.py
+run_transfer_analysis()
         ↓
-dataset loading and player matching
-        ↓
-candidate preparation and scoring
-        ↓
-recommendation generation
-        ↓
-console reporting and CSV export
+TransferAnalysisResult
+        ├── console reporting adapter
+        └── CSV exporting adapter
 ```
+The analysis service is intentionally side-effect free. It does not print to
+the terminal, create directories, or write CSV files.
 
+`run_transfer_analysis()` accepts analytical inputs and returns a structured,
+JSON-compatible `TransferAnalysisResult`.
+
+Presentation and output concerns are handled by separate adapters:
+
+- `print_transfer_report()` renders the console report.
+- `export_transfer_csv()` writes recommendation files.
+- `TransferAnalysisResult.to_dict()` produces a JSON-compatible response.
+
+This separation allows the same application service to be reused by the CLI,
+a FastAPI backend, scheduled pipelines, web clients, and mobile applications.
 ### Module Responsibilities
 
 | Module | Responsibility |
@@ -92,10 +101,10 @@ console reporting and CSV export
 | `scoring.py` | Transfer scoring rules and suitability calculations |
 | `recommendations.py` | Mode filtering, ranking, and result generation |
 | `explanations.py` | Recommendation labels and data-driven explanations |
-| `reporting.py` | Console report generation |
-| `cli.py` | Command-line argument definitions |
+| `reporting.py` | Rendering structured analysis results as console reports || `cli.py` | Command-line argument definitions |
 | `entrypoint.py` | Mapping CLI input to the application request |
-| `service.py` | Coordinating the complete analysis workflow |
+| `service.py` | Running the analysis workflow and returning a structured result || `models.py` | Backend-ready request, result, mode, and recommendation contracts |
+| `exporting.py` | CSV output generation from structured analysis results |
 
 The package-level public API is intentionally small:
 
