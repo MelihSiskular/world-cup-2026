@@ -1,18 +1,21 @@
 # ⚽ FIFA World Cup 2026 Analytics
+[![Python Quality](https://github.com/MelihSiskular/world-cup-2026/actions/workflows/python-quality.yml/badge.svg)](https://github.com/MelihSiskular/world-cup-2026/actions/workflows/python-quality.yml)
+![Python](https://img.shields.io/badge/python-3.12%2B-blue)
+![Coverage](https://img.shields.io/badge/coverage-65%25%20minimum-brightgreen)
 
 ## Project Overview
 
 >Machine Learning powered football analytics platform built from FIFA World Cup 2026 tournament data.
 
 
-By integrating match statistics, market values, positional information, heatmaps and unsupervised learning techniques, the platform explores player performance, tactical roles, similarity networks and transfer opportunities beyond traditional football metrics. 
+By integrating match statistics, market values, positional information, heatmaps and unsupervised learning techniques, the platform explores player performance, tactical roles, similarity networks and transfer opportunities beyond traditional football metrics.
 The project focuses on these main areas:
 
 
 -  Goal Analysis
 -  Player Performance Analysis
 -  Player Similarity Engine
--  Player Archetypes 
+-  Player Archetypes
 -  Player Positioning Analysis
 -  Player Role Discovery
 -  Player Heatmap Visualization
@@ -20,6 +23,54 @@ The project focuses on these main areas:
 
 ---
 
+## Quick Start
+
+### Installation
+
+```bash
+git clone https://github.com/MelihSiskular/world-cup-2026.git
+cd world-cup-2026
+
+python3.12 -m venv .venv
+source .venv/bin/activate
+
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+```
+
+### Transfer Intelligence CLI
+
+Run a transfer replacement analysis:
+
+```bash
+wc26-transfer \
+  --player "Michael Olise" \
+  --top-n 5
+```
+
+Example with recruitment constraints:
+
+```bash
+wc26-transfer \
+  --player "Michael Olise" \
+  --minimum-minutes 250 \
+  --minimum-role-confidence 65 \
+  --maximum-market-value 80000000 \
+  --top-n 5
+```
+
+Display all available options:
+
+```bash
+wc26-transfer --help
+```
+
+The legacy module command remains available for backward compatibility:
+
+```bash
+python -m src.transfer_intelligence.find_replacements \
+  --player "Michael Olise"
+```
 
 # 1 - Goal Analysis
 
@@ -61,7 +112,7 @@ df = pd.read_csv(
     "top_players_by_stage_position.csv"
 )
 
-# Top 10 Forward Players 
+# Top 10 Forward Players
 top_forwards = df[
     (df["round_number"] == 1)
     & (df["analysis_position"] == "F")
@@ -224,18 +275,18 @@ With this positioning engine analyzes following topics.
 * Horizontal lane occupation
 * Vertical pitch occupation
 * Spatial spread and mobility
-* Position stability 
+* Position stability
 
 ### Example Spatial Profiles
 
 Player | Team | Position | Lateral Profile | Vertical Profie       | Mobility            |
-|---|---|---|-----------------|-----------------------|---------------------| 
+|---|---|---|-----------------|-----------------------|---------------------|
 | Michael Olise | France | M | Central Lane    | Advanced Middle Third | Positionally Stable |
 | Rodri | Spain | M | Central Lane    | Final Third           | Roaming             |
 | Jude Bellingham | England | M | Central Lane    | Middle Third          | Positionally Stable |
 | Nuno Mendes | Portugal | D | Left Wide Lane  | Advanced Middle Third | Dynamic             |
 | Kylian Mbappé | France | F | Left Half Space | Final Third           | Roaming             |
- 
+
 *The system automatically converts raw average-position coordinates into interpretable spatial behavior profiles.*
 
 # 6 - Player Role Discovery
@@ -319,11 +370,11 @@ central build-up areas and influence the speed and direction of possession.*
 appear in this role because they combine a Tempo Controller statistical
 archetype with a central and positionally stable spatial profile.*
 
-**Role Confidence** *measures how closely a player matches the discovered role profile.* 
+**Role Confidence** *measures how closely a player matches the discovered role profile.*
 
 **Role Score** *combines role confidence, tournament rating and minutes played to rank the strongest representatives of a role.*
 
-### Example Role Visualization 
+### Example Role Visualization
 
 ```python
 python -m src.player_roles.visualize_role \
@@ -368,7 +419,7 @@ The heatmap engine measures:
 This allows the project to answer:
 
 > Do two players actually use the same areas of the pitch?
-> 
+>
 > With same intensity?
 
 ### Example - Michael Olise Heatmap
@@ -405,25 +456,30 @@ The Engine produces four recommendation categories
 
 ## Example Transfer Query
 
-python -m src.transfer_intelligence.find_replacements \
+```bash
+wc26-transfer \
   --player "Michael Olise"
+```
 
+The engine produces four recruitment scenarios:
 
  Player          | Team              |
 |-----------------|-------------------|
 | Best Overall    | Stephen Eustaquio |
-| Best Value      | Hakan Çalhanoğlu  | 
+| Best Value      | Hakan Çalhanoğlu  |
 | Premium Option  | Pedri             |
-| Closest Role Profile     | Dani Olmo         |            
+| Closest Role Profile     | Dani Olmo         |
 
- 
----
-I'm so happy that this project evolved from a world cup analytics dataset into a football scouting and recruitment intelligence platform
+ ---
+
+
+*I'm so happy that this project evolved from a world cup analytics dataset into a football scouting and recruitment intelligence platform*
+
 ## Generated Datasets
 
 ### Goal Analysis
 
-- `world_cup_2026_goals_sofascore.csv` 
+- `world_cup_2026_goals_sofascore.csv`
 - `team_goal_buckets.csv`
 
 ### Player Performance
@@ -473,21 +529,45 @@ I'm so happy that this project evolved from a world cup analytics dataset into a
 ## Project Structure
 
 ```text
-src/
-├── goal_minute/
-├── player_archetypes/
-├── player_heatmaps/
-├── player_positioning
-├── player_roles
-├── player_similarity/
-├── players/
-├── transfer_intelligence
-
-data/
-└── processed/
-
-docs/
-└── images/
+world-cup-2026/
+├── .github/
+│   └── workflows/
+│       └── python-quality.yml
+├── data/
+│   └── processed/
+├── docs/
+│   ├── DEVELOPMENT.md
+│   └── images/
+├── src/
+│   ├── wc26/
+│   │   ├── core/
+│   │   │   └── paths.py
+│   │   └── analytics/
+│   │       └── transfer_intelligence/
+│   │           ├── candidates.py
+│   │           ├── cli.py
+│   │           ├── config.py
+│   │           ├── datasets.py
+│   │           ├── entrypoint.py
+│   │           ├── explanations.py
+│   │           ├── matching.py
+│   │           ├── recommendations.py
+│   │           ├── reporting.py
+│   │           ├── scoring.py
+│   │           ├── service.py
+│   │           └── utils.py
+│   ├── goal_minute/
+│   ├── player_archetypes/
+│   ├── player_heatmaps/
+│   ├── player_positioning/
+│   ├── player_roles/
+│   ├── player_similarity/
+│   └── transfer_intelligence/
+├── tests/
+│   ├── unit/
+│   └── integration/
+├── pyproject.toml
+└── README.md
 ```
 
 ---

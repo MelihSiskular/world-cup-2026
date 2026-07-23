@@ -22,6 +22,8 @@ dependencies = [
     "playwright>=1.45,<2",
 ]
 
+[project.scripts]
+wc26-transfer = "wc26.analytics.transfer_intelligence.entrypoint:main"
 
 [project.optional-dependencies]
 dev = [
@@ -48,7 +50,7 @@ markers = [
 
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py312"
 line-length = 100
 src = ["src"]
 
@@ -79,3 +81,4 @@ branch = true
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
+fail_under = 65

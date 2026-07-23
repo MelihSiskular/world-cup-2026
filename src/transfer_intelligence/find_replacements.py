@@ -22,8 +22,6 @@ python -m src.transfer_intelligence.find_replacements \
 
 from __future__ import annotations
 
-from pathlib import Path
-
 # Compatibility re-exports for existing imports and tests.
 # Remove these only as part of an explicitly breaking release.
 from wc26.analytics.transfer_intelligence.candidates import (
@@ -61,6 +59,9 @@ from wc26.analytics.transfer_intelligence.datasets import (
 )
 from wc26.analytics.transfer_intelligence.datasets import (
     load_similarity as load_similarity,
+)
+from wc26.analytics.transfer_intelligence.entrypoint import (
+    main as run_console,
 )
 from wc26.analytics.transfer_intelligence.explanations import (
     build_reason as build_reason,
@@ -116,10 +117,6 @@ from wc26.analytics.transfer_intelligence.scoring import (
 from wc26.analytics.transfer_intelligence.scoring import (
     same_value_score as same_value_score,
 )
-from wc26.analytics.transfer_intelligence.service import (
-    TransferAnalysisRequest,
-    run_transfer_analysis,
-)
 from wc26.analytics.transfer_intelligence.utils import (
     format_market_value as format_market_value,
 )
@@ -138,23 +135,9 @@ from wc26.analytics.transfer_intelligence.utils import (
 
 
 def main() -> None:
-    args = parse_args()
+    """Preserve the legacy module entrypoint."""
 
-    request = TransferAnalysisRequest(
-        player=args.player,
-        features=Path(args.features),
-        similarity=Path(args.similarity),
-        heatmap_similarity=Path(args.heatmap_similarity),
-        heatmap_profiles=Path(args.heatmap_profiles),
-        output_dir=Path(args.output_dir),
-        minimum_minutes=args.minimum_minutes,
-        minimum_role_confidence=(args.minimum_role_confidence),
-        maximum_market_value=(args.maximum_market_value),
-        neutral_heatmap_score=(args.neutral_heatmap_score),
-        top_n=args.top_n,
-    )
-
-    run_transfer_analysis(request)
+    run_console()
 
 
 if __name__ == "__main__":
