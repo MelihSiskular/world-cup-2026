@@ -28,28 +28,28 @@ def main() -> None:
         similarity=Path(args.similarity),
         heatmap_similarity=Path(args.heatmap_similarity),
         heatmap_profiles=Path(args.heatmap_profiles),
-        output_dir=Path(args.output_dir),
         minimum_minutes=args.minimum_minutes,
         minimum_role_confidence=args.minimum_role_confidence,
         maximum_market_value=args.maximum_market_value,
         neutral_heatmap_score=args.neutral_heatmap_score,
-        top_n=args.top_n,
     )
 
     result = run_transfer_analysis(request)
 
     print_transfer_report(
         result,
-        request.top_n,
+        args.top_n,
     )
+
+    output_dir = Path(args.output_dir)
 
     export_transfer_csv(
         result,
-        request.output_dir,
+        output_dir,
     )
 
     print()
-    print(f"Output directory: {request.output_dir}")
+    print(f"Output directory: {output_dir}")
 
 
 __all__ = [

@@ -19,12 +19,10 @@ class TransferAnalysisRequest:
     similarity: Path
     heatmap_similarity: Path
     heatmap_profiles: Path
-    output_dir: Path
     minimum_minutes: float
     minimum_role_confidence: float
     maximum_market_value: float | None
     neutral_heatmap_score: float
-    top_n: int
 
 
 @dataclass(frozen=True, slots=True)

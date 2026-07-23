@@ -127,12 +127,10 @@ def test_run_transfer_analysis_returns_structured_result(
         similarity=tmp_path / "similarity.csv",
         heatmap_similarity=tmp_path / "heatmap_similarity.csv",
         heatmap_profiles=tmp_path / "heatmap_profiles.csv",
-        output_dir=tmp_path / "results",
         minimum_minutes=150.0,
         minimum_role_confidence=50.0,
         maximum_market_value=None,
         neutral_heatmap_score=70.0,
-        top_n=5,
     )
 
     result = service.run_transfer_analysis(request)
@@ -172,8 +170,6 @@ def test_run_transfer_analysis_returns_structured_result(
         serialized,
         allow_nan=False,
     )
-
-    assert not request.output_dir.exists()
 
     captured = capsys.readouterr()
 

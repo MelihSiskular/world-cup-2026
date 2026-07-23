@@ -123,12 +123,10 @@ def test_main_builds_request_and_orchestrates_outputs(
         similarity=similarity,
         heatmap_similarity=heatmap_similarity,
         heatmap_profiles=heatmap_profiles,
-        output_dir=output_dir,
         minimum_minutes=250.0,
         minimum_role_confidence=65.0,
         maximum_market_value=100_000_000.0,
         neutral_heatmap_score=72.0,
-        top_n=7,
     )
 
     assert report_calls == [

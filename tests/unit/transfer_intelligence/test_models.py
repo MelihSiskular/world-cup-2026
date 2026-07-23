@@ -22,16 +22,14 @@ def test_transfer_analysis_request_stores_input_contract(
         similarity=tmp_path / "similarity.csv",
         heatmap_similarity=tmp_path / "heatmap_similarity.csv",
         heatmap_profiles=tmp_path / "heatmap_profiles.csv",
-        output_dir=tmp_path / "results",
         minimum_minutes=150.0,
         minimum_role_confidence=50.0,
         maximum_market_value=80_000_000.0,
         neutral_heatmap_score=70.0,
-        top_n=5,
     )
 
     assert request.player == "Michael Olise"
-    assert request.top_n == 5
+    assert request.minimum_minutes == 150.0
     assert request.maximum_market_value == 80_000_000.0
 
 
