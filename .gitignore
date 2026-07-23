@@ -18,6 +18,7 @@ env/
 .DS_Store
 Thumbs.db
 
+src/players/detailed
 src/transfer_intelligence/build_transfer_feature_table.py
 src/transfer_intelligence/visualizations/player_image_service.py
 src/player_heatmaps/build_player_heatmap_profiles.py
