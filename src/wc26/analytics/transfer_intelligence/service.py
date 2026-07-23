@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from pathlib import Path
-
 import pandas as pd
 
 from wc26.analytics.transfer_intelligence.candidates import (
@@ -21,6 +18,9 @@ from wc26.analytics.transfer_intelligence.datasets import (
 from wc26.analytics.transfer_intelligence.matching import (
     resolve_player,
 )
+from wc26.analytics.transfer_intelligence.models import (
+    TransferAnalysisRequest,
+)
 from wc26.analytics.transfer_intelligence.recommendations import (
     generate_mode_results,
 )
@@ -30,23 +30,6 @@ from wc26.analytics.transfer_intelligence.reporting import (
 from wc26.analytics.transfer_intelligence.utils import (
     slugify,
 )
-
-
-@dataclass(frozen=True, slots=True)
-class TransferAnalysisRequest:
-    """Input parameters required to run transfer analysis."""
-
-    player: str
-    features: Path
-    similarity: Path
-    heatmap_similarity: Path
-    heatmap_profiles: Path
-    output_dir: Path
-    minimum_minutes: float
-    minimum_role_confidence: float
-    maximum_market_value: float | None
-    neutral_heatmap_score: float
-    top_n: int
 
 
 def run_transfer_analysis(
