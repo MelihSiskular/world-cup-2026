@@ -39,9 +39,6 @@ from wc26.analytics.transfer_intelligence.recommendations import (
 from wc26.analytics.transfer_intelligence.reporting import (
     print_report,
 )
-from wc26.analytics.transfer_intelligence.utils import (
-    slugify,
-)
 
 
 def _to_json_value(value: object) -> JsonValue:
@@ -182,33 +179,11 @@ def run_transfer_analysis(
         results,
     )
 
-    request.output_dir.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    player_slug = slugify(target["player_name"])
-
-    for mode, result in results.items():
-        if result.empty:
-            continue
-
-        output_path = request.output_dir / (f"{player_slug}_{mode}_recommendations.csv")
-
-        result.to_csv(
-            output_path,
-            index=False,
-            encoding="utf-8-sig",
-        )
-
     print_report(
         target,
         results,
         request.top_n,
     )
-
-    print()
-    print(f"Output directory: {request.output_dir}")
 
     return analysis_result
 

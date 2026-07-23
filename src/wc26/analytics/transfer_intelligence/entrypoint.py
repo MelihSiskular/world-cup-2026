@@ -5,6 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 
 from wc26.analytics.transfer_intelligence.cli import parse_args
+from wc26.analytics.transfer_intelligence.exporting import (
+    export_transfer_csv,
+)
 from wc26.analytics.transfer_intelligence.service import (
     TransferAnalysisRequest,
     run_transfer_analysis,
@@ -30,7 +33,15 @@ def main() -> None:
         top_n=args.top_n,
     )
 
-    run_transfer_analysis(request)
+    result = run_transfer_analysis(request)
+
+    export_transfer_csv(
+        result,
+        request.output_dir,
+    )
+
+    print()
+    print(f"Output directory: {request.output_dir}")
 
 
 __all__ = [

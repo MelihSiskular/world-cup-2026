@@ -177,6 +177,4 @@ def test_run_transfer_analysis_returns_structured_result(
         allow_nan=False,
     )
 
-    output_file = request.output_dir / f"michael_olise_{first_mode}_recommendations.csv"
-
-    assert output_file.exists()
+    assert not request.output_dir.exists()

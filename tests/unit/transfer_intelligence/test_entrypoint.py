@@ -39,8 +39,15 @@ def test_main_builds_request_and_runs_service(
         neutral_heatmap_score=72.0,
         top_n=7,
     )
-
     captured_request: TransferAnalysisRequest | None = None
+    export_calls: list[tuple[TransferAnalysisResult, Path]] = []
+
+    analysis_result = TransferAnalysisResult(
+        target={
+            "player_name": "Michael Olise",
+        },
+        modes=(),
+    )
 
     def fake_parse_args() -> argparse.Namespace:
         return args
@@ -51,20 +58,38 @@ def test_main_builds_request_and_runs_service(
         nonlocal captured_request
         captured_request = request
 
-        return TransferAnalysisResult(
-            target={},
-            modes=(),
+        return analysis_result
+
+    def fake_export_transfer_csv(
+        result: TransferAnalysisResult,
+        output_path: Path,
+    ) -> tuple[Path, ...]:
+        export_calls.append(
+            (
+                result,
+                output_path,
+            )
         )
 
-    monkeypatch.setattr(entrypoint, "parse_args", fake_parse_args)
+        return ()
+
+    monkeypatch.setattr(
+        entrypoint,
+        "parse_args",
+        fake_parse_args,
+    )
     monkeypatch.setattr(
         entrypoint,
         "run_transfer_analysis",
         fake_run_transfer_analysis,
     )
+    monkeypatch.setattr(
+        entrypoint,
+        "export_transfer_csv",
+        fake_export_transfer_csv,
+    )
 
     entrypoint.main()
-
     assert captured_request == TransferAnalysisRequest(
         player="Michael Olise",
         features=features,
