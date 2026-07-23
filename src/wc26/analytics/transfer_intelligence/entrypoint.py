@@ -1,0 +1,38 @@
+"""Console entrypoint for transfer intelligence."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from wc26.analytics.transfer_intelligence.cli import parse_args
+from wc26.analytics.transfer_intelligence.service import (
+    TransferAnalysisRequest,
+    run_transfer_analysis,
+)
+
+
+def main() -> None:
+    """Run transfer intelligence from command-line arguments."""
+
+    args = parse_args()
+
+    request = TransferAnalysisRequest(
+        player=args.player,
+        features=Path(args.features),
+        similarity=Path(args.similarity),
+        heatmap_similarity=Path(args.heatmap_similarity),
+        heatmap_profiles=Path(args.heatmap_profiles),
+        output_dir=Path(args.output_dir),
+        minimum_minutes=args.minimum_minutes,
+        minimum_role_confidence=args.minimum_role_confidence,
+        maximum_market_value=args.maximum_market_value,
+        neutral_heatmap_score=args.neutral_heatmap_score,
+        top_n=args.top_n,
+    )
+
+    run_transfer_analysis(request)
+
+
+__all__ = [
+    "main",
+]

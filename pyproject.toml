@@ -22,6 +22,8 @@ dependencies = [
     "playwright>=1.45,<2",
 ]
 
+[project.scripts]
+wc26-transfer = "wc26.analytics.transfer_intelligence.entrypoint:main"
 
 [project.optional-dependencies]
 dev = [
