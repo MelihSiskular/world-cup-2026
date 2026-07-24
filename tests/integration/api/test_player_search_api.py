@@ -11,15 +11,11 @@ from fastapi.testclient import TestClient
 
 from wc26.api import create_app
 
-
 pytestmark = [
     pytest.mark.integration,
     pytest.mark.skipif(
         os.getenv("WC26_RUN_INTEGRATION") != "1",
-        reason=(
-            "Set WC26_RUN_INTEGRATION=1 "
-            "to run real-data integration tests."
-        ),
+        reason=("Set WC26_RUN_INTEGRATION=1 to run real-data integration tests."),
     ),
 ]
 
@@ -42,9 +38,7 @@ def test_player_search_api_uses_real_dataset(
         )
 
     assert response.status_code == 200, response.text
-    assert response.headers["content-type"].startswith(
-        "application/json"
-    )
+    assert response.headers["content-type"].startswith("application/json")
 
     payload = response.json()
 
@@ -52,17 +46,12 @@ def test_player_search_api_uses_real_dataset(
     assert payload["count"] >= 1
     assert payload["count"] == len(payload["players"])
 
-    player_names = {
-        player["player_name"]
-        for player in payload["players"]
-    }
+    player_names = {player["player_name"] for player in payload["players"]}
 
     assert "Michael Olise" in player_names
 
     michael_olise = next(
-        player
-        for player in payload["players"]
-        if player["player_name"] == "Michael Olise"
+        player for player in payload["players"] if player["player_name"] == "Michael Olise"
     )
 
     assert isinstance(
@@ -72,12 +61,15 @@ def test_player_search_api_uses_real_dataset(
     assert michael_olise["national_team_name"]
     assert michael_olise["position"]
 
-    assert json.loads(
-        json.dumps(
-            payload,
-            allow_nan=False,
+    assert (
+        json.loads(
+            json.dumps(
+                payload,
+                allow_nan=False,
+            )
         )
-    ) == payload
+        == payload
+    )
 
 
 def test_player_search_api_matches_without_diacritics(
@@ -98,9 +90,6 @@ def test_player_search_api_matches_without_diacritics(
 
     assert response.status_code == 200
 
-    player_names = {
-        player["player_name"]
-        for player in response.json()["players"]
-    }
+    player_names = {player["player_name"] for player in response.json()["players"]}
 
     assert "Luka Modrić" in player_names
