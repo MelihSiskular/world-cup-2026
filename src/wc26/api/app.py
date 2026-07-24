@@ -6,6 +6,9 @@ from fastapi import FastAPI
 
 from wc26 import __version__
 from wc26.api.routes.health import router as health_router
+from wc26.api.routes.transfer_intelligence import (
+    router as transfer_intelligence_router,
+)
 
 
 def create_app() -> FastAPI:
@@ -21,6 +24,7 @@ def create_app() -> FastAPI:
     )
 
     application.include_router(health_router)
+    application.include_router(transfer_intelligence_router)
 
     return application
 
