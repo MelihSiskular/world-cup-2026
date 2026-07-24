@@ -1,6 +1,8 @@
 """Public API for WC26 transfer intelligence."""
 
 from wc26.analytics.transfer_intelligence.models import (
+    PlayerProfileRequest,
+    PlayerProfileResult,
     PlayerSearchItem,
     PlayerSearchRequest,
     PlayerSearchResult,
@@ -8,6 +10,9 @@ from wc26.analytics.transfer_intelligence.models import (
     TransferAnalysisResult,
     TransferModeResult,
     TransferRecommendation,
+)
+from wc26.analytics.transfer_intelligence.player_profile import (
+    get_player_profile,
 )
 from wc26.analytics.transfer_intelligence.player_search import (
     search_players,
@@ -17,6 +22,9 @@ from wc26.analytics.transfer_intelligence.service import (
 )
 
 __all__ = [
+    "PlayerProfileRequest",
+    "PlayerProfileResult",
+    "get_player_profile",
     "PlayerSearchItem",
     "PlayerSearchRequest",
     "PlayerSearchResult",

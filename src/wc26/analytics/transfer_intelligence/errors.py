@@ -23,10 +23,15 @@ class InvalidPlayerSearchError(ValueError):
     """Raised when player-search parameters are invalid."""
 
 
+class InvalidPlayerProfileError(ValueError):
+    """Raised when player-profile parameters are invalid."""
+
+
 __all__ = [
     "AmbiguousPlayerError",
     "DatasetNotFoundError",
     "InvalidDatasetError",
+    "InvalidPlayerProfileError",
     "InvalidPlayerSearchError",
     "PlayerNotFoundError",
 ]

@@ -139,10 +139,80 @@ class PlayerSearchResult:
         }
 
 
+@dataclass(frozen=True, slots=True)
+class PlayerProfileRequest:
+    """Input required to retrieve one player profile."""
+
+    player_id: int
+    features: Path
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerProfileResult:
+    """Structured profile returned for one player."""
+
+    player_id: int
+    player_name: str
+    national_team_name: str | None
+    country_name: str | None
+    position: str | None
+    age: float | None
+    height_cm: float | None
+    appearances: int | None
+    starts: int | None
+    minutes: float | None
+    weighted_rating: float | None
+    market_value: float | None
+    market_value_currency: str | None
+    archetype: str | None
+    spatial_role: str | None
+    final_role: str | None
+    lateral_profile: str | None
+    vertical_profile: str | None
+    mobility_profile: str | None
+    role_confidence_pct: float | None
+    spatial_reliability: float | None
+    data_reliability_score: float | None
+    player_quality_score: float | None
+    role_reason: str | None
+
+    def to_dict(self) -> JsonObject:
+        """Return a JSON-compatible player profile."""
+
+        return {
+            "player_id": self.player_id,
+            "player_name": self.player_name,
+            "national_team_name": self.national_team_name,
+            "country_name": self.country_name,
+            "position": self.position,
+            "age": self.age,
+            "height_cm": self.height_cm,
+            "appearances": self.appearances,
+            "starts": self.starts,
+            "minutes": self.minutes,
+            "weighted_rating": self.weighted_rating,
+            "market_value": self.market_value,
+            "market_value_currency": self.market_value_currency,
+            "archetype": self.archetype,
+            "spatial_role": self.spatial_role,
+            "final_role": self.final_role,
+            "lateral_profile": self.lateral_profile,
+            "vertical_profile": self.vertical_profile,
+            "mobility_profile": self.mobility_profile,
+            "role_confidence_pct": self.role_confidence_pct,
+            "spatial_reliability": self.spatial_reliability,
+            "data_reliability_score": self.data_reliability_score,
+            "player_quality_score": self.player_quality_score,
+            "role_reason": self.role_reason,
+        }
+
+
 __all__ = [
     "JsonObject",
     "JsonScalar",
     "JsonValue",
+    "PlayerProfileRequest",
+    "PlayerProfileResult",
     "PlayerSearchItem",
     "PlayerSearchRequest",
     "PlayerSearchResult",
