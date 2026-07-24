@@ -302,3 +302,44 @@ Also verify:
 - Public API changes are documented.
 - Generated datasets and local output files are not committed accidentally.
 - The GitHub Actions Python Quality workflow passes.
+
+## Backend development
+
+The backend is implemented with FastAPI and exposed through an ASGI
+application entrypoint.
+
+### Package structure
+
+```text
+src/wc26/api/
+├── __init__.py
+├── app.py
+├── main.py
+├── routes/
+│   ├── __init__.py
+│   └── health.py
+└── schemas/
+    ├── __init__.py
+    └── health.py
+
+```
+
+| Module         | Responsibility                                       |
+| -------------- | ---------------------------------------------------- |
+| `api/app.py`   | Creates and configures the FastAPI application       |
+| `api/main.py`  | Exposes the deployable ASGI application object       |
+| `api/routes/`  | Defines HTTP endpoints grouped by domain             |
+| `api/schemas/` | Defines validated API request and response contracts |
+
+
+```bash
+python -m uvicorn wc26.api.main:app \
+  --reload \
+  --host 127.0.0.1 \
+  --port 8000
+
+curl -i http://127.0.0.1:8000/health
+```
+
+Interactive API documentation is available at:
+http://127.0.0.1:8000/docs

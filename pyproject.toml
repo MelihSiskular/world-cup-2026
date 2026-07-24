@@ -20,8 +20,9 @@ dependencies = [
     "matplotlib>=3.8,<4",
     "Pillow>=10,<13",
     "playwright>=1.45,<2",
+    "fastapi>=0.139,<1",
+    "uvicorn[standard]>=0.51,<1",
 ]
-
 [project.scripts]
 wc26-transfer = "wc26.analytics.transfer_intelligence.entrypoint:main"
 
@@ -32,6 +33,7 @@ dev = [
     "ruff>=0.6,<1",
     "mypy>=1.11,<2",
     "pandas-stubs>=2.2",
+    "httpx2>=2,<3",
 ]
 
 
