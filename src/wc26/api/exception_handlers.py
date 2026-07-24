@@ -12,9 +12,13 @@ from wc26.analytics.transfer_intelligence.errors import (
     AmbiguousPlayerError,
     DatasetNotFoundError,
     InvalidDatasetError,
+    InvalidPlayerSearchError,
     PlayerNotFoundError,
 )
-from wc26.api.errors import TransferAnalysisExecutionError
+from wc26.api.errors import (
+    PlayerSearchExecutionError,
+    TransferAnalysisExecutionError,
+)
 from wc26.api.schemas.errors import (
     ApiErrorCode,
     ApiErrorDetail,
@@ -22,6 +26,41 @@ from wc26.api.schemas.errors import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+async def handle_invalid_player_search(
+    request: Request,
+    exception: Exception,
+) -> JSONResponse:
+    """Convert invalid player-search parameters into HTTP 400."""
+
+    del request
+
+    return _error_response(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        code="invalid_player_search",
+        message=str(exception),
+    )
+
+
+async def handle_player_search_execution_error(
+    request: Request,
+    exception: Exception,
+) -> JSONResponse:
+    """Convert an unexpected player-search failure into HTTP 500."""
+
+    del request
+
+    logger.error(
+        "Player search failed: %s",
+        exception,
+    )
+
+    return _error_response(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        code="player_search_failed",
+        message="Player search could not be completed.",
+    )
 
 
 def _error_response(
@@ -159,6 +198,14 @@ def register_exception_handlers(
     application.add_exception_handler(
         TransferAnalysisExecutionError,
         handle_analysis_execution_error,
+    )
+    application.add_exception_handler(
+        InvalidPlayerSearchError,
+        handle_invalid_player_search,
+    )
+    application.add_exception_handler(
+        PlayerSearchExecutionError,
+        handle_player_search_execution_error,
     )
 
 
