@@ -10,8 +10,10 @@ from typing import Any, Final, cast
 import numpy as np
 import pandas as pd
 
+from wc26.analytics.transfer_intelligence.datasets import (
+    load_player_features,
+)
 from wc26.analytics.transfer_intelligence.errors import (
-    DatasetNotFoundError,
     InvalidDatasetError,
     InvalidPlayerSearchError,
 )
@@ -203,27 +205,14 @@ def _record_to_item(
     )
 
 
-def search_players(
-    request: PlayerSearchRequest,
+def _search_players_in_dataframe(
+    *,
+    dataframe: pd.DataFrame,
+    display_query: str,
+    normalized_query: str,
+    limit: int,
 ) -> PlayerSearchResult:
-    """Search players by a case- and diacritic-insensitive name query."""
-
-    display_query, normalized_query = _validate_request(request)
-
-    if not request.features.exists():
-        raise DatasetNotFoundError(f"Player feature table not found: {request.features}")
-
-    try:
-        dataframe = pd.read_csv(
-            request.features,
-            low_memory=False,
-        )
-    except (
-        pd.errors.EmptyDataError,
-        pd.errors.ParserError,
-        UnicodeDecodeError,
-    ) as exception:
-        raise InvalidDatasetError("Player feature table could not be read.") from exception
+    """Search a prepared player DataFrame."""
 
     missing_columns = set(PLAYER_SEARCH_COLUMNS).difference(dataframe.columns)
 
@@ -273,7 +262,7 @@ def search_players(
             subset=["player_id"],
             keep="first",
         )
-        .head(request.limit)
+        .head(limit)
     )
 
     records = cast(
@@ -289,10 +278,44 @@ def search_players(
     )
 
 
+def search_players_from_dataframe(
+    request: PlayerSearchRequest,
+    dataframe: pd.DataFrame,
+) -> PlayerSearchResult:
+    """Search players using an already loaded feature table."""
+
+    display_query, normalized_query = _validate_request(request)
+
+    return _search_players_in_dataframe(
+        dataframe=dataframe,
+        display_query=display_query,
+        normalized_query=normalized_query,
+        limit=request.limit,
+    )
+
+
+def search_players(
+    request: PlayerSearchRequest,
+) -> PlayerSearchResult:
+    """Search players using the configured feature dataset."""
+
+    display_query, normalized_query = _validate_request(request)
+
+    dataframe = load_player_features(request.features)
+
+    return _search_players_in_dataframe(
+        dataframe=dataframe,
+        display_query=display_query,
+        normalized_query=normalized_query,
+        limit=request.limit,
+    )
+
+
 __all__ = [
     "MAXIMUM_RESULT_LIMIT",
     "MINIMUM_QUERY_LENGTH",
     "MINIMUM_RESULT_LIMIT",
     "PLAYER_SEARCH_COLUMNS",
     "search_players",
+    "search_players_from_dataframe",
 ]

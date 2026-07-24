@@ -9,8 +9,10 @@ from typing import Any, Final, cast
 import numpy as np
 import pandas as pd
 
+from wc26.analytics.transfer_intelligence.datasets import (
+    load_player_features,
+)
 from wc26.analytics.transfer_intelligence.errors import (
-    DatasetNotFoundError,
     InvalidDatasetError,
     InvalidPlayerProfileError,
     PlayerNotFoundError,
@@ -137,25 +139,10 @@ def _validate_request(
         raise InvalidPlayerProfileError("Player ID must be a positive integer.")
 
 
-def _read_feature_table(
-    request: PlayerProfileRequest,
+def _prepare_feature_table(
+    dataframe: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Read and validate the player feature table."""
-
-    if not request.features.exists():
-        raise DatasetNotFoundError(f"Player feature table not found: {request.features}")
-
-    try:
-        dataframe = pd.read_csv(
-            request.features,
-            low_memory=False,
-        )
-    except (
-        pd.errors.EmptyDataError,
-        pd.errors.ParserError,
-        UnicodeDecodeError,
-    ) as exception:
-        raise InvalidDatasetError("Player feature table could not be read.") from exception
+    """Validate and select player-profile columns."""
 
     missing_columns = set(PLAYER_PROFILE_COLUMNS).difference(dataframe.columns)
 
@@ -239,17 +226,18 @@ def _record_to_profile(
     )
 
 
-def get_player_profile(
+def _get_player_profile_from_validated_request(
     request: PlayerProfileRequest,
+    dataframe: pd.DataFrame,
 ) -> PlayerProfileResult:
-    """Return the profile for one stable player identifier."""
+    """Return one profile from an already loaded table."""
 
-    _validate_request(request)
+    prepared_dataframe = _prepare_feature_table(dataframe)
+    prepared_dataframe = _validate_player_ids(prepared_dataframe)
 
-    dataframe = _read_feature_table(request)
-    dataframe = _validate_player_ids(dataframe)
-
-    matches = dataframe.loc[dataframe["_normalized_player_id"].eq(request.player_id)]
+    matches = prepared_dataframe.loc[
+        prepared_dataframe["_normalized_player_id"].eq(request.player_id)
+    ]
 
     if matches.empty:
         raise PlayerNotFoundError(f"Player not found for ID: {request.player_id}")
@@ -267,7 +255,37 @@ def get_player_profile(
     return _record_to_profile(record)
 
 
+def get_player_profile_from_dataframe(
+    request: PlayerProfileRequest,
+    dataframe: pd.DataFrame,
+) -> PlayerProfileResult:
+    """Return one profile using an already loaded feature table."""
+
+    _validate_request(request)
+
+    return _get_player_profile_from_validated_request(
+        request,
+        dataframe,
+    )
+
+
+def get_player_profile(
+    request: PlayerProfileRequest,
+) -> PlayerProfileResult:
+    """Return one profile using the configured feature dataset."""
+
+    _validate_request(request)
+
+    dataframe = load_player_features(request.features)
+
+    return _get_player_profile_from_validated_request(
+        request,
+        dataframe,
+    )
+
+
 __all__ = [
     "PLAYER_PROFILE_COLUMNS",
     "get_player_profile",
+    "get_player_profile_from_dataframe",
 ]
