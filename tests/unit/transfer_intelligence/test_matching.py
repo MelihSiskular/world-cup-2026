@@ -3,6 +3,10 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
+from wc26.analytics.transfer_intelligence.errors import (
+    AmbiguousPlayerError,
+    PlayerNotFoundError,
+)
 from wc26.analytics.transfer_intelligence.matching import (
     resolve_player,
 )
@@ -59,7 +63,7 @@ def test_resolve_player_rejects_unknown_name(
     players: pd.DataFrame,
 ) -> None:
     with pytest.raises(
-        ValueError,
+        PlayerNotFoundError,
         match="Player not found",
     ):
         resolve_player(
@@ -72,7 +76,7 @@ def test_resolve_player_rejects_ambiguous_name(
     players: pd.DataFrame,
 ) -> None:
     with pytest.raises(
-        ValueError,
+        AmbiguousPlayerError,
         match="Multiple players matched",
     ):
         resolve_player(

@@ -9,14 +9,17 @@ import pandas as pd
 from wc26.analytics.transfer_intelligence.config import (
     HEATMAP_METRIC_COLUMNS,
 )
+from wc26.analytics.transfer_intelligence.errors import (
+    DatasetNotFoundError,
+    InvalidDatasetError,
+)
 
 
 def load_similarity(
     path: Path,
 ) -> pd.DataFrame:
     if not path.exists():
-        raise FileNotFoundError(f"Similarity file not found: {path}")
-
+        raise DatasetNotFoundError(f"Similarity file not found: {path}")
     dataframe = pd.read_csv(
         path,
         low_memory=False,
@@ -31,8 +34,7 @@ def load_similarity(
     missing = required.difference(dataframe.columns)
 
     if missing:
-        raise ValueError("Missing similarity columns: " + ", ".join(sorted(missing)))
-
+        raise InvalidDatasetError("Missing similarity columns: " + ", ".join(sorted(missing)))
     result = dataframe[
         [
             "source_player_id",
@@ -55,7 +57,6 @@ def load_heatmap_similarity(
 ) -> pd.DataFrame:
     if not path.exists():
         raise FileNotFoundError(f"Heatmap similarity file not found: {path}")
-
     dataframe = pd.read_csv(
         path,
         low_memory=False,
@@ -70,8 +71,9 @@ def load_heatmap_similarity(
     missing = required.difference(dataframe.columns)
 
     if missing:
-        raise ValueError("Missing heatmap similarity columns: " + ", ".join(sorted(missing)))
-
+        raise InvalidDatasetError(
+            "Missing heatmap similarity columns: " + ", ".join(sorted(missing))
+        )
     available_columns = [
         column
         for column in (
