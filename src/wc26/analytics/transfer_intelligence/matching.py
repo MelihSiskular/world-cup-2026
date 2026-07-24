@@ -7,6 +7,11 @@ from typing import cast
 import numpy as np
 import pandas as pd
 
+from wc26.analytics.transfer_intelligence.errors import (
+    AmbiguousPlayerError,
+    PlayerNotFoundError,
+)
+
 
 def resolve_player(
     players: pd.DataFrame,
@@ -32,12 +37,11 @@ def resolve_player(
         return partial.iloc[0]
 
     if partial.empty:
-        raise ValueError(f"Player not found: {query}")
+        raise PlayerNotFoundError(f"Player not found: {query}")
 
-    raise ValueError(
-        "Multiple players matched: "
-        + ", ".join(partial["player_name"].drop_duplicates().head(20).tolist())
-    )
+    matches = partial["player_name"].drop_duplicates().head(20).tolist()
+
+    raise AmbiguousPlayerError("Multiple players matched: " + ", ".join(matches))
 
 
 def attach_similarity(

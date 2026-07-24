@@ -10,6 +10,10 @@ from wc26.analytics.transfer_intelligence.datasets import (
     load_heatmap_similarity,
     load_similarity,
 )
+from wc26.analytics.transfer_intelligence.errors import (
+    DatasetNotFoundError,
+    InvalidDatasetError,
+)
 
 
 def write_csv(
@@ -25,7 +29,7 @@ def test_load_similarity_rejects_missing_file(
     missing_path = tmp_path / "missing.csv"
 
     with pytest.raises(
-        FileNotFoundError,
+        DatasetNotFoundError,
         match="Similarity file not found",
     ):
         load_similarity(missing_path)
@@ -46,7 +50,7 @@ def test_load_similarity_rejects_missing_columns(
     )
 
     with pytest.raises(
-        ValueError,
+        InvalidDatasetError,
         match="Missing similarity columns",
     ):
         load_similarity(path)
