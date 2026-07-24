@@ -14,13 +14,12 @@ import pandas as pd
 from wc26.analytics.transfer_intelligence.candidates import (
     prepare_candidate_base,
 )
+from wc26.analytics.transfer_intelligence.catalog import (
+    TransferDataCatalog,
+    load_transfer_data_catalog,
+)
 from wc26.analytics.transfer_intelligence.config import (
     MODE_CONFIG,
-)
-from wc26.analytics.transfer_intelligence.datasets import (
-    load_heatmap_profiles,
-    load_heatmap_similarity,
-    load_similarity,
 )
 from wc26.analytics.transfer_intelligence.matching import (
     resolve_transfer_target,
@@ -121,26 +120,18 @@ def _build_analysis_result(
     )
 
 
-def run_transfer_analysis(
+def run_transfer_analysis_from_catalog(
     request: TransferAnalysisRequest,
+    catalog: TransferDataCatalog,
 ) -> TransferAnalysisResult:
-    """Run transfer analysis and return its structured result."""
+    """Run transfer analysis using already loaded datasets."""
 
-    players = pd.read_csv(
-        request.features,
-        low_memory=False,
-    )
+    players = catalog.players.copy()
 
     players["player_id"] = pd.to_numeric(
         players["player_id"],
         errors="coerce",
     )
-
-    similarity = load_similarity(request.similarity)
-
-    heatmap_similarity = load_heatmap_similarity(request.heatmap_similarity)
-
-    heatmap_profiles = load_heatmap_profiles(request.heatmap_profiles)
 
     target = resolve_transfer_target(
         players,
@@ -153,12 +144,12 @@ def run_transfer_analysis(
         target_heatmap_profile,
     ) = prepare_candidate_base(
         players=players,
-        similarity=similarity,
-        heatmap_similarity=heatmap_similarity,
-        heatmap_profiles=heatmap_profiles,
+        similarity=catalog.similarity,
+        heatmap_similarity=catalog.heatmap_similarity,
+        heatmap_profiles=catalog.heatmap_profiles,
         target=target,
         minimum_minutes=request.minimum_minutes,
-        minimum_role_confidence=request.minimum_role_confidence,
+        minimum_role_confidence=(request.minimum_role_confidence),
         maximum_market_value=request.maximum_market_value,
         neutral_heatmap_score=request.neutral_heatmap_score,
     )
@@ -172,15 +163,32 @@ def run_transfer_analysis(
         for mode in MODE_CONFIG
     }
 
-    analysis_result = _build_analysis_result(
+    return _build_analysis_result(
         target,
         results,
     )
 
-    return analysis_result
+
+def run_transfer_analysis(
+    request: TransferAnalysisRequest,
+) -> TransferAnalysisResult:
+    """Load configured datasets and run transfer analysis."""
+
+    catalog = load_transfer_data_catalog(
+        features=request.features,
+        similarity=request.similarity,
+        heatmap_similarity=request.heatmap_similarity,
+        heatmap_profiles=request.heatmap_profiles,
+    )
+
+    return run_transfer_analysis_from_catalog(
+        request,
+        catalog,
+    )
 
 
 __all__ = [
     "TransferAnalysisRequest",
     "run_transfer_analysis",
+    "run_transfer_analysis_from_catalog",
 ]

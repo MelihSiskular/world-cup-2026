@@ -11,6 +11,9 @@ import pandas as pd
 from pytest import CaptureFixture, MonkeyPatch
 
 from wc26.analytics.transfer_intelligence import service
+from wc26.analytics.transfer_intelligence.catalog import (
+    TransferDataCatalog,
+)
 from wc26.analytics.transfer_intelligence.config import (
     MODE_CONFIG,
 )
@@ -22,33 +25,14 @@ from wc26.analytics.transfer_intelligence.models import (
 
 @dataclass(slots=True)
 class _ServiceDoubles:
-    """Controllable dependencies used by the service-result test."""
+    """Controllable dependencies used by service-result tests."""
 
-    players: pd.DataFrame
     target: pd.Series
     base_candidates: pd.DataFrame
+    similarity: pd.DataFrame
+    heatmap_similarity: pd.DataFrame
+    heatmap_profiles: pd.DataFrame
     first_mode: str
-
-    def read_csv(
-        self,
-        *args: object,
-        **kwargs: object,
-    ) -> pd.DataFrame:
-        """Return a fresh copy of the player feature table."""
-
-        del args, kwargs
-
-        return self.players.copy()
-
-    @staticmethod
-    def load_empty_dataset(
-        path: object,
-    ) -> pd.DataFrame:
-        """Return an empty supporting dataset."""
-
-        del path
-
-        return pd.DataFrame()
 
     def resolve_transfer_target(
         self,
@@ -57,12 +41,14 @@ class _ServiceDoubles:
         player: str | None,
         player_id: int | None,
     ) -> pd.Series:
-        """Return the prepared target and validate name compatibility."""
+        """Return the prepared target."""
 
         assert list(players.columns) == [
             "player_id",
             "player_name",
         ]
+        assert players["player_id"].tolist() == [10]
+
         assert player == "Michael Olise"
         assert player_id is None
 
@@ -70,15 +56,33 @@ class _ServiceDoubles:
 
     def prepare_candidate_base(
         self,
-        *args: object,
-        **kwargs: object,
+        *,
+        players: pd.DataFrame,
+        similarity: pd.DataFrame,
+        heatmap_similarity: pd.DataFrame,
+        heatmap_profiles: pd.DataFrame,
+        target: pd.Series,
+        minimum_minutes: float,
+        minimum_role_confidence: float,
+        maximum_market_value: float | None,
+        neutral_heatmap_score: float,
     ) -> tuple[
         pd.DataFrame,
         dict[str, float],
     ]:
-        """Return the prepared candidate pool and heatmap profile."""
+        """Return a prepared candidate pool."""
 
-        del args, kwargs
+        assert players["player_id"].tolist() == [10]
+
+        assert similarity is self.similarity
+        assert heatmap_similarity is self.heatmap_similarity
+        assert heatmap_profiles is self.heatmap_profiles
+        assert target is self.target
+
+        assert minimum_minutes == 150.0
+        assert minimum_role_confidence == 50.0
+        assert maximum_market_value is None
+        assert neutral_heatmap_score == 70.0
 
         return (
             self.base_candidates,
@@ -94,7 +98,7 @@ class _ServiceDoubles:
         mode: str,
         target_heatmap_profile: object,
     ) -> pd.DataFrame:
-        """Return one recommendation for the first configured mode."""
+        """Return one recommendation for the first mode."""
 
         assert candidates is self.base_candidates
         assert target_heatmap_profile == {
@@ -118,32 +122,12 @@ class _ServiceDoubles:
         )
 
 
-def _install_service_doubles(
+def _install_analysis_doubles(
     monkeypatch: MonkeyPatch,
     doubles: _ServiceDoubles,
 ) -> None:
-    """Replace external service dependencies with deterministic doubles."""
+    """Replace analytical dependencies with test doubles."""
 
-    monkeypatch.setattr(
-        service.pd,
-        "read_csv",
-        doubles.read_csv,
-    )
-    monkeypatch.setattr(
-        service,
-        "load_similarity",
-        doubles.load_empty_dataset,
-    )
-    monkeypatch.setattr(
-        service,
-        "load_heatmap_similarity",
-        doubles.load_empty_dataset,
-    )
-    monkeypatch.setattr(
-        service,
-        "load_heatmap_profiles",
-        doubles.load_empty_dataset,
-    )
     monkeypatch.setattr(
         service,
         "resolve_transfer_target",
@@ -161,7 +145,25 @@ def _install_service_doubles(
     )
 
 
-def test_run_transfer_analysis_returns_structured_result(
+def _analysis_request(
+    tmp_path: Path,
+) -> TransferAnalysisRequest:
+    """Build a standard analysis request."""
+
+    return TransferAnalysisRequest(
+        player="Michael Olise",
+        features=tmp_path / "features.csv",
+        similarity=tmp_path / "similarity.csv",
+        heatmap_similarity=(tmp_path / "heatmap_similarity.csv"),
+        heatmap_profiles=(tmp_path / "heatmap_profiles.csv"),
+        minimum_minutes=150.0,
+        minimum_role_confidence=50.0,
+        maximum_market_value=None,
+        neutral_heatmap_score=70.0,
+    )
+
+
+def test_run_transfer_analysis_from_catalog_returns_structured_result(
     monkeypatch: MonkeyPatch,
     tmp_path: Path,
     capsys: CaptureFixture[str],
@@ -172,6 +174,26 @@ def test_run_transfer_analysis_returns_structured_result(
             "player_name": ["Michael Olise"],
         }
     )
+    similarity = pd.DataFrame(
+        {
+            "source_player_id": [10],
+        }
+    )
+    heatmap_similarity = pd.DataFrame(
+        {
+            "target_player_id": [10],
+        }
+    )
+    heatmap_profiles = pd.DataFrame(
+        {
+            "player_id": [10],
+        }
+    )
+
+    original_players = players.copy(deep=True)
+    original_similarity = similarity.copy(deep=True)
+    original_heatmap_similarity = heatmap_similarity.copy(deep=True)
+    original_heatmap_profiles = heatmap_profiles.copy(deep=True)
 
     target = pd.Series(
         {
@@ -192,33 +214,33 @@ def test_run_transfer_analysis_returns_structured_result(
         }
     )
 
+    catalog = TransferDataCatalog(
+        players=players,
+        similarity=similarity,
+        heatmap_similarity=heatmap_similarity,
+        heatmap_profiles=heatmap_profiles,
+    )
+
     mode_names = tuple(MODE_CONFIG)
 
     doubles = _ServiceDoubles(
-        players=players,
         target=target,
         base_candidates=base_candidates,
+        similarity=similarity,
+        heatmap_similarity=heatmap_similarity,
+        heatmap_profiles=heatmap_profiles,
         first_mode=mode_names[0],
     )
 
-    _install_service_doubles(
+    _install_analysis_doubles(
         monkeypatch,
         doubles,
     )
 
-    request = TransferAnalysisRequest(
-        player="Michael Olise",
-        features=tmp_path / "features.csv",
-        similarity=tmp_path / "similarity.csv",
-        heatmap_similarity=(tmp_path / "heatmap_similarity.csv"),
-        heatmap_profiles=(tmp_path / "heatmap_profiles.csv"),
-        minimum_minutes=150.0,
-        minimum_role_confidence=50.0,
-        maximum_market_value=None,
-        neutral_heatmap_score=70.0,
+    result = service.run_transfer_analysis_from_catalog(
+        _analysis_request(tmp_path),
+        catalog,
     )
-
-    result = service.run_transfer_analysis(request)
 
     assert isinstance(
         result,
@@ -259,7 +281,123 @@ def test_run_transfer_analysis_returns_structured_result(
         allow_nan=False,
     )
 
+    pd.testing.assert_frame_equal(
+        players,
+        original_players,
+    )
+    pd.testing.assert_frame_equal(
+        similarity,
+        original_similarity,
+    )
+    pd.testing.assert_frame_equal(
+        heatmap_similarity,
+        original_heatmap_similarity,
+    )
+    pd.testing.assert_frame_equal(
+        heatmap_profiles,
+        original_heatmap_profiles,
+    )
+
     captured = capsys.readouterr()
 
     assert captured.out == ""
     assert captured.err == ""
+
+
+def test_run_transfer_analysis_loads_catalog_and_delegates(
+    monkeypatch: MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    request = _analysis_request(tmp_path)
+
+    catalog = TransferDataCatalog(
+        players=pd.DataFrame(),
+        similarity=pd.DataFrame(),
+        heatmap_similarity=pd.DataFrame(),
+        heatmap_profiles=pd.DataFrame(),
+    )
+
+    expected = TransferAnalysisResult(
+        target={
+            "player_id": 10,
+            "player_name": "Michael Olise",
+        },
+        modes=(),
+    )
+
+    loader_calls: list[
+        tuple[
+            Path,
+            Path,
+            Path,
+            Path,
+        ]
+    ] = []
+    analysis_calls: list[
+        tuple[
+            TransferAnalysisRequest,
+            TransferDataCatalog,
+        ]
+    ] = []
+
+    def fake_load_transfer_data_catalog(
+        *,
+        features: Path,
+        similarity: Path,
+        heatmap_similarity: Path,
+        heatmap_profiles: Path,
+    ) -> TransferDataCatalog:
+        loader_calls.append(
+            (
+                features,
+                similarity,
+                heatmap_similarity,
+                heatmap_profiles,
+            )
+        )
+
+        return catalog
+
+    def fake_run_transfer_analysis_from_catalog(
+        delegated_request: TransferAnalysisRequest,
+        delegated_catalog: TransferDataCatalog,
+    ) -> TransferAnalysisResult:
+        analysis_calls.append(
+            (
+                delegated_request,
+                delegated_catalog,
+            )
+        )
+
+        return expected
+
+    monkeypatch.setattr(
+        service,
+        "load_transfer_data_catalog",
+        fake_load_transfer_data_catalog,
+    )
+    monkeypatch.setattr(
+        service,
+        "run_transfer_analysis_from_catalog",
+        fake_run_transfer_analysis_from_catalog,
+    )
+
+    result = service.run_transfer_analysis(request)
+
+    assert result is expected
+
+    assert loader_calls == [
+        (
+            request.features,
+            request.similarity,
+            request.heatmap_similarity,
+            request.heatmap_profiles,
+        )
+    ]
+
+    assert analysis_calls == [
+        (
+            request,
+            catalog,
+        )
+    ]
