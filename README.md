@@ -572,6 +572,28 @@ world-cup-2026/
 
 ---
 
+## Backend API
+
+The project includes a FastAPI backend foundation for exposing the Transfer
+Intelligence engine through HTTP endpoints.
+
+### Run the development server
+
+Activate the project virtual environment and install the development
+dependencies:
+
+```bash
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+
+python -m uvicorn wc26.api.main:app \
+  --reload \
+  --host 127.0.0.1 \
+  --port 8000
+
+```
+
+---
 ## Sample Insights
 
 Examples of questions that can be answered using this project:
