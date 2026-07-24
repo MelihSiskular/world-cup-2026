@@ -39,6 +39,10 @@ def test_package_exports_application_contract() -> None:
 
 def test_package_declares_small_public_api() -> None:
     assert transfer_intelligence.__all__ == [
+        "PlayerSearchItem",
+        "PlayerSearchRequest",
+        "PlayerSearchResult",
+        "search_players",
         "TransferAnalysisRequest",
         "TransferAnalysisResult",
         "TransferModeResult",
