@@ -27,11 +27,16 @@ class InvalidPlayerProfileError(ValueError):
     """Raised when player-profile parameters are invalid."""
 
 
+class InvalidTransferAnalysisRequestError(ValueError):
+    """Raised when transfer-analysis target parameters are invalid."""
+
+
 __all__ = [
     "AmbiguousPlayerError",
     "DatasetNotFoundError",
     "InvalidDatasetError",
     "InvalidPlayerProfileError",
     "InvalidPlayerSearchError",
+    "InvalidTransferAnalysisRequestError",
     "PlayerNotFoundError",
 ]

@@ -12,9 +12,9 @@ type JsonObject = dict[str, JsonValue]
 
 @dataclass(frozen=True, slots=True)
 class TransferAnalysisRequest:
-    """Input parameters required to run transfer analysis."""
+    """Input required to run one transfer analysis."""
 
-    player: str
+    player: str | None
     features: Path
     similarity: Path
     heatmap_similarity: Path
@@ -23,6 +23,7 @@ class TransferAnalysisRequest:
     minimum_role_confidence: float
     maximum_market_value: float | None
     neutral_heatmap_score: float
+    player_id: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
