@@ -8,6 +8,7 @@ from typing import Annotated
 from fastapi import (
     APIRouter,
     Depends,
+    Path,
     Query,
     status,
 )
@@ -15,20 +16,31 @@ from fastapi import (
 from wc26.analytics.transfer_intelligence.errors import (
     DatasetNotFoundError,
     InvalidDatasetError,
+    InvalidPlayerProfileError,
     InvalidPlayerSearchError,
+    PlayerNotFoundError,
 )
 from wc26.analytics.transfer_intelligence.models import (
+    PlayerProfileRequest,
     PlayerSearchRequest,
 )
 from wc26.api.dependencies import (
+    PlayerProfileRunner,
     PlayerSearchRunner,
     TransferDatasetPaths,
+    get_player_profile_runner,
     get_player_search_runner,
     get_transfer_dataset_paths,
 )
-from wc26.api.errors import PlayerSearchExecutionError
+from wc26.api.errors import (
+    PlayerProfileExecutionError,
+    PlayerSearchExecutionError,
+)
 from wc26.api.schemas.errors import ApiErrorResponse
-from wc26.api.schemas.players import PlayerSearchResponse
+from wc26.api.schemas.players import (
+    PlayerProfileResponse,
+    PlayerSearchResponse,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -111,6 +123,75 @@ def search_player_catalogue(
         )
 
         raise PlayerSearchExecutionError("Player search execution failed.") from exception
+
+
+@router.get(
+    "/{player_id}",
+    response_model=PlayerProfileResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get one player profile",
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "model": ApiErrorResponse,
+            "description": "The player identifier is invalid.",
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "model": ApiErrorResponse,
+            "description": "The player was not found.",
+        },
+        status.HTTP_503_SERVICE_UNAVAILABLE: {
+            "model": ApiErrorResponse,
+            "description": ("The player feature dataset is missing or invalid."),
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ApiErrorResponse,
+            "description": ("Player profile retrieval failed unexpectedly."),
+        },
+    },
+)
+def get_player_profile_by_id(
+    player_id: Annotated[
+        int,
+        Path(
+            gt=0,
+            description="Stable player identifier.",
+            examples=[978838],
+        ),
+    ],
+    dataset_paths: Annotated[
+        TransferDatasetPaths,
+        Depends(get_transfer_dataset_paths),
+    ],
+    player_profile_runner: Annotated[
+        PlayerProfileRunner,
+        Depends(get_player_profile_runner),
+    ],
+) -> PlayerProfileResponse:
+    """Return the detailed profile for one player ID."""
+
+    request = PlayerProfileRequest(
+        player_id=player_id,
+        features=dataset_paths.features,
+    )
+
+    try:
+        result = player_profile_runner(request)
+
+        return PlayerProfileResponse.model_validate(result.to_dict())
+    except (
+        InvalidPlayerProfileError,
+        PlayerNotFoundError,
+        DatasetNotFoundError,
+        InvalidDatasetError,
+    ):
+        raise
+    except Exception as exception:
+        logger.exception(
+            "Unexpected player-profile failure for ID %s",
+            player_id,
+        )
+
+        raise PlayerProfileExecutionError("Player profile execution failed.") from exception
 
 
 __all__ = [

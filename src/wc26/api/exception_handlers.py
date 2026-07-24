@@ -12,10 +12,13 @@ from wc26.analytics.transfer_intelligence.errors import (
     AmbiguousPlayerError,
     DatasetNotFoundError,
     InvalidDatasetError,
+    InvalidPlayerProfileError,
     InvalidPlayerSearchError,
+    InvalidTransferAnalysisRequestError,
     PlayerNotFoundError,
 )
 from wc26.api.errors import (
+    PlayerProfileExecutionError,
     PlayerSearchExecutionError,
     TransferAnalysisExecutionError,
 )
@@ -26,6 +29,56 @@ from wc26.api.schemas.errors import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+async def handle_invalid_transfer_analysis_request(
+    request: Request,
+    exception: Exception,
+) -> JSONResponse:
+    """Convert an invalid transfer target into HTTP 400."""
+
+    del request
+
+    return _error_response(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        code="invalid_transfer_analysis_request",
+        message=str(exception),
+    )
+
+
+async def handle_invalid_player_profile(
+    request: Request,
+    exception: Exception,
+) -> JSONResponse:
+    """Convert invalid player-profile parameters into HTTP 400."""
+
+    del request
+
+    return _error_response(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        code="invalid_player_profile",
+        message=str(exception),
+    )
+
+
+async def handle_player_profile_execution_error(
+    request: Request,
+    exception: Exception,
+) -> JSONResponse:
+    """Convert an unexpected player-profile failure into HTTP 500."""
+
+    del request
+
+    logger.error(
+        "Player profile retrieval failed: %s",
+        exception,
+    )
+
+    return _error_response(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        code="player_profile_failed",
+        message="Player profile could not be retrieved.",
+    )
 
 
 async def handle_invalid_player_search(
@@ -196,6 +249,10 @@ def register_exception_handlers(
         handle_invalid_dataset,
     )
     application.add_exception_handler(
+        InvalidTransferAnalysisRequestError,
+        handle_invalid_transfer_analysis_request,
+    )
+    application.add_exception_handler(
         TransferAnalysisExecutionError,
         handle_analysis_execution_error,
     )
@@ -206,6 +263,14 @@ def register_exception_handlers(
     application.add_exception_handler(
         PlayerSearchExecutionError,
         handle_player_search_execution_error,
+    )
+    application.add_exception_handler(
+        InvalidPlayerProfileError,
+        handle_invalid_player_profile,
+    )
+    application.add_exception_handler(
+        PlayerProfileExecutionError,
+        handle_player_profile_execution_error,
     )
 
 

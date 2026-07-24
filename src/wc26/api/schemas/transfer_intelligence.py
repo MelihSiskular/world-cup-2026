@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+from typing import Self
+
 from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
     JsonValue,
+    model_validator,
 )
 
 
@@ -18,10 +21,19 @@ class TransferAnalysisPayload(BaseModel):
         str_strip_whitespace=True,
     )
 
-    player: str = Field(
+    player: str | None = Field(
+        default=None,
         min_length=1,
-        description="Name of the target player.",
+        description=("Name of the target player. Provide exactly one of player or player_id."),
         examples=["Michael Olise"],
+    )
+    player_id: int | None = Field(
+        default=None,
+        gt=0,
+        description=(
+            "Stable identifier of the target player. Provide exactly one of player or player_id."
+        ),
+        examples=[978838],
     )
     minimum_minutes: float = Field(
         default=150.0,
@@ -45,6 +57,23 @@ class TransferAnalysisPayload(BaseModel):
         le=100.0,
         description="Fallback heatmap score when spatial data is unavailable.",
     )
+
+    @model_validator(mode="after")
+    def validate_target_identifier(self) -> Self:
+        """Require exactly one supported player identifier."""
+
+        identifier_count = sum(
+            identifier is not None
+            for identifier in (
+                self.player,
+                self.player_id,
+            )
+        )
+
+        if identifier_count != 1:
+            raise ValueError("Provide exactly one of player or player_id.")
+
+        return self
 
 
 class TransferModeResponse(BaseModel):

@@ -9,6 +9,8 @@ import pandas as pd
 
 from wc26.analytics.transfer_intelligence.errors import (
     AmbiguousPlayerError,
+    InvalidDatasetError,
+    InvalidTransferAnalysisRequestError,
     PlayerNotFoundError,
 )
 
@@ -42,6 +44,59 @@ def resolve_player(
     matches = partial["player_name"].drop_duplicates().head(20).tolist()
 
     raise AmbiguousPlayerError("Multiple players matched: " + ", ".join(matches))
+
+
+def resolve_player_by_id(
+    players: pd.DataFrame,
+    player_id: int,
+) -> pd.Series:
+    """Resolve exactly one player using a stable player identifier."""
+
+    player_ids = pd.to_numeric(
+        players["player_id"],
+        errors="coerce",
+    )
+
+    matches = players.loc[player_ids.eq(player_id)]
+
+    if matches.empty:
+        raise PlayerNotFoundError(f"Player not found for ID: {player_id}")
+
+    if len(matches) != 1:
+        raise InvalidDatasetError(f"Multiple players matched player ID: {player_id}")
+
+    return matches.iloc[0]
+
+
+def resolve_transfer_target(
+    players: pd.DataFrame,
+    *,
+    player: str | None,
+    player_id: int | None,
+) -> pd.Series:
+    """Resolve a transfer target by exactly one supported identifier."""
+
+    normalized_player = player.strip() if player is not None else ""
+
+    has_player_name = bool(normalized_player)
+    has_player_id = player_id is not None
+
+    if has_player_name == has_player_id:
+        raise InvalidTransferAnalysisRequestError("Provide exactly one of player or player_id.")
+
+    if player_id is not None:
+        if player_id <= 0:
+            raise InvalidTransferAnalysisRequestError("Player ID must be a positive integer.")
+
+        return resolve_player_by_id(
+            players,
+            player_id,
+        )
+
+    return resolve_player(
+        players,
+        normalized_player,
+    )
 
 
 def attach_similarity(
@@ -257,4 +312,6 @@ __all__ = [
     "attach_heatmap_similarity",
     "attach_similarity",
     "resolve_player",
+    "resolve_player_by_id",
+    "resolve_transfer_target",
 ]

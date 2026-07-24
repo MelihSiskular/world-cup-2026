@@ -23,7 +23,7 @@ from wc26.analytics.transfer_intelligence.datasets import (
     load_similarity,
 )
 from wc26.analytics.transfer_intelligence.matching import (
-    resolve_player,
+    resolve_transfer_target,
 )
 from wc26.analytics.transfer_intelligence.models import (
     JsonObject,
@@ -142,9 +142,10 @@ def run_transfer_analysis(
 
     heatmap_profiles = load_heatmap_profiles(request.heatmap_profiles)
 
-    target = resolve_player(
+    target = resolve_transfer_target(
         players,
-        request.player,
+        player=request.player,
+        player_id=request.player_id,
     )
 
     (

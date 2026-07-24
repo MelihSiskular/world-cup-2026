@@ -11,7 +11,12 @@ class PlayerSearchExecutionError(RuntimeError):
     """Raised when player search fails unexpectedly."""
 
 
+class PlayerProfileExecutionError(RuntimeError):
+    """Raised when player-profile retrieval fails unexpectedly."""
+
+
 __all__ = [
+    "PlayerProfileExecutionError",
     "PlayerSearchExecutionError",
     "TransferAnalysisExecutionError",
 ]

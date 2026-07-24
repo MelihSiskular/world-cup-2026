@@ -15,6 +15,7 @@ from wc26.analytics.transfer_intelligence.errors import (
     AmbiguousPlayerError,
     DatasetNotFoundError,
     InvalidDatasetError,
+    InvalidTransferAnalysisRequestError,
     PlayerNotFoundError,
 )
 from wc26.analytics.transfer_intelligence.models import (
@@ -46,6 +47,10 @@ logger = logging.getLogger(__name__)
     status_code=status.HTTP_200_OK,
     summary="Analyze transfer alternatives",
     responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "model": ApiErrorResponse,
+            "description": ("The transfer-analysis target is invalid."),
+        },
         status.HTTP_404_NOT_FOUND: {
             "model": ApiErrorResponse,
             "description": "The target player was not found.",
@@ -79,6 +84,7 @@ def analyze_transfer_alternatives(
 
     request = TransferAnalysisRequest(
         player=payload.player,
+        player_id=payload.player_id,
         features=dataset_paths.features,
         similarity=dataset_paths.similarity,
         heatmap_similarity=dataset_paths.heatmap_similarity,
@@ -98,12 +104,15 @@ def analyze_transfer_alternatives(
         AmbiguousPlayerError,
         DatasetNotFoundError,
         InvalidDatasetError,
+        InvalidTransferAnalysisRequestError,
     ):
         raise
+
     except Exception as exception:
         logger.exception(
-            "Unexpected transfer analysis failure for player %s",
+            ("Unexpected transfer analysis failure for player=%r player_id=%r"),
             payload.player,
+            payload.player_id,
         )
 
         raise TransferAnalysisExecutionError("Transfer analysis execution failed.") from exception
