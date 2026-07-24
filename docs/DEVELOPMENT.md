@@ -73,7 +73,8 @@ run_transfer_analysis()
         ↓
 TransferAnalysisResult
         ├── console reporting adapter
-        └── CSV exporting adapter
+        ├── CSV exporting adapter
+        └── FastAPI JSON response adapter
 ```
 The analysis service is intentionally side-effect free. It does not print to
 the terminal, create directories, or write CSV files.
@@ -97,13 +98,14 @@ a FastAPI backend, scheduled pipelines, web clients, and mobile applications.
 | `utils.py` | Shared formatting, normalization, and conversion utilities |
 | `datasets.py` | Loading and validating analytical datasets |
 | `matching.py` | Resolving players and attaching similarity data |
+| `models.py` | Backend-ready request and result contracts |
 | `candidates.py` | Preparing the transfer candidate population |
 | `scoring.py` | Transfer scoring rules and suitability calculations |
 | `recommendations.py` | Mode filtering, ranking, and result generation |
 | `explanations.py` | Recommendation labels and data-driven explanations |
-| `reporting.py` | Rendering structured analysis results as console reports || `cli.py` | Command-line argument definitions |
+| `reporting.py` | Renders structured results as console output |
 | `entrypoint.py` | Mapping CLI input to the application request |
-| `service.py` | Running the analysis workflow and returning a structured result || `models.py` | Backend-ready request, result, mode, and recommendation contracts |
+| `service.py` | Runs the analysis workflow and returns a structured result |
 | `exporting.py` | CSV output generation from structured analysis results |
 
 The package-level public API is intentionally small:
@@ -343,3 +345,119 @@ curl -i http://127.0.0.1:8000/health
 
 Interactive API documentation is available at:
 http://127.0.0.1:8000/docs
+
+### Transfer analysis request flow
+
+```text
+POST /api/v1/transfer-intelligence/analyze
+                    ↓
+TransferAnalysisPayload
+                    ↓
+FastAPI dependency resolution
+                    ↓
+TransferDatasetPaths
+TransferAnalysisRunner
+                    ↓
+TransferAnalysisRequest
+                    ↓
+run_transfer_analysis()
+                    ↓
+TransferAnalysisResult
+                    ↓
+TransferAnalysisResponse
+                    ↓
+JSON response
+```
+
+The HTTP payload does not expose infrastructure concerns such as dataset file
+paths. Dataset locations are provided by the backend dependency layer.
+
+### Transfer Intelligence API modules
+
+| Module | Responsibility |
+|---|---|
+| `api/dependencies.py` | Supplies dataset paths and the analysis application service |
+| `api/routes/transfer_intelligence.py` | Maps HTTP requests to the analytics contract |
+| `api/schemas/transfer_intelligence.py` | Defines validated request and response models |
+| `api/schemas/errors.py` | Defines the shared API error envelope |
+| `api/errors.py` | Defines API-level execution errors |
+| `api/exception_handlers.py` | Maps analytics exceptions to safe HTTP responses |
+
+### Dependency overrides
+
+API unit tests should not execute the real pandas analysis workflow. Override
+the analysis dependency with a controlled test implementation:
+
+```python
+from wc26.api.dependencies import (
+    get_transfer_analysis_runner,
+)
+
+application.dependency_overrides[
+    get_transfer_analysis_runner
+] = override_analysis_runner
+```
+
+Dataset paths can be overridden in the same way:
+
+```python
+from wc26.api.dependencies import (
+    get_transfer_dataset_paths,
+)
+
+application.dependency_overrides[
+    get_transfer_dataset_paths
+] = override_dataset_paths
+```
+
+This keeps route tests fast and deterministic while the separate integration
+test verifies the complete real-data path.
+
+### API error mapping
+
+Analytics errors are represented by domain-specific exception types and mapped
+centrally to HTTP responses:
+
+| Analytics exception | HTTP status | API code |
+|---|---:|---|
+| `PlayerNotFoundError` | `404` | `player_not_found` |
+| `AmbiguousPlayerError` | `409` | `ambiguous_player` |
+| `DatasetNotFoundError` | `503` | `dataset_unavailable` |
+| `InvalidDatasetError` | `503` | `invalid_dataset` |
+| `TransferAnalysisExecutionError` | `500` | `analysis_failed` |
+
+Known domain errors should be allowed to reach the registered exception
+handlers. Unexpected implementation errors should be wrapped as
+`TransferAnalysisExecutionError`.
+
+Dataset-related responses must not expose local file-system paths or other
+internal implementation details.
+
+### Run API unit tests
+
+```bash
+python -m pytest tests/unit/api -v
+```
+
+### Run the real-data API smoke test
+
+```bash
+WC26_RUN_INTEGRATION=1 \
+python -m pytest \
+  tests/integration/api/test_transfer_analysis_api.py \
+  -v
+```
+
+The smoke test verifies the complete path from the FastAPI route through the
+real processed datasets and analytics engine to a standards-compliant JSON
+response.
+
+It intentionally does not assert exact recommendation counts. Counts may
+change when datasets, scoring weights, or recruitment thresholds evolve.
+Instead, it verifies:
+
+- the target player is resolved;
+- all four recruitment modes are returned;
+- recommendations use list structures;
+- at least one recommendation is produced;
+- the response contains no non-standard JSON values such as `NaN`.
