@@ -15,6 +15,27 @@ from wc26.analytics.transfer_intelligence.errors import (
 )
 
 
+def load_player_features(
+    path: Path,
+) -> pd.DataFrame:
+    """Load the shared player feature table."""
+
+    if not path.exists():
+        raise DatasetNotFoundError(f"Player feature table not found: {path}")
+
+    try:
+        return pd.read_csv(
+            path,
+            low_memory=False,
+        )
+    except (
+        pd.errors.EmptyDataError,
+        pd.errors.ParserError,
+        UnicodeDecodeError,
+    ) as exception:
+        raise InvalidDatasetError("Player feature table could not be read.") from exception
+
+
 def load_similarity(
     path: Path,
 ) -> pd.DataFrame:
