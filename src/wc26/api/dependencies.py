@@ -6,6 +6,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
+from fastapi import Request
+
 from wc26.analytics.transfer_intelligence.catalog import (
     TransferDataCatalog,
 )
@@ -111,28 +113,83 @@ def create_catalog_transfer_analysis_runner(
     return runner
 
 
-def get_player_profile_runner() -> PlayerProfileRunner:
-    """Return the path-based player-profile application service."""
+def _get_runtime_catalog(
+    request: Request,
+) -> TransferDataCatalog | None:
+    """Return the startup-loaded catalog when available."""
 
-    return get_player_profile
+    catalog = getattr(
+        request.app.state,
+        "transfer_data_catalog",
+        None,
+    )
+
+    if isinstance(
+        catalog,
+        TransferDataCatalog,
+    ):
+        return catalog
+
+    return None
 
 
-def get_player_search_runner() -> PlayerSearchRunner:
-    """Return the path-based player-search application service."""
+def get_player_profile_runner(
+    request: Request,
+) -> PlayerProfileRunner:
+    """Return the configured player-profile service."""
 
-    return search_players
+    catalog = _get_runtime_catalog(request)
+
+    if catalog is None:
+        return get_player_profile
+
+    return create_catalog_player_profile_runner(catalog)
 
 
-def get_transfer_dataset_paths() -> TransferDatasetPaths:
-    """Return the configured transfer intelligence dataset paths."""
+def get_player_search_runner(
+    request: Request,
+) -> PlayerSearchRunner:
+    """Return the configured player-search service."""
+
+    catalog = _get_runtime_catalog(request)
+
+    if catalog is None:
+        return search_players
+
+    return create_catalog_player_search_runner(catalog)
+
+
+def get_transfer_dataset_paths(
+    request: Request,
+) -> TransferDatasetPaths:
+    """Return application-configured dataset paths."""
+
+    dataset_paths = getattr(
+        request.app.state,
+        "transfer_dataset_paths",
+        None,
+    )
+
+    if isinstance(
+        dataset_paths,
+        TransferDatasetPaths,
+    ):
+        return dataset_paths
 
     return TransferDatasetPaths()
 
 
-def get_transfer_analysis_runner() -> TransferAnalysisRunner:
-    """Return the path-based transfer-analysis application service."""
+def get_transfer_analysis_runner(
+    request: Request,
+) -> TransferAnalysisRunner:
+    """Return the configured transfer-analysis service."""
 
-    return run_transfer_analysis
+    catalog = _get_runtime_catalog(request)
+
+    if catalog is None:
+        return run_transfer_analysis
+
+    return create_catalog_transfer_analysis_runner(catalog)
 
 
 __all__ = [

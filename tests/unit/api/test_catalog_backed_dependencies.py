@@ -222,11 +222,3 @@ def test_catalog_transfer_analysis_runner_uses_entire_catalog(
             catalog,
         )
     ]
-
-
-def test_default_runner_dependencies_remain_path_based() -> None:
-    """Preserve existing route behavior until lifespan integration."""
-
-    assert dependencies.get_player_search_runner() is dependencies.search_players
-    assert dependencies.get_player_profile_runner() is dependencies.get_player_profile
-    assert dependencies.get_transfer_analysis_runner() is dependencies.run_transfer_analysis
