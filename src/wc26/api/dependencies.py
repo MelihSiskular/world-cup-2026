@@ -13,8 +13,13 @@ from wc26.analytics.transfer_intelligence.config import (
     DEFAULT_SIMILARITY,
 )
 from wc26.analytics.transfer_intelligence.models import (
+    PlayerSearchRequest,
+    PlayerSearchResult,
     TransferAnalysisRequest,
     TransferAnalysisResult,
+)
+from wc26.analytics.transfer_intelligence.player_search import (
+    search_players,
 )
 from wc26.analytics.transfer_intelligence.service import (
     run_transfer_analysis,
@@ -36,6 +41,17 @@ type TransferAnalysisRunner = Callable[
     TransferAnalysisResult,
 ]
 
+type PlayerSearchRunner = Callable[
+    [PlayerSearchRequest],
+    PlayerSearchResult,
+]
+
+
+def get_player_search_runner() -> PlayerSearchRunner:
+    """Return the player-search application service."""
+
+    return search_players
+
 
 def get_transfer_dataset_paths() -> TransferDatasetPaths:
     """Return the configured transfer intelligence dataset paths."""
@@ -52,6 +68,8 @@ def get_transfer_analysis_runner() -> TransferAnalysisRunner:
 __all__ = [
     "TransferAnalysisRunner",
     "TransferDatasetPaths",
+    "PlayerSearchRunner",
+    "get_player_search_runner",
     "get_transfer_analysis_runner",
     "get_transfer_dataset_paths",
 ]

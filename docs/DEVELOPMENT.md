@@ -461,3 +461,98 @@ Instead, it verifies:
 - recommendations use list structures;
 - at least one recommendation is produced;
 - the response contains no non-standard JSON values such as `NaN`.
+
+### Player Search architecture
+
+```text
+HTTP query parameters
+        ↓
+Player Search route
+        ↓
+PlayerSearchRequest
+        ↓
+PlayerSearchRunner dependency
+        ↓
+search_players()
+        ↓
+PlayerSearchResult
+        ↓
+PlayerSearchResponse
+```
+
+The HTTP route does not read CSV files directly. It delegates player matching
+to the application service through an injectable dependency.
+
+### Search behavior
+
+The application service applies the following rules:
+
+1. Normalize whitespace.
+2. Apply case folding.
+3. Remove common Unicode diacritics.
+4. Match the normalized query against normalized player names.
+5. Rank exact matches first.
+6. Rank full-name prefixes second.
+7. Rank token-prefix matches third.
+8. Rank remaining partial matches last.
+9. Remove duplicate player IDs.
+10. Apply the requested result limit.
+
+The current limits are:
+
+```text
+Minimum query length: 2
+Minimum result limit: 1
+Maximum result limit: 25
+Default API limit: 10
+```
+
+No-match searches return an empty `PlayerSearchResult`; they do not raise a
+not-found error.
+
+### Player Search dependencies
+
+The route uses two FastAPI dependencies:
+
+```python
+get_transfer_dataset_paths
+get_player_search_runner
+```
+
+The first supplies the server-managed feature-table path. The second supplies
+the player-search application service.
+
+Unit tests should override `get_player_search_runner` so route behavior can be
+tested without reading the real dataset.
+
+### Player Search errors
+
+| Failure | HTTP response |
+|---|---|
+| FastAPI query constraint failure | `422 Unprocessable Entity` |
+| Domain-level invalid search | `400 invalid_player_search` |
+| Missing feature dataset | `503 dataset_unavailable` |
+| Invalid feature dataset | `503 invalid_dataset` |
+| Unexpected search failure | `500 player_search_failed` |
+
+Internal file paths and implementation details must not be included in public
+error responses.
+
+### Real-data smoke test
+
+```bash
+WC26_RUN_INTEGRATION=1 \
+python -m pytest \
+  tests/integration/api/test_player_search_api.py \
+  -v
+```
+
+The integration test verifies:
+
+- the API uses the real processed feature table;
+- `Michael Olise` can be found using `olise`;
+- response counts match the returned player list;
+- player IDs are serialized as integers;
+- essential player metadata is present;
+- responses do not contain non-standard JSON values;
+- diacritic-insensitive matching resolves `modric` to `Luka Modrić`.

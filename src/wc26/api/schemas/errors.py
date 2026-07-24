@@ -12,6 +12,8 @@ type ApiErrorCode = Literal[
     "dataset_unavailable",
     "invalid_dataset",
     "analysis_failed",
+    "invalid_player_search",
+    "player_search_failed",
 ]
 
 

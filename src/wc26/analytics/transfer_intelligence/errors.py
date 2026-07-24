@@ -19,9 +19,14 @@ class InvalidDatasetError(ValueError):
     """Raised when a dataset does not satisfy its required contract."""
 
 
+class InvalidPlayerSearchError(ValueError):
+    """Raised when player-search parameters are invalid."""
+
+
 __all__ = [
     "AmbiguousPlayerError",
     "DatasetNotFoundError",
     "InvalidDatasetError",
+    "InvalidPlayerSearchError",
     "PlayerNotFoundError",
 ]
