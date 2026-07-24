@@ -14,6 +14,9 @@ type ApiErrorCode = Literal[
     "analysis_failed",
     "invalid_player_search",
     "player_search_failed",
+    "invalid_player_profile",
+    "player_profile_failed",
+    "invalid_transfer_analysis_request",
 ]
 
 
