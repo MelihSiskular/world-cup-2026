@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Annotated
 
 from fastapi import (
@@ -10,6 +11,12 @@ from fastapi import (
     status,
 )
 
+from wc26.analytics.transfer_intelligence.errors import (
+    AmbiguousPlayerError,
+    DatasetNotFoundError,
+    InvalidDatasetError,
+    PlayerNotFoundError,
+)
 from wc26.analytics.transfer_intelligence.models import (
     TransferAnalysisRequest,
 )
@@ -19,6 +26,8 @@ from wc26.api.dependencies import (
     get_transfer_analysis_runner,
     get_transfer_dataset_paths,
 )
+from wc26.api.errors import TransferAnalysisExecutionError
+from wc26.api.schemas.errors import ApiErrorResponse
 from wc26.api.schemas.transfer_intelligence import (
     TransferAnalysisPayload,
     TransferAnalysisResponse,
@@ -28,6 +37,7 @@ router = APIRouter(
     prefix="/api/v1/transfer-intelligence",
     tags=["transfer-intelligence"],
 )
+logger = logging.getLogger(__name__)
 
 
 @router.post(
@@ -35,6 +45,24 @@ router = APIRouter(
     response_model=TransferAnalysisResponse,
     status_code=status.HTTP_200_OK,
     summary="Analyze transfer alternatives",
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "model": ApiErrorResponse,
+            "description": "The target player was not found.",
+        },
+        status.HTTP_409_CONFLICT: {
+            "model": ApiErrorResponse,
+            "description": ("The supplied player query matched multiple players."),
+        },
+        status.HTTP_503_SERVICE_UNAVAILABLE: {
+            "model": ApiErrorResponse,
+            "description": ("A required analytics dataset is missing or invalid."),
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ApiErrorResponse,
+            "description": ("Transfer analysis failed unexpectedly."),
+        },
+    },
 )
 def analyze_transfer_alternatives(
     payload: TransferAnalysisPayload,
@@ -61,9 +89,24 @@ def analyze_transfer_alternatives(
         neutral_heatmap_score=payload.neutral_heatmap_score,
     )
 
-    result = analysis_runner(request)
+    try:
+        result = analysis_runner(request)
 
-    return TransferAnalysisResponse.model_validate(result.to_dict())
+        return TransferAnalysisResponse.model_validate(result.to_dict())
+    except (
+        PlayerNotFoundError,
+        AmbiguousPlayerError,
+        DatasetNotFoundError,
+        InvalidDatasetError,
+    ):
+        raise
+    except Exception as exception:
+        logger.exception(
+            "Unexpected transfer analysis failure for player %s",
+            payload.player,
+        )
+
+        raise TransferAnalysisExecutionError("Transfer analysis execution failed.") from exception
 
 
 __all__ = [
