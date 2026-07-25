@@ -1,6 +1,7 @@
 # Development Guide
 
-This guide explains how to set up, test, and extend the WC26 Transfer Intelligence Python core.
+This guide explains how to set up, test and extend the WC26 Transfer
+Intelligence Python core and FastAPI backend.
 
 ## Requirements
 
@@ -76,8 +77,9 @@ TransferAnalysisResult
         ├── CSV exporting adapter
         └── FastAPI JSON response adapter
 ```
+
 The analysis service is intentionally side-effect free. It does not print to
-the terminal, create directories, or write CSV files.
+the terminal, create directories or write CSV files.
 
 `run_transfer_analysis()` accepts analytical inputs and returns a structured,
 JSON-compatible `TransferAnalysisResult`.
@@ -89,24 +91,28 @@ Presentation and output concerns are handled by separate adapters:
 - `TransferAnalysisResult.to_dict()` produces a JSON-compatible response.
 
 This separation allows the same application service to be reused by the CLI,
-a FastAPI backend, scheduled pipelines, web clients, and mobile applications.
+the FastAPI backend, scheduled pipelines, web clients and mobile applications.
+
 ### Module Responsibilities
 
 | Module | Responsibility |
 |---|---|
-| `config.py` | Paths, thresholds, mode configuration, and scoring weights |
-| `utils.py` | Shared formatting, normalization, and conversion utilities |
+| `config.py` | Paths, thresholds, mode configuration and scoring weights |
+| `utils.py` | Shared formatting, normalization and conversion utilities |
 | `datasets.py` | Loading and validating analytical datasets |
 | `matching.py` | Resolving players and attaching similarity data |
 | `models.py` | Backend-ready request and result contracts |
 | `candidates.py` | Preparing the transfer candidate population |
 | `scoring.py` | Transfer scoring rules and suitability calculations |
-| `recommendations.py` | Mode filtering, ranking, and result generation |
+| `recommendations.py` | Mode filtering, ranking and result generation |
 | `explanations.py` | Recommendation labels and data-driven explanations |
-| `reporting.py` | Renders structured results as console output |
+| `reporting.py` | Rendering structured results as console output |
 | `entrypoint.py` | Mapping CLI input to the application request |
-| `service.py` | Runs the analysis workflow and returns a structured result |
-| `exporting.py` | CSV output generation from structured analysis results |
+| `service.py` | Running the analysis workflow and returning a structured result |
+| `exporting.py` | Generating CSV output from structured analysis results |
+| `catalog.py` | Loading the complete runtime data catalog once |
+| `player_search.py` | Searching and ranking player-name matches |
+| `player_profile.py` | Returning stable player profiles by player ID |
 
 The package-level public API is intentionally small:
 
@@ -117,7 +123,399 @@ from wc26.analytics.transfer_intelligence import (
 )
 ```
 
-Internal modules may change as the project evolves. Code outside the package should prefer the public API.
+Internal modules may change as the project evolves. Code outside the package
+should prefer the public API.
+
+## Backend Development
+
+The backend is implemented with FastAPI and exposed through an ASGI application
+entrypoint.
+
+### Package Structure
+
+```text
+src/wc26/api/
+├── __init__.py
+├── app.py
+├── dependencies.py
+├── errors.py
+├── exception_handlers.py
+├── main.py
+├── runtime.py
+├── settings.py
+├── routes/
+│   ├── __init__.py
+│   ├── health.py
+│   ├── players.py
+│   └── transfer_intelligence.py
+└── schemas/
+    ├── __init__.py
+    ├── errors.py
+    ├── health.py
+    ├── players.py
+    └── transfer_intelligence.py
+```
+
+| Module | Responsibility |
+|---|---|
+| `api/app.py` | Creates and configures the FastAPI application |
+| `api/main.py` | Builds the environment-configured deployable ASGI application |
+| `api/settings.py` | Validates runtime settings and environment variables |
+| `api/runtime.py` | Stores typed lifecycle state and operational metadata |
+| `api/dependencies.py` | Supplies dataset paths and catalog-backed services |
+| `api/routes/` | Defines HTTP endpoints grouped by domain |
+| `api/schemas/` | Defines validated API request and response contracts |
+| `api/exception_handlers.py` | Maps domain exceptions to safe HTTP responses |
+
+### Run the API Locally
+
+Production-style startup:
+
+```bash
+python -m uvicorn wc26.api.main:app \
+  --host 127.0.0.1 \
+  --port 8000
+```
+
+Development startup with automatic reload:
+
+```bash
+python -m uvicorn wc26.api.main:app \
+  --reload \
+  --host 127.0.0.1 \
+  --port 8000
+```
+
+Interactive documentation:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+OpenAPI schema:
+
+```text
+http://127.0.0.1:8000/openapi.json
+```
+
+### Runtime Configuration
+
+`create_production_app()` reads process environment variables through
+`ApiSettings.from_environment()`.
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `WC26_ENVIRONMENT` | `development` | Runtime environment: `development`, `test` or `production` |
+| `WC26_API_HOST` | `127.0.0.1` | Host value available to deployment tooling |
+| `WC26_API_PORT` | `8000` | API port value available to deployment tooling |
+| `WC26_API_TITLE` | `WC26 Transfer Intelligence API` | OpenAPI application title |
+| `WC26_API_SUMMARY` | Project summary | OpenAPI application summary |
+| `WC26_SERVICE_NAME` | `wc26-transfer-intelligence` | Service identifier returned by operational endpoints |
+| `WC26_FEATURES_PATH` | Project default | Player feature dataset path |
+| `WC26_SIMILARITY_PATH` | Project default | Statistical similarity dataset path |
+| `WC26_HEATMAP_SIMILARITY_PATH` | Project default | Heatmap similarity dataset path |
+| `WC26_HEATMAP_PROFILES_PATH` | Project default | Heatmap profile dataset path |
+| `WC26_CORS_ORIGINS` | Empty | Comma-separated trusted HTTP or HTTPS origins |
+
+Example:
+
+```bash
+export WC26_ENVIRONMENT=production
+export WC26_API_HOST=0.0.0.0
+export WC26_API_PORT=8000
+export WC26_CORS_ORIGINS="https://example.com,https://admin.example.com"
+
+python -m uvicorn wc26.api.main:app \
+  --host "$WC26_API_HOST" \
+  --port "$WC26_API_PORT"
+```
+
+Dataset paths may also be supplied explicitly to `create_app()` for tests or
+direct Python usage. Explicit `dataset_paths` override the paths stored in
+`ApiSettings`.
+
+### CORS
+
+CORS middleware is installed only when `WC26_CORS_ORIGINS` contains at least
+one valid origin.
+
+Configured origins are:
+
+- restricted to HTTP or HTTPS;
+- normalized by removing a trailing slash;
+- deduplicated;
+- rejected when they contain a path, query string or fragment.
+
+The middleware allows credentials, methods and headers for trusted origins.
+Responses to untrusted origins do not include
+`Access-Control-Allow-Origin`.
+
+### Runtime Catalog and Application State
+
+The production application loads the transfer data catalog once during the
+FastAPI lifespan startup phase.
+
+```text
+Process environment
+        ↓
+ApiSettings
+        ↓
+create_production_app()
+        ↓
+create_app()
+        ↓
+FastAPI lifespan startup
+        ↓
+load_transfer_data_catalog()
+        ↓
+ApiRuntimeState
+        ↓
+catalog-backed player search, profile and transfer analysis
+```
+
+The typed runtime state is stored at:
+
+```python
+application.state.api_runtime
+```
+
+`ApiRuntimeState` contains:
+
+- validated API settings;
+- configured dataset paths;
+- application startup timestamp;
+- catalog load timestamp;
+- the cached `TransferDataCatalog`;
+- calculated uptime;
+- readiness state.
+
+The production process fails during startup when a required catalog dataset
+cannot be loaded or does not satisfy its data contract. This prevents a
+partially initialized analytics service from accepting traffic.
+
+Test applications created with `create_app()` may omit a catalog loader. In
+that case, analytics dependencies preserve the path-based fallback behavior.
+
+### Operational Endpoints
+
+#### `GET /health`
+
+Liveness is independent of the analytics catalog. A running process returns
+`200 OK`.
+
+Example response:
+
+```json
+{
+  "status": "ok",
+  "service": "wc26-transfer-intelligence",
+  "version": "0.1.0",
+  "environment": "production",
+  "started_at": "2026-07-25T07:00:00Z",
+  "uptime_seconds": 125.432
+}
+```
+
+#### `GET /ready`
+
+Readiness reports whether the runtime transfer catalog is available.
+
+Ready response:
+
+```json
+{
+  "status": "ready",
+  "service": "wc26-transfer-intelligence",
+  "version": "0.1.0",
+  "environment": "production",
+  "started_at": "2026-07-25T07:00:00Z",
+  "uptime_seconds": 125.432,
+  "catalog_loaded_at": "2026-07-25T07:00:02Z"
+}
+```
+
+A process without a runtime catalog returns `503 Service Unavailable`:
+
+```json
+{
+  "status": "not_ready",
+  "service": "wc26-transfer-intelligence",
+  "version": "0.1.0",
+  "environment": "test",
+  "started_at": "2026-07-25T07:00:00Z",
+  "uptime_seconds": 1.125,
+  "catalog_loaded_at": null
+}
+```
+
+### API Endpoints
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/health` | Process liveness and runtime metadata |
+| `GET` | `/ready` | Catalog readiness and runtime metadata |
+| `GET` | `/api/v1/players/search` | Search players by name |
+| `GET` | `/api/v1/players/{player_id}` | Retrieve a stable player profile |
+| `POST` | `/api/v1/transfer-intelligence/analyze` | Run transfer replacement analysis |
+
+### Player Search
+
+Example:
+
+```bash
+curl --get \
+  "http://127.0.0.1:8000/api/v1/players/search" \
+  --data-urlencode "q=olise" \
+  --data-urlencode "limit=10"
+```
+
+Search rules:
+
+1. Normalize whitespace.
+2. Apply case folding.
+3. Remove common Unicode diacritics.
+4. Match normalized player names.
+5. Rank exact matches first.
+6. Rank full-name prefixes second.
+7. Rank token-prefix matches third.
+8. Rank remaining partial matches last.
+9. Remove duplicate player IDs.
+10. Apply the requested result limit.
+
+Current limits:
+
+```text
+Minimum query length: 2
+Minimum result limit: 1
+Maximum result limit: 25
+Default API limit: 10
+```
+
+No-match searches return an empty player list rather than a not-found error.
+
+### Player Profile
+
+Player profiles use the stable numeric `player_id` identity.
+
+```bash
+curl \
+  "http://127.0.0.1:8000/api/v1/players/978838"
+```
+
+The response includes the player's identity and recruitment profile fields
+available in the feature dataset.
+
+### Transfer Analysis
+
+The request accepts exactly one transfer target:
+
+```json
+{
+  "player": "Michael Olise"
+}
+```
+
+or:
+
+```json
+{
+  "player_id": 978838
+}
+```
+
+Example request:
+
+```bash
+curl -X POST \
+  "http://127.0.0.1:8000/api/v1/transfer-intelligence/analyze" \
+  -H "Content-Type: application/json" \
+  -d '{"player_id": 978838}'
+```
+
+The API delegates to the same structured analysis service used by the CLI. The
+HTTP layer does not expose local dataset paths and does not contain scoring
+business rules.
+
+### Transfer Analysis Request Flow
+
+```text
+POST /api/v1/transfer-intelligence/analyze
+                    ↓
+TransferAnalysisPayload
+                    ↓
+FastAPI dependency resolution
+                    ↓
+TransferDatasetPaths
+TransferAnalysisRunner
+                    ↓
+TransferAnalysisRequest
+                    ↓
+run_transfer_analysis_from_catalog()
+                    ↓
+TransferAnalysisResult
+                    ↓
+TransferAnalysisResponse
+                    ↓
+JSON response
+```
+
+### Shared Error Responses
+
+Known domain exceptions are mapped centrally to safe HTTP responses.
+
+| Analytics exception | HTTP status | API code |
+|---|---:|---|
+| `InvalidTransferAnalysisRequestError` | `400` | `invalid_transfer_analysis_request` |
+| `InvalidPlayerProfileError` | `400` | `invalid_player_profile` |
+| `InvalidPlayerSearchError` | `400` | `invalid_player_search` |
+| `PlayerNotFoundError` | `404` | `player_not_found` |
+| `AmbiguousPlayerError` | `409` | `ambiguous_player` |
+| `DatasetNotFoundError` | `503` | `dataset_unavailable` |
+| `InvalidDatasetError` | `503` | `invalid_dataset` |
+| `TransferAnalysisExecutionError` | `500` | `analysis_failed` |
+| `PlayerProfileExecutionError` | `500` | `player_profile_failed` |
+| `PlayerSearchExecutionError` | `500` | `player_search_failed` |
+
+Error envelope:
+
+```json
+{
+  "error": {
+    "code": "player_not_found",
+    "message": "Player could not be resolved."
+  }
+}
+```
+
+Dataset-related responses must not expose local file-system paths or internal
+implementation details.
+
+### Dependency Overrides
+
+API unit tests should replace expensive application services with controlled
+test implementations.
+
+```python
+from wc26.api.dependencies import (
+    get_transfer_analysis_runner,
+)
+
+application.dependency_overrides[
+    get_transfer_analysis_runner
+] = override_analysis_runner
+```
+
+Available dependency boundaries include:
+
+```python
+get_transfer_dataset_paths
+get_player_search_runner
+get_player_profile_runner
+get_transfer_analysis_runner
+```
+
+This keeps route tests fast and deterministic while integration tests verify
+the complete real-data path.
 
 ## Quality Checks
 
@@ -163,78 +561,105 @@ python -m pytest \
 
 The current minimum coverage baseline is 65%.
 
-The baseline is intended to prevent untested code from gradually reducing the quality of the Python core. It may be increased as backend-ready contracts and additional service tests are introduced.
-
 ## Integration Tests
 
-Real-data integration tests require the processed World Cup datasets to exist locally.
+Real-data integration tests require the processed World Cup datasets to exist
+locally.
 
-Run them explicitly with:
+Run all real-data tests explicitly:
 
 ```bash
 WC26_RUN_INTEGRATION=1 \
 python -m pytest -m integration -v
 ```
 
-These tests are excluded from GitHub Actions because the required processed datasets are not guaranteed to exist on the GitHub runner.
+Run the complete runtime-catalog API flow:
+
+```bash
+WC26_RUN_INTEGRATION=1 \
+python -m pytest \
+  tests/integration/api/test_runtime_catalog_api.py \
+  -v
+```
+
+The runtime-catalog integration test verifies:
+
+- each required dataset is loaded once during startup;
+- player search uses the cached catalog;
+- player profile retrieval uses the same catalog;
+- transfer analysis uses the same catalog;
+- repeated requests do not reload CSV files;
+- readiness reports `ready`;
+- catalog memory is released during shutdown.
+
+Real-data tests are excluded from normal GitHub Actions runs because processed
+datasets are not guaranteed to exist on the runner.
 
 ## Test Organization
 
 ```text
 tests/
 ├── unit/
-│   ├── test_package.py
-│   ├── test_paths.py
+│   ├── api/
+│   │   ├── test_app.py
+│   │   ├── test_cors.py
+│   │   ├── test_health.py
+│   │   ├── test_main.py
+│   │   ├── test_readiness.py
+│   │   ├── test_runtime.py
+│   │   ├── test_runtime_catalog_lifespan.py
+│   │   └── test_settings.py
 │   └── transfer_intelligence/
 │       ├── test_candidates.py
 │       ├── test_cli.py
 │       ├── test_datasets.py
 │       ├── test_entrypoint.py
-│       ├── test_legacy_behavior.py
 │       ├── test_matching.py
-│       ├── test_module_boundaries.py
-│       ├── test_public_api.py
 │       ├── test_recommendations.py
 │       ├── test_reporting.py
 │       ├── test_scoring.py
 │       └── test_service.py
 └── integration/
+    ├── api/
+    │   └── test_runtime_catalog_api.py
     └── transfer_intelligence/
         └── test_cli_smoke.py
 ```
 
 ### Unit Tests
 
-Unit tests verify individual modules and business rules using small, deterministic inputs.
+Unit tests verify individual modules and business rules using small,
+deterministic inputs.
 
 ### Characterization Tests
 
-Characterization tests preserve important behavior inherited from the original transfer intelligence script.
-
-They allow internal refactoring without unintentionally changing existing recommendation behavior.
+Characterization tests preserve important behavior inherited from the original
+transfer intelligence script. They allow internal refactoring without
+unintentionally changing recommendation behavior.
 
 ### Integration Tests
 
-Integration tests exercise the complete workflow using real processed datasets and verify that the CLI produces valid recommendation outputs.
+Integration tests exercise complete workflows using real processed datasets.
 
 ## Adding a New Feature
 
-When adding or changing transfer intelligence behavior:
+When adding or changing application behavior:
 
 1. Create a focused branch from the latest `main`.
-2. Add or update tests before changing critical scoring behavior.
-3. Keep business rules out of CLI and reporting modules.
+2. Add or update tests before changing critical behavior.
+3. Keep business rules out of CLI, route and reporting modules.
 4. Keep pandas objects inside the analytics layer.
-5. Prefer the package public API over legacy imports.
+5. Prefer package public APIs over legacy imports.
 6. Run all local quality checks.
 7. Review the coverage result.
 8. Open a Pull Request and wait for the Python Quality workflow.
+9. Finalize documentation after the implementation stage is complete.
 
 Example branch:
 
 ```bash
 git switch main
-git pull origin main
+git pull --ff-only origin main
 git switch -c feat/example-feature
 ```
 
@@ -246,14 +671,15 @@ The file:
 src/transfer_intelligence/find_replacements.py
 ```
 
-is a compatibility wrapper for existing commands, imports, and tests.
+is a compatibility wrapper for existing commands, imports and tests.
 
-Do not remove its explicit re-exports as part of an unrelated refactor. Removing them should be treated as an intentional breaking change.
+Do not remove its explicit re-exports as part of an unrelated refactor.
+Removing them should be treated as an intentional breaking change.
 
 New application behavior should be implemented under:
 
 ```text
-src/wc26/analytics/transfer_intelligence/
+src/wc26/
 ```
 
 ## Commit Style
@@ -265,11 +691,12 @@ feat: add transfer intelligence console command
 fix: handle missing heatmap profile
 refactor: separate recommendation exporters
 test: cover value recommendation filtering
-docs: document Python core development workflow
+docs: document backend runtime workflow
 ci: add Python quality workflow
 ```
 
-Avoid combining unrelated refactoring, feature, and documentation changes in one commit.
+Avoid combining unrelated refactoring, feature and documentation changes in
+one commit.
 
 ## Pull Request Checklist
 
@@ -299,260 +726,27 @@ git diff --check
 
 Also verify:
 
-- New behavior has tests.
-- Existing behavior remains compatible unless a breaking change is intended.
-- Public API changes are documented.
-- Generated datasets and local output files are not committed accidentally.
-- The GitHub Actions Python Quality workflow passes.
+- new behavior has tests;
+- existing behavior remains compatible unless a breaking change is intended;
+- public API and environment changes are documented;
+- generated datasets and local output files are not committed accidentally;
+- startup and readiness behavior are covered;
+- the GitHub Actions Python Quality workflow passes.
 
-## Backend development
+## Deployment Preparation
 
-The backend is implemented with FastAPI and exposed through an ASGI
-application entrypoint.
+Before deploying the API:
 
-### Package structure
+1. Set `WC26_ENVIRONMENT=production`.
+2. Configure all four dataset paths.
+3. Configure only trusted CORS origins.
+4. Confirm `GET /health` returns `200`.
+5. Confirm `GET /ready` returns `200` after startup.
+6. Confirm `/docs` and `/openapi.json` match the intended exposure policy.
+7. Run strict type checking and the full portable test suite.
+8. Run real-data integration tests against deployment datasets.
+9. Start Uvicorn through the target process manager or container runtime.
 
-```text
-src/wc26/api/
-├── __init__.py
-├── app.py
-├── main.py
-├── routes/
-│   ├── __init__.py
-│   └── health.py
-└── schemas/
-    ├── __init__.py
-    └── health.py
-
-```
-
-| Module         | Responsibility                                       |
-| -------------- | ---------------------------------------------------- |
-| `api/app.py`   | Creates and configures the FastAPI application       |
-| `api/main.py`  | Exposes the deployable ASGI application object       |
-| `api/routes/`  | Defines HTTP endpoints grouped by domain             |
-| `api/schemas/` | Defines validated API request and response contracts |
-
-
-```bash
-python -m uvicorn wc26.api.main:app \
-  --reload \
-  --host 127.0.0.1 \
-  --port 8000
-
-curl -i http://127.0.0.1:8000/health
-```
-
-Interactive API documentation is available at:
-http://127.0.0.1:8000/docs
-
-### Transfer analysis request flow
-
-```text
-POST /api/v1/transfer-intelligence/analyze
-                    ↓
-TransferAnalysisPayload
-                    ↓
-FastAPI dependency resolution
-                    ↓
-TransferDatasetPaths
-TransferAnalysisRunner
-                    ↓
-TransferAnalysisRequest
-                    ↓
-run_transfer_analysis()
-                    ↓
-TransferAnalysisResult
-                    ↓
-TransferAnalysisResponse
-                    ↓
-JSON response
-```
-
-The HTTP payload does not expose infrastructure concerns such as dataset file
-paths. Dataset locations are provided by the backend dependency layer.
-
-### Transfer Intelligence API modules
-
-| Module | Responsibility |
-|---|---|
-| `api/dependencies.py` | Supplies dataset paths and the analysis application service |
-| `api/routes/transfer_intelligence.py` | Maps HTTP requests to the analytics contract |
-| `api/schemas/transfer_intelligence.py` | Defines validated request and response models |
-| `api/schemas/errors.py` | Defines the shared API error envelope |
-| `api/errors.py` | Defines API-level execution errors |
-| `api/exception_handlers.py` | Maps analytics exceptions to safe HTTP responses |
-
-### Dependency overrides
-
-API unit tests should not execute the real pandas analysis workflow. Override
-the analysis dependency with a controlled test implementation:
-
-```python
-from wc26.api.dependencies import (
-    get_transfer_analysis_runner,
-)
-
-application.dependency_overrides[
-    get_transfer_analysis_runner
-] = override_analysis_runner
-```
-
-Dataset paths can be overridden in the same way:
-
-```python
-from wc26.api.dependencies import (
-    get_transfer_dataset_paths,
-)
-
-application.dependency_overrides[
-    get_transfer_dataset_paths
-] = override_dataset_paths
-```
-
-This keeps route tests fast and deterministic while the separate integration
-test verifies the complete real-data path.
-
-### API error mapping
-
-Analytics errors are represented by domain-specific exception types and mapped
-centrally to HTTP responses:
-
-| Analytics exception | HTTP status | API code |
-|---|---:|---|
-| `PlayerNotFoundError` | `404` | `player_not_found` |
-| `AmbiguousPlayerError` | `409` | `ambiguous_player` |
-| `DatasetNotFoundError` | `503` | `dataset_unavailable` |
-| `InvalidDatasetError` | `503` | `invalid_dataset` |
-| `TransferAnalysisExecutionError` | `500` | `analysis_failed` |
-
-Known domain errors should be allowed to reach the registered exception
-handlers. Unexpected implementation errors should be wrapped as
-`TransferAnalysisExecutionError`.
-
-Dataset-related responses must not expose local file-system paths or other
-internal implementation details.
-
-### Run API unit tests
-
-```bash
-python -m pytest tests/unit/api -v
-```
-
-### Run the real-data API smoke test
-
-```bash
-WC26_RUN_INTEGRATION=1 \
-python -m pytest \
-  tests/integration/api/test_transfer_analysis_api.py \
-  -v
-```
-
-The smoke test verifies the complete path from the FastAPI route through the
-real processed datasets and analytics engine to a standards-compliant JSON
-response.
-
-It intentionally does not assert exact recommendation counts. Counts may
-change when datasets, scoring weights, or recruitment thresholds evolve.
-Instead, it verifies:
-
-- the target player is resolved;
-- all four recruitment modes are returned;
-- recommendations use list structures;
-- at least one recommendation is produced;
-- the response contains no non-standard JSON values such as `NaN`.
-
-### Player Search architecture
-
-```text
-HTTP query parameters
-        ↓
-Player Search route
-        ↓
-PlayerSearchRequest
-        ↓
-PlayerSearchRunner dependency
-        ↓
-search_players()
-        ↓
-PlayerSearchResult
-        ↓
-PlayerSearchResponse
-```
-
-The HTTP route does not read CSV files directly. It delegates player matching
-to the application service through an injectable dependency.
-
-### Search behavior
-
-The application service applies the following rules:
-
-1. Normalize whitespace.
-2. Apply case folding.
-3. Remove common Unicode diacritics.
-4. Match the normalized query against normalized player names.
-5. Rank exact matches first.
-6. Rank full-name prefixes second.
-7. Rank token-prefix matches third.
-8. Rank remaining partial matches last.
-9. Remove duplicate player IDs.
-10. Apply the requested result limit.
-
-The current limits are:
-
-```text
-Minimum query length: 2
-Minimum result limit: 1
-Maximum result limit: 25
-Default API limit: 10
-```
-
-No-match searches return an empty `PlayerSearchResult`; they do not raise a
-not-found error.
-
-### Player Search dependencies
-
-The route uses two FastAPI dependencies:
-
-```python
-get_transfer_dataset_paths
-get_player_search_runner
-```
-
-The first supplies the server-managed feature-table path. The second supplies
-the player-search application service.
-
-Unit tests should override `get_player_search_runner` so route behavior can be
-tested without reading the real dataset.
-
-### Player Search errors
-
-| Failure | HTTP response |
-|---|---|
-| FastAPI query constraint failure | `422 Unprocessable Entity` |
-| Domain-level invalid search | `400 invalid_player_search` |
-| Missing feature dataset | `503 dataset_unavailable` |
-| Invalid feature dataset | `503 invalid_dataset` |
-| Unexpected search failure | `500 player_search_failed` |
-
-Internal file paths and implementation details must not be included in public
-error responses.
-
-### Real-data smoke test
-
-```bash
-WC26_RUN_INTEGRATION=1 \
-python -m pytest \
-  tests/integration/api/test_player_search_api.py \
-  -v
-```
-
-The integration test verifies:
-
-- the API uses the real processed feature table;
-- `Michael Olise` can be found using `olise`;
-- response counts match the returned player list;
-- player IDs are serialized as integers;
-- essential player metadata is present;
-- responses do not contain non-standard JSON values;
-- diacritic-insensitive matching resolves `modric` to `Luka Modrić`.
+The current repository provides a deployment-ready ASGI application entrypoint.
+Infrastructure packaging and hosting configuration belong to the deployment
+stage.
