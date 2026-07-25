@@ -3,19 +3,11 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
-from pathlib import Path
 
 from fastapi import Request
 
 from wc26.analytics.transfer_intelligence.catalog import (
     TransferDataCatalog,
-)
-from wc26.analytics.transfer_intelligence.config import (
-    DEFAULT_FEATURES,
-    DEFAULT_HEATMAP_PROFILES,
-    DEFAULT_HEATMAP_SIMILARITY,
-    DEFAULT_SIMILARITY,
 )
 from wc26.analytics.transfer_intelligence.models import (
     PlayerProfileRequest,
@@ -37,17 +29,8 @@ from wc26.analytics.transfer_intelligence.service import (
     run_transfer_analysis,
     run_transfer_analysis_from_catalog,
 )
-
-
-@dataclass(frozen=True, slots=True)
-class TransferDatasetPaths:
-    """Server-managed dataset paths used by transfer analysis."""
-
-    features: Path = DEFAULT_FEATURES
-    similarity: Path = DEFAULT_SIMILARITY
-    heatmap_similarity: Path = DEFAULT_HEATMAP_SIMILARITY
-    heatmap_profiles: Path = DEFAULT_HEATMAP_PROFILES
-
+from wc26.api.runtime import get_api_runtime_state
+from wc26.api.settings import TransferDatasetPaths
 
 type TransferAnalysisRunner = Callable[
     [TransferAnalysisRequest],
@@ -116,21 +99,11 @@ def create_catalog_transfer_analysis_runner(
 def _get_runtime_catalog(
     request: Request,
 ) -> TransferDataCatalog | None:
-    """Return the startup-loaded catalog when available."""
+    """Return the startup-loaded runtime catalog."""
 
-    catalog = getattr(
-        request.app.state,
-        "transfer_data_catalog",
-        None,
-    )
+    runtime = get_api_runtime_state(request)
 
-    if isinstance(
-        catalog,
-        TransferDataCatalog,
-    ):
-        return catalog
-
-    return None
+    return runtime.transfer_data_catalog
 
 
 def get_player_profile_runner(
@@ -164,19 +137,9 @@ def get_transfer_dataset_paths(
 ) -> TransferDatasetPaths:
     """Return application-configured dataset paths."""
 
-    dataset_paths = getattr(
-        request.app.state,
-        "transfer_dataset_paths",
-        None,
-    )
+    runtime = get_api_runtime_state(request)
 
-    if isinstance(
-        dataset_paths,
-        TransferDatasetPaths,
-    ):
-        return dataset_paths
-
-    return TransferDatasetPaths()
+    return runtime.dataset_paths
 
 
 def get_transfer_analysis_runner(
