@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from dataclasses import replace
 from pathlib import Path
 from typing import Protocol
 
@@ -13,7 +14,6 @@ from wc26 import __version__
 from wc26.analytics.transfer_intelligence.catalog import (
     TransferDataCatalog,
 )
-from wc26.api.dependencies import TransferDatasetPaths
 from wc26.api.exception_handlers import (
     register_exception_handlers,
 )
@@ -23,6 +23,10 @@ from wc26.api.routes.players import (
 )
 from wc26.api.routes.transfer_intelligence import (
     router as transfer_intelligence_router,
+)
+from wc26.api.settings import (
+    ApiSettings,
+    TransferDatasetPaths,
 )
 
 
@@ -42,12 +46,21 @@ class TransferDataCatalogLoader(Protocol):
 
 def create_app(
     *,
+    settings: ApiSettings | None = None,
     dataset_paths: TransferDatasetPaths | None = None,
     catalog_loader: TransferDataCatalogLoader | None = None,
 ) -> FastAPI:
     """Create and configure the WC26 FastAPI application."""
 
-    runtime_paths = dataset_paths if dataset_paths is not None else TransferDatasetPaths()
+    runtime_settings = settings if settings is not None else ApiSettings()
+
+    if dataset_paths is not None:
+        runtime_settings = replace(
+            runtime_settings,
+            dataset_paths=dataset_paths,
+        )
+
+    runtime_paths = runtime_settings.dataset_paths
 
     @asynccontextmanager
     async def lifespan(
@@ -76,8 +89,8 @@ def create_app(
                 )
 
     application = FastAPI(
-        title="WC26 Transfer Intelligence API",
-        summary=("Football recruitment intelligence powered by World Cup data."),
+        title=runtime_settings.title,
+        summary=runtime_settings.summary,
         version=__version__,
         docs_url="/docs",
         redoc_url="/redoc",
@@ -85,6 +98,7 @@ def create_app(
         lifespan=lifespan,
     )
 
+    application.state.api_settings = runtime_settings
     application.state.transfer_dataset_paths = runtime_paths
 
     application.include_router(health_router)

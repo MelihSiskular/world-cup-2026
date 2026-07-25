@@ -7,10 +7,10 @@ from pathlib import Path
 
 import pytest
 
-from wc26.api.dependencies import TransferDatasetPaths
 from wc26.api.settings import (
     ApiSettings,
     ApiSettingsError,
+    TransferDatasetPaths,
 )
 
 

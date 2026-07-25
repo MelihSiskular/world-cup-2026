@@ -8,13 +8,28 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from wc26.api.dependencies import TransferDatasetPaths
+from wc26.analytics.transfer_intelligence.config import (
+    DEFAULT_FEATURES,
+    DEFAULT_HEATMAP_PROFILES,
+    DEFAULT_HEATMAP_SIMILARITY,
+    DEFAULT_SIMILARITY,
+)
 
 type ApiEnvironment = str
 
 
 class ApiSettingsError(ValueError):
     """Raised when API runtime settings are invalid."""
+
+
+@dataclass(frozen=True, slots=True)
+class TransferDatasetPaths:
+    """Server-managed paths for transfer intelligence datasets."""
+
+    features: Path = DEFAULT_FEATURES
+    similarity: Path = DEFAULT_SIMILARITY
+    heatmap_similarity: Path = DEFAULT_HEATMAP_SIMILARITY
+    heatmap_profiles: Path = DEFAULT_HEATMAP_PROFILES
 
 
 def _require_non_empty(
@@ -323,4 +338,5 @@ __all__ = [
     "ApiEnvironment",
     "ApiSettings",
     "ApiSettingsError",
+    "TransferDatasetPaths",
 ]

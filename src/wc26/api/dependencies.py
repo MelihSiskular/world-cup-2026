@@ -3,19 +3,11 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
-from pathlib import Path
 
 from fastapi import Request
 
 from wc26.analytics.transfer_intelligence.catalog import (
     TransferDataCatalog,
-)
-from wc26.analytics.transfer_intelligence.config import (
-    DEFAULT_FEATURES,
-    DEFAULT_HEATMAP_PROFILES,
-    DEFAULT_HEATMAP_SIMILARITY,
-    DEFAULT_SIMILARITY,
 )
 from wc26.analytics.transfer_intelligence.models import (
     PlayerProfileRequest,
@@ -37,17 +29,7 @@ from wc26.analytics.transfer_intelligence.service import (
     run_transfer_analysis,
     run_transfer_analysis_from_catalog,
 )
-
-
-@dataclass(frozen=True, slots=True)
-class TransferDatasetPaths:
-    """Server-managed dataset paths used by transfer analysis."""
-
-    features: Path = DEFAULT_FEATURES
-    similarity: Path = DEFAULT_SIMILARITY
-    heatmap_similarity: Path = DEFAULT_HEATMAP_SIMILARITY
-    heatmap_profiles: Path = DEFAULT_HEATMAP_PROFILES
-
+from wc26.api.settings import TransferDatasetPaths
 
 type TransferAnalysisRunner = Callable[
     [TransferAnalysisRequest],
