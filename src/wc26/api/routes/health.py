@@ -10,38 +10,15 @@ from fastapi import (
 )
 
 from wc26 import __version__
-from wc26.analytics.transfer_intelligence.catalog import (
-    TransferDataCatalog,
-)
+from wc26.api.runtime import get_api_runtime_state
 from wc26.api.schemas.health import (
     HealthResponse,
     ReadinessResponse,
 )
-from wc26.api.settings import ApiSettings
 
 router = APIRouter(
     tags=["system"],
 )
-
-
-def _get_api_settings(
-    request: Request,
-) -> ApiSettings:
-    """Return settings stored on the FastAPI application."""
-
-    settings = getattr(
-        request.app.state,
-        "api_settings",
-        None,
-    )
-
-    if isinstance(
-        settings,
-        ApiSettings,
-    ):
-        return settings
-
-    return ApiSettings()
 
 
 @router.get(
@@ -54,11 +31,11 @@ def get_health(
 ) -> HealthResponse:
     """Return the current API process status."""
 
-    settings = _get_api_settings(request)
+    runtime = get_api_runtime_state(request)
 
     return HealthResponse(
         status="ok",
-        service=settings.service_name,
+        service=runtime.settings.service_name,
         version=__version__,
     )
 
@@ -80,29 +57,20 @@ def get_readiness(
 ) -> ReadinessResponse:
     """Return whether the API is ready to serve analytics requests."""
 
-    settings = _get_api_settings(request)
+    runtime = get_api_runtime_state(request)
 
-    catalog = getattr(
-        request.app.state,
-        "transfer_data_catalog",
-        None,
-    )
-
-    if not isinstance(
-        catalog,
-        TransferDataCatalog,
-    ):
+    if not runtime.is_ready:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
 
         return ReadinessResponse(
             status="not_ready",
-            service=settings.service_name,
+            service=runtime.settings.service_name,
             version=__version__,
         )
 
     return ReadinessResponse(
         status="ready",
-        service=settings.service_name,
+        service=runtime.settings.service_name,
         version=__version__,
     )
 

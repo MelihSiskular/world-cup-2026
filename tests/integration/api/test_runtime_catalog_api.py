@@ -109,13 +109,20 @@ def test_runtime_catalog_loads_once_and_serves_complete_api_flow(
 
     application = create_app(catalog_loader=(catalog_module.load_transfer_data_catalog))
 
-    assert not hasattr(
-        application.state,
-        "transfer_data_catalog",
-    )
+    runtime = application.state.api_runtime
+
+    assert runtime.started_at is None
+    assert runtime.catalog_loaded_at is None
+    assert runtime.transfer_data_catalog is None
+    assert runtime.is_ready is False
 
     with TestClient(application) as client:
-        runtime_catalog = application.state.transfer_data_catalog
+        runtime_catalog = runtime.transfer_data_catalog
+
+        assert runtime_catalog is not None
+        assert runtime.started_at is not None
+        assert runtime.catalog_loaded_at is not None
+        assert runtime.is_ready is True
 
         startup_calls = tuple(calls)
 
@@ -129,6 +136,11 @@ def test_runtime_catalog_loads_once_and_serves_complete_api_flow(
         assert not runtime_catalog.players.empty
         assert not runtime_catalog.similarity.empty
         assert not runtime_catalog.heatmap_similarity.empty
+
+        readiness_response = client.get("/ready")
+
+        assert readiness_response.status_code == 200
+        assert readiness_response.json()["status"] == "ready"
 
         search_response = client.get(
             "/api/v1/players/search",
@@ -173,7 +185,8 @@ def test_runtime_catalog_loads_once_and_serves_complete_api_flow(
 
         assert repeated_search_response.status_code == 200, repeated_search_response.text
 
-        assert application.state.transfer_data_catalog is runtime_catalog
+        assert runtime.transfer_data_catalog is runtime_catalog
+        assert runtime.is_ready is True
 
         assert tuple(calls) == startup_calls
 
@@ -188,7 +201,7 @@ def test_runtime_catalog_loads_once_and_serves_complete_api_flow(
         assert analysis_payload["target"]["player_id"] == player_id
         assert analysis_payload["target"]["player_name"] == "Michael Olise"
 
-    assert not hasattr(
-        application.state,
-        "transfer_data_catalog",
-    )
+    assert runtime.started_at is not None
+    assert runtime.catalog_loaded_at is None
+    assert runtime.transfer_data_catalog is None
+    assert runtime.is_ready is False

@@ -53,7 +53,9 @@ def test_create_production_app_reads_process_environment(
     )
 
     application = create_production_app()
-    settings = application.state.api_settings
+
+    runtime = application.state.api_runtime
+    settings = runtime.settings
 
     assert settings.environment == "production"
     assert application.title == "WC26 Deployment API"
@@ -62,4 +64,4 @@ def test_create_production_app_reads_process_environment(
     assert settings.dataset_paths.similarity == Path("/srv/wc26/similarity.csv")
     assert settings.dataset_paths.heatmap_similarity == Path("/srv/wc26/heatmap-similarity.csv")
     assert settings.dataset_paths.heatmap_profiles == Path("/srv/wc26/heatmap-profiles.csv")
-    assert application.state.transfer_dataset_paths == settings.dataset_paths
+    assert runtime.dataset_paths == settings.dataset_paths

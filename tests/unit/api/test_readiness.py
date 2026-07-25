@@ -115,7 +115,7 @@ def test_readiness_returns_200_with_runtime_catalog() -> None:
     with TestClient(application) as client:
         response = client.get("/ready")
 
-        assert application.state.transfer_data_catalog is catalog
+        assert application.state.api_runtime.transfer_data_catalog is catalog
 
     assert response.status_code == 200
 

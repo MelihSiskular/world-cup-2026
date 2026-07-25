@@ -25,6 +25,7 @@ from wc26.api.routes.players import (
 from wc26.api.routes.transfer_intelligence import (
     router as transfer_intelligence_router,
 )
+from wc26.api.runtime import ApiRuntimeState
 from wc26.api.settings import (
     ApiSettings,
     TransferDatasetPaths,
@@ -61,33 +62,34 @@ def create_app(
             dataset_paths=dataset_paths,
         )
 
-    runtime_paths = runtime_settings.dataset_paths
+    runtime = ApiRuntimeState(
+        settings=runtime_settings,
+    )
 
     @asynccontextmanager
     async def lifespan(
         application: FastAPI,
     ) -> AsyncIterator[None]:
-        """Load and release application runtime data."""
+        """Manage application runtime data."""
 
-        catalog_loaded = False
+        del application
 
-        if catalog_loader is not None:
-            application.state.transfer_data_catalog = catalog_loader(
-                features=runtime_paths.features,
-                similarity=runtime_paths.similarity,
-                heatmap_similarity=(runtime_paths.heatmap_similarity),
-                heatmap_profiles=(runtime_paths.heatmap_profiles),
-            )
-            catalog_loaded = True
+        runtime.mark_started()
 
         try:
+            if catalog_loader is not None:
+                catalog = catalog_loader(
+                    features=runtime.dataset_paths.features,
+                    similarity=runtime.dataset_paths.similarity,
+                    heatmap_similarity=(runtime.dataset_paths.heatmap_similarity),
+                    heatmap_profiles=(runtime.dataset_paths.heatmap_profiles),
+                )
+
+                runtime.attach_catalog(catalog)
+
             yield
         finally:
-            if catalog_loaded:
-                delattr(
-                    application.state,
-                    "transfer_data_catalog",
-                )
+            runtime.clear_catalog()
 
     application = FastAPI(
         title=runtime_settings.title,
@@ -108,8 +110,7 @@ def create_app(
             allow_headers=["*"],
         )
 
-    application.state.api_settings = runtime_settings
-    application.state.transfer_dataset_paths = runtime_paths
+    application.state.api_runtime = runtime
 
     application.include_router(health_router)
     application.include_router(players_router)

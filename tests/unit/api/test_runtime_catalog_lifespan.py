@@ -20,7 +20,7 @@ from wc26.analytics.transfer_intelligence.models import (
     PlayerSearchResult,
 )
 from wc26.api import create_app, dependencies
-from wc26.api.dependencies import TransferDatasetPaths
+from wc26.api.settings import TransferDatasetPaths
 
 
 def _catalog() -> TransferDataCatalog:
@@ -98,10 +98,12 @@ def test_application_lifespan_loads_catalog_once() -> None:
         catalog_loader=fake_catalog_loader,
     )
 
-    assert not hasattr(
-        application.state,
-        "transfer_data_catalog",
-    )
+    runtime = application.state.api_runtime
+
+    assert runtime.started_at is None
+    assert runtime.catalog_loaded_at is None
+    assert runtime.transfer_data_catalog is None
+    assert runtime.is_ready is False
 
     with TestClient(application) as client:
         first_response = client.get("/health")
@@ -110,7 +112,10 @@ def test_application_lifespan_loads_catalog_once() -> None:
         assert first_response.status_code == 200
         assert second_response.status_code == 200
 
-        assert application.state.transfer_data_catalog is catalog
+        assert runtime.started_at is not None
+        assert runtime.catalog_loaded_at is not None
+        assert runtime.transfer_data_catalog is catalog
+        assert runtime.is_ready is True
 
     assert calls == [
         (
@@ -121,10 +126,10 @@ def test_application_lifespan_loads_catalog_once() -> None:
         )
     ]
 
-    assert not hasattr(
-        application.state,
-        "transfer_data_catalog",
-    )
+    assert runtime.started_at is not None
+    assert runtime.catalog_loaded_at is None
+    assert runtime.transfer_data_catalog is None
+    assert runtime.is_ready is False
 
 
 def test_player_search_uses_startup_loaded_catalog(
@@ -207,6 +212,8 @@ def test_player_search_uses_startup_loaded_catalog(
         catalog_loader=fake_catalog_loader,
     )
 
+    runtime = application.state.api_runtime
+
     with TestClient(application) as client:
         response = client.get(
             "/api/v1/players/search",
@@ -215,6 +222,9 @@ def test_player_search_uses_startup_loaded_catalog(
                 "limit": 5,
             },
         )
+
+        assert runtime.transfer_data_catalog is catalog
+        assert runtime.is_ready is True
 
     assert response.status_code == 200
 
@@ -230,6 +240,9 @@ def test_player_search_uses_startup_loaded_catalog(
     ]
 
     assert response.json()["players"][0]["player_id"] == 978838
+
+    assert runtime.transfer_data_catalog is None
+    assert runtime.is_ready is False
 
 
 def test_application_without_catalog_uses_path_fallback(
@@ -270,6 +283,7 @@ def test_application_without_catalog_uses_path_fallback(
     )
 
     application = create_app()
+    runtime = application.state.api_runtime
 
     with TestClient(application) as client:
         response = client.get(
@@ -278,6 +292,10 @@ def test_application_without_catalog_uses_path_fallback(
                 "q": "olise",
             },
         )
+
+        assert runtime.started_at is not None
+        assert runtime.transfer_data_catalog is None
+        assert runtime.is_ready is False
 
     assert response.status_code == 200
     assert len(calls) == 1
@@ -305,9 +323,16 @@ def test_catalog_loading_failure_stops_application_startup() -> None:
         catalog_loader=failing_catalog_loader,
     )
 
+    runtime = application.state.api_runtime
+
     with pytest.raises(
         InvalidDatasetError,
         match="Runtime catalog could not be loaded",
     ):
         with TestClient(application):
             pass
+
+    assert runtime.started_at is not None
+    assert runtime.catalog_loaded_at is None
+    assert runtime.transfer_data_catalog is None
+    assert runtime.is_ready is False

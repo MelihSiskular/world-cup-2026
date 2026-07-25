@@ -54,8 +54,8 @@ def test_create_app_uses_explicit_runtime_settings() -> None:
 
     assert application.title == "Configured WC26 API"
     assert application.summary == "Configured API summary."
-    assert application.state.api_settings is settings
-    assert application.state.transfer_dataset_paths == dataset_paths
+    assert application.state.api_runtime.settings is settings
+    assert application.state.api_runtime.dataset_paths == dataset_paths
 
 
 def test_explicit_dataset_paths_override_settings_paths() -> None:
@@ -80,5 +80,5 @@ def test_explicit_dataset_paths_override_settings_paths() -> None:
         dataset_paths=override_paths,
     )
 
-    assert application.state.api_settings.dataset_paths == override_paths
-    assert application.state.transfer_dataset_paths == override_paths
+    assert application.state.api_runtime.settings.dataset_paths == override_paths
+    assert application.state.api_runtime.dataset_paths == override_paths
