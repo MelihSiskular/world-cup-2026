@@ -16,6 +16,19 @@ from wc26.api.settings import (
 )
 
 
+def _as_utc(
+    timestamp: datetime,
+    *,
+    field_name: str,
+) -> datetime:
+    """Validate and normalize a timezone-aware timestamp."""
+
+    if timestamp.tzinfo is None or timestamp.utcoffset() is None:
+        raise ValueError(f"{field_name} must be timezone-aware.")
+
+    return timestamp.astimezone(UTC)
+
+
 @dataclass(slots=True)
 class ApiRuntimeState:
     """Mutable lifecycle state shared by API components."""
@@ -35,7 +48,7 @@ class ApiRuntimeState:
     def is_ready(self) -> bool:
         """Return whether the runtime catalog is available."""
 
-        return self.transfer_data_catalog is not None
+        return self.transfer_data_catalog is not None and self.catalog_loaded_at is not None
 
     def mark_started(
         self,
@@ -44,7 +57,12 @@ class ApiRuntimeState:
     ) -> None:
         """Record the current application startup time."""
 
-        self.started_at = timestamp if timestamp is not None else datetime.now(UTC)
+        current = timestamp if timestamp is not None else datetime.now(UTC)
+
+        self.started_at = _as_utc(
+            current,
+            field_name="Startup timestamp",
+        )
 
     def attach_catalog(
         self,
@@ -54,14 +72,46 @@ class ApiRuntimeState:
     ) -> None:
         """Attach a loaded transfer catalog to the runtime."""
 
+        current = timestamp if timestamp is not None else datetime.now(UTC)
+
         self.transfer_data_catalog = catalog
-        self.catalog_loaded_at = timestamp if timestamp is not None else datetime.now(UTC)
+        self.catalog_loaded_at = _as_utc(
+            current,
+            field_name="Catalog load timestamp",
+        )
 
     def clear_catalog(self) -> None:
         """Release the loaded runtime catalog."""
 
         self.transfer_data_catalog = None
         self.catalog_loaded_at = None
+
+    def uptime_seconds(
+        self,
+        *,
+        timestamp: datetime | None = None,
+    ) -> float:
+        """Return elapsed seconds since application startup."""
+
+        if self.started_at is None:
+            raise RuntimeError("WC26 API runtime has not started.")
+
+        current = timestamp if timestamp is not None else datetime.now(UTC)
+
+        current_utc = _as_utc(
+            current,
+            field_name="Uptime timestamp",
+        )
+
+        elapsed = (current_utc - self.started_at).total_seconds()
+
+        return round(
+            max(
+                0.0,
+                elapsed,
+            ),
+            3,
+        )
 
 
 def get_api_runtime_state(
@@ -75,7 +125,10 @@ def get_api_runtime_state(
         None,
     )
 
-    if not isinstance(runtime, ApiRuntimeState):
+    if not isinstance(
+        runtime,
+        ApiRuntimeState,
+    ):
         raise RuntimeError("WC26 API runtime state is not initialized.")
 
     return runtime

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -43,6 +44,21 @@ def _catalog() -> TransferDataCatalog:
     )
 
 
+def _parse_datetime(
+    value: object,
+) -> datetime:
+    """Parse one timestamp returned by the API."""
+
+    assert isinstance(value, str)
+
+    return datetime.fromisoformat(
+        value.replace(
+            "Z",
+            "+00:00",
+        )
+    )
+
+
 def test_readiness_route_is_in_openapi_schema() -> None:
     application = create_app()
 
@@ -52,7 +68,7 @@ def test_readiness_route_is_in_openapi_schema() -> None:
     assert "503" in operation["responses"]
 
 
-def test_readiness_returns_503_without_runtime_catalog() -> None:
+def test_readiness_returns_runtime_metadata_without_catalog() -> None:
     application = create_app(
         settings=ApiSettings(
             environment="test",
@@ -67,14 +83,18 @@ def test_readiness_returns_503_without_runtime_catalog() -> None:
     assert health_response.status_code == 200
     assert readiness_response.status_code == 503
 
-    assert readiness_response.json() == {
-        "status": "not_ready",
-        "service": "wc26-test-api",
-        "version": __version__,
-    }
+    payload = readiness_response.json()
+
+    assert payload["status"] == "not_ready"
+    assert payload["service"] == "wc26-test-api"
+    assert payload["version"] == __version__
+    assert payload["environment"] == "test"
+    assert payload["uptime_seconds"] >= 0.0
+    assert payload["catalog_loaded_at"] is None
+    assert _parse_datetime(payload["started_at"]).tzinfo == UTC
 
 
-def test_readiness_returns_200_with_runtime_catalog() -> None:
+def test_readiness_returns_catalog_runtime_metadata() -> None:
     catalog = _catalog()
 
     loader_calls: list[
@@ -113,16 +133,28 @@ def test_readiness_returns_200_with_runtime_catalog() -> None:
     )
 
     with TestClient(application) as client:
+        runtime = application.state.api_runtime
         response = client.get("/ready")
 
-        assert application.state.api_runtime.transfer_data_catalog is catalog
+        expected_started_at = runtime.started_at
+        expected_catalog_loaded_at = runtime.catalog_loaded_at
+
+        assert runtime.transfer_data_catalog is catalog
 
     assert response.status_code == 200
 
-    assert response.json() == {
-        "status": "ready",
-        "service": "wc26-ready-api",
-        "version": __version__,
-    }
+    payload = response.json()
+
+    assert payload["status"] == "ready"
+    assert payload["service"] == "wc26-ready-api"
+    assert payload["version"] == __version__
+    assert payload["environment"] == "test"
+    assert payload["uptime_seconds"] >= 0.0
+
+    assert expected_started_at is not None
+    assert expected_catalog_loaded_at is not None
+
+    assert _parse_datetime(payload["started_at"]) == expected_started_at
+    assert _parse_datetime(payload["catalog_loaded_at"]) == expected_catalog_loaded_at
 
     assert len(loader_calls) == 1
