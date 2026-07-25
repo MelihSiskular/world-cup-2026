@@ -72,6 +72,32 @@ python -m src.transfer_intelligence.find_replacements \
   --player "Michael Olise"
 ```
 
+
+## Backend API
+
+The project also includes a FastAPI backend for player discovery and transfer
+intelligence workflows.
+
+```bash
+python -m uvicorn wc26.api.main:app --reload
+```
+
+Available endpoints:
+
+- `GET /health`
+- `GET /ready`
+- `GET /api/v1/players/search`
+- `GET /api/v1/players/{player_id}`
+- `POST /api/v1/transfer-intelligence/analyze`
+
+Interactive API documentation is available at
+`http://127.0.0.1:8000/docs`.
+
+See [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) for runtime configuration,
+testing, architecture and deployment details.
+
+---
+
 # 1 - Goal Analysis
 
 Goal-related datasets are used to analyze:
@@ -568,29 +594,6 @@ world-cup-2026/
 │   └── integration/
 ├── pyproject.toml
 └── README.md
-```
-
----
-
-## Backend API
-
-The project includes a FastAPI backend foundation for exposing the Transfer
-Intelligence engine through HTTP endpoints.
-
-### Run the development server
-
-Activate the project virtual environment and install the development
-dependencies:
-
-```bash
-source .venv/bin/activate
-python -m pip install -e ".[dev]"
-
-python -m uvicorn wc26.api.main:app \
-  --reload \
-  --host 127.0.0.1 \
-  --port 8000
-
 ```
 
 ---
