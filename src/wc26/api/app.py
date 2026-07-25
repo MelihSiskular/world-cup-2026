@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Protocol
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from wc26 import __version__
 from wc26.analytics.transfer_intelligence.catalog import (
@@ -97,6 +98,15 @@ def create_app(
         openapi_url="/openapi.json",
         lifespan=lifespan,
     )
+
+    if runtime_settings.cors_origins:
+        application.add_middleware(
+            CORSMiddleware,
+            allow_origins=list(runtime_settings.cors_origins),
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
 
     application.state.api_settings = runtime_settings
     application.state.transfer_dataset_paths = runtime_paths
