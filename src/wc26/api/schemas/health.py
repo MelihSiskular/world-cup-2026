@@ -1,4 +1,4 @@
-"""Health-check API schemas."""
+"""Health and readiness API schemas."""
 
 from __future__ import annotations
 
@@ -15,6 +15,15 @@ class HealthResponse(BaseModel):
     version: str
 
 
+class ReadinessResponse(BaseModel):
+    """Response returned by the service readiness endpoint."""
+
+    status: Literal["ready", "not_ready"]
+    service: str
+    version: str
+
+
 __all__ = [
     "HealthResponse",
+    "ReadinessResponse",
 ]
