@@ -65,6 +65,8 @@ COPY --chown=wc26:wc26 \
 
 USER wc26
 
+RUN python -m wc26.api.environment
+
 EXPOSE 8000
 
 HEALTHCHECK \
