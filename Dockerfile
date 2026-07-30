@@ -24,6 +24,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     WC26_ENVIRONMENT=production \
     WC26_API_HOST=0.0.0.0 \
     WC26_API_PORT=8000 \
+    WC26_DATASET_MANIFEST_PATH=/app/config/runtime_dataset_manifest.json \
     WC26_FEATURES_PATH=/app/data/processed/transfer_intelligence/transfer_feature_table.csv \
     WC26_SIMILARITY_PATH=/app/data/processed/player_similarity/player_similarity_breakdown_long.csv \
     WC26_HEATMAP_SIMILARITY_PATH=/app/data/processed/player_heatmaps/heatmap_similarity_long.csv \
@@ -49,6 +50,10 @@ RUN --mount=from=builder,source=/wheels,target=/wheels,readonly \
         --no-index \
         --find-links=/wheels \
         wc26-transfer-intelligence
+
+COPY --chown=wc26:wc26 \
+    config/runtime_dataset_manifest.json \
+    /app/config/runtime_dataset_manifest.json
 
 COPY --chown=wc26:wc26 \
     data/processed/transfer_intelligence/transfer_feature_table.csv \
