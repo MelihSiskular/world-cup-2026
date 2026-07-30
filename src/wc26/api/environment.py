@@ -60,30 +60,26 @@ def validate_runtime_environment(
 
         if not resolved_path.exists():
             errors.append(
-                f"{requirement.environment_variable}: "
-                f"file does not exist: {resolved_path}"
+                f"{requirement.environment_variable}: file does not exist: {resolved_path}"
             )
             continue
 
         if not resolved_path.is_file():
             errors.append(
-                f"{requirement.environment_variable}: "
-                f"path must be a file: {resolved_path}"
+                f"{requirement.environment_variable}: path must be a file: {resolved_path}"
             )
             continue
 
         if not os.access(resolved_path, os.R_OK):
             errors.append(
-                f"{requirement.environment_variable}: "
-                f"file is not readable: {resolved_path}"
+                f"{requirement.environment_variable}: file is not readable: {resolved_path}"
             )
 
     if errors:
         formatted_errors = "\n".join(f"- {error}" for error in errors)
 
         raise RuntimeEnvironmentError(
-            "WC26 API runtime environment validation failed:\n"
-            f"{formatted_errors}"
+            f"WC26 API runtime environment validation failed:\n{formatted_errors}"
         )
 
     return runtime_settings
@@ -104,10 +100,7 @@ def main() -> None:
     print("Runtime datasets:")
 
     for requirement in _dataset_requirements(settings):
-        print(
-            f"  {requirement.environment_variable}="
-            f"{requirement.path.expanduser().resolve()}"
-        )
+        print(f"  {requirement.environment_variable}={requirement.path.expanduser().resolve()}")
 
 
 if __name__ == "__main__":

@@ -92,9 +92,7 @@ def test_main_exits_when_runtime_environment_is_invalid(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    run_server = Mock(
-        side_effect=RuntimeEnvironmentError("missing runtime dataset")
-    )
+    run_server = Mock(side_effect=RuntimeEnvironmentError("missing runtime dataset"))
 
     monkeypatch.setattr(server, "run_server", run_server)
 
