@@ -23,6 +23,7 @@ dependencies = [
 wc26-transfer = "wc26.analytics.transfer_intelligence.entrypoint:main"
 wc26-api = "wc26.api.server:main"
 wc26-validate-env = "wc26.api.environment:main"
+wc26-dataset-manifest = "wc26.deployment.dataset_manifest:main"
 
 [project.optional-dependencies]
 analysis = [
