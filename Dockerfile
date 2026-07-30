@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7
+
 FROM python:3.12-slim-bookworm AS builder
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
@@ -41,14 +43,12 @@ RUN groupadd \
         --shell /usr/sbin/nologin \
         wc26
 
-COPY --from=builder /wheels /wheels
-
-RUN python -m pip install \
+RUN --mount=from=builder,source=/wheels,target=/wheels,readonly \
+    python -m pip install \
         --no-cache-dir \
         --no-index \
         --find-links=/wheels \
-        wc26-transfer-intelligence \
-    && rm -rf /wheels
+        wc26-transfer-intelligence
 
 COPY --chown=wc26:wc26 \
     data/processed/transfer_intelligence/transfer_feature_table.csv \
