@@ -74,4 +74,4 @@ HEALTHCHECK \
     --retries=3 \
     CMD python -c "import os, urllib.request; port = os.environ.get('WC26_API_PORT', '8000'); urllib.request.urlopen(f'http://127.0.0.1:{port}/ready', timeout=5).read()"
 
-CMD ["sh", "-c", "exec python -m uvicorn wc26.api.main:app --host \"$WC26_API_HOST\" --port \"$WC26_API_PORT\""]
+CMD ["python", "-m", "wc26.api.server"]

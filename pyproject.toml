@@ -25,6 +25,7 @@ dependencies = [
 ]
 [project.scripts]
 wc26-transfer = "wc26.analytics.transfer_intelligence.entrypoint:main"
+wc26-api = "wc26.api.server:main"
 
 [project.optional-dependencies]
 dev = [
