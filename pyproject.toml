@@ -25,6 +25,7 @@ wc26-api = "wc26.api.server:main"
 wc26-validate-env = "wc26.api.environment:main"
 wc26-dataset-manifest = "wc26.deployment.dataset_manifest:main"
 wc26-validate-datasets = "wc26.deployment.dataset_integrity:main"
+wc26-build-dataset-bundle = "wc26.deployment.dataset_bundle:main"
 
 [project.optional-dependencies]
 analysis = [
