@@ -46,9 +46,7 @@ def test_generate_manifest_contains_dataset_metadata(
     definitions = (
         DatasetDefinition(
             key="players",
-            relative_path=Path(
-                "data/players.csv"
-            ),
+            relative_path=Path("data/players.csv"),
         ),
     )
 
@@ -88,9 +86,7 @@ def test_manifest_generation_is_deterministic(
     definitions = (
         DatasetDefinition(
             key="runtime",
-            relative_path=Path(
-                "data/runtime.csv"
-            ),
+            relative_path=Path("data/runtime.csv"),
         ),
     )
 
@@ -104,9 +100,7 @@ def test_manifest_generation_is_deterministic(
     )
 
     assert first == second
-    assert render_manifest(first) == render_manifest(
-        second
-    )
+    assert render_manifest(first) == render_manifest(second)
 
 
 def test_manifest_rejects_duplicate_columns(
@@ -123,9 +117,7 @@ def test_manifest_rejects_duplicate_columns(
     definitions = (
         DatasetDefinition(
             key="invalid",
-            relative_path=Path(
-                "data/invalid.csv"
-            ),
+            relative_path=Path("data/invalid.csv"),
         ),
     )
 
@@ -153,9 +145,7 @@ def test_manifest_rejects_inconsistent_rows(
     definitions = (
         DatasetDefinition(
             key="invalid",
-            relative_path=Path(
-                "data/invalid.csv"
-            ),
+            relative_path=Path("data/invalid.csv"),
         ),
     )
 
