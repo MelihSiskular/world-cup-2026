@@ -750,3 +750,26 @@ Before deploying the API:
 The current repository provides a deployment-ready ASGI application entrypoint.
 Infrastructure packaging and hosting configuration belong to the deployment
 stage.
+
+## Deployment and Runtime Datasets
+
+Production deployment, Docker hardening, runtime dataset manifests, integrity
+validation, versioned bundles, atomic activation and rollback are documented
+in:
+
+```text
+docs/DEPLOYMENT.md
+```
+
+Before changing deployment behavior:
+
+1. Keep Docker and dataset changes in focused commits.
+2. Preserve the non-root runtime.
+3. Preserve build-time and startup integrity validation.
+4. Keep externally mounted runtime datasets read-only.
+5. Validate both embedded and external dataset modes.
+6. Treat versioned bundle directories as immutable.
+7. Run the Docker image policy, smoke and hardened runtime tests.
+8. Update `docs/DEPLOYMENT.md` when commands or environment variables change.
+
+The deployment guide is the source of truth for production runtime procedures.
