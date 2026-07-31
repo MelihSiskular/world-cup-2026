@@ -23,7 +23,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     WC26_ENVIRONMENT=production \
     WC26_API_HOST=0.0.0.0 \
-    WC26_API_PORT=8000 \
     WC26_DATASET_MANIFEST_PATH=/app/config/runtime_dataset_manifest.json \
     WC26_FEATURES_PATH=/app/data/processed/transfer_intelligence/transfer_feature_table.csv \
     WC26_SIMILARITY_PATH=/app/data/processed/player_similarity/player_similarity_breakdown_long.csv \
@@ -79,6 +78,6 @@ HEALTHCHECK \
     --timeout=5s \
     --start-period=60s \
     --retries=3 \
-    CMD python -c "import os, urllib.request; port = os.environ.get('WC26_API_PORT', '8000'); urllib.request.urlopen(f'http://127.0.0.1:{port}/ready', timeout=5).read()"
+    CMD python -c "import os, urllib.request; port = os.environ.get('WC26_API_PORT') or os.environ.get('PORT', '8000'); urllib.request.urlopen(f'http://127.0.0.1:{port}/ready', timeout=5).read()"
 
 CMD ["python", "-m", "wc26.api.server"]
