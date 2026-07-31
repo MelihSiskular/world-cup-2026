@@ -34,6 +34,13 @@ RUN python -m pip install \
 
 FROM python:3.12-slim-bookworm AS runtime
 
+ARG RAILWAY_GIT_COMMIT_SHA=""
+ARG RAILWAY_GIT_BRANCH=""
+
+ENV WC26_RELEASE_SHA="${RAILWAY_GIT_COMMIT_SHA}" \
+    WC26_RELEASE_BRANCH="${RAILWAY_GIT_BRANCH}"
+
+
 ENV VIRTUAL_ENV=/opt/venv \
     PATH="/opt/venv/bin:$PATH"
 
