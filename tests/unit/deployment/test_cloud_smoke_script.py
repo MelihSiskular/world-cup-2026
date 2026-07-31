@@ -113,6 +113,21 @@ def build_handler(
                 )
                 return
 
+            if self.path == "/deployment":
+                self.send_json(
+                    {
+                        "service": ("wc26-transfer-intelligence"),
+                        "version": "0.1.0",
+                        "environment": environment,
+                        "provider": "railway",
+                        "commit_sha": "a" * 40,
+                        "branch": ("feat/docker-deployment-foundation"),
+                        "deployment_id": ("deployment-123"),
+                        "dataset_bundle_sha256": ("b" * 64),
+                    }
+                )
+                return
+
             if self.path == "/openapi.json":
                 self.send_json(
                     {
@@ -120,6 +135,7 @@ def build_handler(
                         "paths": {
                             "/health": {},
                             "/ready": {},
+                            "/deployment": {},
                             ("/api/v1/players/search"): {},
                             ("/api/v1/players/{player_id}"): {},
                             ("/api/v1/transfer-intelligence/analyze"): {},
@@ -227,12 +243,15 @@ def run_stub_server(
 
 def run_smoke_script(
     base_url: str,
+    *,
+    expected_commit_sha: str = "a" * 40,
 ) -> subprocess.CompletedProcess[str]:
     """Execute the smoke script against one URL."""
 
     environment = os.environ.copy()
     environment.update(
         {
+            "WC26_EXPECTED_COMMIT_SHA": (expected_commit_sha),
             "WC26_CLOUD_SMOKE_ALLOW_HTTP": "1",
             ("WC26_CLOUD_READY_TIMEOUT_SECONDS"): "5",
             ("WC26_CLOUD_READY_INTERVAL_SECONDS"): "1",
@@ -274,3 +293,16 @@ def test_cloud_smoke_script_rejects_non_production_api() -> None:
 
     assert result.returncode != 0
     assert "environment is not production" in result.stderr
+
+
+def test_cloud_smoke_script_rejects_unexpected_commit() -> None:
+    with run_stub_server(
+        environment="production",
+    ) as base_url:
+        result = run_smoke_script(
+            base_url,
+            expected_commit_sha="c" * 40,
+        )
+
+    assert result.returncode != 0
+    assert "deployment commit SHA does not match WC26_EXPECTED_COMMIT_SHA" in result.stderr

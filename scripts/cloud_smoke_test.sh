@@ -41,6 +41,7 @@ require_positive_integer() {
 
 require_command curl
 require_command python
+require_command grep
 
 BASE_URL="${1:-${WC26_PRODUCTION_URL:-}}"
 
@@ -63,6 +64,7 @@ READY_TIMEOUT_SECONDS="${WC26_CLOUD_READY_TIMEOUT_SECONDS:-180}"
 READY_INTERVAL_SECONDS="${WC26_CLOUD_READY_INTERVAL_SECONDS:-2}"
 REQUEST_TIMEOUT_SECONDS="${WC26_CLOUD_REQUEST_TIMEOUT_SECONDS:-60}"
 ALLOW_HTTP="${WC26_CLOUD_SMOKE_ALLOW_HTTP:-0}"
+EXPECTED_COMMIT_SHA="${WC26_EXPECTED_COMMIT_SHA:-}"
 
 PLAYER_ID=978838
 PLAYER_NAME="Michael Olise"
@@ -79,6 +81,15 @@ require_positive_integer \
 require_positive_integer \
     "WC26_CLOUD_REQUEST_TIMEOUT_SECONDS" \
     "${REQUEST_TIMEOUT_SECONDS}"
+
+if [[
+    -n "${EXPECTED_COMMIT_SHA}"
+    && ! "${EXPECTED_COMMIT_SHA}" =~ ^[0-9a-fA-F]{40}$
+]]; then
+    fail \
+        "WC26_EXPECTED_COMMIT_SHA must be " \
+        "a 40-character Git commit SHA."
+fi
 
 python - \
     "${BASE_URL}" \
@@ -137,8 +148,7 @@ TEMP_DIRECTORY="$(
 )"
 
 cleanup() {
-    rm -rf \
-        "${TEMP_DIRECTORY}"
+    rm -rf "${TEMP_DIRECTORY}"
 }
 
 trap cleanup EXIT
@@ -180,7 +190,14 @@ request_json() {
         "${BASE_URL}${path}"
 }
 
+HEALTH_PATH="${TEMP_DIRECTORY}/health.json"
 READY_PATH="${TEMP_DIRECTORY}/ready.json"
+SEARCH_PATH="${TEMP_DIRECTORY}/search.json"
+PROFILE_PATH="${TEMP_DIRECTORY}/profile.json"
+ANALYSIS_PATH="${TEMP_DIRECTORY}/analysis.json"
+DEPLOYMENT_PATH="${TEMP_DIRECTORY}/deployment.json"
+OPENAPI_PATH="${TEMP_DIRECTORY}/openapi.json"
+DOCS_PATH="${TEMP_DIRECTORY}/docs.html"
 
 log "Target: ${BASE_URL}"
 log "Waiting for production readiness."
@@ -189,7 +206,7 @@ ready=false
 attempt=0
 deadline="$((SECONDS + READY_TIMEOUT_SECONDS))"
 
-while (( SECONDS <= deadline )); do
+while ((SECONDS <= deadline)); do
     attempt="$((attempt + 1))"
 
     if curl \
@@ -234,8 +251,7 @@ PY
         fi
     fi
 
-    sleep \
-        "${READY_INTERVAL_SECONDS}"
+    sleep "${READY_INTERVAL_SECONDS}"
 done
 
 if [[ "${ready}" != "true" ]]; then
@@ -245,13 +261,6 @@ if [[ "${ready}" != "true" ]]; then
 fi
 
 log "API ready after ${attempt} attempt(s)."
-
-HEALTH_PATH="${TEMP_DIRECTORY}/health.json"
-SEARCH_PATH="${TEMP_DIRECTORY}/search.json"
-PROFILE_PATH="${TEMP_DIRECTORY}/profile.json"
-ANALYSIS_PATH="${TEMP_DIRECTORY}/analysis.json"
-OPENAPI_PATH="${TEMP_DIRECTORY}/openapi.json"
-DOCS_PATH="${TEMP_DIRECTORY}/docs.html"
 
 log "Checking liveness endpoint."
 
@@ -288,6 +297,13 @@ request_json \
     "/api/v1/transfer-intelligence/analyze" \
     "${ANALYSIS_PATH}" \
     "{\"player_id\":${PLAYER_ID}}"
+
+log "Checking deployment identity endpoint."
+
+request_json \
+    GET \
+    "/deployment" \
+    "${DEPLOYMENT_PATH}"
 
 log "Checking OpenAPI endpoint."
 
@@ -327,11 +343,14 @@ python - \
     "${PROFILE_PATH}" \
     "${ANALYSIS_PATH}" \
     "${OPENAPI_PATH}" \
+    "${DEPLOYMENT_PATH}" \
     "${PLAYER_ID}" \
-    "${PLAYER_NAME}" <<'PY'
+    "${PLAYER_NAME}" \
+    "${EXPECTED_COMMIT_SHA}" <<'PY'
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -379,9 +398,11 @@ search = load_json(sys.argv[3])
 profile = load_json(sys.argv[4])
 analysis = load_json(sys.argv[5])
 openapi = load_json(sys.argv[6])
+deployment = load_json(sys.argv[7])
 
-player_id = int(sys.argv[7])
-player_name = sys.argv[8]
+player_id = int(sys.argv[8])
+player_name = sys.argv[9]
+expected_commit_sha = sys.argv[10]
 
 require(
     health.get("status") == "ok",
@@ -492,6 +513,75 @@ require(
     "analysis modes must not be empty",
 )
 
+require(
+    deployment.get("service")
+    == "wc26-transfer-intelligence",
+    "deployment service name is invalid",
+)
+require(
+    deployment.get("environment")
+    == "production",
+    "deployment environment is not production",
+)
+require(
+    deployment.get("provider") == "railway",
+    "deployment provider is not railway",
+)
+
+commit_sha = deployment.get("commit_sha")
+
+require(
+    isinstance(commit_sha, str)
+    and re.fullmatch(
+        r"[0-9a-fA-F]{40}",
+        commit_sha,
+    )
+    is not None,
+    "deployment commit SHA is invalid",
+)
+
+if expected_commit_sha:
+    require(
+        commit_sha.casefold()
+        == expected_commit_sha.casefold(),
+        (
+            "deployment commit SHA does not match "
+            "WC26_EXPECTED_COMMIT_SHA"
+        ),
+    )
+
+branch = deployment.get("branch")
+
+require(
+    isinstance(branch, str)
+    and bool(branch.strip()),
+    "deployment branch is missing",
+)
+
+deployment_id = deployment.get(
+    "deployment_id"
+)
+
+require(
+    isinstance(deployment_id, str)
+    and bool(deployment_id.strip()),
+    "Railway deployment ID is missing",
+)
+
+dataset_bundle_sha256 = deployment.get(
+    "dataset_bundle_sha256"
+)
+
+require(
+    isinstance(dataset_bundle_sha256, str)
+    and re.fullmatch(
+        r"[0-9a-fA-F]{64}",
+        dataset_bundle_sha256,
+    )
+    is not None,
+    "dataset bundle SHA256 is invalid",
+)
+
 paths = openapi.get("paths")
 
 require(
@@ -502,6 +592,7 @@ require(
 expected_paths = {
     "/health",
     "/ready",
+    "/deployment",
     "/api/v1/players/search",
     "/api/v1/players/{player_id}",
     "/api/v1/transfer-intelligence/analyze",
@@ -530,6 +621,26 @@ print(
 print(
     f"OpenAPIPathCount={len(paths)}"
 )
+print(
+    f"DeploymentProvider="
+    f"{deployment['provider']}"
+)
+print(
+    f"DeploymentCommitSHA="
+    f"{commit_sha}"
+)
+print(
+    f"DeploymentBranch="
+    f"{branch}"
+)
+print(
+    f"DeploymentID="
+    f"{deployment_id}"
+)
+print(
+    "DatasetBundleSHA256="
+    f"{dataset_bundle_sha256}"
+)
 
 if isinstance(modes, dict):
     print(
@@ -542,6 +653,7 @@ else:
 PY
 
 log "Cloud smoke test passed."
+
 printf '%s\n' \
     "  Base URL:       ${BASE_URL}" \
     "  Environment:    production" \
