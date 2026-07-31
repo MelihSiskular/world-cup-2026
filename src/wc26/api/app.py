@@ -18,6 +18,7 @@ from wc26.analytics.transfer_intelligence.catalog import (
 from wc26.api.exception_handlers import (
     register_exception_handlers,
 )
+from wc26.api.routes.deployment import router as deployment_router
 from wc26.api.routes.health import router as health_router
 from wc26.api.routes.players import (
     router as players_router,
@@ -113,6 +114,7 @@ def create_app(
     application.state.api_runtime = runtime
 
     application.include_router(health_router)
+    application.include_router(deployment_router)
     application.include_router(players_router)
     application.include_router(transfer_intelligence_router)
 
