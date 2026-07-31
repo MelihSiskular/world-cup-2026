@@ -15,7 +15,30 @@ RUN python -m pip wheel \
     .
 
 
+FROM python:3.12-slim-bookworm AS installer
+
+ENV VIRTUAL_ENV=/opt/venv \
+    PATH="/opt/venv/bin:$PATH"
+
+RUN python -m venv "$VIRTUAL_ENV"
+
+COPY --from=builder /wheels /wheels
+
+RUN python -m pip install \
+        --no-cache-dir \
+        --no-index \
+        --find-links=/wheels \
+        wc26-transfer-intelligence \
+    && rm -rf /wheels
+
+
 FROM python:3.12-slim-bookworm AS runtime
+
+ENV VIRTUAL_ENV=/opt/venv \
+    PATH="/opt/venv/bin:$PATH"
+
+COPY --from=installer /opt/venv /opt/venv
+
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -43,12 +66,6 @@ RUN groupadd \
         --shell /usr/sbin/nologin \
         wc26
 
-RUN --mount=from=builder,source=/wheels,target=/wheels,readonly \
-    python -m pip install \
-        --no-cache-dir \
-        --no-index \
-        --find-links=/wheels \
-        wc26-transfer-intelligence
 
 COPY --chown=wc26:wc26 \
     config/runtime_dataset_manifest.json \
