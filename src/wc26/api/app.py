@@ -18,6 +18,10 @@ from wc26.analytics.transfer_intelligence.catalog import (
 from wc26.api.exception_handlers import (
     register_exception_handlers,
 )
+from wc26.api.request_context import (
+    REQUEST_ID_HEADER,
+    RequestObservabilityMiddleware,
+)
 from wc26.api.routes.deployment import router as deployment_router
 from wc26.api.routes.health import router as health_router
 from wc26.api.routes.players import (
@@ -109,7 +113,10 @@ def create_app(
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],
+            expose_headers=[REQUEST_ID_HEADER],
         )
+
+    application.add_middleware(RequestObservabilityMiddleware)
 
     application.state.api_runtime = runtime
 

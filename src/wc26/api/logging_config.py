@@ -7,6 +7,8 @@ import logging
 from datetime import UTC, datetime
 from typing import Final, TextIO
 
+from wc26.api.request_context import get_request_id
+
 _LOG_RECORD_ATTRIBUTES: Final = frozenset(
     logging.LogRecord(
         name="",
@@ -107,6 +109,12 @@ class JsonLogFormatter(logging.Formatter):
 
             payload[key] = value
 
+        if "request_id" not in payload:
+            request_id = get_request_id()
+
+            if request_id is not None:
+                payload["request_id"] = request_id
+
         if record.exc_info is not None:
             payload["exception"] = self.formatException(record.exc_info)
 
@@ -122,6 +130,32 @@ class JsonLogFormatter(logging.Formatter):
         )
 
 
+class ConsoleLogFormatter(logging.Formatter):
+    """Render readable logs with optional request context."""
+
+    def format(
+        self,
+        record: logging.LogRecord,
+    ) -> str:
+        """Return one console-oriented log line."""
+
+        output = super().format(record)
+
+        request_id = getattr(
+            record,
+            "request_id",
+            None,
+        )
+
+        if request_id is None:
+            request_id = get_request_id()
+
+        if request_id is None:
+            return output
+
+        return f"{output} request_id={request_id}"
+
+
 def build_log_handler(
     *,
     environment: str,
@@ -135,7 +169,7 @@ def build_log_handler(
         handler.setFormatter(JsonLogFormatter())
     else:
         handler.setFormatter(
-            logging.Formatter(
+            ConsoleLogFormatter(
                 ("%(asctime)s %(levelname)s %(name)s %(message)s"),
                 datefmt="%Y-%m-%dT%H:%M:%S",
             )
@@ -171,6 +205,7 @@ def configure_logging(
 
 
 __all__ = [
+    "ConsoleLogFormatter",
     "JsonLogFormatter",
     "LogConfigurationError",
     "build_log_handler",

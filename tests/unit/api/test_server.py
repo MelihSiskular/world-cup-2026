@@ -37,6 +37,8 @@ def test_run_server_uses_explicit_settings(
         port=9000,
         reload=False,
         workers=1,
+        access_log=False,
+        log_config=None,
     )
 
 
@@ -73,6 +75,8 @@ def test_run_server_reads_environment_settings(
         port=9100,
         reload=False,
         workers=1,
+        access_log=False,
+        log_config=None,
     )
 
 
