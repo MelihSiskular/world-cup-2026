@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 from typing import Annotated
 
 from fastapi import (
@@ -38,7 +37,6 @@ router = APIRouter(
     prefix="/api/v1/transfer-intelligence",
     tags=["transfer-intelligence"],
 )
-logger = logging.getLogger(__name__)
 
 
 @router.post(
@@ -109,12 +107,6 @@ def analyze_transfer_alternatives(
         raise
 
     except Exception as exception:
-        logger.exception(
-            ("Unexpected transfer analysis failure for player=%r player_id=%r"),
-            payload.player,
-            payload.player_id,
-        )
-
         raise TransferAnalysisExecutionError("Transfer analysis execution failed.") from exception
 
 
