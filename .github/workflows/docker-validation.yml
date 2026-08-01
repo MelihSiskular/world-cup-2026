@@ -1,0 +1,55 @@
+name: Docker Validation
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docker-validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOCKER_IMAGE: wc26-transfer-api:dev
+
+jobs:
+  docker:
+    name: Build, Policy, Smoke and Hardened Runtime
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Inspect Docker engine
+        run: |
+          docker version
+
+      - name: Build production image
+        run: |
+          docker build \
+            --progress=plain \
+            --tag "${DOCKER_IMAGE}" \
+            --build-arg "RAILWAY_GIT_COMMIT_SHA=${GITHUB_SHA}" \
+            --build-arg "RAILWAY_GIT_BRANCH=${GITHUB_REF_NAME}" \
+            .
+
+      - name: Validate Docker image policy
+        run: |
+          ./scripts/docker_image_policy.sh
+
+      - name: Run Docker API smoke test
+        run: |
+          ./scripts/docker_smoke_test.sh
+
+      - name: Validate hardened Docker runtime
+        run: |
+          ./scripts/docker_hardened_runtime_test.sh
