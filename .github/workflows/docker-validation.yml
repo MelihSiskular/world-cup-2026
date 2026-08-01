@@ -19,6 +19,7 @@ concurrency:
 env:
   DOCKER_IMAGE: wc26-transfer-api:dev
   MAX_IMAGE_ARCHIVE_SIZE_BYTES: "140000000"
+  ARTIFACT_DIRECTORY: artifacts/docker-validation
 
 jobs:
   docker:
@@ -30,27 +31,127 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
-      - name: Inspect Docker engine
+      - name: Prepare diagnostics directory
+        shell: bash
         run: |
-          docker version
+          mkdir -p "${ARTIFACT_DIRECTORY}"
+
+      - name: Inspect Docker engine
+        shell: bash
+        run: |
+          set -o pipefail
+
+          docker version \
+            2>&1 \
+            | tee \
+              "${ARTIFACT_DIRECTORY}/docker-version.log"
 
       - name: Build production image
+        shell: bash
         run: |
+          set -o pipefail
+
           docker build \
             --progress=plain \
             --tag "${DOCKER_IMAGE}" \
             --build-arg "RAILWAY_GIT_COMMIT_SHA=${GITHUB_SHA}" \
             --build-arg "RAILWAY_GIT_BRANCH=${GITHUB_REF_NAME}" \
-            .
+            . \
+            2>&1 \
+            | tee \
+              "${ARTIFACT_DIRECTORY}/docker-build.log"
 
       - name: Validate Docker image policy
+        shell: bash
         run: |
-          ./scripts/docker_image_policy.sh
+          set -o pipefail
+
+          ./scripts/docker_image_policy.sh \
+            2>&1 \
+            | tee \
+              "${ARTIFACT_DIRECTORY}/docker-image-policy.log"
 
       - name: Run Docker API smoke test
+        shell: bash
         run: |
-          ./scripts/docker_smoke_test.sh
+          set -o pipefail
+
+          ./scripts/docker_smoke_test.sh \
+            2>&1 \
+            | tee \
+              "${ARTIFACT_DIRECTORY}/docker-smoke-test.log"
 
       - name: Validate hardened Docker runtime
+        shell: bash
         run: |
-          ./scripts/docker_hardened_runtime_test.sh
+          set -o pipefail
+
+          ./scripts/docker_hardened_runtime_test.sh \
+            2>&1 \
+            | tee \
+              "${ARTIFACT_DIRECTORY}/docker-hardened-runtime.log"
+
+      - name: Collect Docker diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set +e
+
+          mkdir -p "${ARTIFACT_DIRECTORY}"
+
+          {
+            echo "Workflow=${GITHUB_WORKFLOW}"
+            echo "RunID=${GITHUB_RUN_ID}"
+            echo "RunAttempt=${GITHUB_RUN_ATTEMPT}"
+            echo "Repository=${GITHUB_REPOSITORY}"
+            echo "Ref=${GITHUB_REF}"
+            echo "RefName=${GITHUB_REF_NAME}"
+            echo "CommitSHA=${GITHUB_SHA}"
+            echo "RunnerOS=${RUNNER_OS}"
+            echo "RunnerArchitecture=${RUNNER_ARCH}"
+          } > "${ARTIFACT_DIRECTORY}/workflow-context.txt"
+
+          docker info \
+            > "${ARTIFACT_DIRECTORY}/docker-info.log" \
+            2>&1
+
+          docker ps \
+            --all \
+            --no-trunc \
+            > "${ARTIFACT_DIRECTORY}/docker-containers.log" \
+            2>&1
+
+          docker image ls \
+            --no-trunc \
+            > "${ARTIFACT_DIRECTORY}/docker-images.log" \
+            2>&1
+
+          docker system df \
+            --verbose \
+            > "${ARTIFACT_DIRECTORY}/docker-system-df.log" \
+            2>&1
+
+          if docker image inspect \
+            "${DOCKER_IMAGE}" \
+            >/dev/null 2>&1
+          then
+            docker image inspect \
+              "${DOCKER_IMAGE}" \
+              > "${ARTIFACT_DIRECTORY}/image-inspect.json" \
+              2>&1
+
+            docker history \
+              --no-trunc \
+              "${DOCKER_IMAGE}" \
+              > "${ARTIFACT_DIRECTORY}/image-history.log" \
+              2>&1
+          fi
+
+      - name: Upload Docker validation diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/docker-validation
+          if-no-files-found: error
+          retention-days: 14
