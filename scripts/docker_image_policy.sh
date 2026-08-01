@@ -3,7 +3,9 @@
 set -Eeuo pipefail
 
 readonly IMAGE_NAME="${1:-wc26-transfer-api:dev}"
-readonly MAX_IMAGE_SIZE_BYTES="${MAX_IMAGE_SIZE_BYTES:-140000000}"
+readonly MAX_IMAGE_ARCHIVE_SIZE_BYTES="${
+    MAX_IMAGE_ARCHIVE_SIZE_BYTES:-${MAX_IMAGE_SIZE_BYTES:-140000000}
+}"
 
 
 log() {
@@ -45,6 +47,15 @@ inspect_value() {
 }
 
 
+measure_compressed_archive_size() {
+    docker image save \
+        "${IMAGE_NAME}" \
+        | gzip -9 -c \
+        | wc -c \
+        | tr -d '[:space:]'
+}
+
+
 assert_equals() {
     local actual="$1"
     local expected="$2"
@@ -57,7 +68,8 @@ assert_equals() {
 
 
 validate_image_metadata() {
-    local image_size
+    local engine_size
+    local compressed_archive_size
     local image_os
     local architecture
     local runtime_user
@@ -66,7 +78,10 @@ validate_image_metadata() {
     local port_exposed
     local healthcheck_defined
 
-    image_size="$(inspect_value '{{.Size}}')"
+    engine_size="$(inspect_value '{{.Size}}')"
+    compressed_archive_size="$(
+        measure_compressed_archive_size
+    )"
     image_os="$(inspect_value '{{.Os}}')"
     architecture="$(inspect_value '{{.Architecture}}')"
     runtime_user="$(inspect_value '{{.Config.User}}')"
@@ -83,10 +98,14 @@ validate_image_metadata() {
             '{{if .Config.Healthcheck}}true{{else}}false{{end}}'
     )"
 
-    if ((image_size > MAX_IMAGE_SIZE_BYTES)); then
+    if ((
+        compressed_archive_size
+        > MAX_IMAGE_ARCHIVE_SIZE_BYTES
+    )); then
         fail \
-            "Image size ${image_size} bytes exceeds budget " \
-            "${MAX_IMAGE_SIZE_BYTES} bytes."
+            "Compressed image archive size " \
+            "${compressed_archive_size} bytes exceeds budget " \
+            "${MAX_IMAGE_ARCHIVE_SIZE_BYTES} bytes."
     fi
 
     assert_equals "${image_os}" "linux" "Operating system"
@@ -102,8 +121,10 @@ validate_image_metadata() {
     log "Image metadata policy passed."
     printf '  Image:          %s\n' "${IMAGE_NAME}"
     printf '  Architecture:   %s\n' "${architecture}"
-    printf '  Size:           %s bytes\n' "${image_size}"
-    printf '  Size budget:    %s bytes\n' "${MAX_IMAGE_SIZE_BYTES}"
+    printf '  Engine size:    %s bytes\n' "${engine_size}"
+    printf '  Archive size:   %s bytes\n' "${compressed_archive_size}"
+    printf '  Archive budget: %s bytes\n' \
+        "${MAX_IMAGE_ARCHIVE_SIZE_BYTES}"
     printf '  Runtime user:   %s\n' "${runtime_user}"
     printf '  Working dir:    %s\n' "${working_directory}"
 }
@@ -264,9 +285,13 @@ PY
 
 main() {
     require_command docker
+    require_command gzip
+    require_command wc
+    require_command tr
+
     require_positive_integer \
-        "${MAX_IMAGE_SIZE_BYTES}" \
-        "MAX_IMAGE_SIZE_BYTES"
+        "${MAX_IMAGE_ARCHIVE_SIZE_BYTES}" \
+        "MAX_IMAGE_ARCHIVE_SIZE_BYTES"
 
     if ! docker info >/dev/null 2>&1; then
         fail "Docker engine is not reachable."

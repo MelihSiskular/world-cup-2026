@@ -18,6 +18,7 @@ concurrency:
 
 env:
   DOCKER_IMAGE: wc26-transfer-api:dev
+  MAX_IMAGE_ARCHIVE_SIZE_BYTES: "140000000"
 
 jobs:
   docker:
