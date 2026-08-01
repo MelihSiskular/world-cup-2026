@@ -5,24 +5,39 @@
 
 ## Project Overview
 
->Machine Learning powered football analytics platform built from FIFA World Cup 2026 tournament data.
+A football analytics and recruitment intelligence platform built from FIFA World Cup 2026 tournament data.
 
+The project started as a collection of match and player analyses, then evolved into a complete scouting workflow that combines statistical performance, player roles, spatial behaviour, heatmaps, market value and transfer suitability.
 
-By integrating match statistics, market values, positional information, heatmaps and unsupervised learning techniques, the platform explores player performance, tactical roles, similarity networks and transfer opportunities beyond traditional football metrics.
-The project focuses on these main areas:
+## What the Project Covers
 
+- Goal timing and tournament scoring analysis
 
--  Goal Analysis
--  Player Performance Analysis
--  Player Similarity Engine
--  Player Archetypes
--  Player Positioning Analysis
--  Player Role Discovery
--  Player Heatmap Visualization
--  Transfer Intelligence Engine
+- Player performance and stage-based rankings
+
+- Statistical player similarity
+
+- Player archetypes and role discovery
+
+- Average-position and heatmap analysis
+
+- Transfer replacement recommendations
+
+- A CLI and FastAPI backend for reusable analysis workflows
+
+### Transfer Intelligence
+
+The Transfer Intelligence Engine does not only ask:
+
+> Who is the most similar player?
+
+It also asks:
+
+> Who is the most suitable replacement for a specific recruitment scenario?
+
+Recommendations combine statistical similarity, role compatibility, spatial behaviour, heatmap similarity, age, market value, tournament quality and data reliability.
 
 ---
-
 ## Quick Start
 
 ### Installation
@@ -38,9 +53,7 @@ python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 ```
 
-### Transfer Intelligence CLI
-
-Run a transfer replacement analysis:
+### Run a Transfer Analysis
 
 ```bash
 wc26-transfer \
@@ -48,7 +61,7 @@ wc26-transfer \
   --top-n 5
 ```
 
-Example with recruitment constraints:
+Add recruitment constraints when needed:
 
 ```bash
 wc26-transfer \
@@ -59,44 +72,73 @@ wc26-transfer \
   --top-n 5
 ```
 
-Display all available options:
+Display all options:
 
 ```bash
 wc26-transfer --help
 ```
 
-The legacy module command remains available for backward compatibility:
-
-```bash
-python -m src.transfer_intelligence.find_replacements \
-  --player "Michael Olise"
-```
-
-
 ## Backend API
 
-The project also includes a FastAPI backend for player discovery and transfer
-intelligence workflows.
+Run the API locally:
 
 ```bash
-python -m uvicorn wc26.api.main:app --reload
+python -m uvicorn wc26.api.main:app \
+  --reload \
+  --host 127.0.0.1 \
+  --port 8000
 ```
 
-Available endpoints:
+Interactive documentation:
 
-- `GET /health`
-- `GET /ready`
-- `GET /api/v1/players/search`
-- `GET /api/v1/players/{player_id}`
-- `POST /api/v1/transfer-intelligence/analyze`
+```text
+http://127.0.0.1:8000/docs
+```
 
-Interactive API documentation is available at
-`http://127.0.0.1:8000/docs`.
+Production API:
 
-See [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) for runtime configuration,
-testing, architecture and deployment details.
+```text
+https://world-cup-2026-production.up.railway.app
+```
+
+Production Swagger UI:
+
+```text
+https://world-cup-2026-production.up.railway.app/docs
+```
+
+### Main Endpoints
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/health` | Process liveness |
+| `GET` | `/ready` | Runtime catalog readiness |
+| `GET` | `/deployment` | Release and dataset identity |
+| `GET` | `/api/v1/players/search` | Search players by name |
+| `GET` | `/api/v1/players/{player_id}` | Retrieve a player profile |
+| `POST` | `/api/v1/transfer-intelligence/analyze` | Run transfer analysis |
+
+Example player search:
+
+```bash
+curl --get \
+  "https://world-cup-2026-production.up.railway.app/api/v1/players/search" \
+  --data-urlencode "q=olise" \
+  --data-urlencode "limit=5"
+```
+
+Example transfer analysis:
+
+```bash
+curl -X POST \
+  "https://world-cup-2026-production.up.railway.app/api/v1/transfer-intelligence/analyze" \
+  -H "Content-Type: application/json" \
+  -d '{"player_id": 978838}'
+```
 
 ---
+
+
 
 # 1 - Goal Analysis
 
@@ -548,53 +590,10 @@ The engine produces four recruitment scenarios:
 - Cosine Similarity
 - K-Means Clustering
 - PCA
-
-
----
-
-## Project Structure
-
-```text
-world-cup-2026/
-├── .github/
-│   └── workflows/
-│       └── python-quality.yml
-├── data/
-│   └── processed/
-├── docs/
-│   ├── DEVELOPMENT.md
-│   └── images/
-├── src/
-│   ├── wc26/
-│   │   ├── core/
-│   │   │   └── paths.py
-│   │   └── analytics/
-│   │       └── transfer_intelligence/
-│   │           ├── candidates.py
-│   │           ├── cli.py
-│   │           ├── config.py
-│   │           ├── datasets.py
-│   │           ├── entrypoint.py
-│   │           ├── explanations.py
-│   │           ├── matching.py
-│   │           ├── recommendations.py
-│   │           ├── reporting.py
-│   │           ├── scoring.py
-│   │           ├── service.py
-│   │           └── utils.py
-│   ├── goal_minute/
-│   ├── player_archetypes/
-│   ├── player_heatmaps/
-│   ├── player_positioning/
-│   ├── player_roles/
-│   ├── player_similarity/
-│   └── transfer_intelligence/
-├── tests/
-│   ├── unit/
-│   └── integration/
-├── pyproject.toml
-└── README.md
-```
+- FastAPI
+- Uvicorn
+- Docker
+- Railway
 
 ---
 ## Sample Insights
@@ -613,6 +612,8 @@ Examples of questions that can be answered using this project:
 ## Data Source
 
 Match events and player statistics are collected from SofaScore and transformed into analytical datasets for educational and research purposes.
+
+Tournament-based outputs should be treated as analytical evidence rather than definitive long-term scouting conclusions.
 
 ---
 
