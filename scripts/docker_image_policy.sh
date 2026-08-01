@@ -87,8 +87,24 @@ validate_image_metadata() {
     command="$(inspect_value '{{json .Config.Cmd}}')"
 
     port_exposed="$(
-        inspect_value \
-            '{{if index .Config.ExposedPorts "8000/tcp"}}true{{else}}false{{end}}'
+        docker image inspect \
+            "${IMAGE_NAME}" \
+            | python -c '
+import json
+import sys
+
+document = json.load(sys.stdin)[0]
+exposed_ports = (
+    document.get("Config", {}).get("ExposedPorts")
+    or {}
+)
+
+print(
+    "true"
+    if "8000/tcp" in exposed_ports
+    else "false"
+)
+'
     )"
 
     healthcheck_defined="$(
