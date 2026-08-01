@@ -3,7 +3,7 @@ name: Production Verification
 on:
   push:
     branches:
-      - feat/docker-deployment-foundation
+      - main
   workflow_dispatch:
 
 permissions:
