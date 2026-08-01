@@ -89,3 +89,8 @@ __pycache__/
 # Coverage
 .coverage
 htmlcov/
+# Keep runtime secrets local, but track the safe configuration template.
+!.env.example
+
+# Generated deployment artifacts
+/dist/

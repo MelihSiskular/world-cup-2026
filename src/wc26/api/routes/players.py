@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 from typing import Annotated
 
 from fastapi import (
@@ -41,9 +40,6 @@ from wc26.api.schemas.players import (
     PlayerProfileResponse,
     PlayerSearchResponse,
 )
-
-logger = logging.getLogger(__name__)
-
 
 router = APIRouter(
     prefix="/api/v1/players",
@@ -117,11 +113,6 @@ def search_player_catalogue(
     ):
         raise
     except Exception as exception:
-        logger.exception(
-            "Unexpected player-search failure for query %s",
-            q,
-        )
-
         raise PlayerSearchExecutionError("Player search execution failed.") from exception
 
 
@@ -186,11 +177,6 @@ def get_player_profile_by_id(
     ):
         raise
     except Exception as exception:
-        logger.exception(
-            "Unexpected player-profile failure for ID %s",
-            player_id,
-        )
-
         raise PlayerProfileExecutionError("Player profile execution failed.") from exception
 
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Literal
 
 from fastapi import FastAPI, status
 from fastapi.requests import Request
@@ -22,107 +23,112 @@ from wc26.api.errors import (
     PlayerSearchExecutionError,
     TransferAnalysisExecutionError,
 )
+from wc26.api.request_context import (
+    get_request_id,
+)
 from wc26.api.schemas.errors import (
     ApiErrorCode,
     ApiErrorDetail,
     ApiErrorResponse,
 )
 
-logger = logging.getLogger(__name__)
+type ApiErrorEvent = Literal[
+    "api.error.client",
+    "api.error.dependency",
+    "api.error.internal",
+]
 
 
-async def handle_invalid_transfer_analysis_request(
+logger = logging.getLogger("wc26.api.error")
+
+
+def _error_log_fields(
+    *,
     request: Request,
     exception: Exception,
-) -> JSONResponse:
-    """Convert an invalid transfer target into HTTP 400."""
+    status_code: int,
+    error_code: ApiErrorCode,
+) -> dict[str, object]:
+    """Return shared structured API error fields."""
 
-    del request
+    return {
+        "request_id": get_request_id(),
+        "http_method": request.method,
+        "http_path": request.url.path,
+        "status_code": status_code,
+        "error_code": error_code,
+        "exception_type": (type(exception).__name__),
+    }
 
-    return _error_response(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        code="invalid_transfer_analysis_request",
-        message=str(exception),
-    )
 
-
-async def handle_invalid_player_profile(
+def _log_api_error(
+    *,
     request: Request,
     exception: Exception,
-) -> JSONResponse:
-    """Convert invalid player-profile parameters into HTTP 400."""
+    status_code: int,
+    error_code: ApiErrorCode,
+    event: ApiErrorEvent,
+    level: int,
+) -> None:
+    """Emit one normalized API error log."""
 
-    del request
-
-    return _error_response(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        code="invalid_player_profile",
-        message=str(exception),
+    log_fields = _error_log_fields(
+        request=request,
+        exception=exception,
+        status_code=status_code,
+        error_code=error_code,
     )
 
+    if event == "api.error.internal":
+        cause = exception.__cause__ if exception.__cause__ is not None else exception
 
-async def handle_player_profile_execution_error(
-    request: Request,
-    exception: Exception,
-) -> JSONResponse:
-    """Convert an unexpected player-profile failure into HTTP 500."""
+        logger.log(
+            level,
+            "Internal API request failure",
+            extra={
+                "event": event,
+                **log_fields,
+                "cause_type": (type(cause).__name__),
+            },
+            exc_info=cause,
+        )
+        return
 
-    del request
+    message = {
+        "api.error.client": ("Client request rejected"),
+        "api.error.dependency": ("API dependency unavailable"),
+    }[event]
 
-    logger.error(
-        "Player profile retrieval failed: %s",
-        exception,
-    )
-
-    return _error_response(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        code="player_profile_failed",
-        message="Player profile could not be retrieved.",
-    )
-
-
-async def handle_invalid_player_search(
-    request: Request,
-    exception: Exception,
-) -> JSONResponse:
-    """Convert invalid player-search parameters into HTTP 400."""
-
-    del request
-
-    return _error_response(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        code="invalid_player_search",
-        message=str(exception),
-    )
-
-
-async def handle_player_search_execution_error(
-    request: Request,
-    exception: Exception,
-) -> JSONResponse:
-    """Convert an unexpected player-search failure into HTTP 500."""
-
-    del request
-
-    logger.error(
-        "Player search failed: %s",
-        exception,
-    )
-
-    return _error_response(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        code="player_search_failed",
-        message="Player search could not be completed.",
+    logger.log(
+        level,
+        message,
+        extra={
+            "event": event,
+            **log_fields,
+        },
     )
 
 
 def _error_response(
     *,
+    request: Request,
+    exception: Exception,
     status_code: int,
     code: ApiErrorCode,
     message: str,
+    event: ApiErrorEvent,
+    log_level: int,
 ) -> JSONResponse:
-    """Build the standard API error response."""
+    """Log and build the standard API error response."""
+
+    _log_api_error(
+        request=request,
+        exception=exception,
+        status_code=status_code,
+        error_code=code,
+        event=event,
+        level=log_level,
+    )
 
     payload = ApiErrorResponse(
         error=ApiErrorDetail(
@@ -137,18 +143,105 @@ def _error_response(
     )
 
 
+async def handle_invalid_transfer_analysis_request(
+    request: Request,
+    exception: Exception,
+) -> JSONResponse:
+    """Convert an invalid transfer target into HTTP 400."""
+
+    return _error_response(
+        request=request,
+        exception=exception,
+        status_code=(status.HTTP_400_BAD_REQUEST),
+        code=("invalid_transfer_analysis_request"),
+        message=str(exception),
+        event="api.error.client",
+        log_level=logging.WARNING,
+    )
+
+
+async def handle_invalid_player_profile(
+    request: Request,
+    exception: Exception,
+) -> JSONResponse:
+    """Convert invalid player-profile parameters into HTTP 400."""
+
+    return _error_response(
+        request=request,
+        exception=exception,
+        status_code=(status.HTTP_400_BAD_REQUEST),
+        code="invalid_player_profile",
+        message=str(exception),
+        event="api.error.client",
+        log_level=logging.WARNING,
+    )
+
+
+async def handle_player_profile_execution_error(
+    request: Request,
+    exception: Exception,
+) -> JSONResponse:
+    """Convert an unexpected player-profile failure into HTTP 500."""
+
+    return _error_response(
+        request=request,
+        exception=exception,
+        status_code=(status.HTTP_500_INTERNAL_SERVER_ERROR),
+        code="player_profile_failed",
+        message=("Player profile could not be retrieved."),
+        event="api.error.internal",
+        log_level=logging.ERROR,
+    )
+
+
+async def handle_invalid_player_search(
+    request: Request,
+    exception: Exception,
+) -> JSONResponse:
+    """Convert invalid player-search parameters into HTTP 400."""
+
+    return _error_response(
+        request=request,
+        exception=exception,
+        status_code=(status.HTTP_400_BAD_REQUEST),
+        code="invalid_player_search",
+        message=str(exception),
+        event="api.error.client",
+        log_level=logging.WARNING,
+    )
+
+
+async def handle_player_search_execution_error(
+    request: Request,
+    exception: Exception,
+) -> JSONResponse:
+    """Convert an unexpected player-search failure into HTTP 500."""
+
+    return _error_response(
+        request=request,
+        exception=exception,
+        status_code=(status.HTTP_500_INTERNAL_SERVER_ERROR),
+        code="player_search_failed",
+        message=("Player search could not be completed."),
+        event="api.error.internal",
+        log_level=logging.ERROR,
+    )
+
+
 async def handle_player_not_found(
     request: Request,
     exception: Exception,
 ) -> JSONResponse:
     """Convert an unresolved player query into HTTP 404."""
 
-    del request
-
     return _error_response(
-        status_code=status.HTTP_404_NOT_FOUND,
+        request=request,
+        exception=exception,
+        status_code=(status.HTTP_404_NOT_FOUND),
         code="player_not_found",
         message=str(exception),
+        event="api.error.client",
+        log_level=logging.WARNING,
     )
 
 
@@ -158,12 +251,14 @@ async def handle_ambiguous_player(
 ) -> JSONResponse:
     """Convert an ambiguous player query into HTTP 409."""
 
-    del request
-
     return _error_response(
-        status_code=status.HTTP_409_CONFLICT,
+        request=request,
+        exception=exception,
+        status_code=(status.HTTP_409_CONFLICT),
         code="ambiguous_player",
         message=str(exception),
+        event="api.error.client",
+        log_level=logging.WARNING,
     )
 
 
@@ -173,17 +268,14 @@ async def handle_dataset_not_found(
 ) -> JSONResponse:
     """Convert an unavailable analytics dataset into HTTP 503."""
 
-    del request
-
-    logger.error(
-        "Transfer Intelligence dataset unavailable: %s",
-        exception,
-    )
-
     return _error_response(
-        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        request=request,
+        exception=exception,
+        status_code=(status.HTTP_503_SERVICE_UNAVAILABLE),
         code="dataset_unavailable",
-        message="A required transfer dataset is unavailable.",
+        message=("A required transfer dataset is unavailable."),
+        event="api.error.dependency",
+        log_level=logging.ERROR,
     )
 
 
@@ -193,17 +285,14 @@ async def handle_invalid_dataset(
 ) -> JSONResponse:
     """Convert an invalid analytics dataset into HTTP 503."""
 
-    del request
-
-    logger.error(
-        "Transfer Intelligence dataset is invalid: %s",
-        exception,
-    )
-
     return _error_response(
-        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        request=request,
+        exception=exception,
+        status_code=(status.HTTP_503_SERVICE_UNAVAILABLE),
         code="invalid_dataset",
         message=("A transfer dataset does not satisfy the required data contract."),
+        event="api.error.dependency",
+        log_level=logging.ERROR,
     )
 
 
@@ -213,17 +302,14 @@ async def handle_analysis_execution_error(
 ) -> JSONResponse:
     """Convert an unexpected analysis failure into HTTP 500."""
 
-    del request
-
-    logger.error(
-        "Transfer Intelligence analysis failed: %s",
-        exception,
-    )
-
     return _error_response(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        request=request,
+        exception=exception,
+        status_code=(status.HTTP_500_INTERNAL_SERVER_ERROR),
         code="analysis_failed",
-        message="Transfer analysis could not be completed.",
+        message=("Transfer analysis could not be completed."),
+        event="api.error.internal",
+        log_level=logging.ERROR,
     )
 
 

@@ -66,16 +66,18 @@ def _parse_environment(
 
 def _parse_port(
     value: str,
+    *,
+    setting_name: str,
 ) -> int:
-    """Parse and validate the API server port."""
+    """Parse and validate one configured server port."""
 
     try:
         port = int(value.strip())
     except ValueError as exception:
-        raise ApiSettingsError("WC26_API_PORT must be an integer.") from exception
+        raise ApiSettingsError(f"{setting_name} must be an integer.") from exception
 
     if not 1 <= port <= 65_535:
-        raise ApiSettingsError("WC26_API_PORT must be between 1 and 65535.")
+        raise ApiSettingsError(f"{setting_name} must be between 1 and 65535.")
 
     return port
 
@@ -167,6 +169,31 @@ def _read_text(
         value,
         setting_name=key,
     )
+
+
+def _read_port(
+    environment: Mapping[str, str],
+    default: int,
+) -> int:
+    """Resolve the explicit WC26 port or a platform-provided port."""
+
+    wc26_port = environment.get("WC26_API_PORT")
+
+    if wc26_port is not None:
+        return _parse_port(
+            wc26_port,
+            setting_name="WC26_API_PORT",
+        )
+
+    platform_port = environment.get("PORT")
+
+    if platform_port is not None:
+        return _parse_port(
+            platform_port,
+            setting_name="PORT",
+        )
+
+    return default
 
 
 def _read_path(
@@ -276,9 +303,10 @@ class ApiSettings:
             )
         )
 
-        port_value = source.get("WC26_API_PORT")
-
-        port = defaults.port if port_value is None else _parse_port(port_value)
+        port = _read_port(
+            source,
+            defaults.port,
+        )
 
         cors_value = source.get(
             "WC26_CORS_ORIGINS",

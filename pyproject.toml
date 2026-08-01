@@ -16,17 +16,32 @@ authors = [
 dependencies = [
     "pandas>=2.2,<3",
     "numpy>=1.26,<3",
-    "scikit-learn>=1.5,<2",
-    "matplotlib>=3.8,<4",
-    "Pillow>=10,<13",
-    "playwright>=1.45,<2",
     "fastapi>=0.139,<1",
-    "uvicorn[standard]>=0.51,<1",
+    "uvicorn>=0.51,<1",
 ]
 [project.scripts]
 wc26-transfer = "wc26.analytics.transfer_intelligence.entrypoint:main"
+wc26-api = "wc26.api.server:main"
+wc26-validate-env = "wc26.api.environment:main"
+wc26-dataset-manifest = "wc26.deployment.dataset_manifest:main"
+wc26-validate-datasets = "wc26.deployment.dataset_integrity:main"
+wc26-build-dataset-bundle = "wc26.deployment.dataset_bundle:main"
+wc26-dataset-release = "wc26.deployment.dataset_release:main"
 
 [project.optional-dependencies]
+analysis = [
+    "scikit-learn>=1.5,<2",
+]
+
+visualization = [
+    "matplotlib>=3.8,<4",
+    "Pillow>=10,<13",
+]
+
+collection = [
+    "playwright>=1.45,<2",
+]
+
 dev = [
     "pytest>=8,<10",
     "pytest-cov>=5,<8",
