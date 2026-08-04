@@ -4,10 +4,12 @@
 
 - **Phase:** 5A.3
 - **Decision:** Accepted
+- **Implementation:** Phase 5 MVP interface implemented; production deployment pending
 - **Scope:** Information architecture, navigation, page hierarchy, visual direction, responsive behavior and shared component language
 - **Related documents:**
   - `docs/WEB_PRODUCT.md`
   - `docs/WEB_TECHNOLOGY.md`
+  - `docs/WEB_DEPLOYMENT.md`
 
 ## 1. Purpose
 

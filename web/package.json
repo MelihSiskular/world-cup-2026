@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run env:check && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
@@ -15,7 +15,8 @@
     "api:schema:local": "python ../scripts/export_openapi_schema.py",
     "api:contract:remote": "npm run api:schema:fetch && npm run api:types",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "env:check": "node --env-file-if-exists=.env.local scripts/validate-environment.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",

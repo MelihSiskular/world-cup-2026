@@ -1,5 +1,12 @@
 # WC26 Transfer Intelligence Web Product
 
+## Status
+
+- **Current phase:** 5F.4
+- **MVP implementation:** Complete
+- **Production deployment:** Pending Vercel configuration and production smoke test
+- **Source of truth:** Railway FastAPI and the validated runtime dataset catalog
+
 ## 1. Product Goal
 
 The goal of Phase 5 is to transform the existing production API into a
@@ -158,7 +165,7 @@ Initial configurable criteria:
 - minimum tournament minutes;
 - minimum role confidence;
 - maximum market value;
-- number of recommendations.
+- neutral heatmap score used only by the decision model when direct heatmap evidence is unavailable.
 
 The frontend must validate obvious input errors before submission, while the
 backend remains the authoritative validator.
@@ -248,7 +255,7 @@ The first navigation structure should remain simple:
 ```text
 Home
 Players
-About the Analysis
+Methodology
 API Status
 ```
 
@@ -374,20 +381,20 @@ The MVP should include:
 Phase 5 is complete only when:
 
 - [ ] A public production website is available.
-- [ ] A user can search players by name.
-- [ ] Search results can open a player profile.
-- [ ] A player profile is rendered from the production API.
-- [ ] A user can configure transfer-analysis criteria.
-- [ ] A user can submit a transfer-analysis request.
-- [ ] Recommendations are grouped by analysis mode.
-- [ ] Candidate explanations are visible.
-- [ ] A target player can be compared with a candidate.
-- [ ] Loading states are implemented.
-- [ ] Empty states are implemented.
-- [ ] Client and service errors are handled.
-- [ ] Mobile and desktop layouts are usable.
-- [ ] The frontend contains no duplicated transfer business logic.
-- [ ] Frontend quality checks pass.
+- [x] A user can search players by name.
+- [x] Search results can open a player profile.
+- [x] A player profile is rendered from the API contract.
+- [x] A user can configure transfer-analysis criteria.
+- [x] A user can submit a transfer-analysis request.
+- [x] Recommendations are grouped by analysis mode.
+- [x] Candidate explanations are visible.
+- [x] A target player can be compared with a candidate.
+- [x] Loading states are implemented.
+- [x] Empty states are implemented.
+- [x] Client and service errors are handled.
+- [x] Mobile and desktop layouts are usable.
+- [x] The frontend contains no duplicated transfer business logic.
+- [x] Frontend quality checks pass.
 - [ ] The frontend is deployed.
 - [ ] A production frontend-to-backend smoke test passes.
 
@@ -420,18 +427,17 @@ been validated.
 5A.2 Frontend technology and repository structure
 5A.3 Information architecture and visual direction
 5B.1 Frontend project foundation
-5B.2 API client and typed contracts
-5B.3 Shared layout and UI components
+5B.2 Typed API integration
+5B.3 Shared application shell
 5C.1 Player search
 5C.2 Player profile
-5D.1 Transfer analysis form
+5D.1 Transfer analysis configuration
 5D.2 Recommendation results
-5E.1 Player comparison
-5E.2 Analytical visualizations
-5F.1 Frontend tests and quality workflow
-5F.2 Production deployment
-5F.3 Frontend-to-backend production validation
-5F.4 Final Phase 5 documentation
+5E.1 Target and candidate comparison
+5F.1 Runtime dataset identity
+5F.2 Product methodology
+5F.3 Frontend tests and error-state hardening
+5F.4 Production environment, deployment and release documentation
 ```
 
 ## 13. Product Principle

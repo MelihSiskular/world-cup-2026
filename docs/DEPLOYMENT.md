@@ -2,6 +2,8 @@
 
 This guide is the source of truth for building, validating, deploying and operating the WC26 Transfer Intelligence API.
 
+Frontend deployment and Vercel operations are documented in `docs/WEB_DEPLOYMENT.md`.
+
 ## Production Service
 
 ```text
@@ -480,9 +482,22 @@ WC26_CLOUD_OBSERVABILITY_MAX_ATTEMPTS
 WC26_CLOUD_OBSERVABILITY_POLL_INTERVAL
 ```
 
+## Frontend Production Validation
+
+The Vercel frontend is validated independently through the same-origin Next.js BFF routes.
+
+```bash
+./scripts/web_production_smoke_test.sh \
+  "https://your-vercel-domain.vercel.app"
+```
+
+The script checks public pages, readiness, health, deployment identity, player search, player profile and transfer analysis through the deployed frontend.
+
+Vercel configuration and rollback procedures are documented in `docs/WEB_DEPLOYMENT.md`.
+
 ## CI/CD Workflows
 
-The repository contains three GitHub Actions workflows.
+The repository contains four GitHub Actions workflows.
 
 ### Python Quality
 
@@ -508,6 +523,14 @@ Artifact name:
 docker-validation-<run-id>-<attempt>
 ```
 
+### Web Quality
+
+```text
+.github/workflows/web-quality.yml
+```
+
+Runs the frontend environment check, generated OpenAPI type check, Vitest suite, ESLint, TypeScript validation, production build and production-dependency audit using Node.js 24.
+
 ### Production Verification
 
 ```text
@@ -517,7 +540,7 @@ docker-validation-<run-id>-<attempt>
 The workflow:
 
 1. validates production configuration;
-2. waits for Python Quality and Docker Validation;
+2. waits for Python Quality, Docker Validation and Web Quality;
 3. waits for Railway to serve the exact commit SHA;
 4. runs observability acceptance;
 5. runs the complete production smoke test;
@@ -638,4 +661,28 @@ docker build \
 ./scripts/docker_external_dataset_test.sh
 ```
 
-After push, confirm that all three GitHub Actions workflows pass and that production `/deployment` reports the exact release SHA.
+Frontend release checks:
+
+```bash
+cd web
+
+npm run env:check
+npm run api:types:check
+npm test
+npm run lint
+npm run typecheck
+npm run build
+npm audit --omit=dev
+
+cd ..
+bash -n scripts/web_production_smoke_test.sh
+```
+
+After the frontend is deployed:
+
+```bash
+./scripts/web_production_smoke_test.sh \
+  "https://your-vercel-domain.vercel.app"
+```
+
+After push, confirm that all four GitHub Actions workflows pass, Railway `/deployment` reports the exact release SHA and the Vercel frontend smoke test succeeds.

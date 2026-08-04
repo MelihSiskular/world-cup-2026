@@ -1,10 +1,11 @@
 # Development Guide
 
-This guide explains how to set up, test and extend the WC26 Transfer Intelligence Python core, CLI and FastAPI backend.
+This guide explains how to set up, test and extend the WC26 Transfer Intelligence Python core, CLI, FastAPI backend and Next.js web application.
 
 ## Requirements
 
 - Python 3.12 or newer
+- Node.js 24 and npm
 - Git
 - Docker Desktop or Docker Engine for container validation
 - Local processed datasets for real-data integration tests
@@ -38,6 +39,75 @@ Confirm the package and CLI are available:
 python -c "import wc26; print(wc26.__version__)"
 wc26-transfer --help
 ```
+
+## Frontend Web Application
+
+The Next.js application lives under:
+
+```text
+web/
+```
+
+Requirements:
+
+- Node.js 24;
+- npm;
+- a running FastAPI backend.
+
+Start the production-style backend from the repository root:
+
+```bash
+source .venv/bin/activate
+
+python -m uvicorn \
+  wc26.api.main:create_production_app \
+  --factory \
+  --host 127.0.0.1 \
+  --port 8000
+```
+
+Prepare the frontend:
+
+```bash
+cd web
+nvm use 24
+npm ci
+cp .env.example .env.local
+```
+
+The local environment must contain:
+
+```env
+WC26_API_BASE_URL=http://127.0.0.1:8000
+```
+
+Run the development server:
+
+```bash
+npm run dev
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+The browser calls same-origin Next.js BFF routes. Only the Next.js server reads `WC26_API_BASE_URL`.
+
+Run the complete frontend quality gate:
+
+```bash
+npm run env:check
+npm run api:types:check
+npm test
+npm run lint
+npm run typecheck
+npm run build
+npm audit --omit=dev
+```
+
+See `docs/WEB_DEPLOYMENT.md` for Vercel deployment and production acceptance.
 
 ## Run Transfer Intelligence
 
@@ -172,7 +242,9 @@ src/wc26/api/
 Development server with reload:
 
 ```bash
-python -m uvicorn wc26.api.main:app \
+python -m uvicorn \
+  wc26.api.main:create_production_app \
+  --factory \
   --reload \
   --host 127.0.0.1 \
   --port 8000
@@ -470,6 +542,22 @@ find scripts \
     done
 ```
 
+### Frontend quality
+
+Run from `web/`:
+
+```bash
+npm run env:check
+npm run api:types:check
+npm test
+npm run lint
+npm run typecheck
+npm run build
+npm audit --omit=dev
+```
+
+The current Vitest and React Testing Library baseline covers browser API errors, form and payload validation, player search, transfer results, player comparison, route errors and not-found recovery.
+
 ## Integration Tests
 
 Real-data integration tests require the processed datasets.
@@ -529,15 +617,27 @@ WC26_EXPECTED_COMMIT_SHA="${expected_sha}" \
 
 The observability script waits for Railway to serve the expected commit. The smoke script validates public API contracts and release identity.
 
+### Frontend production smoke test
+
+After the Vercel deployment is available:
+
+```bash
+./scripts/web_production_smoke_test.sh \
+  "https://your-vercel-domain.vercel.app"
+```
+
+This validates the production pages and the full browser-to-BFF-to-Railway path.
+
 ## GitHub Actions
 
-Three workflows protect the release pipeline:
+Four workflows protect the release pipeline:
 
 | Workflow | Purpose |
 |---|---|
 | `Python Quality` | Shell syntax, Ruff, formatting, mypy and tests |
 | `Docker Validation` | Build, policy, smoke and hardened runtime |
-| `Production Verification` | Wait for quality gates, exact Railway SHA and production acceptance |
+| `Web Quality` | Environment validation, OpenAPI types, Vitest, ESLint, TypeScript, build and audit |
+| `Production Verification` | Wait for all quality gates, exact Railway SHA and production acceptance |
 
 Docker and production runs upload diagnostic artifacts even on failure. Use them before trying to reproduce CI-only issues locally.
 
@@ -610,6 +710,16 @@ python -m pytest \
   --cov-branch \
   --cov-report=term-missing
 
+cd web
+npm run env:check
+npm run api:types:check
+npm test
+npm run lint
+npm run typecheck
+npm run build
+npm audit --omit=dev
+cd ..
+
 git diff --check
 ```
 
@@ -619,13 +729,19 @@ Also confirm:
 - public API and environment changes are documented;
 - generated datasets and local artifacts are not committed accidentally;
 - startup, readiness, request IDs and error contracts remain covered;
-- Python Quality and Docker Validation pass;
+- Python Quality, Docker Validation and Web Quality pass;
 - production verification passes for deployment changes.
 
 ## Deployment Documentation
 
-Production runtime, Railway, dataset releases, rollback, observability and CI/CD are documented in:
+Backend runtime, Railway, dataset releases, rollback, observability and CI/CD are documented in:
 
 ```text
 docs/DEPLOYMENT.md
+```
+
+Frontend environment configuration, Vercel deployment, smoke testing and rollback are documented in:
+
+```text
+docs/WEB_DEPLOYMENT.md
 ```

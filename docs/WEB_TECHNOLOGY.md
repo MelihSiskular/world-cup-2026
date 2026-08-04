@@ -2,10 +2,13 @@
 
 ## Status
 
-- **Phase:** 5A.2
-- **Decision:** Accepted
+- **Phase:** 5F.4
+- **Decision:** Accepted and implemented for the Phase 5 MVP
 - **Scope:** Frontend technology, repository structure, API integration, testing and deployment strategy
-- **Related document:** `docs/WEB_PRODUCT.md`
+- **Related documents:**
+  - `docs/WEB_PRODUCT.md`
+  - `docs/WEB_INFORMATION_ARCHITECTURE.md`
+  - `docs/WEB_DEPLOYMENT.md`
 
 ## 1. Purpose
 
@@ -139,24 +142,34 @@ The backend exposes an OpenAPI schema through:
 
 Frontend request and response types will be generated from this schema.
 
-Planned structure:
+Implemented structure:
 
 ```text
 web/src/lib/api/
-├── client.ts
-├── server-client.ts
+├── browser-client.ts
+├── browser-players.ts
+├── browser-status.ts
+├── browser-transfer-intelligence.ts
+├── config.ts
 ├── errors.ts
+├── generated/
+│   └── schema.d.ts
 ├── request-id.ts
-└── schema.d.ts
+├── route-handler.ts
+├── server-client.ts
+└── types.ts
 ```
 
 Responsibilities:
 
-- `schema.d.ts`: generated API types;
-- `client.ts`: browser-safe API client;
-- `server-client.ts`: server-side FastAPI client;
-- `errors.ts`: frontend-safe error mapping;
-- `request-id.ts`: request ID extraction and propagation.
+- `generated/schema.d.ts`: generated OpenAPI request and response types;
+- `browser-*.ts`: same-origin browser clients for the Next.js BFF;
+- `config.ts`: server-only FastAPI base URL validation;
+- `server-client.ts`: typed server-side FastAPI client;
+- `route-handler.ts`: timeout handling, request-ID propagation and safe upstream error mapping;
+- `errors.ts`: frontend-safe error normalization;
+- `request-id.ts`: request-ID creation, extraction and propagation;
+- `types.ts`: stable web-facing aliases and error contracts.
 
 Generated schema files must not be edited manually.
 
@@ -313,44 +326,52 @@ Frontend commands will run from `web/`.
 
 A separate repository is not justified during Phase 5 because the backend and frontend belong to the same product and share the same API contract and release roadmap.
 
-## 12. Initial Frontend Structure
+## 12. Frontend Structure
 
-The first expected application structure is:
+The implemented frontend is organized by product and infrastructure responsibility:
 
 ```text
 web/
+├── openapi/
 ├── public/
+├── scripts/
+│   ├── fetch-openapi.mjs
+│   └── validate-environment.mjs
 ├── src/
 │   ├── app/
 │   │   ├── api/
 │   │   ├── analysis/
 │   │   ├── compare/
+│   │   ├── methodology/
 │   │   ├── players/
-│   │   ├── globals.css
+│   │   ├── status/
+│   │   ├── error.tsx
 │   │   ├── layout.tsx
+│   │   ├── not-found.tsx
 │   │   └── page.tsx
 │   ├── components/
-│   │   ├── analysis/
-│   │   ├── comparison/
+│   │   ├── feedback/
 │   │   ├── layout/
+│   │   ├── methodology/
 │   │   ├── players/
-│   │   └── ui/
+│   │   ├── status/
+│   │   └── transfer-intelligence/
+│   ├── hooks/
 │   ├── lib/
 │   │   ├── api/
-│   │   ├── formatters/
 │   │   ├── query/
-│   │   └── validation/
-│   └── types/
-├── tests/
+│   │   └── transfer-intelligence/
+│   └── test/
 ├── .env.example
 ├── .nvmrc
 ├── next.config.ts
 ├── package.json
 ├── package-lock.json
-└── tsconfig.json
+├── tsconfig.json
+└── vitest.config.mts
 ```
 
-The exact file list may evolve, but feature ownership and API boundaries should remain clear.
+Python commands run from the repository root. Frontend commands run from `web/`.
 
 ## 13. Environment Configuration
 
@@ -382,20 +403,24 @@ The repository will include only a safe `web/.env.example`.
 
 ### Unit and component tests
 
-Vitest and React Testing Library will cover:
+Vitest and React Testing Library currently cover:
 
-- formatting utilities;
-- API error mapping;
-- validation schemas;
-- loading states;
-- empty states;
-- recommendation cards;
-- player profile sections;
-- transfer-analysis form behavior.
+- browser API success and error mapping;
+- analysis URL parsing and payload generation;
+- BFF payload validation;
+- recruitment-mode score and rank helpers;
+- player-search success, empty, error and retry states;
+- transfer-result error and retry behavior;
+- candidate-unavailable comparison behavior;
+- spatial and direct heatmap metric separation;
+- application error recovery;
+- not-found recovery links.
+
+The Phase 5F.3 baseline contains 38 passing tests across nine test files.
 
 ### End-to-end tests
 
-Playwright will validate the primary product journey:
+Playwright remains the selected end-to-end framework for the production-critical journey after the first Vercel deployment:
 
 ```text
 Open the website
@@ -415,74 +440,88 @@ Browser coverage should include Chromium and WebKit for the production-critical 
 
 ### Contract confidence
 
-Frontend validation will also include:
+Frontend validation also includes:
 
-- OpenAPI type generation;
+- generated OpenAPI type checks;
+- server-only environment validation;
+- ESLint;
 - TypeScript checks;
-- production build;
+- production builds;
+- production dependency audits;
 - frontend-to-backend smoke tests.
 
 ## 15. Deployment Strategy
 
-The production topology will be:
+The production topology is:
 
 ```text
-Next.js frontend
-→ Vercel
-
+Browser
+    ↓
+Next.js frontend and BFF
+    → Vercel
+    ↓ server-only WC26_API_BASE_URL
 FastAPI backend
-→ Railway
+    → Railway
 ```
 
-Vercel will use:
+Vercel project settings:
 
 ```text
+Framework Preset: Next.js
 Root Directory: web
+Production Branch: main
+Build Command: npm run build
 ```
+
+The server-only environment variable is configured for Preview and Production:
+
+```env
+WC26_API_BASE_URL=https://world-cup-2026-production.up.railway.app
+```
+
+The variable must not use the `NEXT_PUBLIC_` prefix.
 
 Expected deployment flow:
 
 ```text
 Feature branch
     ↓
-Frontend quality checks
+Python Quality
+Docker Validation
+Web Quality
     ↓
 Vercel preview deployment
     ↓
-Pull Request review
+Pull request review
     ↓
 Merge to main
     ↓
-Vercel production deployment
+Railway backend deployment
+Vercel frontend deployment
     ↓
-Frontend-to-backend production validation
+Production verification
+Frontend production smoke test
 ```
 
-The Railway backend remains independently deployable.
+The Railway backend remains independently deployable. Visual-only frontend changes must not require a backend rebuild.
 
-The frontend must not require a backend rebuild for visual-only changes.
+See `docs/WEB_DEPLOYMENT.md` for environment configuration, production acceptance and rollback.
 
 ## 16. Visualization Decision
 
-A charting library is intentionally not selected during Phase 5A.2.
+The Phase 5 MVP does not require a general-purpose charting dependency.
 
-The decision is deferred until Phase 5E.2 because it depends on:
+Current analytical presentation uses:
 
-- the final comparison response contract;
-- the available radar metrics;
-- the heatmap representation;
-- whether existing generated images remain useful;
-- accessibility requirements;
-- mobile rendering requirements.
+- structured player and recommendation cards;
+- comparison metrics;
+- restrained score bars;
+- clear evidence labels;
+- backend-owned analytical meaning.
 
-Candidate approaches may include:
+A future charting library may be introduced only when a concrete requirement justifies it, such as accessible radar comparisons, interactive heatmaps or longitudinal performance views.
 
-- custom SVG;
-- a React charting library;
-- D3-based components;
-- backend-generated analytical images.
-
-No visualization dependency should be installed before the data requirement is defined.
+Candidate approaches may include custom SVG, an accessible React charting library, D3-based components or backend-generated analytical images.
 
 ## 17. Explicit Non-Decisions
 
@@ -552,7 +591,39 @@ New libraries and state layers will be introduced only when an identified produc
 - [x] Global state intentionally excluded.
 - [x] Visualization decision deferred to the correct phase.
 
-## 20. Final Decision Summary
+## 20. Implemented Phase 5 Baseline
+
+The Phase 5 MVP now includes:
+
+- a responsive Next.js App Router application;
+- player catalogue search;
+- stable player profiles;
+- transfer-analysis configuration;
+- four recommendation scenarios;
+- target and candidate comparison;
+- a product methodology page;
+- health, readiness and release status views;
+- same-origin BFF route handlers;
+- generated OpenAPI TypeScript contracts;
+- Vitest and React Testing Library coverage;
+- application and route error recovery;
+- request-ID visibility;
+- server-only production environment validation;
+- a dedicated Web Quality workflow;
+- Vercel deployment documentation;
+- a frontend production smoke-test script.
+
+The implemented request boundary remains:
+
+```text
+Browser
+    ↓
+Next.js BFF
+    ↓
+Railway FastAPI
+```
+
+## 21. Final Decision Summary
 
 ```text
 Next.js App Router
@@ -564,8 +635,10 @@ TanStack Query
 React Hook Form and Zod
 OpenAPI-generated TypeScript contracts
 Vitest and React Testing Library
-Playwright
+Playwright for future production-critical E2E coverage
 Node.js 24 and npm
+Server-only WC26_API_BASE_URL validation
+Dedicated Web Quality workflow
 Existing repository under /web
 Vercel frontend deployment
 Railway backend deployment
