@@ -2,6 +2,7 @@ import {
   requestBrowserJson,
 } from "@/lib/api/browser-client";
 import type {
+  PlayerProfileResponse,
   PlayerSearchResponse,
 } from "@/lib/api/types";
 import {
@@ -28,6 +29,18 @@ export function searchPlayers(
     `/api/players/search?${searchParameters.toString()}`,
     {
       signal: options.signal,
+    },
+  );
+}
+
+export function fetchPlayerProfile(
+  playerId: number,
+  signal?: AbortSignal,
+): Promise<PlayerProfileResponse> {
+  return requestBrowserJson<PlayerProfileResponse>(
+    `/api/players/${playerId}`,
+    {
+      signal,
     },
   );
 }
