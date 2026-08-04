@@ -11,9 +11,9 @@ import {
 import {
   createWc26ServerClient,
 } from "@/lib/api/server-client";
-import type {
-  TransferAnalysisPayload,
-} from "@/lib/api/types";
+import {
+  validateTransferAnalysisPayload,
+} from "@/lib/transfer-intelligence/payload-validation";
 
 type UnknownRecord =
   Record<string, unknown>;
@@ -74,8 +74,20 @@ export async function POST(
     );
   }
 
+  const validation =
+    validateTransferAnalysisPayload(
+      parsedBody,
+    );
+
+  if (!validation.success) {
+    return createRequestErrorResponse(
+      requestId,
+      validation.message,
+    );
+  }
+
   const payload =
-    parsedBody as TransferAnalysisPayload;
+    validation.data;
 
   return handleOpenApiRequest(
     requestId,

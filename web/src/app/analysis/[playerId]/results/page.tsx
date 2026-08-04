@@ -9,20 +9,17 @@ import {
 import {
   PageIntro,
 } from "@/components/layout/page-intro";
-import {
-  TransferAnalysisForm,
-} from "@/components/transfer-intelligence/transfer-analysis-form";
 
-type TransferAnalysisPageProps =
+type AnalysisResultsPageProps =
   Readonly<{
     params: Promise<{
       playerId: string;
     }>;
   }>;
 
-export default async function TransferAnalysisPage({
+export default async function AnalysisResultsPage({
   params,
-}: TransferAnalysisPageProps) {
+}: AnalysisResultsPageProps) {
   const {
     playerId,
   } = await params;
@@ -43,23 +40,30 @@ export default async function TransferAnalysisPage({
     <PageContainer className="py-14 sm:py-20">
       <PageIntro
         eyebrow="Transfer intelligence"
-        title="Configure replacement analysis"
-        description="Set recruitment thresholds before ranking candidates across immediate, development, value and short-term scenarios."
+        title="Recommendation results"
+        description="The validated recruitment configuration has been preserved in the URL. Ranked scenario results will be connected in the next delivery."
         actions={
           <Link
-            href={`/players/${parsedPlayerId}`}
+            href={`/analysis/${parsedPlayerId}`}
             className="rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold transition-colors hover:bg-surface-secondary"
           >
-            Back to player profile
+            Adjust parameters
           </Link>
         }
       />
 
-      <div className="mt-12">
-        <TransferAnalysisForm
-          playerId={parsedPlayerId}
-        />
-      </div>
+      <section className="mt-12 rounded-2xl border border-border bg-surface p-6 shadow-sm">
+        <p className="font-semibold">
+          Analysis configuration ready
+        </p>
+
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
+          Phase 5D.2 will submit these
+          parameters to the typed transfer
+          analysis endpoint and present all
+          four recommendation modes.
+        </p>
+      </section>
     </PageContainer>
   );
 }
