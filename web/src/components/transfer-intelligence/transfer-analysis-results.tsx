@@ -47,17 +47,19 @@ type TransferAnalysisResultsProps =
   Readonly<{
     playerId: number;
     values: TransferAnalysisFormValues;
+    initialMode: TransferModeName;
   }>;
 
 export function TransferAnalysisResults({
   playerId,
   values,
+  initialMode,
 }: TransferAnalysisResultsProps) {
   const [
     activeMode,
     setActiveMode,
   ] = useState<TransferModeName>(
-    "immediate",
+    initialMode,
   );
 
   const [
@@ -442,6 +444,7 @@ export function TransferAnalysisResults({
                       target.player_id
                     }
                     mode={activeMode}
+                    analysisValues={values}
                     recommendation={
                       recommendation
                     }

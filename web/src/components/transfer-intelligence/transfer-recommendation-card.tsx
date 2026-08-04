@@ -5,6 +5,12 @@ import type {
   TransferRecommendationResponse,
 } from "@/lib/api/types";
 import {
+  createAnalysisSearchParameters,
+} from "@/lib/transfer-intelligence/analysis-form";
+import type {
+  TransferAnalysisFormValues,
+} from "@/lib/transfer-intelligence/analysis-form";
+import {
   formatMarketValue,
   formatPlayerPosition,
   formatProfileNumber,
@@ -20,6 +26,8 @@ type TransferRecommendationCardProps =
   Readonly<{
     targetPlayerId: number;
     mode: TransferModeName;
+    analysisValues:
+      TransferAnalysisFormValues;
     recommendation:
       TransferRecommendationResponse;
   }>;
@@ -35,6 +43,7 @@ function formatMetricPercentage(
 export function TransferRecommendationCard({
   targetPlayerId,
   mode,
+  analysisValues,
   recommendation,
 }: TransferRecommendationCardProps) {
   const score =
@@ -51,6 +60,20 @@ export function TransferRecommendationCard({
 
   const modeDetails =
     TRANSFER_MODE_DETAILS[mode];
+
+  const comparisonParameters =
+    createAnalysisSearchParameters(
+      analysisValues,
+    );
+
+  comparisonParameters.set(
+    "mode",
+    mode,
+  );
+
+  const comparisonHref =
+    `/compare/${targetPlayerId}/${recommendation.player_id}` +
+    `?${comparisonParameters.toString()}`;
 
   const metrics = [
     {
@@ -156,7 +179,7 @@ export function TransferRecommendationCard({
 
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
-              href={`/compare/${targetPlayerId}/${recommendation.player_id}`}
+              href={comparisonHref}
               className="rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
             >
               Compare with target

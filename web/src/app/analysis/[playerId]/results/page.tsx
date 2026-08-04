@@ -19,6 +19,9 @@ import {
 import type {
   AnalysisSearchParameters,
 } from "@/lib/transfer-intelligence/analysis-form";
+import {
+  parseTransferMode,
+} from "@/lib/transfer-intelligence/result-config";
 
 type AnalysisResultsPageProps =
   Readonly<{
@@ -92,10 +95,23 @@ export default async function AnalysisResultsPage({
     );
   }
 
-  const queryString =
+  const initialMode =
+    parseTransferMode(
+      resolvedSearchParams.mode,
+    ) ?? "immediate";
+
+  const resultParameters =
     createAnalysisSearchParameters(
       parsedParameters.values,
-    ).toString();
+    );
+
+  resultParameters.set(
+    "mode",
+    initialMode,
+  );
+
+  const queryString =
+    resultParameters.toString();
 
   return (
     <PageContainer className="py-10 sm:py-14">
@@ -115,10 +131,12 @@ export default async function AnalysisResultsPage({
 
       <div className="mt-10">
         <TransferAnalysisResults
+          key={`${parsedPlayerId}:${initialMode}:${queryString}`}
           playerId={parsedPlayerId}
           values={
             parsedParameters.values
           }
+          initialMode={initialMode}
         />
       </div>
     </PageContainer>

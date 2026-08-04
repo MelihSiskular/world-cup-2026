@@ -52,6 +52,24 @@ export const TRANSFER_MODE_DETAILS = {
   TransferModeDetails
 >;
 
+export function parseTransferMode(
+  value:
+    | string
+    | readonly string[]
+    | undefined,
+): TransferModeName | null {
+  const candidate =
+    typeof value === "string"
+      ? value
+      : value?.[0];
+
+  return (
+    TRANSFER_MODE_ORDER.find(
+      (mode) => mode === candidate,
+    ) ?? null
+  );
+}
+
 export function getRecommendationScore(
   mode: TransferModeName,
   recommendation:
