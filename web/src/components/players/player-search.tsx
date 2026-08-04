@@ -9,6 +9,9 @@ import {
 } from "react";
 
 import {
+  ApiErrorReference,
+} from "@/components/feedback/api-error-reference";
+import {
   PlayerSearchResultCard,
 } from "@/components/players/player-search-result-card";
 import {
@@ -212,6 +215,10 @@ export function PlayerSearch() {
                   ? playerSearch.error.message
                   : "The player catalogue could not be searched."}
               </p>
+
+              <ApiErrorReference
+                error={playerSearch.error}
+              />
 
               <button
                 type="button"

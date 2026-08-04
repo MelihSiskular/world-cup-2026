@@ -6,6 +6,9 @@ import {
 import Link from "next/link";
 
 import {
+  ApiErrorReference,
+} from "@/components/feedback/api-error-reference";
+import {
   PlayerComparisonSkeleton,
 } from "@/components/transfer-intelligence/player-comparison-skeleton";
 import {
@@ -281,6 +284,10 @@ export function PlayerComparison({
             : "The transfer analysis request failed."}
         </p>
 
+        <ApiErrorReference
+          error={comparison.error}
+        />
+
         <button
           type="button"
           onClick={() => {
@@ -378,10 +385,19 @@ export function PlayerComparison({
       label: "Spatial similarity",
       value: formatProfilePercentage(
         candidate
-          .effective_heatmap_score_pct,
+          .spatial_similarity_pct,
       ),
       description:
-        "Similarity in occupied areas and spatial behaviour.",
+        "Similarity in average position, spatial spread, thirds and lane occupation.",
+    },
+    {
+      label: "Heatmap similarity",
+      value: formatProfilePercentage(
+        candidate
+          .heatmap_similarity_score_pct,
+      ),
+      description:
+        "Direct measured similarity in occupied pitch zones and heatmap structure.",
     },
     {
       label: "Role fit",
@@ -569,7 +585,7 @@ export function PlayerComparison({
 
       <section
         aria-label="Comparison indicators"
-        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5"
       >
         {comparisonMetrics.map(
           (metric) => (

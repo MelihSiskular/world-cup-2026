@@ -6,6 +6,9 @@ import {
 import Link from "next/link";
 
 import {
+  ApiErrorReference,
+} from "@/components/feedback/api-error-reference";
+import {
   PlayerProfileSkeleton,
 } from "@/components/players/player-profile-skeleton";
 import {
@@ -102,6 +105,10 @@ export function PlayerProfile({
             ? playerProfile.error.message
             : "The player profile request failed."}
         </p>
+
+        <ApiErrorReference
+          error={playerProfile.error}
+        />
 
         <div className="mt-7 flex flex-wrap gap-3">
           {!playerNotFound ? (

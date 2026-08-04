@@ -9,6 +9,9 @@ import {
 } from "react";
 
 import {
+  ApiErrorReference,
+} from "@/components/feedback/api-error-reference";
+import {
   TransferAnalysisResultsSkeleton,
 } from "@/components/transfer-intelligence/transfer-analysis-results-skeleton";
 import {
@@ -153,6 +156,10 @@ export function TransferAnalysisResults({
             ? analysis.error.message
             : "The transfer analysis request failed."}
         </p>
+
+        <ApiErrorReference
+          error={analysis.error}
+        />
 
         <div className="mt-7 flex flex-wrap gap-3">
           {!playerNotFound ? (
