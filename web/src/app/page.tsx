@@ -1,60 +1,120 @@
-const foundationItems = [
-  "Next.js App Router",
-  "Strict TypeScript",
-  "Tailwind CSS",
-  "WC26 design tokens",
+import Link from "next/link";
+
+import {
+  PageContainer,
+} from "@/components/layout/page-container";
+
+const productSteps = [
+  {
+    number: "01",
+    title: "Find a player",
+    description:
+      "Search the World Cup 2026 player catalogue using stable player identities.",
+  },
+  {
+    number: "02",
+    title: "Inspect the profile",
+    description:
+      "Review role, spatial profile, reliability, quality and market context.",
+  },
+  {
+    number: "03",
+    title: "Analyze replacements",
+    description:
+      "Compare immediate, development, value and short-term alternatives.",
+  },
 ] as const;
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-page px-6 py-12 text-foreground sm:px-10 lg:px-16">
-      <section className="mx-auto flex min-h-[calc(100vh-6rem)] max-w-6xl items-center">
-        <div className="w-full">
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium text-brand-dark shadow-sm">
-            <span
-              aria-hidden="true"
-              className="size-2 rounded-full bg-brand-accent"
-            />
-            Phase 5 · Web Product Foundation
-          </div>
+    <div>
+      <section className="overflow-hidden border-b border-border bg-surface">
+        <PageContainer className="relative py-16 sm:py-24 lg:py-28">
+          <div
+            aria-hidden="true"
+            className="absolute -top-32 right-0 size-80 rounded-full bg-brand-accent/20 blur-3xl"
+          />
 
-          <div className="max-w-4xl">
-            <p className="mb-4 text-sm font-semibold tracking-[0.18em] text-brand uppercase">
-              WC26 Transfer Intelligence
-            </p>
+          <div className="relative max-w-5xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-surface-secondary px-4 py-2 text-sm font-semibold text-brand-dark">
+              <span className="size-2 rounded-full bg-brand" />
+              World Cup 2026 recruitment intelligence
+            </div>
 
-            <h1 className="text-4xl leading-tight font-bold tracking-[-0.04em] text-balance sm:text-6xl lg:text-7xl">
+            <h1 className="mt-8 text-5xl leading-[1.02] font-bold tracking-[-0.055em] text-balance sm:text-6xl lg:text-7xl">
               Find the right replacement.
-              <span className="block text-brand">
+              <span className="mt-2 block text-brand">
                 Not just the most similar player.
               </span>
             </h1>
 
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-muted">
-              A professional football scouting and player replacement
-              analysis product powered by World Cup 2026 data.
+            <p className="mt-7 max-w-3xl text-lg leading-8 text-muted sm:text-xl">
+              Combine statistical similarity, spatial role,
+              reliability, market context and recruitment strategy
+              in one structured decision-support workflow.
+            </p>
+
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Link
+                href="/players"
+                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+              >
+                Explore players
+              </Link>
+
+              <Link
+                href="/methodology"
+                className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border bg-surface px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-surface-secondary"
+              >
+                View methodology
+              </Link>
+            </div>
+          </div>
+        </PageContainer>
+      </section>
+
+      <section>
+        <PageContainer className="py-14 sm:py-18">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold tracking-[0.18em] text-brand uppercase">
+                Product workflow
+              </p>
+
+              <h2 className="mt-3 text-3xl font-bold tracking-[-0.035em]">
+                From player search to recruitment decision
+              </h2>
+            </div>
+
+            <p className="max-w-xl text-sm leading-6 text-muted">
+              Analytical ranking remains inside the FastAPI backend.
+              The web application presents and explains the results
+              without recalculating recommendation scores.
             </p>
           </div>
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {foundationItems.map((item) => (
-              <div
-                key={item}
-                className="rounded-2xl border border-border bg-surface p-5 shadow-sm"
+          <div className="mt-9 grid gap-5 lg:grid-cols-3">
+            {productSteps.map((step) => (
+              <article
+                key={step.number}
+                className="rounded-2xl border border-border bg-surface p-6 shadow-sm"
               >
-                <div className="mb-4 size-2 rounded-full bg-brand" />
-                <p className="font-semibold">{item}</p>
-              </div>
+                <span className="font-mono text-sm font-semibold text-brand">
+                  {step.number}
+                </span>
+
+                <h3 className="mt-5 text-xl font-bold tracking-[-0.025em]">
+                  {step.title}
+                </h3>
+
+                <p className="mt-3 text-sm leading-6 text-muted">
+                  {step.description}
+                </p>
+              </article>
             ))}
           </div>
-
-          <div className="mt-10 rounded-2xl border border-brand/20 bg-surface-secondary p-5 text-sm leading-6 text-muted">
-            The frontend foundation is running. Player search, profiles,
-            transfer analysis and comparison workflows will be added in the
-            next Phase 5 steps.
-          </div>
-        </div>
+        </PageContainer>
       </section>
-    </main>
+    </div>
   );
 }

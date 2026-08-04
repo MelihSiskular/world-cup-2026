@@ -50,6 +50,7 @@
 html {
   min-width: 320px;
   background: var(--page-background);
+  scroll-behavior: smooth;
 }
 
 body {
@@ -58,6 +59,7 @@ body {
   background: var(--page-background);
   color: var(--text-primary);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  line-height: 1.5;
 }
 
 button,
@@ -67,9 +69,18 @@ textarea {
   font: inherit;
 }
 
+button,
 a {
-  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
   text-decoration: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--brand-accent);
+  outline-offset: 3px;
 }
 
 ::selection {
