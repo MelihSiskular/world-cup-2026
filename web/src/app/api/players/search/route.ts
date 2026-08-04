@@ -11,6 +11,9 @@ import {
 import type {
   PlayerSearchQuery,
 } from "@/lib/api/types";
+import {
+  MINIMUM_PLAYER_SEARCH_LENGTH,
+} from "@/lib/players/search-config";
 
 const MINIMUM_LIMIT = 1;
 const MAXIMUM_LIMIT = 25;
@@ -55,6 +58,16 @@ export async function GET(
     return createRequestErrorResponse(
       requestId,
       "A player search query is required.",
+    );
+  }
+
+  if (
+    queryValue.length <
+    MINIMUM_PLAYER_SEARCH_LENGTH
+  ) {
+    return createRequestErrorResponse(
+      requestId,
+      `A player search query must contain at least ${MINIMUM_PLAYER_SEARCH_LENGTH} characters.`,
     );
   }
 
