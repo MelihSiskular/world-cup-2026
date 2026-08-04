@@ -5,6 +5,8 @@ export type BrowserRequestOptions =
   Readonly<{
     signal?: AbortSignal;
     acceptedStatuses?: readonly number[];
+    method?: "GET" | "POST";
+    body?: unknown;
   }>;
 
 type BrowserApiErrorOptions =
@@ -89,10 +91,28 @@ export async function requestBrowserJson<T>(
   path: string,
   options: BrowserRequestOptions = {},
 ): Promise<T> {
-  const response = await fetch(path, {
-    headers: {
+  const hasBody =
+    options.body !== undefined;
+
+  const headers:
+    Record<string, string> = {
       accept: "application/json",
-    },
+    };
+
+  if (hasBody) {
+    headers["content-type"] =
+      "application/json";
+  }
+
+  const response = await fetch(path, {
+    method:
+      options.method ??
+      (hasBody ? "POST" : "GET"),
+    headers,
+    body:
+      hasBody
+        ? JSON.stringify(options.body)
+        : undefined,
     cache: "no-store",
     signal: options.signal,
   });

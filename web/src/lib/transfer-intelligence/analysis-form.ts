@@ -74,6 +74,117 @@ export type TransferAnalysisFormValues =
     typeof transferAnalysisFormSchema
   >;
 
+export type AnalysisSearchParameters =
+  Readonly<
+    Record<
+      string,
+      string | readonly string[] | undefined
+    >
+  >;
+
+export type ParsedAnalysisParameters =
+  | Readonly<{
+      success: true;
+      values: TransferAnalysisFormValues;
+    }>
+  | Readonly<{
+      success: false;
+      message: string;
+    }>;
+
+function getSingleParameter(
+  value:
+    | string
+    | readonly string[]
+    | undefined,
+): string | undefined {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  return value?.[0];
+}
+
+function parseNumberParameter(
+  value:
+    | string
+    | readonly string[]
+    | undefined,
+  fallback: number,
+): number {
+  const rawValue =
+    getSingleParameter(value);
+
+  if (
+    rawValue === undefined ||
+    rawValue.trim() === ""
+  ) {
+    return fallback;
+  }
+
+  return Number(rawValue);
+}
+
+export function parseAnalysisSearchParameters(
+  searchParameters: AnalysisSearchParameters,
+): ParsedAnalysisParameters {
+  const rawMaximumMarketValue =
+    getSingleParameter(
+      searchParameters.maximum_market_value,
+    );
+
+  const maximumMarketValueMillions =
+    rawMaximumMarketValue === undefined ||
+    rawMaximumMarketValue.trim() === ""
+      ? undefined
+      : Number(
+          rawMaximumMarketValue,
+        ) / 1_000_000;
+
+  const result =
+    transferAnalysisFormSchema.safeParse({
+      minimumMinutes:
+        parseNumberParameter(
+          searchParameters.minimum_minutes,
+          DEFAULT_TRANSFER_ANALYSIS_VALUES
+            .minimumMinutes,
+        ),
+
+      minimumRoleConfidence:
+        parseNumberParameter(
+          searchParameters
+            .minimum_role_confidence,
+          DEFAULT_TRANSFER_ANALYSIS_VALUES
+            .minimumRoleConfidence,
+        ),
+
+      maximumMarketValueMillions,
+
+      neutralHeatmapScore:
+        parseNumberParameter(
+          searchParameters
+            .neutral_heatmap_score,
+          DEFAULT_TRANSFER_ANALYSIS_VALUES
+            .neutralHeatmapScore,
+        ),
+    });
+
+  if (!result.success) {
+    return {
+      success: false,
+      message:
+        result.error.issues[0]
+          ?.message ??
+        "The analysis configuration is invalid.",
+    };
+  }
+
+  return {
+    success: true,
+    values: result.data,
+  };
+}
+
 export function createTransferAnalysisPayload(
   playerId: number,
   values: TransferAnalysisFormValues,

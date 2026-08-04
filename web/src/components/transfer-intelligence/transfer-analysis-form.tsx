@@ -18,7 +18,6 @@ import {
 } from "@/lib/api/browser-players";
 import {
   createAnalysisSearchParameters,
-  DEFAULT_TRANSFER_ANALYSIS_VALUES,
   transferAnalysisFormSchema,
 } from "@/lib/transfer-intelligence/analysis-form";
 import type {
@@ -28,6 +27,7 @@ import type {
 type TransferAnalysisFormProps =
   Readonly<{
     playerId: number;
+    initialValues: TransferAnalysisFormValues;
   }>;
 
 type AnalysisFieldProps =
@@ -74,6 +74,7 @@ function AnalysisField({
 
 export function TransferAnalysisForm({
   playerId,
+  initialValues,
 }: TransferAnalysisFormProps) {
   const router = useRouter();
 
@@ -110,20 +111,7 @@ export function TransferAnalysisForm({
       zodResolver(
         transferAnalysisFormSchema,
       ),
-    defaultValues: {
-      minimumMinutes:
-        DEFAULT_TRANSFER_ANALYSIS_VALUES
-          .minimumMinutes,
-      minimumRoleConfidence:
-        DEFAULT_TRANSFER_ANALYSIS_VALUES
-          .minimumRoleConfidence,
-      maximumMarketValueMillions:
-        DEFAULT_TRANSFER_ANALYSIS_VALUES
-          .maximumMarketValueMillions,
-      neutralHeatmapScore:
-        DEFAULT_TRANSFER_ANALYSIS_VALUES
-          .neutralHeatmapScore,
-    },
+    defaultValues: initialValues,
   });
 
   const submitAnalysis =

@@ -9,23 +9,42 @@ import {
 import {
   PageIntro,
 } from "@/components/layout/page-intro";
+import {
+  TransferAnalysisResults,
+} from "@/components/transfer-intelligence/transfer-analysis-results";
+import {
+  createAnalysisSearchParameters,
+  parseAnalysisSearchParameters,
+} from "@/lib/transfer-intelligence/analysis-form";
+import type {
+  AnalysisSearchParameters,
+} from "@/lib/transfer-intelligence/analysis-form";
 
 type AnalysisResultsPageProps =
   Readonly<{
     params: Promise<{
       playerId: string;
     }>;
+    searchParams:
+      Promise<AnalysisSearchParameters>;
   }>;
 
 export default async function AnalysisResultsPage({
   params,
+  searchParams,
 }: AnalysisResultsPageProps) {
-  const {
-    playerId,
-  } = await params;
+  const [
+    resolvedParams,
+    resolvedSearchParams,
+  ] = await Promise.all([
+    params,
+    searchParams,
+  ]);
 
   const parsedPlayerId =
-    Number(playerId);
+    Number(
+      resolvedParams.playerId,
+    );
 
   if (
     !Number.isSafeInteger(
@@ -36,34 +55,72 @@ export default async function AnalysisResultsPage({
     notFound();
   }
 
+  const parsedParameters =
+    parseAnalysisSearchParameters(
+      resolvedSearchParams,
+    );
+
+  if (!parsedParameters.success) {
+    return (
+      <PageContainer className="py-14 sm:py-20">
+        <PageIntro
+          eyebrow="Transfer intelligence"
+          title="Invalid analysis configuration"
+          description={parsedParameters.message}
+          actions={
+            <Link
+              href={`/analysis/${parsedPlayerId}`}
+              className="rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-white hover:bg-brand-dark"
+            >
+              Configure analysis
+            </Link>
+          }
+        />
+
+        <section className="mt-12 rounded-2xl border border-warning/25 bg-warning/10 p-6">
+          <p className="font-semibold text-warning">
+            The URL parameters could not be used
+          </p>
+
+          <p className="mt-2 text-sm leading-6 text-muted">
+            Return to the configuration page
+            and submit valid recruitment
+            thresholds.
+          </p>
+        </section>
+      </PageContainer>
+    );
+  }
+
+  const queryString =
+    createAnalysisSearchParameters(
+      parsedParameters.values,
+    ).toString();
+
   return (
-    <PageContainer className="py-14 sm:py-20">
+    <PageContainer className="py-10 sm:py-14">
       <PageIntro
         eyebrow="Transfer intelligence"
-        title="Recommendation results"
-        description="The validated recruitment configuration has been preserved in the URL. Ranked scenario results will be connected in the next delivery."
+        title="Replacement recommendations"
+        description="Review candidates across four recruitment scenarios, inspect the recommendation evidence and continue to direct player comparison."
         actions={
           <Link
-            href={`/analysis/${parsedPlayerId}`}
-            className="rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold transition-colors hover:bg-surface-secondary"
+            href={`/analysis/${parsedPlayerId}?${queryString}`}
+            className="rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold hover:bg-surface-secondary"
           >
             Adjust parameters
           </Link>
         }
       />
 
-      <section className="mt-12 rounded-2xl border border-border bg-surface p-6 shadow-sm">
-        <p className="font-semibold">
-          Analysis configuration ready
-        </p>
-
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
-          Phase 5D.2 will submit these
-          parameters to the typed transfer
-          analysis endpoint and present all
-          four recommendation modes.
-        </p>
-      </section>
+      <div className="mt-10">
+        <TransferAnalysisResults
+          playerId={parsedPlayerId}
+          values={
+            parsedParameters.values
+          }
+        />
+      </div>
     </PageContainer>
   );
 }

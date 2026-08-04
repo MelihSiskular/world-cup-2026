@@ -12,23 +12,39 @@ import {
 import {
   TransferAnalysisForm,
 } from "@/components/transfer-intelligence/transfer-analysis-form";
+import {
+  DEFAULT_TRANSFER_ANALYSIS_VALUES,
+  parseAnalysisSearchParameters,
+} from "@/lib/transfer-intelligence/analysis-form";
+import type {
+  AnalysisSearchParameters,
+} from "@/lib/transfer-intelligence/analysis-form";
 
 type TransferAnalysisPageProps =
   Readonly<{
     params: Promise<{
       playerId: string;
     }>;
+    searchParams:
+      Promise<AnalysisSearchParameters>;
   }>;
 
 export default async function TransferAnalysisPage({
   params,
+  searchParams,
 }: TransferAnalysisPageProps) {
-  const {
-    playerId,
-  } = await params;
+  const [
+    resolvedParams,
+    resolvedSearchParams,
+  ] = await Promise.all([
+    params,
+    searchParams,
+  ]);
 
   const parsedPlayerId =
-    Number(playerId);
+    Number(
+      resolvedParams.playerId,
+    );
 
   if (
     !Number.isSafeInteger(
@@ -38,6 +54,18 @@ export default async function TransferAnalysisPage({
   ) {
     notFound();
   }
+
+  const parsedParameters =
+    parseAnalysisSearchParameters(
+      resolvedSearchParams,
+    );
+
+  const initialValues =
+    parsedParameters.success
+      ? parsedParameters.values
+      : {
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        };
 
   return (
     <PageContainer className="py-14 sm:py-20">
@@ -58,6 +86,7 @@ export default async function TransferAnalysisPage({
       <div className="mt-12">
         <TransferAnalysisForm
           playerId={parsedPlayerId}
+          initialValues={initialValues}
         />
       </div>
     </PageContainer>
