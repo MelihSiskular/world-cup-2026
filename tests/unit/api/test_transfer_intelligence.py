@@ -41,10 +41,26 @@ def _build_analysis_result() -> TransferAnalysisResult:
                         data={
                             "player_id": 20,
                             "player_name": "Dani Olmo",
-                            "transfer_score": 88.5,
+                            "recommendation_type": "like_for_like",
+                            "recommendation_strength": "strong",
+                            "why_recommended": ("Strong immediate replacement profile."),
+                            "immediate_score": 88.5,
+                            "immediate_rank": 1,
                         }
                     ),
                 ),
+            ),
+            TransferModeResult(
+                mode="development",
+                recommendations=(),
+            ),
+            TransferModeResult(
+                mode="value",
+                recommendations=(),
+            ),
+            TransferModeResult(
+                mode="short_term",
+                recommendations=(),
             ),
         ),
     )
@@ -52,14 +68,84 @@ def _build_analysis_result() -> TransferAnalysisResult:
 
 def test_transfer_analysis_route_is_in_openapi_schema() -> None:
     application = create_app()
+    schema = application.openapi()
 
-    operation = application.openapi()["paths"]["/api/v1/transfer-intelligence/analyze"]["post"]
+    operation = schema["paths"]["/api/v1/transfer-intelligence/analyze"]["post"]
 
     assert "400" in operation["responses"]
     assert "404" in operation["responses"]
     assert "409" in operation["responses"]
     assert "500" in operation["responses"]
     assert "503" in operation["responses"]
+
+    schemas = schema["components"]["schemas"]
+
+    analysis_schema = schemas["TransferAnalysisResponse"]
+
+    assert analysis_schema["properties"]["target"]["$ref"].endswith("/TransferTargetResponse")
+    assert analysis_schema["properties"]["modes"]["$ref"].endswith("/TransferModesResponse")
+
+    modes_schema = schemas["TransferModesResponse"]
+
+    expected_modes = {
+        "immediate": (
+            "ImmediateTransferModeResponse",
+            "ImmediateTransferRecommendationResponse",
+            "immediate_score",
+            "immediate_rank",
+        ),
+        "development": (
+            "DevelopmentTransferModeResponse",
+            "DevelopmentTransferRecommendationResponse",
+            "development_score",
+            "development_rank",
+        ),
+        "value": (
+            "ValueTransferModeResponse",
+            "ValueTransferRecommendationResponse",
+            "value_score",
+            "value_rank",
+        ),
+        "short_term": (
+            "ShortTermTransferModeResponse",
+            "ShortTermTransferRecommendationResponse",
+            "short_term_score",
+            "short_term_rank",
+        ),
+    }
+
+    assert set(modes_schema["required"]) == set(expected_modes)
+
+    for (
+        mode_name,
+        (
+            mode_schema_name,
+            recommendation_schema_name,
+            score_field,
+            rank_field,
+        ),
+    ) in expected_modes.items():
+        mode_reference = modes_schema["properties"][mode_name]["$ref"]
+
+        assert mode_reference.endswith(f"/{mode_schema_name}")
+
+        mode_schema = schemas[mode_schema_name]
+        mode_property = mode_schema["properties"]["mode"]
+
+        assert mode_property.get("const") == mode_name or mode_property.get("enum") == [mode_name]
+
+        recommendation_reference = mode_schema["properties"]["recommendations"]["items"]["$ref"]
+
+        assert recommendation_reference.endswith(f"/{recommendation_schema_name}")
+
+        recommendation_properties = schemas[recommendation_schema_name]["properties"]
+
+        assert "player_id" in recommendation_properties
+        assert "player_name" in recommendation_properties
+        assert "recommendation_strength" in recommendation_properties
+        assert "why_recommended" in recommendation_properties
+        assert score_field in recommendation_properties
+        assert rank_field in recommendation_properties
 
 
 def test_transfer_analysis_endpoint_delegates_name_to_application_service() -> None:
@@ -131,10 +217,26 @@ def test_transfer_analysis_endpoint_delegates_name_to_application_service() -> N
                     {
                         "player_id": 20,
                         "player_name": "Dani Olmo",
-                        "transfer_score": 88.5,
+                        "recommendation_type": "like_for_like",
+                        "recommendation_strength": "strong",
+                        "why_recommended": ("Strong immediate replacement profile."),
+                        "immediate_score": 88.5,
+                        "immediate_rank": 1,
                     }
                 ],
-            }
+            },
+            "development": {
+                "mode": "development",
+                "recommendations": [],
+            },
+            "value": {
+                "mode": "value",
+                "recommendations": [],
+            },
+            "short_term": {
+                "mode": "short_term",
+                "recommendations": [],
+            },
         },
     }
 
