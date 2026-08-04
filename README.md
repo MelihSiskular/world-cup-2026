@@ -592,8 +592,14 @@ The engine produces four recruitment scenarios:
 - PCA
 - FastAPI
 - Uvicorn
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Vitest
 - Docker
 - Railway
+
 
 ---
 ## Sample Insights

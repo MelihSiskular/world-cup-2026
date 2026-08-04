@@ -102,6 +102,7 @@ jobs:
           workflows = {
               "Python Quality": "python-quality.yml",
               "Docker Validation": "docker-validation.yml",
+              "Web Quality": "web-quality.yml",
           }
 
           timeout_seconds = 15 * 60

@@ -42,6 +42,7 @@ router = APIRouter(
 @router.post(
     "/analyze",
     response_model=TransferAnalysisResponse,
+    response_model_exclude_unset=True,
     status_code=status.HTTP_200_OK,
     summary="Analyze transfer alternatives",
     responses={
