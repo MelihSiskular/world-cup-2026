@@ -42,3 +42,8 @@ next-env.d.ts
 
 # Safe environment template
 !.env.example
+
+# Playwright
+/playwright-report/
+/test-results/
+/blob-report/
