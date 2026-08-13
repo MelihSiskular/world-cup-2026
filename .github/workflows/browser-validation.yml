@@ -1,0 +1,69 @@
+name: Browser Validation
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "24"
+  WC26_API_BASE_URL: https://world-cup-2026-production.up.railway.app
+  WC26_E2E_LOCAL_SERVER: "1"
+
+jobs:
+  browser:
+    name: Chromium and WebKit Journey
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    defaults:
+      run:
+        working-directory: web
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Validate frontend environment
+        run: npm run env:check
+
+      - name: Build production frontend
+        run: npm run build
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Run browser validation
+        run: npm run test:e2e
+
+      - name: Upload Playwright diagnostics
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            web/playwright-report
+            web/test-results
+          if-no-files-found: warn
+          retention-days: 14

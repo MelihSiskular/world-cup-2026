@@ -1,8 +1,18 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const baseURL =
-  process.env.WC26_E2E_BASE_URL ??
+const PRODUCTION_BASE_URL =
   "https://wc26-transfer-intelligence.vercel.app";
+
+const LOCAL_BASE_URL =
+  "http://127.0.0.1:3000";
+
+const useLocalServer =
+  process.env.WC26_E2E_LOCAL_SERVER === "1";
+
+const baseURL = useLocalServer
+  ? LOCAL_BASE_URL
+  : process.env.WC26_E2E_BASE_URL ??
+    PRODUCTION_BASE_URL;
 
 export default defineConfig({
   testDir: "./e2e",
@@ -18,6 +28,18 @@ export default defineConfig({
   reporter: process.env.CI
     ? [["line"], ["html", { open: "never" }]]
     : [["list"], ["html", { open: "never" }]],
+
+  webServer: useLocalServer
+    ? {
+        command:
+          "npm run start -- --hostname 127.0.0.1 --port 3000",
+        url: LOCAL_BASE_URL,
+        reuseExistingServer: !process.env.CI,
+        timeout: 120_000,
+        stdout: "pipe",
+        stderr: "pipe",
+      }
+    : undefined,
 
   use: {
     baseURL,
