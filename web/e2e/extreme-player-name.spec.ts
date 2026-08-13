@@ -134,11 +134,14 @@ async function expectTextFits(
       }),
     );
 
+  const roundingTolerancePx = 2;
+
   expect(
     dimensions.scrollWidth,
-    `Expected text to fit its element: scrollWidth=${dimensions.scrollWidth}, clientWidth=${dimensions.clientWidth}`,
+    `Expected text to fit its element within ${roundingTolerancePx}px browser-rounding tolerance: scrollWidth=${dimensions.scrollWidth}, clientWidth=${dimensions.clientWidth}`,
   ).toBeLessThanOrEqual(
-    dimensions.clientWidth,
+    dimensions.clientWidth +
+      roundingTolerancePx,
   );
 }
 
