@@ -36,6 +36,73 @@ def load_player_features(
         raise InvalidDatasetError("Player feature table could not be read.") from exception
 
 
+PLAYER_TOURNAMENT_SUMMARY_REQUIRED_COLUMNS = frozenset(
+    {
+        "player_id",
+        "player_primary_position",
+        "matches_played",
+        "starts",
+        "substitute_appearances",
+        "captain_appearances",
+        "total_minutes",
+        "formations_used",
+        "primary_formation",
+        "primary_lineup_position",
+    }
+)
+
+
+def load_player_tournament_summary(
+    path: Path,
+) -> pd.DataFrame:
+    """Load the enriched tournament-level player summary."""
+
+    if not path.exists():
+        raise DatasetNotFoundError(f"Player tournament summary not found: {path}")
+
+    try:
+        dataframe = pd.read_csv(
+            path,
+            low_memory=False,
+        )
+    except (
+        pd.errors.EmptyDataError,
+        pd.errors.ParserError,
+        UnicodeDecodeError,
+    ) as exception:
+        raise InvalidDatasetError("Player tournament summary could not be read.") from exception
+
+    missing_columns = PLAYER_TOURNAMENT_SUMMARY_REQUIRED_COLUMNS.difference(dataframe.columns)
+
+    if missing_columns:
+        raise InvalidDatasetError(
+            "Missing player tournament summary columns: " + ", ".join(sorted(missing_columns))
+        )
+
+    player_ids = pd.to_numeric(
+        dataframe["player_id"],
+        errors="coerce",
+    )
+
+    if player_ids.isna().any():
+        raise InvalidDatasetError("Player tournament summary contains an invalid player_id.")
+
+    if not player_ids.gt(0).all():
+        raise InvalidDatasetError("Player tournament summary contains a non-positive player_id.")
+
+    if not player_ids.mod(1).eq(0).all():
+        raise InvalidDatasetError("Player tournament summary contains a non-integer player_id.")
+
+    result = dataframe.copy()
+
+    result["player_id"] = player_ids.astype("int64")
+
+    if result["player_id"].duplicated().any():
+        raise InvalidDatasetError("Player tournament summary contains duplicate player IDs.")
+
+    return result
+
+
 def load_similarity(
     path: Path,
 ) -> pd.DataFrame:
@@ -174,7 +241,10 @@ def load_heatmap_profiles(
 
 
 __all__ = [
+    "PLAYER_TOURNAMENT_SUMMARY_REQUIRED_COLUMNS",
     "load_heatmap_profiles",
     "load_heatmap_similarity",
+    "load_player_features",
+    "load_player_tournament_summary",
     "load_similarity",
 ]

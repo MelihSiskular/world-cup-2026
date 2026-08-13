@@ -30,8 +30,22 @@ from wc26.analytics.player_intelligence.percentiles import (
 from wc26.analytics.player_intelligence.positions import (
     normalize_position_group,
 )
+from wc26.analytics.player_intelligence.profile import (
+    PerformanceMetric,
+    PerformanceMetricGroup,
+    PlayerIntelligenceProfile,
+    SampleContext,
+    TournamentSummary,
+    build_player_intelligence_profile,
+)
 
 __all__ = [
+    "PerformanceMetric",
+    "PerformanceMetricGroup",
+    "PlayerIntelligenceProfile",
+    "SampleContext",
+    "TournamentSummary",
+    "build_player_intelligence_profile",
     "DEFAULT_MAX_STRENGTHS",
     "DEFAULT_MAX_WATCH_OUTS",
     "DEFAULT_MINIMUM_COHORT_MINUTES",
