@@ -20,9 +20,10 @@ work that should be completed before Phase 6B is accepted.
 | Dataset unavailable | Dedicated dataset-unavailable handling | API client coverage | Covered |
 | Generic upstream 5xx | Structured API error handling | API client coverage | Covered |
 | Request ID diagnostics | Request ID preserved and displayed safely | API client coverage | Covered |
-| Missing market value | Nullable API model and presentation fallback | Backend coverage; frontend null-state coverage should be strengthened | Partial |
-| Missing heatmap evidence | Nullable measured evidence with neutral decision-score fallback | Strong backend coverage; frontend presentation coverage should be strengthened | Partial |
-| API timeout | AbortController and upstream-timeout handling | Server client and route-handler regression coverage | Covered || Missing role or archetype | Presentation fallbacks exist | Explicit component coverage still required | Partial |
+| Missing market value | Nullable API model and presentation fallback | Profile, recommendation and comparison component regression coverage | Covered |
+| Missing heatmap evidence | Nullable measured evidence with neutral decision-score fallback | Backend semantics and comparison regression coverage distinguish measured missing/zero values from the decision fallback | Covered |
+| API timeout | AbortController and upstream-timeout handling | Server client and route-handler regression coverage | Covered |
+| Missing role or archetype | Presentation fallbacks exist | Profile, recommendation and comparison component regression coverage | Covered |
 | Missing tournament minutes | Nullable API model and candidate eligibility handling | Profile presentation and candidate eligibility regression coverage | Covered |
 | No appearances | Nullable API model; appearances do not independently filter candidates | Profile presentation and candidate eligibility regression coverage | Covered |
 | Low-minute player | Minimum-minutes threshold applies to candidates, not the target | Boundary, zero, missing-minute and target regression coverage | Covered |

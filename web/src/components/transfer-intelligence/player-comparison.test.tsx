@@ -1,5 +1,6 @@
 import {
   screen,
+  within,
 } from "@testing-library/react";
 import {
   beforeEach,
@@ -17,6 +18,7 @@ import {
 } from "@/lib/api/browser-transfer-intelligence";
 import type {
   TransferAnalysisResponse,
+  TransferRecommendationResponse,
 } from "@/lib/api/types";
 import {
   DEFAULT_TRANSFER_ANALYSIS_VALUES,
@@ -40,6 +42,8 @@ const runTransferAnalysisMock =
 
 function createResponse(
   includeCandidate: boolean,
+  recommendationOverrides:
+    Partial<TransferRecommendationResponse> = {},
 ): TransferAnalysisResponse {
   const recommendation =
     includeCandidate
@@ -84,6 +88,7 @@ function createResponse(
               "Strong",
             why_recommended:
               "Strong tactical and spatial evidence.",
+            ...recommendationOverrides,
           },
         ]
       : [];
@@ -247,6 +252,192 @@ describe(
             "88.4%",
           ),
         ).toBeInTheDocument();
+      },
+    );
+        it(
+      "does not present the neutral heatmap fallback as measured similarity",
+      async () => {
+        runTransferAnalysisMock
+          .mockResolvedValue(
+            createResponse(
+              true,
+              {
+                heatmap_similarity_score_pct:
+                  null,
+                effective_heatmap_score_pct:
+                  70,
+                has_heatmap_similarity:
+                  false,
+              },
+            ),
+          );
+
+        renderWithQueryClient(
+          <PlayerComparison
+            targetPlayerId={978838}
+            candidatePlayerId={12345}
+            mode="immediate"
+            values={{
+              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+            }}
+          />,
+        );
+
+        const heatmapLabel =
+          await screen.findByText(
+            "Heatmap similarity",
+          );
+
+        const heatmapMetric =
+          heatmapLabel.closest(
+            "article",
+          );
+
+        if (!heatmapMetric) {
+          throw new Error(
+            "Heatmap similarity metric not found",
+          );
+        }
+
+        expect(
+          within(
+            heatmapMetric,
+          ).getByText(
+            "Not reported",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          within(
+            heatmapMetric,
+          ).queryByText(
+            "70%",
+          ),
+        ).not.toBeInTheDocument();
+      },
+    );
+
+    it(
+      "keeps measured zero heatmap similarity distinct from missing evidence",
+      async () => {
+        runTransferAnalysisMock
+          .mockResolvedValue(
+            createResponse(
+              true,
+              {
+                heatmap_similarity_score_pct:
+                  0,
+                effective_heatmap_score_pct:
+                  0,
+                has_heatmap_similarity:
+                  true,
+              },
+            ),
+          );
+
+        renderWithQueryClient(
+          <PlayerComparison
+            targetPlayerId={978838}
+            candidatePlayerId={12345}
+            mode="immediate"
+            values={{
+              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+            }}
+          />,
+        );
+
+        const heatmapLabel =
+          await screen.findByText(
+            "Heatmap similarity",
+          );
+
+        const heatmapMetric =
+          heatmapLabel.closest(
+            "article",
+          );
+
+        if (!heatmapMetric) {
+          throw new Error(
+            "Heatmap similarity metric not found",
+          );
+        }
+
+        expect(
+          within(
+            heatmapMetric,
+          ).getByText(
+            "0%",
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
+        it(
+      "renders missing candidate identity evidence explicitly",
+      async () => {
+        runTransferAnalysisMock
+          .mockResolvedValue(
+            createResponse(
+              true,
+              {
+                market_value: null,
+                market_value_currency:
+                  null,
+                final_role: null,
+                archetype: null,
+                age: null,
+              },
+            ),
+          );
+
+        renderWithQueryClient(
+          <PlayerComparison
+            targetPlayerId={978838}
+            candidatePlayerId={12345}
+            mode="immediate"
+            values={{
+              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+            }}
+          />,
+        );
+
+        const candidateHeading =
+          await screen.findByRole(
+            "heading",
+            {
+              name:
+                "Test Candidate",
+            },
+          );
+
+        const candidateCard =
+          candidateHeading.closest(
+            "article",
+          );
+
+        if (!candidateCard) {
+          throw new Error(
+            "Candidate identity card not found",
+          );
+        }
+
+        expect(
+          within(
+            candidateCard,
+          ).getByText(
+            "Role unavailable",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          within(
+            candidateCard,
+          ).getAllByText(
+            "Not reported",
+          ).length,
+        ).toBeGreaterThanOrEqual(
+          2,
+        );
       },
     );
   },

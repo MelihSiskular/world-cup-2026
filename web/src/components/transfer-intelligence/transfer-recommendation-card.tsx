@@ -87,7 +87,7 @@ export function TransferRecommendationCard({
       label: "Spatial similarity",
       value: formatMetricPercentage(
         recommendation
-          .effective_heatmap_score_pct,
+          .spatial_similarity_pct,
       ),
     },
     {
