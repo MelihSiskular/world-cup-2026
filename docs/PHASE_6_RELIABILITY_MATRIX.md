@@ -27,7 +27,7 @@ work that should be completed before Phase 6B is accepted.
 | Missing tournament minutes | Nullable API model and candidate eligibility handling | Profile presentation and candidate eligibility regression coverage | Covered |
 | No appearances | Nullable API model; appearances do not independently filter candidates | Profile presentation and candidate eligibility regression coverage | Covered |
 | Low-minute player | Minimum-minutes threshold applies to candidates, not the target | Boundary, zero, missing-minute and target regression coverage | Covered |
-| Long player name | Explicit break-word hardening across player, recommendation and comparison views | Real browser journey coverage exists; synthetic extreme-name regression is still required | Partial |
+| Long player name | Explicit break-word and min-width hardening across player, analysis, recommendation and comparison views | Synthetic extreme-name Playwright journey passes in Chromium, WebKit, Mobile Chromium and Mobile WebKit | Covered |
 | Mobile long-content overflow | Break-word hardening and page-level overflow protection | Chromium and WebKit journey assertions across players, profile, results and comparison | Covered |
 
 ## Phase 6B Priorities
@@ -35,7 +35,7 @@ work that should be completed before Phase 6B is accepted.
 1. Strengthen nullable player-data presentation coverage.
 2. Add explicit upstream-timeout regression coverage.
 3. Verify low-minute and no-appearance behavior.
-4. Harden long player names and constrained mobile layouts.
+4. [x] Harden long player names and constrained mobile layouts with synthetic cross-browser regression coverage.
 5. Expand mobile result and comparison reliability coverage.
 
 ## Principles

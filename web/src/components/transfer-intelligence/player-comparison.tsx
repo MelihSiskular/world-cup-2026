@@ -108,7 +108,7 @@ function PlayerIdentityCard({
   scoreLabel?: string;
 }>) {
   return (
-    <article className="rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-7">
+    <article className="min-w-0 rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
           {label}
@@ -601,7 +601,7 @@ export function PlayerComparison({
         )}
       </section>
 
-      <section className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+      <section className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
         <div className="border-b border-border p-6 sm:p-7">
           <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
             Side-by-side profile
@@ -612,7 +612,7 @@ export function PlayerComparison({
           </h2>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="min-w-0 max-w-full overflow-x-auto">
           <table className="w-full min-w-[46rem] border-collapse text-left">
             <thead>
               <tr className="border-b border-border bg-surface-secondary">
@@ -620,11 +620,11 @@ export function PlayerComparison({
                   Metric
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold tracking-[0.1em] text-muted uppercase">
+                <th className="break-all px-6 py-4 text-xs font-semibold tracking-[0.1em] text-muted uppercase">
                   {target.player_name}
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold tracking-[0.1em] text-muted uppercase">
+                <th className="break-all px-6 py-4 text-xs font-semibold tracking-[0.1em] text-muted uppercase">
                   {candidate.player_name}
                 </th>
               </tr>
