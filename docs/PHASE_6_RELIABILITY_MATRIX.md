@@ -23,9 +23,9 @@ work that should be completed before Phase 6B is accepted.
 | Missing market value | Nullable API model and presentation fallback | Backend coverage; frontend null-state coverage should be strengthened | Partial |
 | Missing heatmap evidence | Nullable measured evidence with neutral decision-score fallback | Strong backend coverage; frontend presentation coverage should be strengthened | Partial |
 | API timeout | AbortController and upstream-timeout handling | Server client and route-handler regression coverage | Covered || Missing role or archetype | Presentation fallbacks exist | Explicit component coverage still required | Partial |
-| Missing tournament minutes | Nullable API model | Explicit presentation coverage still required | Partial |
-| No appearances | Nullable API model | Explicit presentation coverage still required | Partial |
-| Low-minute player | Minimum-minutes candidate threshold exists | UX behavior coverage still required | Partial |
+| Missing tournament minutes | Nullable API model and candidate eligibility handling | Profile presentation and candidate eligibility regression coverage | Covered |
+| No appearances | Nullable API model; appearances do not independently filter candidates | Profile presentation and candidate eligibility regression coverage | Covered |
+| Low-minute player | Minimum-minutes threshold applies to candidates, not the target | Boundary, zero, missing-minute and target regression coverage | Covered |
 | Long player name | No dedicated hardening verified | No regression coverage | Missing |
 | Mobile long-content overflow | Responsive primary journey passes | Dedicated overflow coverage still required | Missing |
 
