@@ -29,6 +29,7 @@ def test_candidate_pipeline_uses_scoring_functions() -> None:
     assert candidates.calculate_market_value_advantage is calculate_market_value_advantage
     assert candidates.calculate_age_suitability is calculate_age_suitability
 
+
 def _stub_candidate_pipeline(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -173,18 +174,16 @@ def test_candidate_minimum_minutes_excludes_low_and_missing_samples(
     players = _candidate_fixture()
     target = players.iloc[0]
 
-    result, target_heatmap_profile = (
-        candidates.prepare_candidate_base(
-            players=players,
-            similarity=pd.DataFrame(),
-            heatmap_similarity=pd.DataFrame(),
-            heatmap_profiles=pd.DataFrame(),
-            target=target,
-            minimum_minutes=150.0,
-            minimum_role_confidence=0.0,
-            maximum_market_value=None,
-            neutral_heatmap_score=70.0,
-        )
+    result, target_heatmap_profile = candidates.prepare_candidate_base(
+        players=players,
+        similarity=pd.DataFrame(),
+        heatmap_similarity=pd.DataFrame(),
+        heatmap_profiles=pd.DataFrame(),
+        target=target,
+        minimum_minutes=150.0,
+        minimum_role_confidence=0.0,
+        maximum_market_value=None,
+        neutral_heatmap_score=70.0,
     )
 
     assert result["player_id"].tolist() == [
@@ -229,6 +228,7 @@ def test_candidate_minutes_zero_remains_distinct_from_missing_minutes(
         6,
     }
 
+
 def test_target_zero_minutes_does_not_apply_candidate_threshold_to_target(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -236,9 +236,7 @@ def test_target_zero_minutes_does_not_apply_candidate_threshold_to_target(
 
     players = _candidate_fixture()
 
-    target = players.loc[
-        players["player_id"].eq(2)
-    ].iloc[0]
+    target = players.loc[players["player_id"].eq(2)].iloc[0]
 
     result, _ = candidates.prepare_candidate_base(
         players=players,
