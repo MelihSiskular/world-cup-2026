@@ -103,6 +103,7 @@ jobs:
               "Python Quality": "python-quality.yml",
               "Docker Validation": "docker-validation.yml",
               "Web Quality": "web-quality.yml",
+              "Browser Validation": "browser-validation.yml",
           }
 
           timeout_seconds = 15 * 60
