@@ -129,18 +129,18 @@ export function TransferRecommendationCard({
           </div>
 
           <div className="mt-5">
-            <h3 className="text-2xl font-bold tracking-[-0.035em]">
+            <h3 className="break-words text-2xl font-bold tracking-[-0.035em]">
               {recommendation.player_name}
             </h3>
 
-            <p className="mt-1 text-sm font-medium text-muted">
+            <p className="mt-1 break-words text-sm font-medium text-muted">
               {recommendation
                 .national_team_name ??
                 recommendation.country_name ??
                 "National team unavailable"}
             </p>
 
-            <p className="mt-3 font-semibold text-brand">
+            <p className="mt-3 break-words font-semibold text-brand">
               {recommendation.final_role ??
                 recommendation.archetype ??
                 "Role unavailable"}
@@ -169,7 +169,7 @@ export function TransferRecommendationCard({
               Why recommended
             </p>
 
-            <p className="mt-2 text-sm leading-6 text-muted">
+            <p className="mt-2 break-words text-sm leading-6 text-muted">
               {
                 recommendation
                   .why_recommended

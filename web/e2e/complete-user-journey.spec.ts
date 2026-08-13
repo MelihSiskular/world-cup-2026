@@ -4,6 +4,26 @@ import {
   type Page,
 } from "@playwright/test";
 
+async function expectNoHorizontalPageOverflow(
+  page: Page,
+): Promise<void> {
+  const dimensions = await page.evaluate(
+    () => ({
+      scrollWidth:
+        document.documentElement.scrollWidth,
+      clientWidth:
+        document.documentElement.clientWidth,
+    }),
+  );
+
+  expect(
+    dimensions.scrollWidth,
+    `Expected no horizontal page overflow: scrollWidth=${dimensions.scrollWidth}, clientWidth=${dimensions.clientWidth}`,
+  ).toBeLessThanOrEqual(
+    dimensions.clientWidth,
+  );
+}
+
 async function navigateToPlayers(
   page: Page,
 ): Promise<void> {
@@ -70,6 +90,10 @@ test.describe(
           playerSearch,
         ).toBeVisible();
 
+        await expectNoHorizontalPageOverflow(
+          page,
+        );
+
         await playerSearch.fill(
           "Michael Olise",
         );
@@ -98,6 +122,10 @@ test.describe(
             exact: true,
           }),
         ).toBeVisible();
+
+        await expectNoHorizontalPageOverflow(
+          page,
+        );
 
         await page
           .getByRole("link", {
@@ -210,6 +238,10 @@ test.describe(
           "true",
         );
 
+        await expectNoHorizontalPageOverflow(
+          page,
+        );
+
         await expect(
           page.getByRole("heading", {
             name: "Immediate impact",
@@ -288,6 +320,10 @@ test.describe(
             )
             .first(),
         ).toBeVisible();
+
+        await expectNoHorizontalPageOverflow(
+          page,
+        );
       },
     );
   },

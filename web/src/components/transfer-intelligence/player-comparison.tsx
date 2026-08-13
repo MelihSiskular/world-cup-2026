@@ -121,17 +121,17 @@ function PlayerIdentityCard({
         </span>
       </div>
 
-      <h2 className="mt-5 text-3xl font-bold tracking-[-0.04em]">
+      <h2 className="mt-5 break-words text-3xl font-bold tracking-[-0.04em]">
         {player.player_name}
       </h2>
 
-      <p className="mt-2 text-sm font-medium text-muted">
+      <p className="mt-2 break-words text-sm font-medium text-muted">
         {player.national_team_name ??
           player.country_name ??
           "National team unavailable"}
       </p>
 
-      <p className="mt-4 font-semibold text-brand">
+      <p className="mt-4 break-words font-semibold text-brand">
         {player.final_role ??
           player.archetype ??
           "Role unavailable"}

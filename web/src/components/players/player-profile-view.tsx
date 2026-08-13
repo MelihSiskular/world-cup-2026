@@ -116,16 +116,16 @@ export function PlayerProfileView({
                   </span>
                 </div>
 
-                <h1 className="mt-5 text-4xl font-bold tracking-[-0.045em] sm:text-5xl">
+                <h1 className="mt-5 break-words text-4xl font-bold tracking-[-0.045em] sm:text-5xl">
                   {player.player_name}
                 </h1>
 
-                <p className="mt-3 text-lg font-medium text-brand">
+                <p className="mt-3 break-words text-lg font-medium text-brand">
                   {player.final_role ??
                     "Final role unavailable"}
                 </p>
 
-                <p className="mt-2 text-sm text-muted">
+                <p className="mt-2 break-words text-sm text-muted">
                   {player.archetype ??
                     "Archetype unavailable"}
                   {" · "}

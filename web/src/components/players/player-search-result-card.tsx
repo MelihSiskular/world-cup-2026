@@ -95,24 +95,24 @@ export function PlayerSearchResultCard({
               </span>
             </div>
 
-            <h2 className="mt-4 text-xl font-bold tracking-[-0.025em] transition-colors group-hover:text-brand">
+            <h2 className="mt-4 break-words text-xl font-bold tracking-[-0.025em] transition-colors group-hover:text-brand">
               {player.player_name}
             </h2>
 
-            <p className="mt-1 text-sm font-medium text-muted">
+            <p className="mt-1 break-words text-sm font-medium text-muted">
               {player.national_team_name ??
                 "National team unavailable"}
             </p>
 
             <div className="mt-5 flex flex-wrap gap-2">
               {player.final_role ? (
-                <span className="rounded-lg border border-border bg-page px-3 py-1.5 text-xs font-medium">
+                <span className="max-w-full break-words rounded-lg border border-border bg-page px-3 py-1.5 text-xs font-medium">
                   {player.final_role}
                 </span>
               ) : null}
 
               {player.archetype ? (
-                <span className="rounded-lg border border-border bg-page px-3 py-1.5 text-xs font-medium text-muted">
+                <span className="max-w-full break-words rounded-lg border border-border bg-page px-3 py-1.5 text-xs font-medium text-muted">
                   {player.archetype}
                 </span>
               ) : null}
