@@ -22,8 +22,7 @@ work that should be completed before Phase 6B is accepted.
 | Request ID diagnostics | Request ID preserved and displayed safely | API client coverage | Covered |
 | Missing market value | Nullable API model and presentation fallback | Backend coverage; frontend null-state coverage should be strengthened | Partial |
 | Missing heatmap evidence | Nullable measured evidence with neutral decision-score fallback | Strong backend coverage; frontend presentation coverage should be strengthened | Partial |
-| API timeout | AbortController and upstream-timeout handling | Explicit timeout regression coverage still required | Partial |
-| Missing role or archetype | Presentation fallbacks exist | Explicit component coverage still required | Partial |
+| API timeout | AbortController and upstream-timeout handling | Server client and route-handler regression coverage | Covered || Missing role or archetype | Presentation fallbacks exist | Explicit component coverage still required | Partial |
 | Missing tournament minutes | Nullable API model | Explicit presentation coverage still required | Partial |
 | No appearances | Nullable API model | Explicit presentation coverage still required | Partial |
 | Low-minute player | Minimum-minutes candidate threshold exists | UX behavior coverage still required | Partial |

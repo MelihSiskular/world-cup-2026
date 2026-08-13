@@ -15,14 +15,19 @@ const projectRoot =
   );
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      "@": path.resolve(
+    resolve: {
+        alias: {
+            "@": path.resolve(
+            projectRoot,
+            "src",
+        ),
+
+        "server-only": path.resolve(
         projectRoot,
-        "src",
-      ),
+        "src/test/server-only.ts",
+        ),
+        },
     },
-  },
 
   test: {
     environment: "jsdom",
