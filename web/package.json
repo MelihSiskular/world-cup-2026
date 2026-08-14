@@ -20,7 +20,10 @@
     "test:e2e:chromium": "playwright test --project=chromium",
     "test:e2e:webkit": "playwright test --project=webkit",
     "test:e2e:report": "playwright show-report",
-    "env:check": "node --env-file-if-exists=.env.local scripts/validate-environment.mjs"
+    "env:check": "node --env-file-if-exists=.env.local scripts/validate-environment.mjs",
+    "sync:player-images": "node ./scripts/sync-player-images.mjs",
+    "predev": "npm run sync:player-images",
+    "prebuild": "npm run sync:player-images"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import {
@@ -19,8 +20,15 @@ export function SiteHeader() {
           className="flex min-w-0 items-center gap-3 rounded-lg"
           aria-label="WC26 Transfer Intelligence home"
         >
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-dark text-sm font-bold tracking-[-0.04em] text-white">
-            W26
+          <span className="relative flex size-11 shrink-0 items-center justify-center overflow-visible">
+            <Image
+              src="/brand/world-cup-trophy.png"
+              alt=""
+              fill
+              sizes="44px"
+              priority
+              className="scale-[1.75] object-contain"
+            />
           </span>
 
           <span className="min-w-0">

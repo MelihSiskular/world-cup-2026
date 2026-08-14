@@ -94,6 +94,17 @@ def _validate_configuration(
         raise ValueError("Maximum watch-outs cannot be negative.")
 
 
+def _require_percentile(
+    metric: MetricPercentileResult,
+) -> float:
+    """Return percentile evidence required for an insight."""
+
+    if metric.percentile is None:
+        raise ValueError("Insight metric requires percentile evidence.")
+
+    return metric.percentile
+
+
 def _select_diverse_metrics(
     metrics: tuple[MetricPercentileResult, ...],
     *,
@@ -109,7 +120,7 @@ def _select_diverse_metrics(
         ordered = sorted(
             metrics,
             key=lambda metric: (
-                -metric.percentile,
+                -_require_percentile(metric),
                 METRIC_ORDER[metric.metric_key],
             ),
         )
@@ -117,7 +128,7 @@ def _select_diverse_metrics(
         ordered = sorted(
             metrics,
             key=lambda metric: (
-                metric.percentile,
+                _require_percentile(metric),
                 METRIC_ORDER[metric.metric_key],
             ),
         )
@@ -149,11 +160,13 @@ def _build_evidence(
     """Build deterministic human-readable percentile evidence."""
 
     definition = get_metric_definition(metric.metric_key)
+    percentile = _require_percentile(metric)
 
     return (
         f"{definition.short_label} ranks at the "
-        f"{metric.percentile:.1f} performance percentile "
-        f"among {metric.peer_count} same-position peers."
+        f"{percentile:.1f} performance percentile "
+        f"among {metric.peer_count} eligible "
+        "same-position players."
     )
 
 
@@ -165,6 +178,7 @@ def _to_insight(
     """Convert one percentile metric into public insight metadata."""
 
     definition = get_metric_definition(metric.metric_key)
+    percentile = _require_percentile(metric)
 
     return PlayerInsight(
         kind=kind,
@@ -174,7 +188,7 @@ def _to_insight(
         metric_label=definition.label,
         metric_short_label=definition.short_label,
         value=metric.value,
-        percentile=metric.percentile,
+        percentile=percentile,
         peer_count=metric.peer_count,
         evidence=_build_evidence(metric=metric),
     )
@@ -198,11 +212,15 @@ def build_player_insights(
     )
 
     strength_candidates = tuple(
-        metric for metric in profile.metrics if metric.percentile >= strength_percentile
+        metric
+        for metric in profile.metrics
+        if metric.percentile is not None and metric.percentile >= strength_percentile
     )
 
     watch_out_candidates = tuple(
-        metric for metric in profile.metrics if metric.percentile <= watch_out_percentile
+        metric
+        for metric in profile.metrics
+        if metric.percentile is not None and metric.percentile <= watch_out_percentile
     )
 
     selected_strengths = _select_diverse_metrics(

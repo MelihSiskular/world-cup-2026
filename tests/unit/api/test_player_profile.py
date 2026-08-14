@@ -11,8 +11,14 @@ from wc26.analytics.transfer_intelligence.errors import (
     PlayerNotFoundError,
 )
 from wc26.analytics.transfer_intelligence.models import (
+    PlayerInsightResult,
+    PlayerIntelligenceResult,
+    PlayerPerformanceMetricGroupResult,
+    PlayerPerformanceMetricResult,
     PlayerProfileRequest,
     PlayerProfileResult,
+    PlayerSampleContextResult,
+    PlayerTournamentSummaryResult,
 )
 from wc26.api import create_app
 from wc26.api.dependencies import (
@@ -49,6 +55,59 @@ def _build_profile() -> PlayerProfileResult:
         data_reliability_score=74.52,
         player_quality_score=88.85,
         role_reason="Statistical and spatial profile.",
+        tournament=PlayerTournamentSummaryResult(
+            matches=8,
+            starts=8,
+            substitute_appearances=0,
+            captain_appearances=0,
+            minutes=650.0,
+            formations_used=1,
+            primary_formation="4-2-3-1",
+            primary_lineup_position="M",
+        ),
+        intelligence=PlayerIntelligenceResult(
+            position_group="midfielder",
+            sample=PlayerSampleContextResult(
+                target_minutes=650.0,
+                minimum_peer_minutes=180.0,
+                target_meets_peer_minimum=True,
+            ),
+            groups=(
+                PlayerPerformanceMetricGroupResult(
+                    key="creation",
+                    metrics=(
+                        PlayerPerformanceMetricResult(
+                            key="expected_assists_per90",
+                            label="Expected assists / 90",
+                            short_label="xA / 90",
+                            unit="per90",
+                            value=0.4533,
+                            performance_percentile=98.8,
+                            peer_count=216,
+                        ),
+                    ),
+                ),
+            ),
+            strengths=(
+                PlayerInsightResult(
+                    kind="strength",
+                    group="creation",
+                    group_label="Chance creation",
+                    metric_key="expected_assists_per90",
+                    metric_label="Expected assists / 90",
+                    metric_short_label="xA / 90",
+                    value=0.4533,
+                    percentile=98.8,
+                    peer_count=216,
+                    evidence=(
+                        "xA / 90 ranks at the 98.8 "
+                        "performance percentile among 216 "
+                        "eligible same-position players."
+                    ),
+                ),
+            ),
+            watch_outs=(),
+        ),
     )
 
 
@@ -65,6 +124,7 @@ def test_player_profile_endpoint_delegates_to_service() -> None:
 
     dataset_paths = TransferDatasetPaths(
         features=Path("test-data/features.csv"),
+        player_tournament_summary=Path("test-data/player-tournament-summary.csv"),
         similarity=Path("test-data/similarity.csv"),
         heatmap_similarity=Path("test-data/heatmap-similarity.csv"),
         heatmap_profiles=Path("test-data/heatmap-profiles.csv"),
@@ -96,12 +156,35 @@ def test_player_profile_endpoint_delegates_to_service() -> None:
         PlayerProfileRequest(
             player_id=978838,
             features=dataset_paths.features,
+            player_tournament_summary=(dataset_paths.player_tournament_summary),
         )
     ]
 
     assert response.json()["player_id"] == 978838
     assert response.json()["player_name"] == "Michael Olise"
-    assert response.json()["final_role"] == "Advanced Central Playmaker"
+    payload = response.json()
+
+    assert payload["final_role"] == "Advanced Central Playmaker"
+
+    assert payload["tournament"] == {
+        "matches": 8,
+        "starts": 8,
+        "substitute_appearances": 0,
+        "captain_appearances": 0,
+        "minutes": 650.0,
+        "formations_used": 1,
+        "primary_formation": "4-2-3-1",
+        "primary_lineup_position": "M",
+    }
+
+    assert payload["intelligence"]["position_group"] == "midfielder"
+
+    creation = payload["intelligence"]["groups"][0]
+
+    assert creation["key"] == "creation"
+    assert creation["metrics"][0]["value"] == 0.4533
+    assert creation["metrics"][0]["performance_percentile"] == 98.8
+    assert payload["intelligence"]["strengths"][0]["metric_key"] == "expected_assists_per90"
 
 
 def test_player_profile_endpoint_rejects_non_positive_id() -> None:

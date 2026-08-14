@@ -94,3 +94,12 @@ htmlcov/
 
 # Generated deployment artifacts
 /dist/
+
+# Generated frontend player-image mirror
+web/public/player-images/
+
+# macOS metadata
+.DS_Store
+
+# Local brand-generation metadata
+web/public/brand/.last-run.json

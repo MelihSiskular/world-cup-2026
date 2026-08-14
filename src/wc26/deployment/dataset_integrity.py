@@ -416,6 +416,7 @@ def _runtime_dataset_paths() -> dict[str, Path]:
 
     return {
         "features": paths.features,
+        "player_tournament_summary": (paths.player_tournament_summary),
         "similarity": paths.similarity,
         "heatmap_similarity": (paths.heatmap_similarity),
         "heatmap_profiles": (paths.heatmap_profiles),

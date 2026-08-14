@@ -52,6 +52,7 @@ class TransferDataCatalogLoader(Protocol):
         self,
         *,
         features: Path,
+        player_tournament_summary: Path,
         similarity: Path,
         heatmap_similarity: Path,
         heatmap_profiles: Path,
@@ -95,6 +96,7 @@ def _catalog_row_counts(
 
     return {
         "players_rows": len(catalog.players),
+        "player_tournament_summary_rows": len(catalog.player_tournament_summary),
         "similarity_rows": len(catalog.similarity),
         "heatmap_similarity_rows": len(catalog.heatmap_similarity),
         "heatmap_profiles_rows": len(catalog.heatmap_profiles),
@@ -157,6 +159,9 @@ def create_app(
                         "event": ("catalog.loading"),
                         **deployment_fields,
                         "features_path": str(runtime.dataset_paths.features),
+                        "player_tournament_summary_path": str(
+                            runtime.dataset_paths.player_tournament_summary
+                        ),
                         "similarity_path": str(runtime.dataset_paths.similarity),
                         "heatmap_similarity_path": str(runtime.dataset_paths.heatmap_similarity),
                         "heatmap_profiles_path": str(runtime.dataset_paths.heatmap_profiles),
@@ -166,6 +171,7 @@ def create_app(
                 try:
                     catalog = catalog_loader(
                         features=(runtime.dataset_paths.features),
+                        player_tournament_summary=(runtime.dataset_paths.player_tournament_summary),
                         similarity=(runtime.dataset_paths.similarity),
                         heatmap_similarity=(runtime.dataset_paths.heatmap_similarity),
                         heatmap_profiles=(runtime.dataset_paths.heatmap_profiles),

@@ -123,7 +123,7 @@ def test_target_does_not_need_to_meet_cohort_minimum_minutes() -> None:
     assert expected_assists.peer_count == 19
 
 
-def test_metric_is_omitted_when_peer_evidence_is_too_small() -> None:
+def test_metric_value_is_preserved_when_peer_evidence_is_too_small() -> None:
     dataframe = build_midfielder_fixture()
 
     dataframe.loc[
@@ -137,9 +137,14 @@ def test_metric_is_omitted_when_peer_evidence_is_too_small() -> None:
         minimum_peer_count=10,
     )
 
-    metric_keys = {metric.metric_key for metric in profile.metrics}
+    expected_assists = metric_by_key(
+        profile,
+        "expected_assists_per90",
+    )
 
-    assert "expected_assists_per90" not in metric_keys
+    assert expected_assists.value == pytest.approx(1.9)
+    assert expected_assists.peer_count == 5
+    assert expected_assists.percentile is None
 
 
 def test_tied_distribution_stays_neutral() -> None:

@@ -497,6 +497,77 @@ export interface components {
         };
         readonly JsonValue: unknown;
         /**
+         * PlayerInsightResponse
+         * @description Explainable strength or watch-out.
+         */
+        readonly PlayerInsightResponse: {
+            /** Evidence */
+            readonly evidence: string;
+            /** Group */
+            readonly group: string;
+            /** Group Label */
+            readonly group_label: string;
+            /** Kind */
+            readonly kind: string;
+            /** Metric Key */
+            readonly metric_key: string;
+            /** Metric Label */
+            readonly metric_label: string;
+            /** Metric Short Label */
+            readonly metric_short_label: string;
+            /** Peer Count */
+            readonly peer_count: number;
+            /** Percentile */
+            readonly percentile: number;
+            /** Value */
+            readonly value: number;
+        };
+        /**
+         * PlayerIntelligenceResponse
+         * @description Position-aware tournament intelligence.
+         */
+        readonly PlayerIntelligenceResponse: {
+            /** Groups */
+            readonly groups: readonly components["schemas"]["PlayerPerformanceMetricGroupResponse"][];
+            /** Position Group */
+            readonly position_group: string;
+            readonly sample: components["schemas"]["PlayerSampleContextResponse"];
+            /** Strengths */
+            readonly strengths: readonly components["schemas"]["PlayerInsightResponse"][];
+            /** Watch Outs */
+            readonly watch_outs: readonly components["schemas"]["PlayerInsightResponse"][];
+        };
+        /**
+         * PlayerPerformanceMetricGroupResponse
+         * @description Grouped player metrics.
+         */
+        readonly PlayerPerformanceMetricGroupResponse: {
+            /** Key */
+            readonly key: string;
+            /** Metrics */
+            readonly metrics: readonly components["schemas"]["PlayerPerformanceMetricResponse"][];
+        };
+        /**
+         * PlayerPerformanceMetricResponse
+         * @description One position-aware tournament metric.
+         */
+        readonly PlayerPerformanceMetricResponse: {
+            /** Key */
+            readonly key: string;
+            /** Label */
+            readonly label: string;
+            /** Peer Count */
+            readonly peer_count: number;
+            /** Performance Percentile */
+            readonly performance_percentile?: number | null;
+            /** Short Label */
+            readonly short_label: string;
+            /** Unit */
+            readonly unit: string;
+            /** Value */
+            readonly value: number;
+        };
+        /**
          * PlayerProfileResponse
          * @description Detailed profile returned for one player.
          */
@@ -515,6 +586,7 @@ export interface components {
             readonly final_role: string | null;
             /** Height Cm */
             readonly height_cm: number | null;
+            readonly intelligence?: components["schemas"]["PlayerIntelligenceResponse"] | null;
             /** Lateral Profile */
             readonly lateral_profile: string | null;
             /** Market Value */
@@ -545,10 +617,23 @@ export interface components {
             readonly spatial_role: string | null;
             /** Starts */
             readonly starts: number | null;
+            readonly tournament?: components["schemas"]["PlayerTournamentSummaryResponse"] | null;
             /** Vertical Profile */
             readonly vertical_profile: string | null;
             /** Weighted Rating */
             readonly weighted_rating: number | null;
+        };
+        /**
+         * PlayerSampleContextResponse
+         * @description Sample-size context for percentile interpretation.
+         */
+        readonly PlayerSampleContextResponse: {
+            /** Minimum Peer Minutes */
+            readonly minimum_peer_minutes: number;
+            /** Target Meets Peer Minimum */
+            readonly target_meets_peer_minimum: boolean | null;
+            /** Target Minutes */
+            readonly target_minutes: number | null;
         };
         /**
          * PlayerSearchItemResponse
@@ -585,6 +670,28 @@ export interface components {
             readonly players: readonly components["schemas"]["PlayerSearchItemResponse"][];
             /** Query */
             readonly query: string;
+        };
+        /**
+         * PlayerTournamentSummaryResponse
+         * @description Tournament participation context for one player.
+         */
+        readonly PlayerTournamentSummaryResponse: {
+            /** Captain Appearances */
+            readonly captain_appearances: number | null;
+            /** Formations Used */
+            readonly formations_used: number | null;
+            /** Matches */
+            readonly matches: number | null;
+            /** Minutes */
+            readonly minutes: number | null;
+            /** Primary Formation */
+            readonly primary_formation: string | null;
+            /** Primary Lineup Position */
+            readonly primary_lineup_position: string | null;
+            /** Starts */
+            readonly starts: number | null;
+            /** Substitute Appearances */
+            readonly substitute_appearances: number | null;
         };
         /**
          * ReadinessResponse
@@ -1193,7 +1300,7 @@ export interface operations {
                     readonly "application/json": components["schemas"]["ApiErrorResponse"];
                 };
             };
-            /** @description The player feature dataset is missing or invalid. */
+            /** @description The player profile datasets are missing or invalid. */
             readonly 503: {
                 headers: {
                     readonly [name: string]: unknown;

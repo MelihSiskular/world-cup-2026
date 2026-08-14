@@ -109,10 +109,12 @@ def test_readiness_returns_catalog_runtime_metadata() -> None:
     def fake_catalog_loader(
         *,
         features: Path,
+        player_tournament_summary: Path,
         similarity: Path,
         heatmap_similarity: Path,
         heatmap_profiles: Path,
     ) -> TransferDataCatalog:
+        _ = player_tournament_summary
         loader_calls.append(
             (
                 features,

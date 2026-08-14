@@ -124,17 +124,20 @@ def test_catalog_player_profile_runner_uses_catalog_players(
         tuple[
             PlayerProfileRequest,
             pd.DataFrame,
+            pd.DataFrame,
         ]
     ] = []
 
     def fake_get_player_profile_from_dataframe(
         delegated_request: PlayerProfileRequest,
         dataframe: pd.DataFrame,
+        player_tournament_summary: pd.DataFrame,
     ) -> PlayerProfileResult:
         calls.append(
             (
                 delegated_request,
                 dataframe,
+                player_tournament_summary,
             )
         )
 
@@ -155,6 +158,7 @@ def test_catalog_player_profile_runner_uses_catalog_players(
         (
             request,
             catalog.players,
+            catalog.player_tournament_summary,
         )
     ]
 

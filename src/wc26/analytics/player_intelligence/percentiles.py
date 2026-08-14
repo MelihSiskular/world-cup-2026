@@ -32,7 +32,7 @@ class MetricPercentileResult:
 
     metric_key: str
     value: float
-    percentile: float
+    percentile: float | None
     peer_count: int
 
 
@@ -130,7 +130,7 @@ def _distribution_percentile(
     player_value: float,
     peer_values: pd.Series,
     higher_is_better: bool,
-) -> tuple[float, int] | None:
+) -> tuple[float | None, int]:
     """Return performance percentile and usable peer count.
 
     Percentiles use the midpoint of ties. This keeps an entirely tied
@@ -153,7 +153,7 @@ def _distribution_percentile(
     peer_count = len(values)
 
     if peer_count == 0:
-        return None
+        return None, 0
 
     less_count = int(np.count_nonzero(values < player_value))
 
@@ -189,7 +189,7 @@ def _metric_percentile(
     metric: MetricDefinition,
     minimum_peer_count: int,
 ) -> MetricPercentileResult | None:
-    """Calculate one metric percentile when evidence is sufficient."""
+    """Build one metric result while preserving available target values."""
 
     if metric.source_column not in target.index:
         return None
@@ -202,19 +202,14 @@ def _metric_percentile(
     if player_value is None:
         return None
 
-    result = _distribution_percentile(
+    percentile, peer_count = _distribution_percentile(
         player_value=player_value,
         peer_values=cohort[metric.source_column],
         higher_is_better=metric.higher_is_better,
     )
 
-    if result is None:
-        return None
-
-    percentile, peer_count = result
-
     if peer_count < minimum_peer_count:
-        return None
+        percentile = None
 
     return MetricPercentileResult(
         metric_key=metric.key,

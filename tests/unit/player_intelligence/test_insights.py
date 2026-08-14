@@ -31,7 +31,7 @@ def build_profile(
 
 def metric(
     key: str,
-    percentile: float,
+    percentile: float | None,
     *,
     value: float = 1.0,
     peer_count: int = 100,
@@ -104,6 +104,24 @@ def test_watch_outs_use_performance_percentile() -> None:
     assert insight.percentile == 5
 
 
+def test_metric_without_percentile_does_not_generate_insight() -> None:
+    profile = build_profile(
+        (
+            metric(
+                "expected_assists_per90",
+                None,
+                value=0.4533,
+                peer_count=5,
+            ),
+        )
+    )
+
+    summary = build_player_insights(profile)
+
+    assert summary.strengths == ()
+    assert summary.watch_outs == ()
+
+
 def test_neutral_metrics_do_not_generate_insights() -> None:
     profile = build_profile(
         (
@@ -168,7 +186,7 @@ def test_insight_contains_backend_owned_evidence() -> None:
     assert insight.metric_short_label == "xA / 90"
 
     assert insight.evidence == (
-        "xA / 90 ranks at the 98.8 performance percentile among 216 same-position peers."
+        "xA / 90 ranks at the 98.8 performance percentile among 216 eligible same-position players."
     )
 
 

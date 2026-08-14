@@ -50,6 +50,12 @@ DEFAULT_DATASETS: tuple[DatasetDefinition, ...] = (
         relative_path=Path("data/processed/transfer_intelligence/transfer_feature_table.csv"),
     ),
     DatasetDefinition(
+        key="player_tournament_summary",
+        relative_path=Path(
+            "data/processed/player_matches_analysis/player_tournament_full_summary_enriched.csv"
+        ),
+    ),
+    DatasetDefinition(
         key="similarity",
         relative_path=Path("data/processed/player_similarity/player_similarity_breakdown_long.csv"),
     ),

@@ -144,7 +144,7 @@
             }
           },
           "503": {
-            "description": "The player feature dataset is missing or invalid.",
+            "description": "The player profile datasets are missing or invalid.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1975,6 +1975,189 @@
         "description": "Recommendation ranked for immediate first-team impact."
       },
       "JsonValue": {},
+      "PlayerInsightResponse": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "group": {
+            "type": "string",
+            "title": "Group"
+          },
+          "group_label": {
+            "type": "string",
+            "title": "Group Label"
+          },
+          "metric_key": {
+            "type": "string",
+            "title": "Metric Key"
+          },
+          "metric_label": {
+            "type": "string",
+            "title": "Metric Label"
+          },
+          "metric_short_label": {
+            "type": "string",
+            "title": "Metric Short Label"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "percentile": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Percentile"
+          },
+          "peer_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Peer Count"
+          },
+          "evidence": {
+            "type": "string",
+            "title": "Evidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "group",
+          "group_label",
+          "metric_key",
+          "metric_label",
+          "metric_short_label",
+          "value",
+          "percentile",
+          "peer_count",
+          "evidence"
+        ],
+        "title": "PlayerInsightResponse",
+        "description": "Explainable strength or watch-out."
+      },
+      "PlayerIntelligenceResponse": {
+        "properties": {
+          "position_group": {
+            "type": "string",
+            "title": "Position Group"
+          },
+          "sample": {
+            "$ref": "#/components/schemas/PlayerSampleContextResponse"
+          },
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/PlayerPerformanceMetricGroupResponse"
+            },
+            "type": "array",
+            "title": "Groups"
+          },
+          "strengths": {
+            "items": {
+              "$ref": "#/components/schemas/PlayerInsightResponse"
+            },
+            "type": "array",
+            "title": "Strengths"
+          },
+          "watch_outs": {
+            "items": {
+              "$ref": "#/components/schemas/PlayerInsightResponse"
+            },
+            "type": "array",
+            "title": "Watch Outs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "position_group",
+          "sample",
+          "groups",
+          "strengths",
+          "watch_outs"
+        ],
+        "title": "PlayerIntelligenceResponse",
+        "description": "Position-aware tournament intelligence."
+      },
+      "PlayerPerformanceMetricGroupResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/PlayerPerformanceMetricResponse"
+            },
+            "type": "array",
+            "title": "Metrics"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "metrics"
+        ],
+        "title": "PlayerPerformanceMetricGroupResponse",
+        "description": "Grouped player metrics."
+      },
+      "PlayerPerformanceMetricResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "short_label": {
+            "type": "string",
+            "title": "Short Label"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "performance_percentile": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Performance Percentile"
+          },
+          "peer_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Peer Count"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "short_label",
+          "unit",
+          "value",
+          "peer_count"
+        ],
+        "title": "PlayerPerformanceMetricResponse",
+        "description": "One position-aware tournament metric."
+      },
       "PlayerProfileResponse": {
         "properties": {
           "player_id": {
@@ -2226,6 +2409,26 @@
               }
             ],
             "title": "Role Reason"
+          },
+          "tournament": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlayerTournamentSummaryResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "intelligence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlayerIntelligenceResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -2258,6 +2461,46 @@
         ],
         "title": "PlayerProfileResponse",
         "description": "Detailed profile returned for one player."
+      },
+      "PlayerSampleContextResponse": {
+        "properties": {
+          "target_minutes": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Minutes"
+          },
+          "minimum_peer_minutes": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Minimum Peer Minutes"
+          },
+          "target_meets_peer_minimum": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Meets Peer Minimum"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "target_minutes",
+          "minimum_peer_minutes",
+          "target_meets_peer_minimum"
+        ],
+        "title": "PlayerSampleContextResponse",
+        "description": "Sample-size context for percentile interpretation."
       },
       "PlayerSearchItemResponse": {
         "properties": {
@@ -2391,6 +2634,112 @@
         ],
         "title": "PlayerSearchResponse",
         "description": "Structured response returned by player search."
+      },
+      "PlayerTournamentSummaryResponse": {
+        "properties": {
+          "matches": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matches"
+          },
+          "starts": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Starts"
+          },
+          "substitute_appearances": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Substitute Appearances"
+          },
+          "captain_appearances": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Captain Appearances"
+          },
+          "minutes": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minutes"
+          },
+          "formations_used": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formations Used"
+          },
+          "primary_formation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Formation"
+          },
+          "primary_lineup_position": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Lineup Position"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "matches",
+          "starts",
+          "substitute_appearances",
+          "captain_appearances",
+          "minutes",
+          "formations_used",
+          "primary_formation",
+          "primary_lineup_position"
+        ],
+        "title": "PlayerTournamentSummaryResponse",
+        "description": "Tournament participation context for one player."
       },
       "ReadinessResponse": {
         "properties": {

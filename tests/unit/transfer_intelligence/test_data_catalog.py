@@ -95,6 +95,7 @@ def test_load_transfer_data_catalog_loads_each_dataset_once(
     similarity_path = Path("similarity.csv")
     heatmap_similarity_path = Path("heatmap_similarity.csv")
     heatmap_profiles_path = Path("heatmap_profiles.csv")
+    player_tournament_summary_path = Path("player_tournament_summary.csv")
 
     players = pd.DataFrame(
         {
@@ -114,6 +115,20 @@ def test_load_transfer_data_catalog_loads_each_dataset_once(
     heatmap_profiles = pd.DataFrame(
         {
             "player_id": [978838],
+        }
+    )
+    player_tournament_summary = pd.DataFrame(
+        {
+            "player_id": [978838],
+            "player_primary_position": ["M"],
+            "matches_played": [8],
+            "starts": [8],
+            "substitute_appearances": [0],
+            "captain_appearances": [0],
+            "total_minutes": [650],
+            "formations_used": [1],
+            "primary_formation": ["4-2-3-1"],
+            "primary_lineup_position": ["M"],
         }
     )
 
@@ -163,10 +178,26 @@ def test_load_transfer_data_catalog_loads_each_dataset_once(
         )
         return heatmap_profiles
 
+    def load_player_tournament_summary(
+        path: Path,
+    ) -> pd.DataFrame:
+        calls.append(
+            (
+                "player_tournament_summary",
+                path,
+            )
+        )
+        return player_tournament_summary
+
     monkeypatch.setattr(
         catalog_module,
         "load_player_features",
         load_players,
+    )
+    monkeypatch.setattr(
+        catalog_module,
+        "load_player_tournament_summary",
+        load_player_tournament_summary,
     )
     monkeypatch.setattr(
         catalog_module,
@@ -189,17 +220,24 @@ def test_load_transfer_data_catalog_loads_each_dataset_once(
         similarity=similarity_path,
         heatmap_similarity=heatmap_similarity_path,
         heatmap_profiles=heatmap_profiles_path,
+        player_tournament_summary=(player_tournament_summary_path),
     )
 
     assert result.players is players
     assert result.similarity is similarity
     assert result.heatmap_similarity is heatmap_similarity
     assert result.heatmap_profiles is heatmap_profiles
+    assert result.player_tournament_summary is player_tournament_summary
 
-    assert calls == [
+    assert len(calls) == 5
+    assert set(calls) == {
         (
             "players",
             features_path,
+        ),
+        (
+            "player_tournament_summary",
+            player_tournament_summary_path,
         ),
         (
             "similarity",
@@ -213,4 +251,4 @@ def test_load_transfer_data_catalog_loads_each_dataset_once(
             "heatmap_profiles",
             heatmap_profiles_path,
         ),
-    ]
+    }

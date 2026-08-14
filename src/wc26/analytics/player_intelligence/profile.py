@@ -48,7 +48,7 @@ class PerformanceMetric:
     short_label: str
     unit: MetricUnit
     value: float
-    performance_percentile: float
+    performance_percentile: float | None
     peer_count: int
 
 

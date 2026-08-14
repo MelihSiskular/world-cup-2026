@@ -118,10 +118,12 @@ def test_catalog_lifecycle_logs_include_identity_and_counts(
     def fake_catalog_loader(
         *,
         features: Path,
+        player_tournament_summary: Path,
         similarity: Path,
         heatmap_similarity: Path,
         heatmap_profiles: Path,
     ) -> TransferDataCatalog:
+        _ = player_tournament_summary
         del (
             features,
             similarity,
@@ -286,10 +288,12 @@ def test_catalog_failure_emits_failure_and_cleanup_logs(
     def failing_catalog_loader(
         *,
         features: Path,
+        player_tournament_summary: Path,
         similarity: Path,
         heatmap_similarity: Path,
         heatmap_profiles: Path,
     ) -> TransferDataCatalog:
+        _ = player_tournament_summary
         del (
             features,
             similarity,

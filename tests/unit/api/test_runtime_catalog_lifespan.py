@@ -78,10 +78,12 @@ def test_application_lifespan_loads_catalog_once() -> None:
     def fake_catalog_loader(
         *,
         features: Path,
+        player_tournament_summary: Path,
         similarity: Path,
         heatmap_similarity: Path,
         heatmap_profiles: Path,
     ) -> TransferDataCatalog:
+        _ = player_tournament_summary
         calls.append(
             (
                 features,
@@ -194,10 +196,12 @@ def test_player_search_uses_startup_loaded_catalog(
     def fake_catalog_loader(
         *,
         features: Path,
+        player_tournament_summary: Path,
         similarity: Path,
         heatmap_similarity: Path,
         heatmap_profiles: Path,
     ) -> TransferDataCatalog:
+        _ = player_tournament_summary
         del (
             features,
             similarity,
@@ -306,10 +310,12 @@ def test_catalog_loading_failure_stops_application_startup() -> None:
     def failing_catalog_loader(
         *,
         features: Path,
+        player_tournament_summary: Path,
         similarity: Path,
         heatmap_similarity: Path,
         heatmap_profiles: Path,
     ) -> TransferDataCatalog:
+        _ = player_tournament_summary
         del (
             features,
             similarity,

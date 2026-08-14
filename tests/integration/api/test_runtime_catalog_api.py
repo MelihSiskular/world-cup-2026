@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import logging
 import os
 from pathlib import Path
+from typing import cast
 
 import pandas as pd
 import pytest
@@ -25,8 +27,11 @@ pytestmark = [
 
 def test_runtime_catalog_loads_once_and_serves_complete_api_flow(
     monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Verify startup loading and request-time cache reuse."""
+
+    caplog.set_level(logging.INFO)
 
     project_root = Path(__file__).resolve().parents[3]
     monkeypatch.chdir(project_root)
@@ -34,6 +39,7 @@ def test_runtime_catalog_loads_once_and_serves_complete_api_flow(
     calls: list[tuple[str, Path]] = []
 
     original_load_player_features = catalog_module.load_player_features
+    original_load_player_tournament_summary = catalog_module.load_player_tournament_summary
     original_load_similarity = catalog_module.load_similarity
     original_load_heatmap_similarity = catalog_module.load_heatmap_similarity
     original_load_heatmap_profiles = catalog_module.load_heatmap_profiles
@@ -48,7 +54,19 @@ def test_runtime_catalog_loads_once_and_serves_complete_api_flow(
             )
         )
 
-        return original_load_player_features(path)
+        return cast(pd.DataFrame, original_load_player_features(path))
+
+    def counted_load_player_tournament_summary(
+        path: Path,
+    ) -> pd.DataFrame:
+        calls.append(
+            (
+                "player_tournament_summary",
+                path,
+            )
+        )
+
+        return cast(pd.DataFrame, original_load_player_tournament_summary(path))
 
     def counted_load_similarity(
         path: Path,
@@ -60,7 +78,7 @@ def test_runtime_catalog_loads_once_and_serves_complete_api_flow(
             )
         )
 
-        return original_load_similarity(path)
+        return cast(pd.DataFrame, original_load_similarity(path))
 
     def counted_load_heatmap_similarity(
         path: Path,
@@ -72,7 +90,7 @@ def test_runtime_catalog_loads_once_and_serves_complete_api_flow(
             )
         )
 
-        return original_load_heatmap_similarity(path)
+        return cast(pd.DataFrame, original_load_heatmap_similarity(path))
 
     def counted_load_heatmap_profiles(
         path: Path,
@@ -84,12 +102,17 @@ def test_runtime_catalog_loads_once_and_serves_complete_api_flow(
             )
         )
 
-        return original_load_heatmap_profiles(path)
+        return cast(pd.DataFrame, original_load_heatmap_profiles(path))
 
     monkeypatch.setattr(
         catalog_module,
         "load_player_features",
         counted_load_player_features,
+    )
+    monkeypatch.setattr(
+        catalog_module,
+        "load_player_tournament_summary",
+        counted_load_player_tournament_summary,
     )
     monkeypatch.setattr(
         catalog_module,
@@ -126,16 +149,39 @@ def test_runtime_catalog_loads_once_and_serves_complete_api_flow(
 
         startup_calls = tuple(calls)
 
-        assert [dataset_name for dataset_name, _ in startup_calls] == [
+        assert len(startup_calls) == 5
+        assert {dataset_name for dataset_name, _ in startup_calls} == {
             "players",
+            "player_tournament_summary",
             "similarity",
             "heatmap_similarity",
             "heatmap_profiles",
-        ]
+        }
 
         assert not runtime_catalog.players.empty
+        assert not (runtime_catalog.player_tournament_summary.empty)
         assert not runtime_catalog.similarity.empty
         assert not runtime_catalog.heatmap_similarity.empty
+        assert not runtime_catalog.heatmap_profiles.empty
+
+        catalog_loaded_record = next(
+            (
+                record
+                for record in caplog.records
+                if getattr(
+                    record,
+                    "event",
+                    None,
+                )
+                == "catalog.loaded"
+            ),
+            None,
+        )
+
+        assert catalog_loaded_record is not None
+        assert vars(catalog_loaded_record)["player_tournament_summary_rows"] == len(
+            runtime_catalog.player_tournament_summary
+        )
 
         readiness_response = client.get("/ready")
 
@@ -197,6 +243,17 @@ def test_runtime_catalog_loads_once_and_serves_complete_api_flow(
 
         assert profile_payload["player_id"] == player_id
         assert profile_payload["player_name"] == "Michael Olise"
+
+        tournament = profile_payload["tournament"]
+        intelligence = profile_payload["intelligence"]
+
+        assert tournament is not None
+        assert tournament["matches"] > 0
+        assert tournament["minutes"] > 0
+
+        assert intelligence is not None
+        assert intelligence["position_group"] == "midfielder"
+        assert intelligence["groups"]
 
         assert analysis_payload["target"]["player_id"] == player_id
         assert analysis_payload["target"]["player_name"] == "Michael Olise"

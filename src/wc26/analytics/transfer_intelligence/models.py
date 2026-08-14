@@ -141,11 +141,172 @@ class PlayerSearchResult:
 
 
 @dataclass(frozen=True, slots=True)
+class PlayerTournamentSummaryResult:
+    """Tournament participation context exposed by the player profile."""
+
+    matches: int | None
+    starts: int | None
+    substitute_appearances: int | None
+    captain_appearances: int | None
+    minutes: float | None
+    formations_used: int | None
+    primary_formation: str | None
+    primary_lineup_position: str | None
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible tournament context."""
+
+        return {
+            "matches": self.matches,
+            "starts": self.starts,
+            "substitute_appearances": self.substitute_appearances,
+            "captain_appearances": self.captain_appearances,
+            "minutes": self.minutes,
+            "formations_used": self.formations_used,
+            "primary_formation": self.primary_formation,
+            "primary_lineup_position": self.primary_lineup_position,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerSampleContextResult:
+    """Evidence boundary for percentile interpretation."""
+
+    target_minutes: float | None
+    minimum_peer_minutes: float
+    target_meets_peer_minimum: bool | None
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible sample context."""
+
+        return {
+            "target_minutes": self.target_minutes,
+            "minimum_peer_minutes": self.minimum_peer_minutes,
+            "target_meets_peer_minimum": (self.target_meets_peer_minimum),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerPerformanceMetricResult:
+    """One presentation-ready player performance metric."""
+
+    key: str
+    label: str
+    short_label: str
+    unit: str
+    value: float
+    performance_percentile: float | None
+    peer_count: int
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible performance metric."""
+
+        return {
+            "key": self.key,
+            "label": self.label,
+            "short_label": self.short_label,
+            "unit": self.unit,
+            "value": self.value,
+            "performance_percentile": (self.performance_percentile),
+            "peer_count": self.peer_count,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerPerformanceMetricGroupResult:
+    """One grouped family of player performance metrics."""
+
+    key: str
+    metrics: tuple[
+        PlayerPerformanceMetricResult,
+        ...,
+    ]
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible metric group."""
+
+        metric_values: list[JsonValue] = [metric.to_dict() for metric in self.metrics]
+
+        return {
+            "key": self.key,
+            "metrics": metric_values,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerInsightResult:
+    """One explainable player strength or watch-out."""
+
+    kind: str
+    group: str
+    group_label: str
+    metric_key: str
+    metric_label: str
+    metric_short_label: str
+    value: float
+    percentile: float
+    peer_count: int
+    evidence: str
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible player insight."""
+
+        return {
+            "kind": self.kind,
+            "group": self.group,
+            "group_label": self.group_label,
+            "metric_key": self.metric_key,
+            "metric_label": self.metric_label,
+            "metric_short_label": self.metric_short_label,
+            "value": self.value,
+            "percentile": self.percentile,
+            "peer_count": self.peer_count,
+            "evidence": self.evidence,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerIntelligenceResult:
+    """Position-aware tournament intelligence for one player."""
+
+    position_group: str
+    sample: PlayerSampleContextResult
+    groups: tuple[
+        PlayerPerformanceMetricGroupResult,
+        ...,
+    ]
+    strengths: tuple[
+        PlayerInsightResult,
+        ...,
+    ]
+    watch_outs: tuple[
+        PlayerInsightResult,
+        ...,
+    ]
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible player intelligence."""
+
+        group_values: list[JsonValue] = [group.to_dict() for group in self.groups]
+        strength_values: list[JsonValue] = [insight.to_dict() for insight in self.strengths]
+        watch_out_values: list[JsonValue] = [insight.to_dict() for insight in self.watch_outs]
+
+        return {
+            "position_group": self.position_group,
+            "sample": self.sample.to_dict(),
+            "groups": group_values,
+            "strengths": strength_values,
+            "watch_outs": watch_out_values,
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class PlayerProfileRequest:
     """Input required to retrieve one player profile."""
 
     player_id: int
     features: Path
+    player_tournament_summary: Path | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -176,6 +337,8 @@ class PlayerProfileResult:
     data_reliability_score: float | None
     player_quality_score: float | None
     role_reason: str | None
+    tournament: PlayerTournamentSummaryResult | None = None
+    intelligence: PlayerIntelligenceResult | None = None
 
     def to_dict(self) -> JsonObject:
         """Return a JSON-compatible player profile."""
@@ -205,6 +368,8 @@ class PlayerProfileResult:
             "data_reliability_score": self.data_reliability_score,
             "player_quality_score": self.player_quality_score,
             "role_reason": self.role_reason,
+            "tournament": (None if self.tournament is None else self.tournament.to_dict()),
+            "intelligence": (None if self.intelligence is None else self.intelligence.to_dict()),
         }
 
 
@@ -212,6 +377,12 @@ __all__ = [
     "JsonObject",
     "JsonScalar",
     "JsonValue",
+    "PlayerInsightResult",
+    "PlayerIntelligenceResult",
+    "PlayerPerformanceMetricGroupResult",
+    "PlayerPerformanceMetricResult",
+    "PlayerSampleContextResult",
+    "PlayerTournamentSummaryResult",
     "PlayerProfileRequest",
     "PlayerProfileResult",
     "PlayerSearchItem",

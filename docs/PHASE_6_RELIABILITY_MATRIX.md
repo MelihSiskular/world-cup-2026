@@ -35,7 +35,7 @@ work that should be completed before Phase 6B is accepted.
 1. Strengthen nullable player-data presentation coverage.
 2. Add explicit upstream-timeout regression coverage.
 3. Verify low-minute and no-appearance behavior.
-4. [x] Harden long player names and constrained mobile layouts with synthetic cross-browser regression coverage.
+4. [x] Harden long player names and constrained mobile layouts with synthetic cross-browser regression coverage.q
 5. Expand mobile result and comparison reliability coverage.
 
 ## Principles

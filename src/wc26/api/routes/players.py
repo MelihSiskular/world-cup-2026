@@ -59,7 +59,7 @@ router = APIRouter(
         },
         status.HTTP_503_SERVICE_UNAVAILABLE: {
             "model": ApiErrorResponse,
-            "description": ("The player feature dataset is missing or invalid."),
+            "description": ("The player profile datasets are missing or invalid."),
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
             "model": ApiErrorResponse,
@@ -163,6 +163,7 @@ def get_player_profile_by_id(
     request = PlayerProfileRequest(
         player_id=player_id,
         features=dataset_paths.features,
+        player_tournament_summary=(dataset_paths.player_tournament_summary),
     )
 
     try:

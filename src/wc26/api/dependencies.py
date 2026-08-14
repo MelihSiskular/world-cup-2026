@@ -75,6 +75,7 @@ def create_catalog_player_profile_runner(
         return get_player_profile_from_dataframe(
             request,
             catalog.players,
+            catalog.player_tournament_summary,
         )
 
     return runner
