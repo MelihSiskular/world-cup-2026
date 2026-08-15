@@ -9,7 +9,15 @@ from fastapi import Request
 from wc26.analytics.transfer_intelligence.catalog import (
     TransferDataCatalog,
 )
+from wc26.analytics.transfer_intelligence.errors import (
+    InvalidDatasetError,
+)
+from wc26.analytics.transfer_intelligence.heatmap_comparison import (
+    get_heatmap_comparison_from_catalog,
+)
 from wc26.analytics.transfer_intelligence.models import (
+    HeatmapComparisonRequest,
+    HeatmapComparisonResult,
     PlayerProfileRequest,
     PlayerProfileResult,
     PlayerSearchRequest,
@@ -35,6 +43,12 @@ from wc26.api.settings import TransferDatasetPaths
 type TransferAnalysisRunner = Callable[
     [TransferAnalysisRequest],
     TransferAnalysisResult,
+]
+
+
+type HeatmapComparisonRunner = Callable[
+    [HeatmapComparisonRequest],
+    HeatmapComparisonResult,
 ]
 
 type PlayerSearchRunner = Callable[
@@ -76,6 +90,22 @@ def create_catalog_player_profile_runner(
             request,
             catalog.players,
             catalog.player_tournament_summary,
+        )
+
+    return runner
+
+
+def create_catalog_heatmap_comparison_runner(
+    catalog: TransferDataCatalog,
+) -> HeatmapComparisonRunner:
+    """Create a heatmap-comparison runner backed by a loaded catalog."""
+
+    def runner(
+        request: HeatmapComparisonRequest,
+    ) -> HeatmapComparisonResult:
+        return get_heatmap_comparison_from_catalog(
+            request,
+            catalog,
         )
 
     return runner
@@ -133,6 +163,25 @@ def get_player_search_runner(
     return create_catalog_player_search_runner(catalog)
 
 
+def get_heatmap_comparison_runner(
+    request: Request,
+) -> HeatmapComparisonRunner:
+    """Return the startup-catalog heatmap comparison service."""
+
+    catalog = _get_runtime_catalog(
+        request
+    )
+
+    if catalog is None:
+        raise InvalidDatasetError(
+            "Runtime transfer data catalog is unavailable."
+        )
+
+    return create_catalog_heatmap_comparison_runner(
+        catalog
+    )
+
+
 def get_transfer_dataset_paths(
     request: Request,
 ) -> TransferDatasetPaths:
@@ -157,13 +206,16 @@ def get_transfer_analysis_runner(
 
 
 __all__ = [
+    "HeatmapComparisonRunner",
     "PlayerProfileRunner",
     "PlayerSearchRunner",
     "TransferAnalysisRunner",
     "TransferDatasetPaths",
+    "create_catalog_heatmap_comparison_runner",
     "create_catalog_player_profile_runner",
     "create_catalog_player_search_runner",
     "create_catalog_transfer_analysis_runner",
+    "get_heatmap_comparison_runner",
     "get_player_profile_runner",
     "get_player_search_runner",
     "get_transfer_analysis_runner",

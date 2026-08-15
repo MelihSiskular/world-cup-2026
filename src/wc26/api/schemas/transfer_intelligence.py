@@ -13,6 +13,198 @@ from pydantic import (
 )
 
 
+class HeatmapPlayerResponse(BaseModel):
+    """Measured tournament heatmap evidence for one player."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    player_id: int = Field(gt=0)
+    player_name: str = Field(min_length=1)
+
+    available: bool
+
+    grid_width: int | None = Field(
+        default=None,
+        ge=2,
+    )
+    grid_height: int | None = Field(
+        default=None,
+        ge=2,
+    )
+    grid: list[list[float]] | None = None
+
+    matches_with_heatmap: int | None = Field(
+        default=None,
+        ge=0,
+    )
+    heatmap_point_count: int | None = Field(
+        default=None,
+        ge=0,
+    )
+
+    weighted_mean_x: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+    weighted_mean_y: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+    peak_cell_x: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+    peak_cell_y: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+    heatmap_entropy: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=1.0,
+    )
+
+    @model_validator(mode="after")
+    def validate_grid_contract(self) -> Self:
+        """Keep availability and grid dimensions internally consistent."""
+
+        if not self.available:
+            if (
+                self.grid is not None
+                or self.grid_width is not None
+                or self.grid_height is not None
+            ):
+                raise ValueError(
+                    "Unavailable heatmaps must not expose grid data."
+                )
+
+            return self
+
+        if (
+            self.grid is None
+            or self.grid_width is None
+            or self.grid_height is None
+        ):
+            raise ValueError(
+                "Available heatmaps require grid data and dimensions."
+            )
+
+        if len(self.grid) != self.grid_height:
+            raise ValueError(
+                "Heatmap grid height does not match grid_height."
+            )
+
+        if any(
+            len(row) != self.grid_width
+            for row in self.grid
+        ):
+            raise ValueError(
+                "Heatmap grid width does not match grid_width."
+            )
+
+        if any(
+            value < 0.0
+            for row in self.grid
+            for value in row
+        ):
+            raise ValueError(
+                "Heatmap grid values must be non-negative."
+            )
+
+        return self
+
+
+class HeatmapSimilarityResponse(BaseModel):
+    """Measured pairwise heatmap similarity evidence."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    available: bool
+
+    heatmap_similarity_score_pct: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+    heatmap_cosine_similarity_pct: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+    occupation_overlap_pct: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+    peak_zone_similarity_pct: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+    peak_zone_distance: float | None = Field(
+        default=None,
+        ge=0.0,
+    )
+    entropy_similarity_pct: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+
+    target_matches_with_heatmap: int | None = Field(
+        default=None,
+        ge=0,
+    )
+    candidate_matches_with_heatmap: int | None = Field(
+        default=None,
+        ge=0,
+    )
+    target_heatmap_points: int | None = Field(
+        default=None,
+        ge=0,
+    )
+    candidate_heatmap_points: int | None = Field(
+        default=None,
+        ge=0,
+    )
+
+    @model_validator(mode="after")
+    def validate_measured_evidence(self) -> Self:
+        """Require a measured headline score only when evidence is available."""
+
+        if (
+            self.available
+            and self.heatmap_similarity_score_pct is None
+        ):
+            raise ValueError(
+                "Available heatmap similarity requires a measured score."
+            )
+
+        if (
+            not self.available
+            and self.heatmap_similarity_score_pct is not None
+        ):
+            raise ValueError(
+                "Unavailable heatmap similarity must not expose a measured score."
+            )
+
+        return self
+
+
+class HeatmapComparisonResponse(BaseModel):
+    """Target-to-candidate tournament heatmap comparison."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    target: HeatmapPlayerResponse
+    candidate: HeatmapPlayerResponse
+    similarity: HeatmapSimilarityResponse
+
+
 class TransferAnalysisPayload(BaseModel):
     """Client-provided parameters for transfer analysis."""
 
@@ -369,6 +561,9 @@ class TransferAnalysisResponse(BaseModel):
 
 __all__ = [
     "DevelopmentTransferModeResponse",
+    "HeatmapComparisonResponse",
+    "HeatmapPlayerResponse",
+    "HeatmapSimilarityResponse",
     "TransferExplainabilityBonusResponse",
     "TransferExplainabilityReasonResponse",
     "TransferExplainabilityScoreResponse",
