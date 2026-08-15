@@ -149,6 +149,93 @@ class TransferTargetResponse(TransferPlayerResponse):
     """Target player returned by Transfer Intelligence."""
 
 
+class TransferExplainabilityScoreResponse(BaseModel):
+    """Mathematical composition of one recommendation score."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    weighted_signal_total: float = Field(ge=0.0)
+    bonus_total: float = Field(ge=0.0)
+    pre_clip_score: float
+    final_score: float = Field(ge=0.0, le=100.0)
+    was_clipped: bool
+
+
+class TransferExplainabilitySignalResponse(BaseModel):
+    """One weighted input used by the recommendation scorer."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    key: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    description: str = Field(min_length=1)
+
+    source_score: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+    input_score: float = Field(
+        ge=0.0,
+        le=100.0,
+    )
+    weight: float = Field(
+        ge=0.0,
+        le=1.0,
+    )
+    weighted_contribution: float = Field(
+        ge=0.0,
+    )
+
+    evidence_status: Literal[
+        "available",
+        "fallback",
+        "missing",
+    ]
+
+    note: str | None = None
+
+
+class TransferExplainabilityBonusResponse(BaseModel):
+    """One explicit mode-specific recommendation bonus."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    key: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    configured_points: float = Field(ge=0.0)
+    applied: bool
+    applied_points: float = Field(ge=0.0)
+
+
+class TransferExplainabilityReasonResponse(BaseModel):
+    """One structured human-readable recommendation reason."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    key: str = Field(min_length=1)
+    group: str = Field(min_length=1)
+    text: str = Field(min_length=1)
+
+
+class TransferRecommendationExplainabilityResponse(BaseModel):
+    """Structured explanation of one transfer recommendation."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    mode: Literal[
+        "immediate",
+        "development",
+        "value",
+        "short_term",
+    ]
+
+    score: TransferExplainabilityScoreResponse
+    signals: list[TransferExplainabilitySignalResponse]
+    bonuses: list[TransferExplainabilityBonusResponse]
+    reasons: list[TransferExplainabilityReasonResponse]
+
+
 class TransferRecommendationResponse(TransferPlayerResponse):
     """Stable fields shared by every recommendation mode."""
 
@@ -188,6 +275,8 @@ class TransferRecommendationResponse(TransferPlayerResponse):
 
     same_final_role: bool | None = None
     same_archetype: bool | None = None
+
+    explainability: TransferRecommendationExplainabilityResponse
 
     recommendation_type: str
     recommendation_strength: str
@@ -280,6 +369,11 @@ class TransferAnalysisResponse(BaseModel):
 
 __all__ = [
     "DevelopmentTransferModeResponse",
+    "TransferExplainabilityBonusResponse",
+    "TransferExplainabilityReasonResponse",
+    "TransferExplainabilityScoreResponse",
+    "TransferExplainabilitySignalResponse",
+    "TransferRecommendationExplainabilityResponse",
     "DevelopmentTransferRecommendationResponse",
     "ImmediateTransferModeResponse",
     "ImmediateTransferRecommendationResponse",

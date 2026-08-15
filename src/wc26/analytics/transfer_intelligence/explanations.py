@@ -2,11 +2,22 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import pandas as pd
 
 from wc26.analytics.transfer_intelligence.utils import (
     safe_float,
 )
+
+
+@dataclass(frozen=True, slots=True)
+class RecommendationReasonItem:
+    """One structured reason supporting a transfer recommendation."""
+
+    key: str
+    group: str
+    text: str
 
 
 def classify_candidate(
@@ -170,19 +181,29 @@ def heatmap_difference_reason(
     return f"operates mainly in the {candidate_lateral} and {candidate_vertical}"
 
 
-def build_reason(
+def build_reason_items(
     row: pd.Series,
     mode: str,
     target_heatmap_profile: dict[str, float],
-) -> str:
-    reasons: list[tuple[int, str, str]] = []
+) -> tuple[RecommendationReasonItem, ...]:
+    """Build structured recommendation reasons in presentation order."""
+
+    reasons: list[
+        tuple[
+            int,
+            RecommendationReasonItem,
+        ]
+    ] = []
 
     if bool(row["same_final_role"]):
         reasons.append(
             (
                 100,
-                "role",
-                "same final role",
+                RecommendationReasonItem(
+                    key="same_final_role",
+                    group="role",
+                    text="same final role",
+                ),
             )
         )
 
@@ -190,8 +211,11 @@ def build_reason(
         reasons.append(
             (
                 92,
-                "archetype",
-                "same statistical archetype",
+                RecommendationReasonItem(
+                    key="same_archetype",
+                    group="archetype",
+                    text="same statistical archetype",
+                ),
             )
         )
 
@@ -215,16 +239,23 @@ def build_reason(
         reasons.append(
             (
                 88,
-                "statistics",
-                (f"very strong statistical similarity ({statistical:.1f}%)"),
+                RecommendationReasonItem(
+                    key="statistical_similarity",
+                    group="statistics",
+                    text=(f"very strong statistical similarity ({statistical:.1f}%)"),
+                ),
             )
         )
+
     elif statistical >= 55:
         reasons.append(
             (
                 74,
-                "statistics",
-                (f"good statistical similarity ({statistical:.1f}%)"),
+                RecommendationReasonItem(
+                    key="statistical_similarity",
+                    group="statistics",
+                    text=(f"good statistical similarity ({statistical:.1f}%)"),
+                ),
             )
         )
 
@@ -232,16 +263,23 @@ def build_reason(
         reasons.append(
             (
                 96,
-                "role",
-                (f"elite tactical fit ({role_fit:.1f}%)"),
+                RecommendationReasonItem(
+                    key="role_fit",
+                    group="role",
+                    text=(f"elite tactical fit ({role_fit:.1f}%)"),
+                ),
             )
         )
+
     elif role_fit >= 65:
         reasons.append(
             (
                 82,
-                "role",
-                (f"strong tactical fit ({role_fit:.1f}%)"),
+                RecommendationReasonItem(
+                    key="role_fit",
+                    group="role",
+                    text=(f"strong tactical fit ({role_fit:.1f}%)"),
+                ),
             )
         )
 
@@ -249,8 +287,11 @@ def build_reason(
         reasons.append(
             (
                 76,
-                "average_position",
-                (f"similar average-position profile ({spatial:.1f}%)"),
+                RecommendationReasonItem(
+                    key="spatial_similarity",
+                    group="average_position",
+                    text=(f"similar average-position profile ({spatial:.1f}%)"),
+                ),
             )
         )
 
@@ -264,24 +305,35 @@ def build_reason(
             reasons.append(
                 (
                     94,
-                    "heatmap",
-                    (f"elite heatmap occupation similarity ({heatmap:.1f}%)"),
+                    RecommendationReasonItem(
+                        key="heatmap_similarity",
+                        group="heatmap",
+                        text=(f"elite heatmap occupation similarity ({heatmap:.1f}%)"),
+                    ),
                 )
             )
+
         elif heatmap >= 82:
             reasons.append(
                 (
                     84,
-                    "heatmap",
-                    (f"strong heatmap occupation similarity ({heatmap:.1f}%)"),
+                    RecommendationReasonItem(
+                        key="heatmap_similarity",
+                        group="heatmap",
+                        text=(f"strong heatmap occupation similarity ({heatmap:.1f}%)"),
+                    ),
                 )
             )
+
         elif heatmap >= 72:
             reasons.append(
                 (
                     70,
-                    "heatmap",
-                    (f"useful heatmap occupation similarity ({heatmap:.1f}%)"),
+                    RecommendationReasonItem(
+                        key="heatmap_similarity",
+                        group="heatmap",
+                        text=(f"useful heatmap occupation similarity ({heatmap:.1f}%)"),
+                    ),
                 )
             )
 
@@ -289,8 +341,11 @@ def build_reason(
             reasons.append(
                 (
                     86,
-                    "heatmap_overlap",
-                    (f"high shared-zone occupation ({overlap:.1f}%)"),
+                    RecommendationReasonItem(
+                        key="heatmap_overlap",
+                        group="heatmap_overlap",
+                        text=(f"high shared-zone occupation ({overlap:.1f}%)"),
+                    ),
                 )
             )
 
@@ -298,8 +353,11 @@ def build_reason(
             reasons.append(
                 (
                     89,
-                    "heatmap_structure",
-                    "closely matches both lateral and vertical usage",
+                    RecommendationReasonItem(
+                        key="heatmap_structure",
+                        group="heatmap_structure",
+                        text=("closely matches both lateral and vertical usage"),
+                    ),
                 )
             )
 
@@ -312,8 +370,11 @@ def build_reason(
             reasons.append(
                 (
                     78,
-                    "heatmap_zone",
-                    zone_reason,
+                    RecommendationReasonItem(
+                        key="heatmap_zone",
+                        group="heatmap_zone",
+                        text=zone_reason,
+                    ),
                 )
             )
 
@@ -321,16 +382,23 @@ def build_reason(
         reasons.append(
             (
                 91 if mode == "value" else 72,
-                "market",
-                "major price advantage",
+                RecommendationReasonItem(
+                    key="market_advantage",
+                    group="market",
+                    text="major price advantage",
+                ),
             )
         )
+
     elif value >= 60:
         reasons.append(
             (
                 76 if mode == "value" else 64,
-                "market",
-                "useful price advantage",
+                RecommendationReasonItem(
+                    key="market_advantage",
+                    group="market",
+                    text="useful price advantage",
+                ),
             )
         )
 
@@ -344,16 +412,23 @@ def build_reason(
             reasons.append(
                 (
                     95,
-                    "age",
-                    "elite age upside",
+                    RecommendationReasonItem(
+                        key="development_age_upside",
+                        group="age",
+                        text="elite age upside",
+                    ),
                 )
             )
+
         elif age <= 23:
             reasons.append(
                 (
                     84,
-                    "age",
-                    "strong development age",
+                    RecommendationReasonItem(
+                        key="development_age_upside",
+                        group="age",
+                        text="strong development age",
+                    ),
                 )
             )
 
@@ -364,8 +439,11 @@ def build_reason(
             reasons.append(
                 (
                     88,
-                    "reliability",
-                    "reliable tournament sample",
+                    RecommendationReasonItem(
+                        key="data_reliability",
+                        group="reliability",
+                        text="reliable tournament sample",
+                    ),
                 )
             )
 
@@ -374,23 +452,46 @@ def build_reason(
         reverse=True,
     )
 
-    selected: list[str] = []
+    selected: list[RecommendationReasonItem] = []
+
     used_groups: set[str] = set()
 
-    for _, group, text in reasons:
-        if group in used_groups:
+    for _, reason in reasons:
+        if reason.group in used_groups:
             continue
 
-        selected.append(text)
-        used_groups.add(group)
+        selected.append(reason)
+        used_groups.add(reason.group)
 
         if len(selected) >= 4:
             break
 
     if not selected:
-        selected.append("balanced profile across the decision criteria")
+        selected.append(
+            RecommendationReasonItem(
+                key="balanced_profile",
+                group="balanced",
+                text=("balanced profile across the decision criteria"),
+            )
+        )
 
-    return "; ".join(selected)
+    return tuple(selected)
+
+
+def build_reason(
+    row: pd.Series,
+    mode: str,
+    target_heatmap_profile: dict[str, float],
+) -> str:
+    """Build the legacy human-readable recommendation reason."""
+
+    reason_items = build_reason_items(
+        row,
+        mode,
+        target_heatmap_profile,
+    )
+
+    return "; ".join(reason.text for reason in reason_items)
 
 
 def recommendation_strength(
@@ -412,7 +513,9 @@ def recommendation_strength(
 
 
 __all__ = [
+    "RecommendationReasonItem",
     "build_reason",
+    "build_reason_items",
     "classify_candidate",
     "dominant_heatmap_zone",
     "heatmap_difference_reason",

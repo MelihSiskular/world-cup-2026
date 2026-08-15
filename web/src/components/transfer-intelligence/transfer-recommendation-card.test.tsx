@@ -54,7 +54,73 @@ function createRecommendation():
       "Strong tactical alternative",
     recommendation_strength: "Strong",
     why_recommended:
-      "Strong tactical and spatial evidence.",
+      "same final role; strong statistical similarity (72.5%)",
+    explainability: {
+      mode: "immediate",
+      score: {
+        weighted_signal_total: 68.3,
+        bonus_total: 6,
+        pre_clip_score: 74.3,
+        final_score: 74.3,
+        was_clipped: false,
+      },
+      signals: [
+        {
+          key: "statistical_similarity_pct",
+          label: "Statistical similarity",
+          description:
+            "Similarity across the statistical feature model.",
+          source_score: 72.5,
+          input_score: 72.5,
+          weight: 0.2,
+          weighted_contribution: 14.5,
+          evidence_status: "available",
+          note: null,
+        },
+        {
+          key: "effective_heatmap_score_pct",
+          label: "Heatmap evidence",
+          description:
+            "Heatmap occupation evidence used by the recruitment scoring model.",
+          source_score: null,
+          input_score: 70,
+          weight: 0.12,
+          weighted_contribution: 8.4,
+          evidence_status: "fallback",
+          note:
+            "Direct heatmap evidence is unavailable; the configured neutral fallback is used for scoring.",
+        },
+      ],
+      bonuses: [
+        {
+          key: "same_final_role",
+          label: "Same final role",
+          configured_points: 6,
+          applied: true,
+          applied_points: 6,
+        },
+        {
+          key: "same_archetype",
+          label: "Same statistical archetype",
+          configured_points: 2,
+          applied: false,
+          applied_points: 0,
+        },
+      ],
+      reasons: [
+        {
+          key: "same_final_role",
+          group: "role",
+          text: "same final role",
+        },
+        {
+          key: "statistical_similarity",
+          group: "statistics",
+          text:
+            "strong statistical similarity (72.5%)",
+        },
+      ],
+    },
   } as unknown as TransferRecommendationResponse;
 }
 
@@ -98,13 +164,39 @@ describe(
         ).toBeInTheDocument();
 
         expect(
-          screen.queryByText(
+          within(
+            spatialMetric,
+          ).queryByText(
             "70%",
             {
               exact: true,
             },
           ),
         ).not.toBeInTheDocument();
+      },
+    );
+
+    it(
+      "renders the candidate player image",
+      () => {
+        render(
+          <TransferRecommendationCard
+            targetPlayerId={978838}
+            mode="immediate"
+            analysisValues={{
+              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+            }}
+            recommendation={
+              createRecommendation()
+            }
+          />,
+        );
+
+        expect(
+          screen.getByAltText(
+            "Test Candidate player photo",
+          ),
+        ).toBeInTheDocument();
       },
     );
 
@@ -149,6 +241,80 @@ describe(
             marketRow,
           ).getByText(
             "Not reported",
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+    it(
+      "renders backend-selected recommendation reasons",
+      () => {
+        render(
+          <TransferRecommendationCard
+            targetPlayerId={978838}
+            mode="immediate"
+            analysisValues={{
+              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+            }}
+            recommendation={
+              createRecommendation()
+            }
+          />,
+        );
+
+        expect(
+          screen.getByText(
+            "Why this candidate",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "same final role",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "strong statistical similarity (72.5%)",
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
+    it(
+      "preserves heatmap fallback semantics in score breakdown",
+      () => {
+        render(
+          <TransferRecommendationCard
+            targetPlayerId={978838}
+            mode="immediate"
+            analysisValues={{
+              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+            }}
+            recommendation={
+              createRecommendation()
+            }
+          />,
+        );
+
+        expect(
+          screen.getByText(
+            "Fallback input",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            /Direct heatmap evidence is unavailable/,
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "It is not a probability that a transfer will succeed.",
+            {
+              exact: false,
+            },
           ),
         ).toBeInTheDocument();
       },

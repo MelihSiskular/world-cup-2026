@@ -214,6 +214,7 @@ export interface components {
             readonly effective_heatmap_score_pct?: number | null;
             /** Entropy Similarity Pct */
             readonly entropy_similarity_pct?: number | null;
+            readonly explainability: components["schemas"]["TransferRecommendationExplainabilityResponse"];
             /** Final Role */
             readonly final_role?: string | null;
             /** Has Heatmap Similarity */
@@ -388,6 +389,7 @@ export interface components {
             readonly effective_heatmap_score_pct?: number | null;
             /** Entropy Similarity Pct */
             readonly entropy_similarity_pct?: number | null;
+            readonly explainability: components["schemas"]["TransferRecommendationExplainabilityResponse"];
             /** Final Role */
             readonly final_role?: string | null;
             /** Has Heatmap Similarity */
@@ -761,6 +763,7 @@ export interface components {
             readonly effective_heatmap_score_pct?: number | null;
             /** Entropy Similarity Pct */
             readonly entropy_similarity_pct?: number | null;
+            readonly explainability: components["schemas"]["TransferRecommendationExplainabilityResponse"];
             /** Final Role */
             readonly final_role?: string | null;
             /** Has Heatmap Similarity */
@@ -918,6 +921,77 @@ export interface components {
             readonly target: components["schemas"]["TransferTargetResponse"];
         };
         /**
+         * TransferExplainabilityBonusResponse
+         * @description One explicit mode-specific recommendation bonus.
+         */
+        readonly TransferExplainabilityBonusResponse: {
+            /** Applied */
+            readonly applied: boolean;
+            /** Applied Points */
+            readonly applied_points: number;
+            /** Configured Points */
+            readonly configured_points: number;
+            /** Key */
+            readonly key: string;
+            /** Label */
+            readonly label: string;
+        };
+        /**
+         * TransferExplainabilityReasonResponse
+         * @description One structured human-readable recommendation reason.
+         */
+        readonly TransferExplainabilityReasonResponse: {
+            /** Group */
+            readonly group: string;
+            /** Key */
+            readonly key: string;
+            /** Text */
+            readonly text: string;
+        };
+        /**
+         * TransferExplainabilityScoreResponse
+         * @description Mathematical composition of one recommendation score.
+         */
+        readonly TransferExplainabilityScoreResponse: {
+            /** Bonus Total */
+            readonly bonus_total: number;
+            /** Final Score */
+            readonly final_score: number;
+            /** Pre Clip Score */
+            readonly pre_clip_score: number;
+            /** Was Clipped */
+            readonly was_clipped: boolean;
+            /** Weighted Signal Total */
+            readonly weighted_signal_total: number;
+        };
+        /**
+         * TransferExplainabilitySignalResponse
+         * @description One weighted input used by the recommendation scorer.
+         */
+        readonly TransferExplainabilitySignalResponse: {
+            /** Description */
+            readonly description: string;
+            /**
+             * Evidence Status
+             * @enum {string}
+             */
+            readonly evidence_status: "available" | "fallback" | "missing";
+            /** Input Score */
+            readonly input_score: number;
+            /** Key */
+            readonly key: string;
+            /** Label */
+            readonly label: string;
+            /** Note */
+            readonly note?: string | null;
+            /** Source Score */
+            readonly source_score?: number | null;
+            /** Weight */
+            readonly weight: number;
+            /** Weighted Contribution */
+            readonly weighted_contribution: number;
+        };
+        /**
          * TransferModesResponse
          * @description All supported Transfer Intelligence recruitment scenarios.
          */
@@ -926,6 +1000,24 @@ export interface components {
             readonly immediate: components["schemas"]["ImmediateTransferModeResponse"];
             readonly short_term: components["schemas"]["ShortTermTransferModeResponse"];
             readonly value: components["schemas"]["ValueTransferModeResponse"];
+        };
+        /**
+         * TransferRecommendationExplainabilityResponse
+         * @description Structured explanation of one transfer recommendation.
+         */
+        readonly TransferRecommendationExplainabilityResponse: {
+            /** Bonuses */
+            readonly bonuses: readonly components["schemas"]["TransferExplainabilityBonusResponse"][];
+            /**
+             * Mode
+             * @enum {string}
+             */
+            readonly mode: "immediate" | "development" | "value" | "short_term";
+            /** Reasons */
+            readonly reasons: readonly components["schemas"]["TransferExplainabilityReasonResponse"][];
+            readonly score: components["schemas"]["TransferExplainabilityScoreResponse"];
+            /** Signals */
+            readonly signals: readonly components["schemas"]["TransferExplainabilitySignalResponse"][];
         };
         /**
          * TransferTargetResponse
@@ -1066,6 +1158,7 @@ export interface components {
             readonly effective_heatmap_score_pct?: number | null;
             /** Entropy Similarity Pct */
             readonly entropy_similarity_pct?: number | null;
+            readonly explainability: components["schemas"]["TransferRecommendationExplainabilityResponse"];
             /** Final Role */
             readonly final_role?: string | null;
             /** Has Heatmap Similarity */

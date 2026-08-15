@@ -4,9 +4,6 @@ import {
   it,
 } from "vitest";
 
-import type {
-  TransferRecommendationResponse,
-} from "@/lib/api/types";
 import {
   getRecommendationRank,
   getRecommendationScore,
@@ -14,15 +11,6 @@ import {
 } from "@/lib/transfer-intelligence/result-config";
 
 const recommendation = {
-  player_id: 100,
-  player_name:
-    "Test Candidate",
-  recommendation_type:
-    "Balanced alternative",
-  recommendation_strength:
-    "Good",
-  why_recommended:
-    "Good profile fit.",
   immediate_score:
     66.5,
   immediate_rank:
@@ -39,8 +27,7 @@ const recommendation = {
     62.4,
   short_term_rank:
     4,
-} as TransferRecommendationResponse;
-
+};
 describe(
   "parseTransferMode",
   () => {

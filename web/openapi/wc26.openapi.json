@@ -1164,6 +1164,9 @@
             ],
             "title": "Same Archetype"
           },
+          "explainability": {
+            "$ref": "#/components/schemas/TransferRecommendationExplainabilityResponse"
+          },
           "recommendation_type": {
             "type": "string",
             "title": "Recommendation Type"
@@ -1193,6 +1196,7 @@
         "required": [
           "player_id",
           "player_name",
+          "explainability",
           "recommendation_type",
           "recommendation_strength",
           "why_recommended",
@@ -1936,6 +1940,9 @@
             ],
             "title": "Same Archetype"
           },
+          "explainability": {
+            "$ref": "#/components/schemas/TransferRecommendationExplainabilityResponse"
+          },
           "recommendation_type": {
             "type": "string",
             "title": "Recommendation Type"
@@ -1965,6 +1972,7 @@
         "required": [
           "player_id",
           "player_name",
+          "explainability",
           "recommendation_type",
           "recommendation_strength",
           "why_recommended",
@@ -3478,6 +3486,9 @@
             ],
             "title": "Same Archetype"
           },
+          "explainability": {
+            "$ref": "#/components/schemas/TransferRecommendationExplainabilityResponse"
+          },
           "recommendation_type": {
             "type": "string",
             "title": "Recommendation Type"
@@ -3507,6 +3518,7 @@
         "required": [
           "player_id",
           "player_name",
+          "explainability",
           "recommendation_type",
           "recommendation_strength",
           "why_recommended",
@@ -3610,6 +3622,194 @@
         "title": "TransferAnalysisResponse",
         "description": "Structured transfer analysis API response."
       },
+      "TransferExplainabilityBonusResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Label"
+          },
+          "configured_points": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Configured Points"
+          },
+          "applied": {
+            "type": "boolean",
+            "title": "Applied"
+          },
+          "applied_points": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Applied Points"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "configured_points",
+          "applied",
+          "applied_points"
+        ],
+        "title": "TransferExplainabilityBonusResponse",
+        "description": "One explicit mode-specific recommendation bonus."
+      },
+      "TransferExplainabilityReasonResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key"
+          },
+          "group": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Group"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "group",
+          "text"
+        ],
+        "title": "TransferExplainabilityReasonResponse",
+        "description": "One structured human-readable recommendation reason."
+      },
+      "TransferExplainabilityScoreResponse": {
+        "properties": {
+          "weighted_signal_total": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Weighted Signal Total"
+          },
+          "bonus_total": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Bonus Total"
+          },
+          "pre_clip_score": {
+            "type": "number",
+            "title": "Pre Clip Score"
+          },
+          "final_score": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Final Score"
+          },
+          "was_clipped": {
+            "type": "boolean",
+            "title": "Was Clipped"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "weighted_signal_total",
+          "bonus_total",
+          "pre_clip_score",
+          "final_score",
+          "was_clipped"
+        ],
+        "title": "TransferExplainabilityScoreResponse",
+        "description": "Mathematical composition of one recommendation score."
+      },
+      "TransferExplainabilitySignalResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Description"
+          },
+          "source_score": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Score"
+          },
+          "input_score": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Input Score"
+          },
+          "weight": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Weight"
+          },
+          "weighted_contribution": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Weighted Contribution"
+          },
+          "evidence_status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "fallback",
+              "missing"
+            ],
+            "title": "Evidence Status"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "description",
+          "input_score",
+          "weight",
+          "weighted_contribution",
+          "evidence_status"
+        ],
+        "title": "TransferExplainabilitySignalResponse",
+        "description": "One weighted input used by the recommendation scorer."
+      },
       "TransferModesResponse": {
         "properties": {
           "immediate": {
@@ -3635,6 +3835,55 @@
         ],
         "title": "TransferModesResponse",
         "description": "All supported Transfer Intelligence recruitment scenarios."
+      },
+      "TransferRecommendationExplainabilityResponse": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "immediate",
+              "development",
+              "value",
+              "short_term"
+            ],
+            "title": "Mode"
+          },
+          "score": {
+            "$ref": "#/components/schemas/TransferExplainabilityScoreResponse"
+          },
+          "signals": {
+            "items": {
+              "$ref": "#/components/schemas/TransferExplainabilitySignalResponse"
+            },
+            "type": "array",
+            "title": "Signals"
+          },
+          "bonuses": {
+            "items": {
+              "$ref": "#/components/schemas/TransferExplainabilityBonusResponse"
+            },
+            "type": "array",
+            "title": "Bonuses"
+          },
+          "reasons": {
+            "items": {
+              "$ref": "#/components/schemas/TransferExplainabilityReasonResponse"
+            },
+            "type": "array",
+            "title": "Reasons"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "mode",
+          "score",
+          "signals",
+          "bonuses",
+          "reasons"
+        ],
+        "title": "TransferRecommendationExplainabilityResponse",
+        "description": "Structured explanation of one transfer recommendation."
       },
       "TransferTargetResponse": {
         "properties": {
@@ -4787,6 +5036,9 @@
             ],
             "title": "Same Archetype"
           },
+          "explainability": {
+            "$ref": "#/components/schemas/TransferRecommendationExplainabilityResponse"
+          },
           "recommendation_type": {
             "type": "string",
             "title": "Recommendation Type"
@@ -4816,6 +5068,7 @@
         "required": [
           "player_id",
           "player_name",
+          "explainability",
           "recommendation_type",
           "recommendation_strength",
           "why_recommended",

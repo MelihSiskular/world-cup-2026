@@ -11,6 +11,7 @@ from wc26.analytics.transfer_intelligence.errors import (
     InvalidTransferAnalysisRequestError,
 )
 from wc26.analytics.transfer_intelligence.models import (
+    JsonObject,
     TransferAnalysisRequest,
     TransferAnalysisResult,
     TransferModeResult,
@@ -23,6 +24,81 @@ from wc26.api.dependencies import (
     get_transfer_analysis_runner,
     get_transfer_dataset_paths,
 )
+
+
+def _build_explainability_payload() -> JsonObject:
+    """Return deterministic recommendation explainability."""
+
+    return {
+        "mode": "immediate",
+        "score": {
+            "weighted_signal_total": 80.5,
+            "bonus_total": 8.0,
+            "pre_clip_score": 88.5,
+            "final_score": 88.5,
+            "was_clipped": False,
+        },
+        "signals": [
+            {
+                "key": "role_fit_pct",
+                "label": "Role fit",
+                "description": (
+                    "Alignment between the candidate and target across the tactical role model."
+                ),
+                "source_score": 90.0,
+                "input_score": 90.0,
+                "weight": 0.23,
+                "weighted_contribution": 20.7,
+                "evidence_status": "available",
+                "note": None,
+            },
+            {
+                "key": "effective_heatmap_score_pct",
+                "label": "Heatmap evidence",
+                "description": (
+                    "Heatmap occupation evidence used by the recruitment scoring model."
+                ),
+                "source_score": None,
+                "input_score": 70.0,
+                "weight": 0.12,
+                "weighted_contribution": 8.4,
+                "evidence_status": "fallback",
+                "note": (
+                    "Direct heatmap evidence is unavailable; "
+                    "the configured neutral fallback is used "
+                    "for scoring."
+                ),
+            },
+        ],
+        "bonuses": [
+            {
+                "key": "same_final_role",
+                "label": "Same final role",
+                "configured_points": 6.0,
+                "applied": True,
+                "applied_points": 6.0,
+            },
+            {
+                "key": "same_archetype",
+                "label": "Same statistical archetype",
+                "configured_points": 2.0,
+                "applied": True,
+                "applied_points": 2.0,
+            },
+        ],
+        "reasons": [
+            {
+                "key": "same_final_role",
+                "group": "role",
+                "text": "same final role",
+            },
+            {
+                "key": "statistical_similarity",
+                "group": "statistics",
+                "text": ("very strong statistical similarity (80.0%)"),
+            },
+        ],
+    }
 
 
 def _build_analysis_result() -> TransferAnalysisResult:
@@ -44,6 +120,7 @@ def _build_analysis_result() -> TransferAnalysisResult:
                             "recommendation_type": "like_for_like",
                             "recommendation_strength": "strong",
                             "why_recommended": ("Strong immediate replacement profile."),
+                            "explainability": _build_explainability_payload(),
                             "immediate_score": 88.5,
                             "immediate_rank": 1,
                         }
@@ -144,8 +221,39 @@ def test_transfer_analysis_route_is_in_openapi_schema() -> None:
         assert "player_name" in recommendation_properties
         assert "recommendation_strength" in recommendation_properties
         assert "why_recommended" in recommendation_properties
+        assert "explainability" in recommendation_properties
         assert score_field in recommendation_properties
         assert rank_field in recommendation_properties
+
+        explainability_reference = recommendation_properties["explainability"]["$ref"]
+
+        assert explainability_reference.endswith("/TransferRecommendationExplainabilityResponse")
+
+    explainability_schema = schemas["TransferRecommendationExplainabilityResponse"]
+
+    assert set(explainability_schema["required"]) == {
+        "mode",
+        "score",
+        "signals",
+        "bonuses",
+        "reasons",
+    }
+
+    assert explainability_schema["properties"]["score"]["$ref"].endswith(
+        "/TransferExplainabilityScoreResponse"
+    )
+
+    signal_reference = explainability_schema["properties"]["signals"]["items"]["$ref"]
+
+    assert signal_reference.endswith("/TransferExplainabilitySignalResponse")
+
+    bonus_reference = explainability_schema["properties"]["bonuses"]["items"]["$ref"]
+
+    assert bonus_reference.endswith("/TransferExplainabilityBonusResponse")
+
+    reason_reference = explainability_schema["properties"]["reasons"]["items"]["$ref"]
+
+    assert reason_reference.endswith("/TransferExplainabilityReasonResponse")
 
 
 def test_transfer_analysis_endpoint_delegates_name_to_application_service() -> None:
@@ -220,6 +328,7 @@ def test_transfer_analysis_endpoint_delegates_name_to_application_service() -> N
                         "recommendation_type": "like_for_like",
                         "recommendation_strength": "strong",
                         "why_recommended": ("Strong immediate replacement profile."),
+                        "explainability": _build_explainability_payload(),
                         "immediate_score": 88.5,
                         "immediate_rank": 1,
                     }

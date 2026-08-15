@@ -16,6 +16,7 @@ from wc26.analytics.transfer_intelligence.explanations import (
 )
 from wc26.analytics.transfer_intelligence.recommendations import (
     filter_for_mode,
+    generate_mode_results,
 )
 from wc26.analytics.transfer_intelligence.scoring import (
     calculate_mode_score,
@@ -187,3 +188,175 @@ def test_value_mode_does_not_filter_by_age() -> None:
     )
 
     assert result["player_id"].tolist() == [1, 2]
+
+
+@pytest.mark.parametrize(
+    ("mode", "age"),
+    [
+        ("immediate", 25.0),
+        ("development", 22.0),
+        ("value", 25.0),
+        ("short_term", 30.0),
+    ],
+)
+def test_generated_recommendations_include_structured_explainability(
+    mode: str,
+    age: float,
+) -> None:
+    candidates = pd.DataFrame(
+        [
+            {
+                "player_id": 101,
+                "age": age,
+                "statistical_similarity_pct": 80.0,
+                "role_fit_pct": 90.0,
+                "spatial_similarity_pct": 80.0,
+                "effective_heatmap_score_pct": 70.0,
+                "heatmap_similarity_score_pct": None,
+                "has_heatmap_similarity": False,
+                "occupation_overlap_pct": 0.0,
+                "lateral_profile_similarity_pct": 0.0,
+                "vertical_profile_similarity_pct": 0.0,
+                "player_quality_score": 80.0,
+                "data_reliability_score": 80.0,
+                "market_value_advantage_pct": 70.0,
+                "age_suitability_pct": 80.0,
+                "same_final_role": True,
+                "same_archetype": True,
+            }
+        ]
+    )
+
+    result = generate_mode_results(
+        candidates,
+        mode=mode,
+        target_heatmap_profile={},
+    )
+
+    assert len(result) == 1
+
+    row = result.iloc[0]
+
+    explanation = row["explainability"]
+
+    assert isinstance(
+        explanation,
+        dict,
+    )
+
+    assert explanation["mode"] == mode
+
+    score = explanation["score"]
+
+    assert isinstance(
+        score,
+        dict,
+    )
+
+    assert score["final_score"] == pytest.approx(row[f"{mode}_score"])
+
+    signals = explanation["signals"]
+
+    assert isinstance(
+        signals,
+        list,
+    )
+
+    assert len(signals) == 8
+
+    heatmap = next(signal for signal in signals if signal["key"] == "effective_heatmap_score_pct")
+
+    assert heatmap["source_score"] is None
+    assert heatmap["input_score"] == pytest.approx(70.0)
+    assert heatmap["evidence_status"] == "fallback"
+
+    bonuses = explanation["bonuses"]
+
+    assert isinstance(
+        bonuses,
+        list,
+    )
+
+    assert len(bonuses) == 2
+
+    reasons = explanation["reasons"]
+
+    assert isinstance(
+        reasons,
+        list,
+    )
+
+    assert reasons
+
+    assert row["why_recommended"] == "; ".join(reason["text"] for reason in reasons)
+
+
+def test_explainability_does_not_change_existing_ranking_order() -> None:
+    candidates = pd.DataFrame(
+        [
+            {
+                "player_id": 1,
+                "age": 25.0,
+                "statistical_similarity_pct": 90.0,
+                "role_fit_pct": 95.0,
+                "spatial_similarity_pct": 90.0,
+                "effective_heatmap_score_pct": 90.0,
+                "heatmap_similarity_score_pct": 90.0,
+                "has_heatmap_similarity": True,
+                "occupation_overlap_pct": 90.0,
+                "lateral_profile_similarity_pct": 90.0,
+                "vertical_profile_similarity_pct": 90.0,
+                "player_quality_score": 90.0,
+                "data_reliability_score": 90.0,
+                "market_value_advantage_pct": 70.0,
+                "age_suitability_pct": 70.0,
+                "same_final_role": True,
+                "same_archetype": True,
+            },
+            {
+                "player_id": 2,
+                "age": 25.0,
+                "statistical_similarity_pct": 70.0,
+                "role_fit_pct": 70.0,
+                "spatial_similarity_pct": 70.0,
+                "effective_heatmap_score_pct": 70.0,
+                "heatmap_similarity_score_pct": 70.0,
+                "has_heatmap_similarity": True,
+                "occupation_overlap_pct": 70.0,
+                "lateral_profile_similarity_pct": 70.0,
+                "vertical_profile_similarity_pct": 70.0,
+                "player_quality_score": 70.0,
+                "data_reliability_score": 70.0,
+                "market_value_advantage_pct": 50.0,
+                "age_suitability_pct": 50.0,
+                "same_final_role": False,
+                "same_archetype": False,
+            },
+        ]
+    )
+
+    result = generate_mode_results(
+        candidates,
+        mode="immediate",
+        target_heatmap_profile={},
+    )
+
+    assert result["player_id"].tolist() == [
+        1,
+        2,
+    ]
+
+    assert result["immediate_rank"].tolist() == [
+        1,
+        2,
+    ]
+
+    assert result["immediate_score"].astype(float).is_monotonic_decreasing
+
+    assert all(
+        isinstance(
+            explanation,
+            dict,
+        )
+        for explanation in result["explainability"]
+    )
