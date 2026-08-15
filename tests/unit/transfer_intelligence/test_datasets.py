@@ -580,3 +580,29 @@ def test_load_heatmap_grids_rejects_non_normalized_grid(
         match="is not normalized",
     ):
         load_heatmap_grids(path)
+
+
+def test_load_heatmap_profiles_keeps_sample_evidence(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "profiles.csv"
+
+    write_csv(
+        path,
+        [
+            {
+                "player_id": "978838",
+                "matches_with_heatmap": "7",
+                "heatmap_point_count": "312",
+                "weighted_mean_x": "58.4",
+                "weighted_mean_y": "41.2",
+            }
+        ],
+    )
+
+    result = load_heatmap_profiles(path)
+
+    assert len(result) == 1
+    assert result.iloc[0]["player_id"] == 978838
+    assert result.iloc[0]["matches_with_heatmap"] == 7
+    assert result.iloc[0]["heatmap_point_count"] == 312

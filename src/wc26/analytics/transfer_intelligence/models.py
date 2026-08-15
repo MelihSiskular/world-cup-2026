@@ -373,7 +373,142 @@ class PlayerProfileResult:
         }
 
 
+
+@dataclass(frozen=True, slots=True)
+class HeatmapComparisonRequest:
+    """Stable player identifiers for one heatmap comparison."""
+
+    target_player_id: int
+    candidate_player_id: int
+
+
+@dataclass(frozen=True, slots=True)
+class HeatmapPlayerResult:
+    """Heatmap evidence available for one comparison player."""
+
+    player_id: int
+    player_name: str
+    available: bool
+    grid_width: int | None
+    grid_height: int | None
+    grid: tuple[tuple[float, ...], ...] | None
+    matches_with_heatmap: int | None
+    heatmap_point_count: int | None
+    weighted_mean_x: float | None
+    weighted_mean_y: float | None
+    peak_cell_x: float | None
+    peak_cell_y: float | None
+    heatmap_entropy: float | None
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible player heatmap evidence."""
+
+        grid_value: JsonValue = None
+
+        if self.grid is not None:
+            grid_rows: list[JsonValue] = []
+
+            for row in self.grid:
+                row_values: list[JsonValue] = [
+                    float(value)
+                    for value in row
+                ]
+                grid_rows.append(row_values)
+
+            grid_value = grid_rows
+
+        return {
+            "player_id": self.player_id,
+            "player_name": self.player_name,
+            "available": self.available,
+            "grid_width": self.grid_width,
+            "grid_height": self.grid_height,
+            "grid": grid_value,
+            "matches_with_heatmap": self.matches_with_heatmap,
+            "heatmap_point_count": self.heatmap_point_count,
+            "weighted_mean_x": self.weighted_mean_x,
+            "weighted_mean_y": self.weighted_mean_y,
+            "peak_cell_x": self.peak_cell_x,
+            "peak_cell_y": self.peak_cell_y,
+            "heatmap_entropy": self.heatmap_entropy,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class HeatmapSimilarityResult:
+    """Measured pairwise heatmap similarity evidence."""
+
+    available: bool
+    heatmap_similarity_score_pct: float | None
+    heatmap_cosine_similarity_pct: float | None
+    occupation_overlap_pct: float | None
+    peak_zone_similarity_pct: float | None
+    peak_zone_distance: float | None
+    entropy_similarity_pct: float | None
+    target_matches_with_heatmap: int | None
+    candidate_matches_with_heatmap: int | None
+    target_heatmap_points: int | None
+    candidate_heatmap_points: int | None
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible measured similarity evidence."""
+
+        return {
+            "available": self.available,
+            "heatmap_similarity_score_pct": (
+                self.heatmap_similarity_score_pct
+            ),
+            "heatmap_cosine_similarity_pct": (
+                self.heatmap_cosine_similarity_pct
+            ),
+            "occupation_overlap_pct": (
+                self.occupation_overlap_pct
+            ),
+            "peak_zone_similarity_pct": (
+                self.peak_zone_similarity_pct
+            ),
+            "peak_zone_distance": self.peak_zone_distance,
+            "entropy_similarity_pct": (
+                self.entropy_similarity_pct
+            ),
+            "target_matches_with_heatmap": (
+                self.target_matches_with_heatmap
+            ),
+            "candidate_matches_with_heatmap": (
+                self.candidate_matches_with_heatmap
+            ),
+            "target_heatmap_points": (
+                self.target_heatmap_points
+            ),
+            "candidate_heatmap_points": (
+                self.candidate_heatmap_points
+            ),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class HeatmapComparisonResult:
+    """Complete target-to-candidate heatmap comparison."""
+
+    target: HeatmapPlayerResult
+    candidate: HeatmapPlayerResult
+    similarity: HeatmapSimilarityResult
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible heatmap comparison."""
+
+        return {
+            "target": self.target.to_dict(),
+            "candidate": self.candidate.to_dict(),
+            "similarity": self.similarity.to_dict(),
+        }
+
+
 __all__ = [
+    "HeatmapComparisonRequest",
+    "HeatmapComparisonResult",
+    "HeatmapPlayerResult",
+    "HeatmapSimilarityResult",
     "JsonObject",
     "JsonScalar",
     "JsonValue",

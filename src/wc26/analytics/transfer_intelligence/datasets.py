@@ -216,6 +216,8 @@ def load_heatmap_profiles(
 
     useful_columns = [
         "player_id",
+        "matches_with_heatmap",
+        "heatmap_point_count",
         "left_wide_share",
         "left_half_space_share",
         "central_share",
@@ -236,10 +238,18 @@ def load_heatmap_profiles(
 
     result = dataframe[available].copy()
 
-    result["player_id"] = pd.to_numeric(
-        result["player_id"],
-        errors="coerce",
-    )
+    for column in (
+        "player_id",
+        "matches_with_heatmap",
+        "heatmap_point_count",
+    ):
+        if column not in result.columns:
+            continue
+
+        result[column] = pd.to_numeric(
+            result[column],
+            errors="coerce",
+        )
 
     return result.dropna(subset=["player_id"]).drop_duplicates("player_id")
 
