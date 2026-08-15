@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from pathlib import Path
+from types import MappingProxyType
+from zipfile import BadZipFile
 
+import numpy as np
 import pandas as pd
 
 from wc26.analytics.transfer_intelligence.config import (
@@ -240,8 +244,165 @@ def load_heatmap_profiles(
     return result.dropna(subset=["player_id"]).drop_duplicates("player_id")
 
 
+def load_heatmap_grids(
+    path: Path,
+) -> Mapping[int, np.ndarray]:
+    """Load and validate normalized player heatmap grids."""
+
+    if not path.exists():
+        raise DatasetNotFoundError(
+            f"Heatmap grid archive not found: {path}"
+        )
+
+    try:
+        archive = np.load(
+            path,
+            allow_pickle=False,
+        )
+    except (
+        OSError,
+        ValueError,
+        EOFError,
+        BadZipFile,
+    ) as exception:
+        raise InvalidDatasetError(
+            "Heatmap grid archive could not be read."
+        ) from exception
+
+    if not isinstance(
+        archive,
+        np.lib.npyio.NpzFile,
+    ):
+        raise InvalidDatasetError(
+            "Heatmap grid artifact must be an NPZ archive."
+        )
+
+    grids: dict[int, np.ndarray] = {}
+    expected_shape: tuple[int, int] | None = None
+
+    try:
+        if not archive.files:
+            raise InvalidDatasetError(
+                "Heatmap grid archive contains no player grids."
+            )
+
+        for key in archive.files:
+            try:
+                player_id = int(key)
+            except ValueError as exception:
+                raise InvalidDatasetError(
+                    "Heatmap grid archive contains "
+                    f"an invalid player key: {key!r}."
+                ) from exception
+
+            if player_id <= 0:
+                raise InvalidDatasetError(
+                    "Heatmap grid archive contains "
+                    f"a non-positive player ID: {player_id}."
+                )
+
+            if player_id in grids:
+                raise InvalidDatasetError(
+                    "Heatmap grid archive contains "
+                    f"duplicate player ID: {player_id}."
+                )
+
+            try:
+                grid = np.asarray(
+                    archive[key],
+                    dtype=np.float32,
+                )
+            except (
+                OSError,
+                ValueError,
+                EOFError,
+                BadZipFile,
+            ) as exception:
+                raise InvalidDatasetError(
+                    "Heatmap grid could not be read "
+                    f"for player_id={player_id}."
+                ) from exception
+
+            if grid.ndim != 2:
+                raise InvalidDatasetError(
+                    "Heatmap grid must be two-dimensional "
+                    f"for player_id={player_id}; "
+                    f"received shape={grid.shape}."
+                )
+
+            shape = (
+                int(grid.shape[0]),
+                int(grid.shape[1]),
+            )
+
+            if min(shape) < 2:
+                raise InvalidDatasetError(
+                    "Heatmap grid dimensions must both "
+                    f"be at least 2 for player_id={player_id}; "
+                    f"received shape={shape}."
+                )
+
+            if expected_shape is None:
+                expected_shape = shape
+            elif shape != expected_shape:
+                raise InvalidDatasetError(
+                    "Heatmap grid archive contains "
+                    "inconsistent grid dimensions: "
+                    f"expected {expected_shape}, "
+                    f"received {shape} "
+                    f"for player_id={player_id}."
+                )
+
+            if not np.isfinite(grid).all():
+                raise InvalidDatasetError(
+                    "Heatmap grid contains non-finite values "
+                    f"for player_id={player_id}."
+                )
+
+            if np.any(grid < 0):
+                raise InvalidDatasetError(
+                    "Heatmap grid contains negative density "
+                    f"for player_id={player_id}."
+                )
+
+            total = float(
+                grid.sum(dtype=np.float64)
+            )
+
+            if not np.isclose(
+                total,
+                1.0,
+                rtol=1e-5,
+                atol=1e-6,
+            ):
+                raise InvalidDatasetError(
+                    "Heatmap grid is not normalized "
+                    f"for player_id={player_id}; "
+                    f"sum={total:.8f}."
+                )
+
+            immutable_grid = np.array(
+                grid,
+                dtype=np.float32,
+                copy=True,
+                order="C",
+            )
+
+            immutable_grid.setflags(
+                write=False,
+            )
+
+            grids[player_id] = immutable_grid
+
+    finally:
+        archive.close()
+
+    return MappingProxyType(grids)
+
+
 __all__ = [
     "PLAYER_TOURNAMENT_SUMMARY_REQUIRED_COLUMNS",
+    "load_heatmap_grids",
     "load_heatmap_profiles",
     "load_heatmap_similarity",
     "load_player_features",

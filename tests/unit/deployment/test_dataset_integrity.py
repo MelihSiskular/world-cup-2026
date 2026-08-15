@@ -4,6 +4,7 @@ import csv
 import json
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from wc26.deployment.dataset_integrity import (
@@ -12,6 +13,7 @@ from wc26.deployment.dataset_integrity import (
 )
 from wc26.deployment.dataset_manifest import (
     DatasetDefinition,
+    calculate_bundle_sha256,
     generate_manifest,
     render_manifest,
 )
@@ -216,3 +218,139 @@ def test_runtime_dataset_can_use_external_path(
 
     assert report.dataset_count == 1
     assert report.total_size_bytes == (external_path.stat().st_size)
+
+
+
+def test_runtime_heatmap_grid_integrity_passes(
+    tmp_path: Path,
+) -> None:
+    dataset_path = (
+        tmp_path
+        / "runtime/player_heatmap_grids.npz"
+    )
+    dataset_path.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    np.savez(
+        dataset_path,
+        **{
+            "978838": np.full(
+                (2, 3),
+                1.0 / 6.0,
+                dtype=np.float32,
+            ),
+            "789071": np.full(
+                (2, 3),
+                1.0 / 6.0,
+                dtype=np.float32,
+            ),
+        },
+    )
+
+    manifest = generate_manifest(
+        repository_root=tmp_path,
+        definitions=(
+            DatasetDefinition(
+                key="heatmap_grids",
+                relative_path=Path(
+                    "runtime/player_heatmap_grids.npz"
+                ),
+                artifact_type="heatmap_grid_npz",
+            ),
+        ),
+    )
+
+    manifest_path = (
+        tmp_path
+        / "config/heatmap-manifest.json"
+    )
+    manifest_path.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+    manifest_path.write_text(
+        render_manifest(manifest),
+        encoding="utf-8",
+    )
+
+    report = validate_runtime_dataset_integrity(
+        manifest_path=manifest_path,
+        dataset_paths={
+            "heatmap_grids": dataset_path,
+        },
+    )
+
+    assert report.dataset_count == 1
+    assert report.total_size_bytes == (
+        dataset_path.stat().st_size
+    )
+
+
+def test_runtime_heatmap_grid_integrity_rejects_metadata_mismatch(
+    tmp_path: Path,
+) -> None:
+    dataset_path = (
+        tmp_path
+        / "runtime/player_heatmap_grids.npz"
+    )
+    dataset_path.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    np.savez(
+        dataset_path,
+        **{
+            "978838": np.full(
+                (2, 3),
+                1.0 / 6.0,
+                dtype=np.float32,
+            ),
+        },
+    )
+
+    manifest = generate_manifest(
+        repository_root=tmp_path,
+        definitions=(
+            DatasetDefinition(
+                key="heatmap_grids",
+                relative_path=Path(
+                    "runtime/player_heatmap_grids.npz"
+                ),
+                artifact_type="heatmap_grid_npz",
+            ),
+        ),
+    )
+
+    manifest["datasets"][0]["grid_width"] = 99
+    manifest["bundle_sha256"] = (
+        calculate_bundle_sha256(
+            manifest["datasets"]
+        )
+    )
+
+    manifest_path = (
+        tmp_path
+        / "config/heatmap-manifest.json"
+    )
+    manifest_path.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+    manifest_path.write_text(
+        render_manifest(manifest),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        DatasetIntegrityError,
+        match="grid width mismatch",
+    ):
+        validate_runtime_dataset_integrity(
+            manifest_path=manifest_path,
+            dataset_paths={
+                "heatmap_grids": dataset_path,
+            },
+        )

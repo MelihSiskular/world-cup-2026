@@ -74,6 +74,10 @@ def _dataset_requirements(
             environment_variable=("WC26_HEATMAP_PROFILES_PATH"),
             path=dataset_paths.heatmap_profiles,
         ),
+        RuntimeFileRequirement(
+            environment_variable=("WC26_HEATMAP_GRIDS_PATH"),
+            path=dataset_paths.heatmap_grids,
+        ),
     )
 
 
@@ -104,6 +108,7 @@ def _runtime_dataset_paths(
         "similarity": dataset_paths.similarity,
         "heatmap_similarity": (dataset_paths.heatmap_similarity),
         "heatmap_profiles": (dataset_paths.heatmap_profiles),
+        "heatmap_grids": (dataset_paths.heatmap_grids),
     }
 
 

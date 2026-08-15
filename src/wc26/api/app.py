@@ -56,6 +56,7 @@ class TransferDataCatalogLoader(Protocol):
         similarity: Path,
         heatmap_similarity: Path,
         heatmap_profiles: Path,
+        heatmap_grids: Path,
     ) -> TransferDataCatalog:
         """Load and return the runtime catalog."""
 
@@ -100,6 +101,7 @@ def _catalog_row_counts(
         "similarity_rows": len(catalog.similarity),
         "heatmap_similarity_rows": len(catalog.heatmap_similarity),
         "heatmap_profiles_rows": len(catalog.heatmap_profiles),
+        "heatmap_grids_count": len(catalog.heatmap_grids),
     }
 
 
@@ -165,6 +167,7 @@ def create_app(
                         "similarity_path": str(runtime.dataset_paths.similarity),
                         "heatmap_similarity_path": str(runtime.dataset_paths.heatmap_similarity),
                         "heatmap_profiles_path": str(runtime.dataset_paths.heatmap_profiles),
+                        "heatmap_grids_path": str(runtime.dataset_paths.heatmap_grids),
                     },
                 )
 
@@ -175,6 +178,7 @@ def create_app(
                         similarity=(runtime.dataset_paths.similarity),
                         heatmap_similarity=(runtime.dataset_paths.heatmap_similarity),
                         heatmap_profiles=(runtime.dataset_paths.heatmap_profiles),
+                        heatmap_grids=(runtime.dataset_paths.heatmap_grids),
                     )
                 except Exception:
                     logger.exception(

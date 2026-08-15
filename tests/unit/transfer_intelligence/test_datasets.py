@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import operator
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
 from wc26.analytics.transfer_intelligence.datasets import (
+    load_heatmap_grids,
     load_heatmap_profiles,
     load_heatmap_similarity,
     load_similarity,
@@ -216,3 +219,364 @@ def test_load_heatmap_profiles_cleans_ids_and_duplicates(
     assert len(result) == 1
     assert result.iloc[0]["player_id"] == 10
     assert result.iloc[0]["central_share"] == pytest.approx(0.4)
+
+
+
+def test_load_heatmap_grids_loads_immutable_grids(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "heatmap_grids.npz"
+
+    olise_grid = np.array(
+        [
+            [0.1, 0.2],
+            [0.3, 0.4],
+        ],
+        dtype=np.float64,
+    )
+    olmo_grid = np.full(
+        (2, 2),
+        0.25,
+        dtype=np.float64,
+    )
+
+    np.savez(
+        path,
+        **{
+            "978838": olise_grid,
+            "789071": olmo_grid,
+        },
+    )
+
+    result = load_heatmap_grids(path)
+
+    assert set(result) == {
+        978838,
+        789071,
+    }
+
+    assert result[978838].shape == (2, 2)
+    assert result[978838].dtype == np.float32
+
+    np.testing.assert_allclose(
+        result[978838],
+        olise_grid,
+    )
+
+    assert not result[978838].flags.writeable
+    assert not result[789071].flags.writeable
+
+    with pytest.raises(ValueError):
+        result[978838][0, 0] = 0.0
+
+    with pytest.raises(TypeError):
+        operator.setitem(
+            result,
+            123,
+            result[978838],
+        )
+
+
+def test_load_heatmap_grids_rejects_missing_file(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "missing.npz"
+
+    with pytest.raises(
+        DatasetNotFoundError,
+        match="Heatmap grid archive not found",
+    ):
+        load_heatmap_grids(path)
+
+
+def test_load_heatmap_grids_rejects_malformed_archive(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "heatmap_grids.npz"
+
+    path.write_text(
+        "not an npz archive",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        InvalidDatasetError,
+        match="Heatmap grid archive could not be read",
+    ):
+        load_heatmap_grids(path)
+
+
+def test_load_heatmap_grids_rejects_empty_archive(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "heatmap_grids.npz"
+
+    np.savez(path)
+
+    with pytest.raises(
+        InvalidDatasetError,
+        match="contains no player grids",
+    ):
+        load_heatmap_grids(path)
+
+
+def test_load_heatmap_grids_rejects_invalid_player_key(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "heatmap_grids.npz"
+
+    grid = np.full(
+        (2, 2),
+        0.25,
+        dtype=np.float32,
+    )
+
+    np.savez(
+        path,
+        **{
+            "player-x": grid,
+        },
+    )
+
+    with pytest.raises(
+        InvalidDatasetError,
+        match="invalid player key",
+    ):
+        load_heatmap_grids(path)
+
+
+@pytest.mark.parametrize(
+    "player_key",
+    [
+        "0",
+        "-1",
+    ],
+)
+def test_load_heatmap_grids_rejects_non_positive_player_id(
+    tmp_path: Path,
+    player_key: str,
+) -> None:
+    path = tmp_path / "heatmap_grids.npz"
+
+    grid = np.full(
+        (2, 2),
+        0.25,
+        dtype=np.float32,
+    )
+
+    np.savez(
+        path,
+        **{
+            player_key: grid,
+        },
+    )
+
+    with pytest.raises(
+        InvalidDatasetError,
+        match="non-positive player ID",
+    ):
+        load_heatmap_grids(path)
+
+
+def test_load_heatmap_grids_rejects_duplicate_canonical_player_id(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "heatmap_grids.npz"
+
+    grid = np.full(
+        (2, 2),
+        0.25,
+        dtype=np.float32,
+    )
+
+    np.savez(
+        path,
+        **{
+            "1": grid,
+            "01": grid,
+        },
+    )
+
+    with pytest.raises(
+        InvalidDatasetError,
+        match="duplicate player ID",
+    ):
+        load_heatmap_grids(path)
+
+
+@pytest.mark.parametrize(
+    "grid",
+    [
+        np.array(
+            [0.25, 0.25, 0.25, 0.25],
+            dtype=np.float32,
+        ),
+        np.full(
+            (2, 2, 2),
+            0.125,
+            dtype=np.float32,
+        ),
+    ],
+)
+def test_load_heatmap_grids_rejects_non_2d_grid(
+    tmp_path: Path,
+    grid: np.ndarray,
+) -> None:
+    path = tmp_path / "heatmap_grids.npz"
+
+    np.savez(
+        path,
+        **{
+            "1": grid,
+        },
+    )
+
+    with pytest.raises(
+        InvalidDatasetError,
+        match="must be two-dimensional",
+    ):
+        load_heatmap_grids(path)
+
+
+def test_load_heatmap_grids_rejects_too_small_dimensions(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "heatmap_grids.npz"
+
+    grid = np.array(
+        [
+            [0.5, 0.5],
+        ],
+        dtype=np.float32,
+    )
+
+    np.savez(
+        path,
+        **{
+            "1": grid,
+        },
+    )
+
+    with pytest.raises(
+        InvalidDatasetError,
+        match="must both be at least 2",
+    ):
+        load_heatmap_grids(path)
+
+
+def test_load_heatmap_grids_rejects_inconsistent_shapes(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "heatmap_grids.npz"
+
+    first_grid = np.full(
+        (2, 2),
+        0.25,
+        dtype=np.float32,
+    )
+    second_grid = np.full(
+        (2, 3),
+        1.0 / 6.0,
+        dtype=np.float32,
+    )
+
+    np.savez(
+        path,
+        **{
+            "1": first_grid,
+            "2": second_grid,
+        },
+    )
+
+    with pytest.raises(
+        InvalidDatasetError,
+        match="inconsistent grid dimensions",
+    ):
+        load_heatmap_grids(path)
+
+
+@pytest.mark.parametrize(
+    "invalid_value",
+    [
+        np.nan,
+        np.inf,
+    ],
+)
+def test_load_heatmap_grids_rejects_non_finite_values(
+    tmp_path: Path,
+    invalid_value: float,
+) -> None:
+    path = tmp_path / "heatmap_grids.npz"
+
+    grid = np.array(
+        [
+            [invalid_value, 0.2],
+            [0.3, 0.5],
+        ],
+        dtype=np.float32,
+    )
+
+    np.savez(
+        path,
+        **{
+            "1": grid,
+        },
+    )
+
+    with pytest.raises(
+        InvalidDatasetError,
+        match="contains non-finite values",
+    ):
+        load_heatmap_grids(path)
+
+
+def test_load_heatmap_grids_rejects_negative_density(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "heatmap_grids.npz"
+
+    grid = np.array(
+        [
+            [-0.1, 0.4],
+            [0.3, 0.4],
+        ],
+        dtype=np.float32,
+    )
+
+    np.savez(
+        path,
+        **{
+            "1": grid,
+        },
+    )
+
+    with pytest.raises(
+        InvalidDatasetError,
+        match="contains negative density",
+    ):
+        load_heatmap_grids(path)
+
+
+def test_load_heatmap_grids_rejects_non_normalized_grid(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "heatmap_grids.npz"
+
+    grid = np.full(
+        (2, 2),
+        0.2,
+        dtype=np.float32,
+    )
+
+    np.savez(
+        path,
+        **{
+            "1": grid,
+        },
+    )
+
+    with pytest.raises(
+        InvalidDatasetError,
+        match="is not normalized",
+    ):
+        load_heatmap_grids(path)

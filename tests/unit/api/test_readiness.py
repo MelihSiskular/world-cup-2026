@@ -103,6 +103,7 @@ def test_readiness_returns_catalog_runtime_metadata() -> None:
             Path,
             Path,
             Path,
+            Path,
         ]
     ] = []
 
@@ -113,6 +114,7 @@ def test_readiness_returns_catalog_runtime_metadata() -> None:
         similarity: Path,
         heatmap_similarity: Path,
         heatmap_profiles: Path,
+        heatmap_grids: Path,
     ) -> TransferDataCatalog:
         _ = player_tournament_summary
         loader_calls.append(
@@ -121,6 +123,7 @@ def test_readiness_returns_catalog_runtime_metadata() -> None:
                 similarity,
                 heatmap_similarity,
                 heatmap_profiles,
+                heatmap_grids,
             )
         )
 
@@ -160,3 +163,6 @@ def test_readiness_returns_catalog_runtime_metadata() -> None:
     assert _parse_datetime(payload["catalog_loaded_at"]) == expected_catalog_loaded_at
 
     assert len(loader_calls) == 1
+    assert loader_calls[0][-1] == (
+        application.state.api_runtime.dataset_paths.heatmap_grids
+    )

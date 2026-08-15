@@ -42,6 +42,7 @@ def test_api_settings_read_environment_overrides() -> None:
             "WC26_SIMILARITY_PATH": ("/srv/wc26/similarity.csv"),
             "WC26_HEATMAP_SIMILARITY_PATH": ("/srv/wc26/heatmap-similarity.csv"),
             "WC26_HEATMAP_PROFILES_PATH": ("/srv/wc26/heatmap-profiles.csv"),
+            "WC26_HEATMAP_GRIDS_PATH": ("/srv/wc26/heatmap-grids.npz"),
             "WC26_CORS_ORIGINS": ("https://zone14analyst.com,https://app.zone14analyst.com"),
         }
     )
@@ -57,6 +58,7 @@ def test_api_settings_read_environment_overrides() -> None:
     assert settings.dataset_paths.similarity == Path("/srv/wc26/similarity.csv")
     assert settings.dataset_paths.heatmap_similarity == Path("/srv/wc26/heatmap-similarity.csv")
     assert settings.dataset_paths.heatmap_profiles == Path("/srv/wc26/heatmap-profiles.csv")
+    assert settings.dataset_paths.heatmap_grids == Path("/srv/wc26/heatmap-grids.npz")
 
     assert settings.cors_origins == (
         "https://zone14analyst.com",

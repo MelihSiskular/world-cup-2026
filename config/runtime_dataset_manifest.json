@@ -1,7 +1,8 @@
 {
-  "bundle_sha256": "eb7742984b4701a1c0bd050571d2ded0f414b50bea7165328601ce4f85c446ec",
+  "bundle_sha256": "4fc9f780253af6bbcc51cd7e572e92e70cc0466d7dcacd0ed6249a625a7a851f",
   "datasets": [
     {
+      "artifact_type": "csv",
       "column_count": 196,
       "columns": [
         "player_id",
@@ -208,6 +209,7 @@
       "size_bytes": 1277675
     },
     {
+      "artifact_type": "csv",
       "column_count": 236,
       "columns": [
         "player_id",
@@ -454,6 +456,7 @@
       "size_bytes": 1719254
     },
     {
+      "artifact_type": "csv",
       "column_count": 66,
       "columns": [
         "source_player_id",
@@ -530,6 +533,7 @@
       "size_bytes": 7194000
     },
     {
+      "artifact_type": "csv",
       "column_count": 25,
       "columns": [
         "target_player_id",
@@ -565,6 +569,7 @@
       "size_bytes": 8758836
     },
     {
+      "artifact_type": "csv",
       "column_count": 34,
       "columns": [
         "player_id",
@@ -607,7 +612,18 @@
       "row_count": 978,
       "sha256": "48ff64627433ad6bf61c008a3375111fd2da14fb59f47222bc5311814f9d195f",
       "size_bytes": 474146
+    },
+    {
+      "artifact_type": "heatmap_grid_npz",
+      "dtype": "float32",
+      "grid_count": 978,
+      "grid_height": 14,
+      "grid_width": 21,
+      "key": "heatmap_grids",
+      "path": "data/processed/player_heatmaps/player_heatmap_grids.npz",
+      "sha256": "a79302dd670f401dc618498e969eeab2c780c7ce3135dbb6bb7bc64523b656b4",
+      "size_bytes": 1228217
     }
   ],
-  "manifest_version": 1
+  "manifest_version": 2
 }

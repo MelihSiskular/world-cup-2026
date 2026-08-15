@@ -23,6 +23,10 @@ DEFAULT_HEATMAP_PROFILES: Final[Path] = Path(
     "data/processed/player_heatmaps/player_heatmap_profiles.csv"
 )
 
+DEFAULT_HEATMAP_GRIDS: Final[Path] = Path(
+    "data/processed/player_heatmaps/player_heatmap_grids.npz"
+)
+
 DEFAULT_OUTPUT_DIR: Final[Path] = Path("data/processed/transfer_intelligence/replacement_results")
 
 

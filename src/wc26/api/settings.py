@@ -10,6 +10,7 @@ from urllib.parse import urlsplit
 
 from wc26.analytics.transfer_intelligence.config import (
     DEFAULT_FEATURES,
+    DEFAULT_HEATMAP_GRIDS,
     DEFAULT_HEATMAP_PROFILES,
     DEFAULT_HEATMAP_SIMILARITY,
     DEFAULT_PLAYER_TOURNAMENT_SUMMARY,
@@ -32,6 +33,7 @@ class TransferDatasetPaths:
     similarity: Path = DEFAULT_SIMILARITY
     heatmap_similarity: Path = DEFAULT_HEATMAP_SIMILARITY
     heatmap_profiles: Path = DEFAULT_HEATMAP_PROFILES
+    heatmap_grids: Path = DEFAULT_HEATMAP_GRIDS
 
 
 def _require_non_empty(
@@ -363,6 +365,11 @@ class ApiSettings:
                     source,
                     "WC26_HEATMAP_PROFILES_PATH",
                     defaults.dataset_paths.heatmap_profiles,
+                ),
+                heatmap_grids=_read_path(
+                    source,
+                    "WC26_HEATMAP_GRIDS_PATH",
+                    defaults.dataset_paths.heatmap_grids,
                 ),
             ),
             cors_origins=tuple(cors_value.split(",")),

@@ -59,6 +59,7 @@ def _dataset_paths() -> TransferDatasetPaths:
         similarity=Path("runtime/similarity.csv"),
         heatmap_similarity=Path("runtime/heatmap-similarity.csv"),
         heatmap_profiles=Path("runtime/heatmap-profiles.csv"),
+        heatmap_grids=Path("runtime/heatmap-grids.npz"),
     )
 
 
@@ -68,6 +69,7 @@ def test_application_lifespan_loads_catalog_once() -> None:
 
     calls: list[
         tuple[
+            Path,
             Path,
             Path,
             Path,
@@ -82,6 +84,7 @@ def test_application_lifespan_loads_catalog_once() -> None:
         similarity: Path,
         heatmap_similarity: Path,
         heatmap_profiles: Path,
+        heatmap_grids: Path,
     ) -> TransferDataCatalog:
         _ = player_tournament_summary
         calls.append(
@@ -90,6 +93,7 @@ def test_application_lifespan_loads_catalog_once() -> None:
                 similarity,
                 heatmap_similarity,
                 heatmap_profiles,
+                heatmap_grids,
             )
         )
 
@@ -125,6 +129,7 @@ def test_application_lifespan_loads_catalog_once() -> None:
             dataset_paths.similarity,
             dataset_paths.heatmap_similarity,
             dataset_paths.heatmap_profiles,
+            dataset_paths.heatmap_grids,
         )
     ]
 
@@ -200,6 +205,7 @@ def test_player_search_uses_startup_loaded_catalog(
         similarity: Path,
         heatmap_similarity: Path,
         heatmap_profiles: Path,
+        heatmap_grids: Path,
     ) -> TransferDataCatalog:
         _ = player_tournament_summary
         del (
@@ -207,6 +213,7 @@ def test_player_search_uses_startup_loaded_catalog(
             similarity,
             heatmap_similarity,
             heatmap_profiles,
+            heatmap_grids,
         )
 
         return catalog
@@ -314,6 +321,7 @@ def test_catalog_loading_failure_stops_application_startup() -> None:
         similarity: Path,
         heatmap_similarity: Path,
         heatmap_profiles: Path,
+        heatmap_grids: Path,
     ) -> TransferDataCatalog:
         _ = player_tournament_summary
         del (
@@ -321,6 +329,7 @@ def test_catalog_loading_failure_stops_application_startup() -> None:
             similarity,
             heatmap_similarity,
             heatmap_profiles,
+            heatmap_grids,
         )
 
         raise InvalidDatasetError("Runtime catalog could not be loaded.")

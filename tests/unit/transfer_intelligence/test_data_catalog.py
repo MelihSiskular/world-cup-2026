@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -95,6 +97,7 @@ def test_load_transfer_data_catalog_loads_each_dataset_once(
     similarity_path = Path("similarity.csv")
     heatmap_similarity_path = Path("heatmap_similarity.csv")
     heatmap_profiles_path = Path("heatmap_profiles.csv")
+    heatmap_grids_path = Path("heatmap_grids.npz")
     player_tournament_summary_path = Path("player_tournament_summary.csv")
 
     players = pd.DataFrame(
@@ -117,6 +120,13 @@ def test_load_transfer_data_catalog_loads_each_dataset_once(
             "player_id": [978838],
         }
     )
+    heatmap_grids: Mapping[int, np.ndarray] = {
+        978838: np.full(
+            (2, 2),
+            0.25,
+            dtype=np.float32,
+        )
+    }
     player_tournament_summary = pd.DataFrame(
         {
             "player_id": [978838],
@@ -178,6 +188,17 @@ def test_load_transfer_data_catalog_loads_each_dataset_once(
         )
         return heatmap_profiles
 
+    def load_heatmap_grids(
+        path: Path,
+    ) -> Mapping[int, np.ndarray]:
+        calls.append(
+            (
+                "heatmap_grids",
+                path,
+            )
+        )
+        return heatmap_grids
+
     def load_player_tournament_summary(
         path: Path,
     ) -> pd.DataFrame:
@@ -214,6 +235,11 @@ def test_load_transfer_data_catalog_loads_each_dataset_once(
         "load_heatmap_profiles",
         load_heatmap_profiles,
     )
+    monkeypatch.setattr(
+        catalog_module,
+        "load_heatmap_grids",
+        load_heatmap_grids,
+    )
 
     result = catalog_module.load_transfer_data_catalog(
         features=features_path,
@@ -221,15 +247,17 @@ def test_load_transfer_data_catalog_loads_each_dataset_once(
         heatmap_similarity=heatmap_similarity_path,
         heatmap_profiles=heatmap_profiles_path,
         player_tournament_summary=(player_tournament_summary_path),
+        heatmap_grids=heatmap_grids_path,
     )
 
     assert result.players is players
     assert result.similarity is similarity
     assert result.heatmap_similarity is heatmap_similarity
     assert result.heatmap_profiles is heatmap_profiles
+    assert result.heatmap_grids is heatmap_grids
     assert result.player_tournament_summary is player_tournament_summary
 
-    assert len(calls) == 5
+    assert len(calls) == 6
     assert set(calls) == {
         (
             "players",
@@ -250,5 +278,9 @@ def test_load_transfer_data_catalog_loads_each_dataset_once(
         (
             "heatmap_profiles",
             heatmap_profiles_path,
+        ),
+        (
+            "heatmap_grids",
+            heatmap_grids_path,
         ),
     }
