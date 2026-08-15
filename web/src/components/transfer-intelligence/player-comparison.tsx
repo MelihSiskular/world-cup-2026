@@ -7,6 +7,7 @@ import { ApiErrorReference } from "@/components/feedback/api-error-reference";
 import { PlayerImage } from "@/components/players/player-image";
 import {
   getHeatmapGridMaximum,
+  HeatmapDensityLegend,
   HeatmapPitch,
 } from "@/components/transfer-intelligence/heatmap-pitch";
 import { PlayerComparisonSkeleton } from "@/components/transfer-intelligence/player-comparison-skeleton";
@@ -473,7 +474,7 @@ export function PlayerComparison({
         ))}
       </section>
 
-      <section className="grid min-w-0 gap-6 xl:grid-cols-2">
+      <section className="grid min-w-0 gap-6 md:grid-cols-2">
         <RoleCompatibilityPanel target={target} candidate={candidate} />
 
         <article className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
@@ -576,8 +577,7 @@ export function PlayerComparison({
 
               <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
                 Compare where both players actually occupied the pitch during
-                the tournament. Both pitches use the same density scale so
-                visual intensity is directly comparable.
+                the tournament using measured heatmap evidence.
               </p>
             </div>
 
@@ -634,7 +634,25 @@ export function PlayerComparison({
             </div>
           ) : heatmapComparison.data ? (
             <>
-              <div className="grid min-w-0 gap-5 xl:grid-cols-2">
+              <div className="mb-5 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-surface-secondary px-4 py-3 sm:px-5">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-foreground">
+                    Relative tournament occupation density
+                  </p>
+
+                  <p className="mt-1 max-w-3xl text-[11px] leading-5 text-muted">
+                    Both pitches use the same shared density scale. Visual
+                    intensity reflects observed tournament heatmap occupation,
+                    not positional probability.
+                  </p>
+                </div>
+
+                <div className="shrink-0">
+                  <HeatmapDensityLegend />
+                </div>
+              </div>
+
+              <div className="grid min-w-0 gap-5 md:grid-cols-2">
                 <article className="min-w-0">
                   <div className="mb-3 flex items-center justify-between gap-3 px-1">
                     <div>
@@ -651,6 +669,7 @@ export function PlayerComparison({
                   <HeatmapPitch
                     player={heatmapComparison.data.target}
                     scaleMax={sharedHeatmapMaximum}
+                    showDensityLegend={false}
                   />
                 </article>
 
@@ -670,11 +689,12 @@ export function PlayerComparison({
                   <HeatmapPitch
                     player={heatmapComparison.data.candidate}
                     scaleMax={sharedHeatmapMaximum}
+                    showDensityLegend={false}
                   />
                 </article>
               </div>
 
-              <dl className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              <dl className="mt-6 grid gap-3 sm:grid-cols-2 md:grid-cols-3">
                 <HeatmapEvidenceMetric
                   label="Measured similarity"
                   value={formatProfilePercentage(

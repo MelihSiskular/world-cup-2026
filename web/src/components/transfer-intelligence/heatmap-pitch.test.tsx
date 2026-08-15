@@ -230,6 +230,42 @@ describe(
     );
 
     it(
+  "can hide density guidance for shared comparison layouts",
+  () => {
+    render(
+      <HeatmapPitch
+        player={
+          createPlayer()
+        }
+        showDensityLegend={false}
+      />,
+    );
+
+    expect(
+      screen.queryByText(
+        "Relative tournament occupation density",
+      ),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByLabelText(
+        "Relative occupation density legend",
+      ),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByRole(
+        "img",
+        {
+          name:
+            "Tournament heatmap for Michael Olise",
+        },
+      ),
+    ).toBeInTheDocument();
+  },
+);
+
+    it(
       "does not render a malformed available grid",
       () => {
         render(

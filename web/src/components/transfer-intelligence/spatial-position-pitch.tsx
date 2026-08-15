@@ -7,36 +7,23 @@ type SpatialPitchPlayer = Readonly<{
   yStd?: number | null;
 }>;
 
-type SpatialPositionPitchProps =
-  Readonly<{
-    target: SpatialPitchPlayer;
-    candidate: SpatialPitchPlayer;
-  }>;
+type SpatialPositionPitchProps = Readonly<{
+  target: SpatialPitchPlayer;
+  candidate: SpatialPitchPlayer;
+}>;
 
 const PITCH_LENGTH = 105;
 const PITCH_WIDTH = 68;
 
-function clampCoordinate(
-  value: number,
-): number {
-  return Math.min(
-    100,
-    Math.max(0, value),
-  );
+function clampCoordinate(value: number): number {
+  return Math.min(100, Math.max(0, value));
 }
 
-function projectX(
-  value: number,
-): number {
-  return (
-    (clampCoordinate(value) / 100) *
-    PITCH_LENGTH
-  );
+function projectX(value: number): number {
+  return (clampCoordinate(value) / 100) * PITCH_LENGTH;
 }
 
-function projectY(
-  value: number,
-): number {
+function projectY(value: number): number {
   /*
    * Analytical coordinates use an
    * origin compatible with the existing
@@ -45,16 +32,10 @@ function projectY(
    * SVG increases Y downwards, so the
    * display coordinate is inverted.
    */
-  return (
-    PITCH_WIDTH -
-    (clampCoordinate(value) / 100) *
-      PITCH_WIDTH
-  );
+  return PITCH_WIDTH - (clampCoordinate(value) / 100) * PITCH_WIDTH;
 }
 
-function hasPosition(
-  player: SpatialPitchPlayer,
-): player is SpatialPitchPlayer &
+function hasPosition(player: SpatialPitchPlayer): player is SpatialPitchPlayer &
   Readonly<{
     meanX: number;
     meanY: number;
@@ -67,38 +48,20 @@ function hasPosition(
   );
 }
 
-function projectSpreadX(
-  value: number | null | undefined,
-): number {
-  if (
-    typeof value !== "number" ||
-    !Number.isFinite(value) ||
-    value <= 0
-  ) {
+function projectSpreadX(value: number | null | undefined): number {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) {
     return 0;
   }
 
-  return (
-    (value / 100) *
-    PITCH_LENGTH
-  );
+  return (value / 100) * PITCH_LENGTH;
 }
 
-function projectSpreadY(
-  value: number | null | undefined,
-): number {
-  if (
-    typeof value !== "number" ||
-    !Number.isFinite(value) ||
-    value <= 0
-  ) {
+function projectSpreadY(value: number | null | undefined): number {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) {
     return 0;
   }
 
-  return (
-    (value / 100) *
-    PITCH_WIDTH
-  );
+  return (value / 100) * PITCH_WIDTH;
 }
 
 function PlayerPosition({
@@ -115,11 +78,9 @@ function PlayerPosition({
   const x = projectX(player.meanX);
   const y = projectY(player.meanY);
 
-  const radiusX =
-    projectSpreadX(player.xStd);
+  const radiusX = projectSpreadX(player.xStd);
 
-  const radiusY =
-    projectSpreadY(player.yStd);
+  const radiusY = projectSpreadY(player.yStd);
 
   const markerClassName =
     kind === "target"
@@ -136,15 +97,11 @@ function PlayerPosition({
       ? "fill-white text-[3.2px] font-bold"
       : "fill-brand-dark text-[3.2px] font-bold";
 
-  const label =
-    kind === "target" ? "T" : "C";
+  const label = kind === "target" ? "T" : "C";
 
   return (
-    <g
-      data-testid={`${kind}-spatial-position`}
-    >
-      {radiusX > 0 &&
-      radiusY > 0 ? (
+    <g data-testid={`${kind}-spatial-position`}>
+      {radiusX > 0 && radiusY > 0 ? (
         <ellipse
           cx={x}
           cy={y}
@@ -152,28 +109,16 @@ function PlayerPosition({
           ry={radiusY}
           className={spreadClassName}
           strokeWidth="0.55"
-          strokeDasharray={
-            kind === "candidate"
-              ? "2.2 1.4"
-              : undefined
-          }
+          strokeDasharray={kind === "candidate" ? "2.2 1.4" : undefined}
         />
       ) : null}
 
       <circle
         cx={x}
         cy={y}
-        r={
-          kind === "target"
-            ? "3.2"
-            : "3.8"
-        }
+        r={kind === "target" ? "3.2" : "3.8"}
         className={markerClassName}
-        strokeWidth={
-          kind === "target"
-            ? "0.8"
-            : "1.15"
-        }
+        strokeWidth={kind === "target" ? "0.8" : "1.15"}
       />
 
       <text
@@ -187,9 +132,7 @@ function PlayerPosition({
       </text>
 
       <title>
-        {player.playerName}: mean position
-        {" "}
-        ({player.meanX.toFixed(1)},{" "}
+        {player.playerName}: mean position ({player.meanX.toFixed(1)},{" "}
         {player.meanY.toFixed(1)})
       </title>
     </g>
@@ -218,11 +161,7 @@ function PitchLines() {
         y2={PITCH_WIDTH - 0.5}
       />
 
-      <circle
-        cx={PITCH_LENGTH / 2}
-        cy={PITCH_WIDTH / 2}
-        r="9.15"
-      />
+      <circle cx={PITCH_LENGTH / 2} cy={PITCH_WIDTH / 2} r="9.15" />
 
       <circle
         cx={PITCH_LENGTH / 2}
@@ -231,12 +170,7 @@ function PitchLines() {
         className="fill-border"
       />
 
-      <rect
-        x="0.5"
-        y={(PITCH_WIDTH - 40.32) / 2}
-        width="16.5"
-        height="40.32"
-      />
+      <rect x="0.5" y={(PITCH_WIDTH - 40.32) / 2} width="16.5" height="40.32" />
 
       <rect
         x={PITCH_LENGTH - 17}
@@ -245,12 +179,7 @@ function PitchLines() {
         height="40.32"
       />
 
-      <rect
-        x="0.5"
-        y={(PITCH_WIDTH - 18.32) / 2}
-        width="5.5"
-        height="18.32"
-      />
+      <rect x="0.5" y={(PITCH_WIDTH - 18.32) / 2} width="5.5" height="18.32" />
 
       <rect
         x={PITCH_LENGTH - 6}
@@ -259,12 +188,7 @@ function PitchLines() {
         height="18.32"
       />
 
-      <circle
-        cx="11"
-        cy={PITCH_WIDTH / 2}
-        r="0.7"
-        className="fill-border"
-      />
+      <circle cx="11" cy={PITCH_WIDTH / 2} r="0.7" className="fill-border" />
 
       <circle
         cx={PITCH_LENGTH - 11}
@@ -280,20 +204,14 @@ export function SpatialPositionPitch({
   target,
   candidate,
 }: SpatialPositionPitchProps) {
-  const hasTarget =
-    hasPosition(target);
+  const hasTarget = hasPosition(target);
 
-  const hasCandidate =
-    hasPosition(candidate);
+  const hasCandidate = hasPosition(candidate);
 
-  if (
-    !hasTarget &&
-    !hasCandidate
-  ) {
+  if (!hasTarget && !hasCandidate) {
     return (
       <div className="flex min-h-64 items-center justify-center rounded-2xl border border-dashed border-border bg-page px-6 text-center text-sm leading-6 text-muted">
-        Positional coordinates are not
-        available for either player.
+        Positional coordinates are not available for either player.
       </div>
     );
   }
@@ -302,9 +220,7 @@ export function SpatialPositionPitch({
     <div className="min-w-0">
       <div className="overflow-hidden rounded-2xl border border-border bg-page p-3 sm:p-4">
         <div className="mb-3 flex items-center justify-between gap-4 px-1">
-          <span className="text-xs font-medium text-muted">
-            Defensive
-          </span>
+          <span className="text-xs font-medium text-muted">Defensive</span>
 
           <span className="text-xs font-semibold text-brand">
             Attacking direction →
@@ -326,15 +242,9 @@ export function SpatialPositionPitch({
 
           <PitchLines />
 
-          <PlayerPosition
-            player={target}
-            kind="target"
-          />
+          <PlayerPosition player={target} kind="target" />
 
-          <PlayerPosition
-            player={candidate}
-            kind="candidate"
-          />
+          <PlayerPosition player={candidate} kind="candidate" />
         </svg>
       </div>
 
@@ -354,8 +264,7 @@ export function SpatialPositionPitch({
         </span>
 
         <span className="text-muted">
-          Ellipses show positional
-          dispersion when available.
+          Ellipses show positional dispersion when available.
         </span>
       </div>
     </div>
