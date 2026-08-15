@@ -265,6 +265,98 @@
         }
       }
     },
+    "/api/v1/transfer-intelligence/heatmap-comparison/{target_player_id}/{candidate_player_id}": {
+      "get": {
+        "tags": [
+          "transfer-intelligence"
+        ],
+        "summary": "Compare measured player heatmaps",
+        "description": "Return measured tournament heatmap evidence for two players.",
+        "operationId": "compare_player_heatmaps_api_v1_transfer_intelligence_heatmap_comparison__target_player_id___candidate_player_id__get",
+        "parameters": [
+          {
+            "name": "target_player_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Target Player Id"
+            }
+          },
+          {
+            "name": "candidate_player_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Candidate Player Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HeatmapComparisonResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The heatmap comparison request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the requested players was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required heatmap analytics data is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Heatmap comparison failed unexpectedly.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/transfer-intelligence/analyze": {
       "post": {
         "tags": [
@@ -1260,6 +1352,325 @@
         ],
         "title": "HealthResponse",
         "description": "Response returned by the service health endpoint."
+      },
+      "HeatmapComparisonResponse": {
+        "properties": {
+          "target": {
+            "$ref": "#/components/schemas/HeatmapPlayerResponse"
+          },
+          "candidate": {
+            "$ref": "#/components/schemas/HeatmapPlayerResponse"
+          },
+          "similarity": {
+            "$ref": "#/components/schemas/HeatmapSimilarityResponse"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "target",
+          "candidate",
+          "similarity"
+        ],
+        "title": "HeatmapComparisonResponse",
+        "description": "Target-to-candidate tournament heatmap comparison."
+      },
+      "HeatmapPlayerResponse": {
+        "properties": {
+          "player_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Player Id"
+          },
+          "player_name": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Player Name"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "grid_width": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 2.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid Width"
+          },
+          "grid_height": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 2.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid Height"
+          },
+          "grid": {
+            "anyOf": [
+              {
+                "items": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid"
+          },
+          "matches_with_heatmap": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matches With Heatmap"
+          },
+          "heatmap_point_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heatmap Point Count"
+          },
+          "weighted_mean_x": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weighted Mean X"
+          },
+          "weighted_mean_y": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weighted Mean Y"
+          },
+          "peak_cell_x": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Cell X"
+          },
+          "peak_cell_y": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Cell Y"
+          },
+          "heatmap_entropy": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heatmap Entropy"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "player_id",
+          "player_name",
+          "available"
+        ],
+        "title": "HeatmapPlayerResponse",
+        "description": "Measured tournament heatmap evidence for one player."
+      },
+      "HeatmapSimilarityResponse": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "heatmap_similarity_score_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heatmap Similarity Score Pct"
+          },
+          "heatmap_cosine_similarity_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heatmap Cosine Similarity Pct"
+          },
+          "occupation_overlap_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occupation Overlap Pct"
+          },
+          "peak_zone_similarity_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Zone Similarity Pct"
+          },
+          "peak_zone_distance": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Zone Distance"
+          },
+          "entropy_similarity_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entropy Similarity Pct"
+          },
+          "target_matches_with_heatmap": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Matches With Heatmap"
+          },
+          "candidate_matches_with_heatmap": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Matches With Heatmap"
+          },
+          "target_heatmap_points": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Heatmap Points"
+          },
+          "candidate_heatmap_points": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Heatmap Points"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "available"
+        ],
+        "title": "HeatmapSimilarityResponse",
+        "description": "Measured pairwise heatmap similarity evidence."
       },
       "ImmediateTransferModeResponse": {
         "properties": {

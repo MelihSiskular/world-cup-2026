@@ -64,6 +64,26 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/api/v1/transfer-intelligence/heatmap-comparison/{target_player_id}/{candidate_player_id}": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /**
+         * Compare measured player heatmaps
+         * @description Return measured tournament heatmap evidence for two players.
+         */
+        readonly get: operations["compare_player_heatmaps_api_v1_transfer_intelligence_heatmap_comparison__target_player_id___candidate_player_id__get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/deployment": {
         readonly parameters: {
             readonly query?: never;
@@ -341,6 +361,75 @@ export interface components {
             readonly uptime_seconds: number;
             /** Version */
             readonly version: string;
+        };
+        /**
+         * HeatmapComparisonResponse
+         * @description Target-to-candidate tournament heatmap comparison.
+         */
+        readonly HeatmapComparisonResponse: {
+            readonly candidate: components["schemas"]["HeatmapPlayerResponse"];
+            readonly similarity: components["schemas"]["HeatmapSimilarityResponse"];
+            readonly target: components["schemas"]["HeatmapPlayerResponse"];
+        };
+        /**
+         * HeatmapPlayerResponse
+         * @description Measured tournament heatmap evidence for one player.
+         */
+        readonly HeatmapPlayerResponse: {
+            /** Available */
+            readonly available: boolean;
+            /** Grid */
+            readonly grid?: readonly (readonly number[])[] | null;
+            /** Grid Height */
+            readonly grid_height?: number | null;
+            /** Grid Width */
+            readonly grid_width?: number | null;
+            /** Heatmap Entropy */
+            readonly heatmap_entropy?: number | null;
+            /** Heatmap Point Count */
+            readonly heatmap_point_count?: number | null;
+            /** Matches With Heatmap */
+            readonly matches_with_heatmap?: number | null;
+            /** Peak Cell X */
+            readonly peak_cell_x?: number | null;
+            /** Peak Cell Y */
+            readonly peak_cell_y?: number | null;
+            /** Player Id */
+            readonly player_id: number;
+            /** Player Name */
+            readonly player_name: string;
+            /** Weighted Mean X */
+            readonly weighted_mean_x?: number | null;
+            /** Weighted Mean Y */
+            readonly weighted_mean_y?: number | null;
+        };
+        /**
+         * HeatmapSimilarityResponse
+         * @description Measured pairwise heatmap similarity evidence.
+         */
+        readonly HeatmapSimilarityResponse: {
+            /** Available */
+            readonly available: boolean;
+            /** Candidate Heatmap Points */
+            readonly candidate_heatmap_points?: number | null;
+            /** Candidate Matches With Heatmap */
+            readonly candidate_matches_with_heatmap?: number | null;
+            /** Entropy Similarity Pct */
+            readonly entropy_similarity_pct?: number | null;
+            /** Heatmap Cosine Similarity Pct */
+            readonly heatmap_cosine_similarity_pct?: number | null;
+            /** Heatmap Similarity Score Pct */
+            readonly heatmap_similarity_score_pct?: number | null;
+            /** Occupation Overlap Pct */
+            readonly occupation_overlap_pct?: number | null;
+            /** Peak Zone Distance */
+            readonly peak_zone_distance?: number | null;
+            /** Peak Zone Similarity Pct */
+            readonly peak_zone_similarity_pct?: number | null;
+            /** Target Heatmap Points */
+            readonly target_heatmap_points?: number | null;
+            /** Target Matches With Heatmap */
+            readonly target_matches_with_heatmap?: number | null;
         };
         /** HTTPValidationError */
         readonly HTTPValidationError: {
@@ -1472,6 +1561,74 @@ export interface operations {
                 };
             };
             /** @description A required analytics dataset is missing or invalid. */
+            readonly 503: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+        };
+    };
+    readonly compare_player_heatmaps_api_v1_transfer_intelligence_heatmap_comparison__target_player_id___candidate_player_id__get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly candidate_player_id: number;
+                readonly target_player_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HeatmapComparisonResponse"];
+                };
+            };
+            /** @description The heatmap comparison request is invalid. */
+            readonly 400: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description One of the requested players was not found. */
+            readonly 404: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Heatmap comparison failed unexpectedly. */
+            readonly 500: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description Required heatmap analytics data is unavailable. */
             readonly 503: {
                 headers: {
                     readonly [name: string]: unknown;
