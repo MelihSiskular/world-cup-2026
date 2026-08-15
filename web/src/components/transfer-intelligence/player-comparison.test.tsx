@@ -72,6 +72,18 @@ function createResponse(
               72.5,
             spatial_similarity_pct:
               61.2,
+            weighted_mean_x:
+              61.8,
+            weighted_mean_y:
+              43.2,
+            weighted_x_std:
+              6.4,
+            weighted_y_std:
+              7.1,
+            lateral_profile_similarity_pct:
+              81.4,
+            vertical_profile_similarity_pct:
+              76.2,
             heatmap_similarity_score_pct:
               88.4,
             role_fit_pct:
@@ -113,6 +125,24 @@ function createResponse(
         "Central Half-Space Creator",
       archetype:
         "Wide Creator",
+      spatial_role:
+        "Advanced Central Zone",
+      lateral_profile:
+        "Central Lane",
+      vertical_profile:
+        "Advanced Middle Third",
+      mobility_profile:
+        "Positionally Stable",
+      role_confidence_pct:
+        87.2,
+      weighted_mean_x:
+        58.7,
+      weighted_mean_y:
+        49.1,
+      weighted_x_std:
+        5.8,
+      weighted_y_std:
+        6.2,
     },
 
     modes: {
@@ -229,26 +259,43 @@ describe(
           ),
         ).toBeInTheDocument();
 
+        const comparisonIndicators =
+          screen.getByRole(
+            "region",
+            {
+              name:
+                "Comparison indicators",
+            },
+          );
+
         expect(
-          screen.getByText(
+          within(
+            comparisonIndicators,
+          ).getByText(
             "Spatial similarity",
           ),
         ).toBeInTheDocument();
 
         expect(
-          screen.getByText(
+          within(
+            comparisonIndicators,
+          ).getByText(
             "61.2%",
           ),
         ).toBeInTheDocument();
 
         expect(
-          screen.getByText(
+          within(
+            comparisonIndicators,
+          ).getByText(
             "Heatmap similarity",
           ),
         ).toBeInTheDocument();
 
         expect(
-          screen.getByText(
+          within(
+            comparisonIndicators,
+          ).getByText(
             "88.4%",
           ),
         ).toBeInTheDocument();
@@ -372,7 +419,82 @@ describe(
       },
     );
 
-        it(
+    it(
+      "renders tactical and spatial visual comparison",
+      async () => {
+        runTransferAnalysisMock
+          .mockResolvedValue(
+            createResponse(
+              true,
+            ),
+          );
+
+        renderWithQueryClient(
+          <PlayerComparison
+            targetPlayerId={978838}
+            candidatePlayerId={12345}
+            mode="immediate"
+            values={{
+              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+            }}
+          />,
+        );
+
+        expect(
+          await screen.findByText(
+            "Tactical role alignment",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByRole(
+            "img",
+            {
+              name:
+                "Spatial position comparison for Michael Olise and Test Candidate",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Lateral similarity",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "81.4%",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Vertical similarity",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "76.2%",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByTestId(
+            "target-spatial-position",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByTestId(
+            "candidate-spatial-position",
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
+    it(
       "renders missing candidate identity evidence explicitly",
       async () => {
         runTransferAnalysisMock

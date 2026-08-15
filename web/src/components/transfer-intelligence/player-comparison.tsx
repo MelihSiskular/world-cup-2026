@@ -9,8 +9,17 @@ import {
   ApiErrorReference,
 } from "@/components/feedback/api-error-reference";
 import {
+  PlayerImage,
+} from "@/components/players/player-image";
+import {
   PlayerComparisonSkeleton,
 } from "@/components/transfer-intelligence/player-comparison-skeleton";
+import {
+  RoleCompatibilityPanel,
+} from "@/components/transfer-intelligence/role-compatibility-panel";
+import {
+  SpatialPositionPitch,
+} from "@/components/transfer-intelligence/spatial-position-pitch";
 import {
   isBrowserApiError,
 } from "@/lib/api/browser-client";
@@ -121,21 +130,32 @@ function PlayerIdentityCard({
         </span>
       </div>
 
-      <h2 className="mt-5 break-words text-3xl font-bold tracking-[-0.04em]">
-        {player.player_name}
-      </h2>
+      <div className="mt-5 flex min-w-0 items-start gap-4">
+        <PlayerImage
+          playerId={player.player_id}
+          playerName={player.player_name}
+          size="card"
+          className="shrink-0 bg-page"
+        />
 
-      <p className="mt-2 break-words text-sm font-medium text-muted">
-        {player.national_team_name ??
-          player.country_name ??
-          "National team unavailable"}
-      </p>
+        <div className="min-w-0 flex-1">
+          <h2 className="break-words text-3xl font-bold tracking-[-0.04em]">
+            {player.player_name}
+          </h2>
 
-      <p className="mt-4 break-words font-semibold text-brand">
-        {player.final_role ??
-          player.archetype ??
-          "Role unavailable"}
-      </p>
+          <p className="mt-2 break-words text-sm font-medium text-muted">
+            {player.national_team_name ??
+              player.country_name ??
+              "National team unavailable"}
+          </p>
+
+          <p className="mt-3 break-words font-semibold text-brand">
+            {player.final_role ??
+              player.archetype ??
+              "Role unavailable"}
+          </p>
+        </div>
+      </div>
 
       <dl className="mt-7 grid grid-cols-2 gap-4 rounded-2xl bg-surface-secondary p-5 text-sm">
         <div>
@@ -420,48 +440,6 @@ export function PlayerComparison({
 
   const comparisonRows = [
     {
-      label: "Final role",
-      target:
-        target.final_role,
-      candidate:
-        candidate.final_role,
-    },
-    {
-      label: "Archetype",
-      target:
-        target.archetype,
-      candidate:
-        candidate.archetype,
-    },
-    {
-      label: "Spatial role",
-      target:
-        target.spatial_role,
-      candidate:
-        candidate.spatial_role,
-    },
-    {
-      label: "Lateral profile",
-      target:
-        target.lateral_profile,
-      candidate:
-        candidate.lateral_profile,
-    },
-    {
-      label: "Vertical profile",
-      target:
-        target.vertical_profile,
-      candidate:
-        candidate.vertical_profile,
-    },
-    {
-      label: "Mobility profile",
-      target:
-        target.mobility_profile,
-      candidate:
-        candidate.mobility_profile,
-    },
-    {
       label: "Weighted rating",
       target:
         formatProfileNumber(
@@ -489,17 +467,6 @@ export function PlayerComparison({
       candidate:
         formatProfilePercentage(
           candidate.player_quality_score,
-        ),
-    },
-    {
-      label: "Role confidence",
-      target:
-        formatProfilePercentage(
-          target.role_confidence_pct,
-        ),
-      candidate:
-        formatProfilePercentage(
-          candidate.role_confidence_pct,
         ),
     },
     {
@@ -601,14 +568,128 @@ export function PlayerComparison({
         )}
       </section>
 
+      <section className="grid min-w-0 gap-6 xl:grid-cols-2">
+        <RoleCompatibilityPanel
+          target={target}
+          candidate={candidate}
+        />
+
+        <article className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+          <div className="border-b border-border p-5 sm:p-6">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
+                  Spatial profile
+                </p>
+
+                <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
+                  Position and occupation context
+                </h2>
+
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+                  Compare weighted tournament
+                  positions and positional
+                  dispersion on the same pitch.
+                </p>
+              </div>
+
+              <div className="min-w-32 rounded-2xl border border-brand/15 bg-surface-secondary px-4 py-3 text-right">
+                <p className="text-xs font-medium text-muted">
+                  Spatial similarity
+                </p>
+
+                <p className="mt-1 text-3xl font-bold tracking-[-0.04em] text-brand-dark">
+                  {formatProfilePercentage(
+                    candidate
+                      .spatial_similarity_pct,
+                  )}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-5 sm:p-6">
+            <SpatialPositionPitch
+              target={{
+                playerId:
+                  target.player_id,
+                playerName:
+                  target.player_name,
+                meanX:
+                  target.weighted_mean_x,
+                meanY:
+                  target.weighted_mean_y,
+                xStd:
+                  target.weighted_x_std,
+                yStd:
+                  target.weighted_y_std,
+              }}
+              candidate={{
+                playerId:
+                  candidate.player_id,
+                playerName:
+                  candidate.player_name,
+                meanX:
+                  candidate.weighted_mean_x,
+                meanY:
+                  candidate.weighted_mean_y,
+                xStd:
+                  candidate.weighted_x_std,
+                yStd:
+                  candidate.weighted_y_std,
+              }}
+            />
+
+            <dl className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-xl border border-border bg-page p-4">
+                <dt className="text-xs text-muted">
+                  Lateral similarity
+                </dt>
+
+                <dd className="mt-2 text-lg font-bold">
+                  {formatProfilePercentage(
+                    candidate
+                      .lateral_profile_similarity_pct,
+                  )}
+                </dd>
+              </div>
+
+              <div className="rounded-xl border border-border bg-page p-4">
+                <dt className="text-xs text-muted">
+                  Vertical similarity
+                </dt>
+
+                <dd className="mt-2 text-lg font-bold">
+                  {formatProfilePercentage(
+                    candidate
+                      .vertical_profile_similarity_pct,
+                  )}
+                </dd>
+              </div>
+            </dl>
+
+            <p className="mt-4 text-xs leading-5 text-muted">
+              Pitch markers represent weighted
+              mean tournament position. Ellipses
+              represent positional dispersion on
+              each axis. Overall spatial
+              similarity also considers pitch
+              thirds and lane occupation, so it
+              is not simply the distance between
+              the two markers.
+            </p>
+          </div>
+        </article>
+      </section>
+
       <section className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
         <div className="border-b border-border p-6 sm:p-7">
           <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-            Side-by-side profile
+            Performance context
           </p>
 
           <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
-            Tactical and performance context
+            Quality, reliability and market context
           </h2>
         </div>
 
