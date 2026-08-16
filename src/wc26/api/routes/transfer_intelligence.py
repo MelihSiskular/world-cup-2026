@@ -19,13 +19,16 @@ from wc26.analytics.transfer_intelligence.errors import (
 )
 from wc26.analytics.transfer_intelligence.models import (
     HeatmapComparisonRequest,
+    RadarComparisonRequest,
     TransferAnalysisRequest,
 )
 from wc26.api.dependencies import (
     HeatmapComparisonRunner,
+    RadarComparisonRunner,
     TransferAnalysisRunner,
     TransferDatasetPaths,
     get_heatmap_comparison_runner,
+    get_radar_comparison_runner,
     get_transfer_analysis_runner,
     get_transfer_dataset_paths,
 )
@@ -33,6 +36,7 @@ from wc26.api.errors import TransferAnalysisExecutionError
 from wc26.api.schemas.errors import ApiErrorResponse
 from wc26.api.schemas.transfer_intelligence import (
     HeatmapComparisonResponse,
+    RadarComparisonResponse,
     TransferAnalysisPayload,
     TransferAnalysisResponse,
 )
@@ -95,6 +99,63 @@ def compare_player_heatmaps(
     )
 
     return HeatmapComparisonResponse.model_validate(
+        result.to_dict()
+    )
+
+
+
+@router.get(
+    "/radar-comparison/{target_player_id}/{candidate_player_id}",
+    response_model=RadarComparisonResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Compare position-relative player style profiles",
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "model": ApiErrorResponse,
+            "description": (
+                "The radar comparison request is invalid."
+            ),
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "model": ApiErrorResponse,
+            "description": (
+                "One of the requested players was not found."
+            ),
+        },
+        status.HTTP_503_SERVICE_UNAVAILABLE: {
+            "model": ApiErrorResponse,
+            "description": (
+                "Required radar analytics data is unavailable."
+            ),
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ApiErrorResponse,
+            "description": (
+                "Radar comparison failed unexpectedly."
+            ),
+        },
+    },
+)
+def compare_player_radars(
+    target_player_id: int,
+    candidate_player_id: int,
+    comparison_runner: Annotated[
+        RadarComparisonRunner,
+        Depends(get_radar_comparison_runner),
+    ],
+) -> RadarComparisonResponse:
+    """Return position-relative playing-style profiles for two players."""
+
+    request = RadarComparisonRequest(
+        target_player_id=target_player_id,
+        candidate_player_id=candidate_player_id,
+    )
+
+    result = comparison_runner(
+        request
+    )
+
+    return RadarComparisonResponse.model_validate(
         result.to_dict()
     )
 

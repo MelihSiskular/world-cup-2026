@@ -16,6 +16,11 @@ from wc26.analytics.transfer_intelligence.models import (
     HeatmapPlayerResult,
     HeatmapSimilarityResult,
     JsonObject,
+    RadarComparisonMetadataResult,
+    RadarComparisonRequest,
+    RadarComparisonResult,
+    RadarDimensionResult,
+    RadarPlayerResult,
     TransferAnalysisRequest,
     TransferAnalysisResult,
     TransferModeResult,
@@ -24,9 +29,11 @@ from wc26.analytics.transfer_intelligence.models import (
 from wc26.api import create_app
 from wc26.api.dependencies import (
     HeatmapComparisonRunner,
+    RadarComparisonRunner,
     TransferAnalysisRunner,
     TransferDatasetPaths,
     get_heatmap_comparison_runner,
+    get_radar_comparison_runner,
     get_transfer_analysis_runner,
     get_transfer_dataset_paths,
 )
@@ -786,3 +793,247 @@ def test_heatmap_comparison_endpoint_preserves_invalid_request_error() -> None:
         )
 
     assert response.status_code == 400
+
+
+
+def _build_radar_comparison_result() -> RadarComparisonResult:
+    """Return deterministic position-relative radar comparison evidence."""
+
+    target_dimensions = (
+        RadarDimensionResult(
+            key="creativity",
+            label="Creativity",
+            raw_score=4.516,
+            percentile=100.0,
+            peer_count=216,
+        ),
+        RadarDimensionResult(
+            key="progression",
+            label="Progression",
+            raw_score=2.870,
+            percentile=98.6,
+            peer_count=216,
+        ),
+        RadarDimensionResult(
+            key="dribbling",
+            label="Dribbling",
+            raw_score=1.626,
+            percentile=94.0,
+            peer_count=216,
+        ),
+    )
+
+    candidate_dimensions = (
+        RadarDimensionResult(
+            key="creativity",
+            label="Creativity",
+            raw_score=1.604,
+            percentile=91.7,
+            peer_count=216,
+        ),
+        RadarDimensionResult(
+            key="progression",
+            label="Progression",
+            raw_score=0.115,
+            percentile=60.6,
+            peer_count=216,
+        ),
+        RadarDimensionResult(
+            key="dribbling",
+            label="Dribbling",
+            raw_score=0.621,
+            percentile=79.2,
+            peer_count=216,
+        ),
+    )
+
+    return RadarComparisonResult(
+        target=RadarPlayerResult(
+            player_id=10,
+            player_name="Michael Olise",
+            position="M",
+            available=True,
+            peer_count=216,
+            dimensions=target_dimensions,
+        ),
+        candidate=RadarPlayerResult(
+            player_id=20,
+            player_name="Dani Olmo",
+            position="M",
+            available=True,
+            peer_count=216,
+            dimensions=candidate_dimensions,
+        ),
+        comparison=RadarComparisonMetadataResult(
+            same_position=True,
+            overlay_available=True,
+            reason=None,
+        ),
+    )
+
+
+def test_radar_comparison_route_is_in_openapi_schema() -> None:
+    application = create_app()
+    schema = application.openapi()
+
+    route = (
+        "/api/v1/transfer-intelligence/"
+        "radar-comparison/"
+        "{target_player_id}/{candidate_player_id}"
+    )
+
+    operation = schema["paths"][route]["get"]
+
+    assert "400" in operation["responses"]
+    assert "404" in operation["responses"]
+    assert "500" in operation["responses"]
+    assert "503" in operation["responses"]
+
+    schemas = schema["components"]["schemas"]
+
+    response_schema = schemas[
+        "RadarComparisonResponse"
+    ]
+
+    assert response_schema["properties"]["target"]["$ref"].endswith(
+        "/RadarPlayerResponse"
+    )
+
+    assert response_schema["properties"]["candidate"]["$ref"].endswith(
+        "/RadarPlayerResponse"
+    )
+
+    assert response_schema["properties"]["comparison"]["$ref"].endswith(
+        "/RadarComparisonMetadataResponse"
+    )
+
+    player_schema = schemas[
+        "RadarPlayerResponse"
+    ]
+
+    dimension_reference = (
+        player_schema[
+            "properties"
+        ][
+            "dimensions"
+        ][
+            "items"
+        ][
+            "$ref"
+        ]
+    )
+
+    assert dimension_reference.endswith(
+        "/RadarDimensionResponse"
+    )
+
+    dimension_properties = schemas[
+        "RadarDimensionResponse"
+    ]["properties"]
+
+    assert "raw_score" in dimension_properties
+    assert "percentile" in dimension_properties
+    assert "peer_count" in dimension_properties
+
+
+def test_radar_comparison_endpoint_delegates_player_ids() -> None:
+    application = create_app()
+
+    captured_requests: list[
+        RadarComparisonRequest
+    ] = []
+
+    expected = _build_radar_comparison_result()
+
+    def fake_runner(
+        request: RadarComparisonRequest,
+    ) -> RadarComparisonResult:
+        captured_requests.append(
+            request
+        )
+
+        return expected
+
+    def override_runner() -> RadarComparisonRunner:
+        return fake_runner
+
+    application.dependency_overrides[
+        get_radar_comparison_runner
+    ] = override_runner
+
+    with TestClient(application) as client:
+        response = client.get(
+            "/api/v1/transfer-intelligence/"
+            "radar-comparison/10/20"
+        )
+
+    assert response.status_code == 200
+
+    assert captured_requests == [
+        RadarComparisonRequest(
+            target_player_id=10,
+            candidate_player_id=20,
+        )
+    ]
+
+    payload = response.json()
+
+    assert payload["target"]["player_id"] == 10
+    assert payload["target"]["player_name"] == "Michael Olise"
+    assert payload["target"]["position"] == "M"
+    assert payload["target"]["available"] is True
+    assert payload["target"]["peer_count"] == 216
+
+    assert payload["target"]["dimensions"][0] == {
+        "key": "creativity",
+        "label": "Creativity",
+        "raw_score": 4.516,
+        "percentile": 100.0,
+        "peer_count": 216,
+    }
+
+    assert payload["candidate"]["player_id"] == 20
+    assert payload["candidate"]["player_name"] == "Dani Olmo"
+
+    assert payload["comparison"] == {
+        "same_position": True,
+        "overlay_available": True,
+        "reason": None,
+    }
+
+
+def test_radar_comparison_endpoint_preserves_invalid_request_error() -> None:
+    application = create_app()
+
+    def fake_runner(
+        request: RadarComparisonRequest,
+    ) -> RadarComparisonResult:
+        del request
+
+        raise InvalidTransferAnalysisRequestError(
+            "Radar comparison requires two different players."
+        )
+
+    def override_runner() -> RadarComparisonRunner:
+        return fake_runner
+
+    application.dependency_overrides[
+        get_radar_comparison_runner
+    ] = override_runner
+
+    with TestClient(application) as client:
+        response = client.get(
+            "/api/v1/transfer-intelligence/"
+            "radar-comparison/10/10"
+        )
+
+    assert response.status_code == 400
+
+    assert response.json() == {
+        "error": {
+            "code": "invalid_transfer_analysis_request",
+            "message": (
+                "Radar comparison requires two different players."
+            ),
+        }
+    }
