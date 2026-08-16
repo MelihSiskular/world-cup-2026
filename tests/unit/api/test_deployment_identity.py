@@ -6,6 +6,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from wc26 import __version__
 from wc26.api import create_app
 from wc26.api.deployment import (
     resolve_deployment_identity,
@@ -105,7 +106,7 @@ def test_deployment_endpoint_exposes_runtime_identity(
     assert response.status_code == 200
     assert response.json() == {
         "service": ("wc26-transfer-intelligence"),
-        "version": "0.1.0",
+        "version": __version__,
         "environment": "production",
         "provider": "railway",
         "commit_sha": "b" * 40,
