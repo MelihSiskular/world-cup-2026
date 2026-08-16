@@ -77,6 +77,143 @@ const candidate = {
   recommendation_strength: "Strong",
   why_recommended:
     "Synthetic recommendation used to verify extreme player-name wrapping.",
+
+  explainability: {
+    mode: "immediate",
+
+    score: {
+      weighted_signal_total: 77.3,
+      bonus_total: 0,
+      pre_clip_score: 77.3,
+      final_score: 77.3,
+      was_clipped: false,
+    },
+
+    signals: [
+      {
+        key: "statistical_similarity_pct",
+        label: "Statistical similarity",
+        description:
+          "Synthetic statistical similarity evidence.",
+        source_score: 74.5,
+        input_score: 74.5,
+        weight: 0.2,
+        weighted_contribution: 14.9,
+        evidence_status: "available",
+        note: null,
+      },
+      {
+        key: "role_fit_pct",
+        label: "Role fit",
+        description:
+          "Synthetic tactical role-fit evidence.",
+        source_score: 81.2,
+        input_score: 81.2,
+        weight: 0.2,
+        weighted_contribution: 16.24,
+        evidence_status: "available",
+        note: null,
+      },
+      {
+        key: "spatial_similarity_pct",
+        label: "Spatial similarity",
+        description:
+          "Synthetic spatial similarity evidence.",
+        source_score: 68.2,
+        input_score: 68.2,
+        weight: 0.15,
+        weighted_contribution: 10.23,
+        evidence_status: "available",
+        note: null,
+      },
+      {
+        key: "effective_heatmap_score_pct",
+        label: "Heatmap similarity",
+        description:
+          "Synthetic measured heatmap evidence.",
+        source_score: 71.4,
+        input_score: 71.4,
+        weight: 0.1,
+        weighted_contribution: 7.14,
+        evidence_status: "available",
+        note: null,
+      },
+      {
+        key: "player_quality_score",
+        label: "Player quality",
+        description:
+          "Synthetic player-quality evidence.",
+        source_score: 80,
+        input_score: 80,
+        weight: 0.15,
+        weighted_contribution: 12,
+        evidence_status: "available",
+        note: null,
+      },
+      {
+        key: "data_reliability_score",
+        label: "Data reliability",
+        description:
+          "Synthetic data-reliability evidence.",
+        source_score: 97.8,
+        input_score: 97.8,
+        weight: 0.05,
+        weighted_contribution: 4.89,
+        evidence_status: "available",
+        note: null,
+      },
+      {
+        key: "market_value_advantage_pct",
+        label: "Market advantage",
+        description:
+          "Synthetic market-value evidence.",
+        source_score: 76.5,
+        input_score: 76.5,
+        weight: 0.1,
+        weighted_contribution: 7.65,
+        evidence_status: "available",
+        note: null,
+      },
+      {
+        key: "age_suitability_pct",
+        label: "Age suitability",
+        description:
+          "Synthetic age-suitability evidence.",
+        source_score: 85,
+        input_score: 85,
+        weight: 0.05,
+        weighted_contribution: 4.25,
+        evidence_status: "available",
+        note: null,
+      },
+    ],
+
+    bonuses: [
+      {
+        key: "same_final_role",
+        label: "Same final role",
+        configured_points: 5,
+        applied: false,
+        applied_points: 0,
+      },
+      {
+        key: "same_archetype",
+        label: "Same archetype",
+        configured_points: 3,
+        applied: false,
+        applied_points: 0,
+      },
+    ],
+
+    reasons: [
+      {
+        key: "synthetic_layout_reason",
+        group: "synthetic",
+        text:
+          "Synthetic recommendation used to verify extreme player-name wrapping.",
+      },
+    ],
+  },
 };
 
 const analysisResponse = {

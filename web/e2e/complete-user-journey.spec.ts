@@ -135,6 +135,9 @@ test.describe(
 
         await expect(page).toHaveURL(
           /\/analysis\/978838/,
+          {
+            timeout: 30_000,
+          },
         );
 
         await expect(
@@ -320,6 +323,104 @@ test.describe(
             )
             .first(),
         ).toBeVisible();
+
+        /*
+         * Phase 6C comparison intelligence.
+         *
+         * Keep these assertions at the
+         * browser-integration level:
+         * the detailed geometry and
+         * percentile semantics belong to
+         * component/unit tests.
+         */
+        const radarComparison =
+          page.getByRole(
+            "region",
+            {
+              name:
+                "Playing style radar comparison",
+              exact: true,
+            },
+          );
+
+        await expect(
+          radarComparison,
+        ).toBeVisible({
+          timeout: 30_000,
+        });
+
+        await expect(
+          radarComparison.getByText(
+            "Shared position overlay",
+            {
+              exact: true,
+            },
+          ),
+        ).toBeVisible({
+          timeout: 30_000,
+        });
+
+        await expect(
+          radarComparison.getByRole(
+            "img",
+            {
+              name:
+                /^Playing style radar comparison for Michael Olise and /,
+            },
+          ),
+        ).toBeVisible({
+          timeout: 30_000,
+        });
+
+        const heatmapComparison =
+          page.getByRole(
+            "region",
+            {
+              name:
+                "Heatmap profile comparison",
+              exact: true,
+            },
+          );
+
+        await expect(
+          heatmapComparison,
+        ).toBeVisible({
+          timeout: 30_000,
+        });
+
+        await expect(
+          heatmapComparison.getByText(
+            "Measured pair evidence",
+            {
+              exact: true,
+            },
+          ),
+        ).toBeVisible({
+          timeout: 30_000,
+        });
+
+        await expect(
+          heatmapComparison.getByRole(
+            "img",
+            {
+              name:
+                "Tournament heatmap for Michael Olise",
+              exact: true,
+            },
+          ),
+        ).toBeVisible({
+          timeout: 30_000,
+        });
+
+        await expect(
+          heatmapComparison.getByRole(
+            "img",
+            {
+              name:
+                /^Tournament heatmap for /,
+            },
+          ),
+        ).toHaveCount(2);
 
         await expectNoHorizontalPageOverflow(
           page,
