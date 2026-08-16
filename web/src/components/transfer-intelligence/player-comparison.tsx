@@ -11,11 +11,13 @@ import {
   HeatmapPitch,
 } from "@/components/transfer-intelligence/heatmap-pitch";
 import { PlayerComparisonSkeleton } from "@/components/transfer-intelligence/player-comparison-skeleton";
+import { RadarProfile } from "@/components/transfer-intelligence/radar-profile";
 import { RoleCompatibilityPanel } from "@/components/transfer-intelligence/role-compatibility-panel";
 import { SpatialPositionPitch } from "@/components/transfer-intelligence/spatial-position-pitch";
 import { isBrowserApiError } from "@/lib/api/browser-client";
 import {
   fetchHeatmapComparison,
+  fetchRadarComparison,
   runTransferAnalysis,
 } from "@/lib/api/browser-transfer-intelligence";
 import type {
@@ -234,7 +236,7 @@ export function PlayerComparison({
     },
   });
 
-  const heatmapCandidateIsEligible =
+  const supplementalCandidateIsEligible =
     comparison.data?.modes[mode].recommendations.some(
       (recommendation) => recommendation.player_id === candidatePlayerId,
     ) ?? false;
@@ -248,7 +250,7 @@ export function PlayerComparison({
     ],
     queryFn: ({ signal }) =>
       fetchHeatmapComparison(targetPlayerId, candidatePlayerId, signal),
-    enabled: heatmapCandidateIsEligible,
+    enabled: supplementalCandidateIsEligible,
     staleTime: 5 * 60 * 1000,
 
     /*
@@ -256,6 +258,31 @@ export function PlayerComparison({
      * Keep failure isolated to this panel
      * and let the explicit retry control
      * handle another request.
+     */
+    retry: false,
+  });
+
+  const radarComparison = useQuery({
+    queryKey: [
+      "transfer-intelligence",
+      "radar-comparison",
+      targetPlayerId,
+      candidatePlayerId,
+    ],
+    queryFn: ({ signal }) =>
+      fetchRadarComparison(
+        targetPlayerId,
+        candidatePlayerId,
+        signal,
+      ),
+    enabled: supplementalCandidateIsEligible,
+    staleTime: 5 * 60 * 1000,
+
+    /*
+     * Radar profiles are supplemental
+     * playing-style evidence. A radar
+     * failure must not invalidate the
+     * recruitment comparison.
      */
     retry: false,
   });
@@ -558,6 +585,136 @@ export function PlayerComparison({
             </p>
           </div>
         </article>
+      </section>
+
+      <section
+        aria-label="Playing style radar comparison"
+        className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm"
+      >
+        <div className="border-b border-border p-6 sm:p-7">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
+                Playing style
+              </p>
+
+              <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
+                Position-relative radar profile
+              </h2>
+
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
+                Compare how strongly each player expresses the statistical
+                playing-style dimensions associated with their position.
+              </p>
+            </div>
+
+            {radarComparison.data ? (
+              <span
+                className={
+                  radarComparison.data.comparison.overlay_available
+                    ? "rounded-full border border-success/20 bg-success/10 px-3 py-1.5 text-xs font-semibold text-success"
+                    : "rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-muted"
+                }
+              >
+                {radarComparison.data.comparison.overlay_available
+                  ? "Shared position overlay"
+                  : "Separate position profiles"}
+              </span>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="p-5 sm:p-6">
+          {radarComparison.isPending ? (
+            <div
+              aria-label="Loading radar comparison"
+              className="min-h-96 animate-pulse rounded-2xl bg-surface-secondary"
+            />
+          ) : radarComparison.isError ? (
+            <div
+              role="alert"
+              className="rounded-2xl border border-warning/25 bg-warning/10 p-6"
+            >
+              <p className="text-sm font-semibold tracking-[0.12em] text-warning uppercase">
+                Radar comparison unavailable
+              </p>
+
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
+                The main recruitment comparison remains available, but
+                position-relative playing-style profiles could not be loaded.
+              </p>
+
+              <ApiErrorReference error={radarComparison.error} />
+
+              <button
+                type="button"
+                onClick={() => {
+                  void radarComparison.refetch();
+                }}
+                className="mt-5 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-page"
+              >
+                Retry radar
+              </button>
+            </div>
+          ) : radarComparison.data ? (
+            radarComparison.data.comparison.overlay_available ? (
+              <RadarProfile
+                primary={radarComparison.data.target}
+                secondary={radarComparison.data.candidate}
+              />
+            ) : (
+              <>
+                <div className="mb-5 rounded-xl border border-border bg-surface-secondary px-4 py-3 text-xs leading-5 text-muted sm:px-5">
+                  These players do not share one compatible radar axis
+                  contract. Their profiles are shown separately rather than
+                  forcing unlike position dimensions onto one chart.
+                </div>
+
+                <div className="grid min-w-0 gap-5 lg:grid-cols-2">
+                  <article className="min-w-0">
+                    <div className="mb-3 px-1">
+                      <p className="text-xs font-semibold tracking-[0.12em] text-brand uppercase">
+                        Target
+                      </p>
+
+                      <h3 className="mt-1 break-words text-lg font-bold">
+                        {radarComparison.data.target.player_name}
+                      </h3>
+                    </div>
+
+                    <RadarProfile
+                      primary={radarComparison.data.target}
+                    />
+                  </article>
+
+                  <article className="min-w-0">
+                    <div className="mb-3 px-1">
+                      <p className="text-xs font-semibold tracking-[0.12em] text-brand-navy uppercase">
+                        Candidate
+                      </p>
+
+                      <h3 className="mt-1 break-words text-lg font-bold">
+                        {radarComparison.data.candidate.player_name}
+                      </h3>
+                    </div>
+
+                    <RadarProfile
+                      primary={radarComparison.data.candidate}
+                    />
+                  </article>
+                </div>
+              </>
+            )
+          ) : null}
+
+          {radarComparison.data ? (
+            <div className="mt-5 rounded-xl border border-border bg-surface-secondary px-4 py-3 text-xs leading-5 text-muted">
+              Percentiles are calculated against same-position tournament
+              peers. Radar shape represents playing-style expression, not an
+              overall player-quality score.
+            </div>
+          ) : null}
+        </div>
       </section>
 
       <section

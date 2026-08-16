@@ -4,10 +4,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { PlayerComparison } from "@/components/transfer-intelligence/player-comparison";
 import {
   fetchHeatmapComparison,
+  fetchRadarComparison,
   runTransferAnalysis,
 } from "@/lib/api/browser-transfer-intelligence";
 import type {
   HeatmapComparisonResponse,
+  RadarComparisonResponse,
   TransferAnalysisResponse,
   TransferRecommendationResponse,
 } from "@/lib/api/types";
@@ -16,10 +18,13 @@ import { renderWithQueryClient } from "@/test/render-with-query-client";
 
 vi.mock("@/lib/api/browser-transfer-intelligence", () => ({
   fetchHeatmapComparison: vi.fn(),
+  fetchRadarComparison: vi.fn(),
   runTransferAnalysis: vi.fn(),
 }));
 
 const fetchHeatmapComparisonMock = vi.mocked(fetchHeatmapComparison);
+
+const fetchRadarComparisonMock = vi.mocked(fetchRadarComparison);
 
 const runTransferAnalysisMock = vi.mocked(runTransferAnalysis);
 
@@ -165,13 +170,124 @@ function createHeatmapResponse(
   };
 }
 
+function createRadarResponse(
+  overlayAvailable = true,
+): RadarComparisonResponse {
+  const targetDimensions = [
+    {
+      key: "creativity",
+      label: "Creativity",
+      raw_score: 4.516,
+      percentile: 100,
+      peer_count: 216,
+    },
+    {
+      key: "progression",
+      label: "Progression",
+      raw_score: 2.87,
+      percentile: 98.6,
+      peer_count: 216,
+    },
+    {
+      key: "dribbling",
+      label: "Dribbling",
+      raw_score: 1.626,
+      percentile: 94,
+      peer_count: 216,
+    },
+  ];
+
+  const candidateDimensions = overlayAvailable
+    ? [
+        {
+          key: "creativity",
+          label: "Creativity",
+          raw_score: 1.604,
+          percentile: 91.7,
+          peer_count: 216,
+        },
+        {
+          key: "progression",
+          label: "Progression",
+          raw_score: 0.115,
+          percentile: 60.6,
+          peer_count: 216,
+        },
+        {
+          key: "dribbling",
+          label: "Dribbling",
+          raw_score: 0.621,
+          percentile: 79.2,
+          peer_count: 216,
+        },
+      ]
+    : [
+        {
+          key: "finishing",
+          label: "Finishing",
+          raw_score: 1.2,
+          percentile: 88,
+          peer_count: 75,
+        },
+        {
+          key: "shooting_volume",
+          label: "Shooting Volume",
+          raw_score: 0.9,
+          percentile: 82,
+          peer_count: 75,
+        },
+        {
+          key: "off_ball_threat",
+          label: "Off Ball Threat",
+          raw_score: 0.7,
+          percentile: 76,
+          peer_count: 75,
+        },
+      ];
+
+  return {
+    target: {
+      player_id: 978838,
+      player_name: "Michael Olise",
+      position: "M",
+      available: true,
+      peer_count: 216,
+      dimensions: targetDimensions,
+    },
+    candidate: {
+      player_id: 12345,
+      player_name: "Test Candidate",
+      position: overlayAvailable
+        ? "M"
+        : "F",
+      available: true,
+      peer_count: overlayAvailable
+        ? 216
+        : 75,
+      dimensions: candidateDimensions,
+    },
+    comparison: {
+      same_position: overlayAvailable,
+      overlay_available: overlayAvailable,
+      reason: overlayAvailable
+        ? null
+        : "different_position_profiles",
+    },
+  };
+}
+
+
 describe("PlayerComparison", () => {
   beforeEach(() => {
     fetchHeatmapComparisonMock.mockReset();
 
+    fetchRadarComparisonMock.mockReset();
+
     runTransferAnalysisMock.mockReset();
 
     fetchHeatmapComparisonMock.mockResolvedValue(createHeatmapResponse());
+
+    fetchRadarComparisonMock.mockResolvedValue(createRadarResponse());
   });
 
   it("shows a candidate-unavailable state", async () => {
@@ -468,4 +584,171 @@ describe("PlayerComparison", () => {
       screen.queryByText("The player comparison could not be prepared"),
     ).not.toBeInTheDocument();
   });
+  it("renders a shared same-position radar overlay", async () => {
+    runTransferAnalysisMock.mockResolvedValue(createResponse(true));
+
+    renderWithQueryClient(
+      <PlayerComparison
+        targetPlayerId={978838}
+        candidatePlayerId={12345}
+        mode="immediate"
+        values={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+      />,
+    );
+
+    const radarRegion = await screen.findByRole(
+      "region",
+      {
+        name: "Playing style radar comparison",
+      },
+    );
+
+    expect(
+      fetchRadarComparisonMock,
+    ).toHaveBeenCalledTimes(1);
+
+    expect(
+      fetchRadarComparisonMock.mock.calls[0]?.[0],
+    ).toBe(978838);
+
+    expect(
+      fetchRadarComparisonMock.mock.calls[0]?.[1],
+    ).toBe(12345);
+
+    expect(
+      await within(radarRegion).findByText(
+        "Shared position overlay",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      within(radarRegion).getByRole(
+        "img",
+        {
+          name:
+            "Playing style radar comparison for Michael Olise and Test Candidate",
+        },
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      within(radarRegion).getByTestId(
+        "radar-polygon-primary",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      within(radarRegion).getByTestId(
+        "radar-polygon-secondary",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("renders cross-position radar profiles separately", async () => {
+    runTransferAnalysisMock.mockResolvedValue(createResponse(true));
+
+    fetchRadarComparisonMock.mockResolvedValue(
+      createRadarResponse(false),
+    );
+
+    renderWithQueryClient(
+      <PlayerComparison
+        targetPlayerId={978838}
+        candidatePlayerId={12345}
+        mode="immediate"
+        values={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+      />,
+    );
+
+    const radarRegion = await screen.findByRole(
+      "region",
+      {
+        name: "Playing style radar comparison",
+      },
+    );
+
+    expect(
+      await within(radarRegion).findByText(
+        "Separate position profiles",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      within(radarRegion).getByRole(
+        "img",
+        {
+          name:
+            "Playing style radar for Michael Olise",
+        },
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      within(radarRegion).getByRole(
+        "img",
+        {
+          name:
+            "Playing style radar for Test Candidate",
+        },
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      within(radarRegion).queryByRole(
+        "img",
+        {
+          name:
+            "Playing style radar comparison for Michael Olise and Test Candidate",
+        },
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps radar failure isolated from the main comparison", async () => {
+    runTransferAnalysisMock.mockResolvedValue(createResponse(true));
+
+    fetchRadarComparisonMock.mockRejectedValue(
+      new Error("Radar service unavailable"),
+    );
+
+    renderWithQueryClient(
+      <PlayerComparison
+        targetPlayerId={978838}
+        candidatePlayerId={12345}
+        mode="immediate"
+        values={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+      />,
+    );
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Test Candidate",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(
+        "Radar comparison unavailable",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "Performance context",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(
+        "The player comparison could not be prepared",
+      ),
+    ).not.toBeInTheDocument();
+  });
+
 });
