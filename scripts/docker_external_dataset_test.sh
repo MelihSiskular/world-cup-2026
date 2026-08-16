@@ -25,6 +25,11 @@ readonly TRANSFER_DIRECTORY="$(
         "${REPOSITORY_ROOT}/data/processed/" \
         "transfer_intelligence"
 )"
+readonly PLAYER_MATCHES_ANALYSIS_DIRECTORY="$(
+    printf '%s' \
+        "${REPOSITORY_ROOT}/data/processed/" \
+        "player_matches_analysis"
+)"
 readonly SIMILARITY_DIRECTORY="$(
     printf '%s' \
         "${REPOSITORY_ROOT}/data/processed/" \
@@ -46,6 +51,11 @@ readonly FEATURES_SOURCE="$(
         "${TRANSFER_DIRECTORY}/" \
         "transfer_feature_table.csv"
 )"
+readonly PLAYER_TOURNAMENT_SUMMARY_SOURCE="$(
+    printf '%s' \
+        "${PLAYER_MATCHES_ANALYSIS_DIRECTORY}/" \
+        "player_tournament_full_summary_enriched.csv"
+)"
 readonly SIMILARITY_SOURCE="$(
     printf '%s' \
         "${SIMILARITY_DIRECTORY}/" \
@@ -61,6 +71,11 @@ readonly HEATMAP_PROFILES_SOURCE="$(
         "${HEATMAP_DIRECTORY}/" \
         "player_heatmap_profiles.csv"
 )"
+readonly HEATMAP_GRIDS_SOURCE="$(
+    printf '%s' \
+        "${HEATMAP_DIRECTORY}/" \
+        "player_heatmap_grids.npz"
+)"
 
 readonly CONTAINER_MANIFEST_PATH="$(
     printf '%s' \
@@ -71,6 +86,11 @@ readonly CONTAINER_FEATURES_PATH="$(
     printf '%s' \
         "/runtime/data/transfer_intelligence/" \
         "transfer_feature_table.csv"
+)"
+readonly CONTAINER_PLAYER_TOURNAMENT_SUMMARY_PATH="$(
+    printf '%s' \
+        "/runtime/data/player_matches_analysis/" \
+        "player_tournament_full_summary_enriched.csv"
 )"
 readonly CONTAINER_SIMILARITY_PATH="$(
     printf '%s' \
@@ -86,6 +106,11 @@ readonly CONTAINER_HEATMAP_PROFILES_PATH="$(
     printf '%s' \
         "/runtime/data/player_heatmaps/" \
         "player_heatmap_profiles.csv"
+)"
+readonly CONTAINER_HEATMAP_GRIDS_PATH="$(
+    printf '%s' \
+        "/runtime/data/player_heatmaps/" \
+        "player_heatmap_grids.npz"
 )"
 
 readonly BASE_URL="http://127.0.0.1:${HOST_PORT}"
@@ -224,15 +249,21 @@ start_container() {
         --env \
             "WC26_FEATURES_PATH=${CONTAINER_FEATURES_PATH}" \
         --env \
+            "WC26_PLAYER_TOURNAMENT_SUMMARY_PATH=${CONTAINER_PLAYER_TOURNAMENT_SUMMARY_PATH}" \
+        --env \
             "WC26_SIMILARITY_PATH=${CONTAINER_SIMILARITY_PATH}" \
         --env \
             "WC26_HEATMAP_SIMILARITY_PATH=${CONTAINER_HEATMAP_SIMILARITY_PATH}" \
         --env \
             "WC26_HEATMAP_PROFILES_PATH=${CONTAINER_HEATMAP_PROFILES_PATH}" \
+        --env \
+            "WC26_HEATMAP_GRIDS_PATH=${CONTAINER_HEATMAP_GRIDS_PATH}" \
         --mount \
             "type=bind,source=${CONFIG_DIRECTORY},target=/runtime/config,readonly" \
         --mount \
             "type=bind,source=${TRANSFER_DIRECTORY},target=/runtime/data/transfer_intelligence,readonly" \
+        --mount \
+            "type=bind,source=${PLAYER_MATCHES_ANALYSIS_DIRECTORY},target=/runtime/data/player_matches_analysis,readonly" \
         --mount \
             "type=bind,source=${SIMILARITY_DIRECTORY},target=/runtime/data/player_similarity,readonly" \
         --mount \
@@ -316,6 +347,7 @@ container = json.loads(
 expected_destinations = {
     "/runtime/config",
     "/runtime/data/transfer_intelligence",
+    "/runtime/data/player_matches_analysis",
     "/runtime/data/player_similarity",
     "/runtime/data/player_heatmaps",
 }
@@ -382,6 +414,10 @@ expected = {
         "/runtime/data/transfer_intelligence/"
         "transfer_feature_table.csv"
     ),
+    "WC26_PLAYER_TOURNAMENT_SUMMARY_PATH": (
+        "/runtime/data/player_matches_analysis/"
+        "player_tournament_full_summary_enriched.csv"
+    ),
     "WC26_SIMILARITY_PATH": (
         "/runtime/data/player_similarity/"
         "player_similarity_breakdown_long.csv"
@@ -393,6 +429,10 @@ expected = {
     "WC26_HEATMAP_PROFILES_PATH": (
         "/runtime/data/player_heatmaps/"
         "player_heatmap_profiles.csv"
+    ),
+    "WC26_HEATMAP_GRIDS_PATH": (
+        "/runtime/data/player_heatmaps/"
+        "player_heatmap_grids.npz"
     ),
 }
 
@@ -641,9 +681,11 @@ main() {
 
     require_file "${MANIFEST_SOURCE}"
     require_file "${FEATURES_SOURCE}"
+    require_file "${PLAYER_TOURNAMENT_SUMMARY_SOURCE}"
     require_file "${SIMILARITY_SOURCE}"
     require_file "${HEATMAP_SIMILARITY_SOURCE}"
     require_file "${HEATMAP_PROFILES_SOURCE}"
+    require_file "${HEATMAP_GRIDS_SOURCE}"
 
     if ! docker info >/dev/null 2>&1; then
         fail "Docker engine is not reachable."

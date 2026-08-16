@@ -3,7 +3,9 @@
 FROM python:3.12-slim-bookworm AS builder
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    PIP_NO_CACHE_DIR=1
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DEFAULT_TIMEOUT=120 \
+    PIP_RETRIES=10
 
 WORKDIR /build
 
@@ -55,9 +57,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     WC26_API_HOST=0.0.0.0 \
     WC26_DATASET_MANIFEST_PATH=/app/config/runtime_dataset_manifest.json \
     WC26_FEATURES_PATH=/app/data/processed/transfer_intelligence/transfer_feature_table.csv \
+    WC26_PLAYER_TOURNAMENT_SUMMARY_PATH=/app/data/processed/player_matches_analysis/player_tournament_full_summary_enriched.csv \
     WC26_SIMILARITY_PATH=/app/data/processed/player_similarity/player_similarity_breakdown_long.csv \
     WC26_HEATMAP_SIMILARITY_PATH=/app/data/processed/player_heatmaps/heatmap_similarity_long.csv \
-    WC26_HEATMAP_PROFILES_PATH=/app/data/processed/player_heatmaps/player_heatmap_profiles.csv
+    WC26_HEATMAP_PROFILES_PATH=/app/data/processed/player_heatmaps/player_heatmap_profiles.csv \
+    WC26_HEATMAP_GRIDS_PATH=/app/data/processed/player_heatmaps/player_heatmap_grids.npz
 
 WORKDIR /app
 
@@ -83,12 +87,17 @@ COPY --chown=wc26:wc26 \
     /app/data/processed/transfer_intelligence/transfer_feature_table.csv
 
 COPY --chown=wc26:wc26 \
+    data/processed/player_matches_analysis/player_tournament_full_summary_enriched.csv \
+    /app/data/processed/player_matches_analysis/player_tournament_full_summary_enriched.csv
+
+COPY --chown=wc26:wc26 \
     data/processed/player_similarity/player_similarity_breakdown_long.csv \
     /app/data/processed/player_similarity/player_similarity_breakdown_long.csv
 
 COPY --chown=wc26:wc26 \
     data/processed/player_heatmaps/heatmap_similarity_long.csv \
     data/processed/player_heatmaps/player_heatmap_profiles.csv \
+    data/processed/player_heatmaps/player_heatmap_grids.npz \
     /app/data/processed/player_heatmaps/
 
 USER wc26
