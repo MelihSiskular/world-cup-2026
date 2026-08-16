@@ -1,6 +1,6 @@
 {
   "name": "wc26-web",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -16,7 +16,14 @@
     "api:contract:remote": "npm run api:schema:fetch && npm run api:types",
     "test": "vitest run",
     "test:watch": "vitest",
-    "env:check": "node --env-file-if-exists=.env.local scripts/validate-environment.mjs"
+    "test:e2e": "playwright test",
+    "test:e2e:chromium": "playwright test --project=chromium",
+    "test:e2e:webkit": "playwright test --project=webkit",
+    "test:e2e:report": "playwright show-report",
+    "env:check": "node --env-file-if-exists=.env.local scripts/validate-environment.mjs",
+    "sync:player-images": "node ./scripts/sync-player-images.mjs",
+    "predev": "npm run sync:player-images",
+    "prebuild": "npm run sync:player-images"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",
@@ -29,6 +36,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^7.0.0",

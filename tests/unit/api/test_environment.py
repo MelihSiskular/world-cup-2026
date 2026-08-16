@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from wc26.api.environment import (
@@ -21,23 +22,42 @@ from wc26.deployment.dataset_manifest import (
 
 def _create_dataset_paths(tmp_path: Path) -> TransferDatasetPaths:
     features = tmp_path / "features.csv"
+    player_tournament_summary = tmp_path / "player-tournament-summary.csv"
     similarity = tmp_path / "similarity.csv"
     heatmap_similarity = tmp_path / "heatmap-similarity.csv"
     heatmap_profiles = tmp_path / "heatmap-profiles.csv"
+    heatmap_grids = tmp_path / "heatmap-grids.npz"
 
     for path in (
         features,
+        player_tournament_summary,
         similarity,
         heatmap_similarity,
         heatmap_profiles,
     ):
-        path.write_text("column\nvalue\n", encoding="utf-8")
+        path.write_text(
+            "column\nvalue\n",
+            encoding="utf-8",
+        )
+
+    np.savez(
+        heatmap_grids,
+        **{
+            "978838": np.full(
+                (2, 2),
+                0.25,
+                dtype=np.float32,
+            )
+        },
+    )
 
     return TransferDatasetPaths(
         features=features,
+        player_tournament_summary=(player_tournament_summary),
         similarity=similarity,
         heatmap_similarity=heatmap_similarity,
         heatmap_profiles=heatmap_profiles,
+        heatmap_grids=heatmap_grids,
     )
 
 
@@ -59,9 +79,11 @@ def test_validate_runtime_environment_reports_all_missing_files(
     settings = ApiSettings(
         dataset_paths=TransferDatasetPaths(
             features=tmp_path / "missing-features.csv",
+            player_tournament_summary=(tmp_path / "missing-player-tournament-summary.csv"),
             similarity=tmp_path / "missing-similarity.csv",
-            heatmap_similarity=tmp_path / "missing-heatmap-similarity.csv",
-            heatmap_profiles=tmp_path / "missing-heatmap-profiles.csv",
+            heatmap_similarity=(tmp_path / "missing-heatmap-similarity.csv"),
+            heatmap_profiles=(tmp_path / "missing-heatmap-profiles.csv"),
+            heatmap_grids=(tmp_path / "missing-heatmap-grids.npz"),
         ),
     )
 
@@ -71,9 +93,11 @@ def test_validate_runtime_environment_reports_all_missing_files(
     message = str(error.value)
 
     assert "WC26_FEATURES_PATH" in message
+    assert "WC26_PLAYER_TOURNAMENT_SUMMARY_PATH" in message
     assert "WC26_SIMILARITY_PATH" in message
     assert "WC26_HEATMAP_SIMILARITY_PATH" in message
     assert "WC26_HEATMAP_PROFILES_PATH" in message
+    assert "WC26_HEATMAP_GRIDS_PATH" in message
 
 
 def test_validate_runtime_environment_rejects_directory_paths(
@@ -86,9 +110,11 @@ def test_validate_runtime_environment_rejects_directory_paths(
     settings = ApiSettings(
         dataset_paths=TransferDatasetPaths(
             features=invalid_features_path,
+            player_tournament_summary=(dataset_paths.player_tournament_summary),
             similarity=dataset_paths.similarity,
             heatmap_similarity=dataset_paths.heatmap_similarity,
             heatmap_profiles=dataset_paths.heatmap_profiles,
+            heatmap_grids=dataset_paths.heatmap_grids,
         ),
     )
 
@@ -111,6 +137,10 @@ def test_main_reports_valid_runtime_environment(
         str(dataset_paths.features),
     )
     monkeypatch.setenv(
+        "WC26_PLAYER_TOURNAMENT_SUMMARY_PATH",
+        str(dataset_paths.player_tournament_summary),
+    )
+    monkeypatch.setenv(
         "WC26_SIMILARITY_PATH",
         str(dataset_paths.similarity),
     )
@@ -122,6 +152,10 @@ def test_main_reports_valid_runtime_environment(
         "WC26_HEATMAP_PROFILES_PATH",
         str(dataset_paths.heatmap_profiles),
     )
+    monkeypatch.setenv(
+        "WC26_HEATMAP_GRIDS_PATH",
+        str(dataset_paths.heatmap_grids),
+    )
 
     main()
 
@@ -129,7 +163,9 @@ def test_main_reports_valid_runtime_environment(
 
     assert "WC26 API runtime environment is valid." in output
     assert "WC26_FEATURES_PATH=" in output
+    assert "WC26_PLAYER_TOURNAMENT_SUMMARY_PATH=" in output
     assert "WC26_HEATMAP_PROFILES_PATH=" in output
+    assert "WC26_HEATMAP_GRIDS_PATH=" in output
 
 
 def _create_runtime_manifest(
@@ -142,6 +178,10 @@ def _create_runtime_manifest(
             relative_path=(dataset_paths.features.relative_to(tmp_path)),
         ),
         DatasetDefinition(
+            key="player_tournament_summary",
+            relative_path=(dataset_paths.player_tournament_summary.relative_to(tmp_path)),
+        ),
+        DatasetDefinition(
             key="similarity",
             relative_path=(dataset_paths.similarity.relative_to(tmp_path)),
         ),
@@ -152,6 +192,11 @@ def _create_runtime_manifest(
         DatasetDefinition(
             key="heatmap_profiles",
             relative_path=(dataset_paths.heatmap_profiles.relative_to(tmp_path)),
+        ),
+        DatasetDefinition(
+            key="heatmap_grids",
+            relative_path=(dataset_paths.heatmap_grids.relative_to(tmp_path)),
+            artifact_type="heatmap_grid_npz",
         ),
     )
 

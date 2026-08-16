@@ -3,7 +3,7 @@
   "info": {
     "title": "WC26 Transfer Intelligence API",
     "summary": "Football recruitment intelligence powered by World Cup data.",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "paths": {
     "/health": {
@@ -144,7 +144,7 @@
             }
           },
           "503": {
-            "description": "The player feature dataset is missing or invalid.",
+            "description": "The player profile datasets are missing or invalid.",
             "content": {
               "application/json": {
                 "schema": {
@@ -244,6 +244,190 @@
           },
           "500": {
             "description": "Player profile retrieval failed unexpectedly.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transfer-intelligence/heatmap-comparison/{target_player_id}/{candidate_player_id}": {
+      "get": {
+        "tags": [
+          "transfer-intelligence"
+        ],
+        "summary": "Compare measured player heatmaps",
+        "description": "Return measured tournament heatmap evidence for two players.",
+        "operationId": "compare_player_heatmaps_api_v1_transfer_intelligence_heatmap_comparison__target_player_id___candidate_player_id__get",
+        "parameters": [
+          {
+            "name": "target_player_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Target Player Id"
+            }
+          },
+          {
+            "name": "candidate_player_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Candidate Player Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HeatmapComparisonResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The heatmap comparison request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the requested players was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required heatmap analytics data is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Heatmap comparison failed unexpectedly.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transfer-intelligence/radar-comparison/{target_player_id}/{candidate_player_id}": {
+      "get": {
+        "tags": [
+          "transfer-intelligence"
+        ],
+        "summary": "Compare position-relative player style profiles",
+        "description": "Return position-relative playing-style profiles for two players.",
+        "operationId": "compare_player_radars_api_v1_transfer_intelligence_radar_comparison__target_player_id___candidate_player_id__get",
+        "parameters": [
+          {
+            "name": "target_player_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Target Player Id"
+            }
+          },
+          {
+            "name": "candidate_player_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Candidate Player Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadarComparisonResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The radar comparison request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the requested players was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required radar analytics data is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Radar comparison failed unexpectedly.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1164,6 +1348,9 @@
             ],
             "title": "Same Archetype"
           },
+          "explainability": {
+            "$ref": "#/components/schemas/TransferRecommendationExplainabilityResponse"
+          },
           "recommendation_type": {
             "type": "string",
             "title": "Recommendation Type"
@@ -1193,6 +1380,7 @@
         "required": [
           "player_id",
           "player_name",
+          "explainability",
           "recommendation_type",
           "recommendation_strength",
           "why_recommended",
@@ -1256,6 +1444,325 @@
         ],
         "title": "HealthResponse",
         "description": "Response returned by the service health endpoint."
+      },
+      "HeatmapComparisonResponse": {
+        "properties": {
+          "target": {
+            "$ref": "#/components/schemas/HeatmapPlayerResponse"
+          },
+          "candidate": {
+            "$ref": "#/components/schemas/HeatmapPlayerResponse"
+          },
+          "similarity": {
+            "$ref": "#/components/schemas/HeatmapSimilarityResponse"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "target",
+          "candidate",
+          "similarity"
+        ],
+        "title": "HeatmapComparisonResponse",
+        "description": "Target-to-candidate tournament heatmap comparison."
+      },
+      "HeatmapPlayerResponse": {
+        "properties": {
+          "player_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Player Id"
+          },
+          "player_name": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Player Name"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "grid_width": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 2.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid Width"
+          },
+          "grid_height": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 2.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid Height"
+          },
+          "grid": {
+            "anyOf": [
+              {
+                "items": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid"
+          },
+          "matches_with_heatmap": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matches With Heatmap"
+          },
+          "heatmap_point_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heatmap Point Count"
+          },
+          "weighted_mean_x": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weighted Mean X"
+          },
+          "weighted_mean_y": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weighted Mean Y"
+          },
+          "peak_cell_x": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Cell X"
+          },
+          "peak_cell_y": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Cell Y"
+          },
+          "heatmap_entropy": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heatmap Entropy"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "player_id",
+          "player_name",
+          "available"
+        ],
+        "title": "HeatmapPlayerResponse",
+        "description": "Measured tournament heatmap evidence for one player."
+      },
+      "HeatmapSimilarityResponse": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "heatmap_similarity_score_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heatmap Similarity Score Pct"
+          },
+          "heatmap_cosine_similarity_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heatmap Cosine Similarity Pct"
+          },
+          "occupation_overlap_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occupation Overlap Pct"
+          },
+          "peak_zone_similarity_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Zone Similarity Pct"
+          },
+          "peak_zone_distance": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Zone Distance"
+          },
+          "entropy_similarity_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entropy Similarity Pct"
+          },
+          "target_matches_with_heatmap": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Matches With Heatmap"
+          },
+          "candidate_matches_with_heatmap": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Matches With Heatmap"
+          },
+          "target_heatmap_points": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Heatmap Points"
+          },
+          "candidate_heatmap_points": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Heatmap Points"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "available"
+        ],
+        "title": "HeatmapSimilarityResponse",
+        "description": "Measured pairwise heatmap similarity evidence."
       },
       "ImmediateTransferModeResponse": {
         "properties": {
@@ -1936,6 +2443,9 @@
             ],
             "title": "Same Archetype"
           },
+          "explainability": {
+            "$ref": "#/components/schemas/TransferRecommendationExplainabilityResponse"
+          },
           "recommendation_type": {
             "type": "string",
             "title": "Recommendation Type"
@@ -1965,6 +2475,7 @@
         "required": [
           "player_id",
           "player_name",
+          "explainability",
           "recommendation_type",
           "recommendation_strength",
           "why_recommended",
@@ -1975,6 +2486,189 @@
         "description": "Recommendation ranked for immediate first-team impact."
       },
       "JsonValue": {},
+      "PlayerInsightResponse": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "group": {
+            "type": "string",
+            "title": "Group"
+          },
+          "group_label": {
+            "type": "string",
+            "title": "Group Label"
+          },
+          "metric_key": {
+            "type": "string",
+            "title": "Metric Key"
+          },
+          "metric_label": {
+            "type": "string",
+            "title": "Metric Label"
+          },
+          "metric_short_label": {
+            "type": "string",
+            "title": "Metric Short Label"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "percentile": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Percentile"
+          },
+          "peer_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Peer Count"
+          },
+          "evidence": {
+            "type": "string",
+            "title": "Evidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "group",
+          "group_label",
+          "metric_key",
+          "metric_label",
+          "metric_short_label",
+          "value",
+          "percentile",
+          "peer_count",
+          "evidence"
+        ],
+        "title": "PlayerInsightResponse",
+        "description": "Explainable strength or watch-out."
+      },
+      "PlayerIntelligenceResponse": {
+        "properties": {
+          "position_group": {
+            "type": "string",
+            "title": "Position Group"
+          },
+          "sample": {
+            "$ref": "#/components/schemas/PlayerSampleContextResponse"
+          },
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/PlayerPerformanceMetricGroupResponse"
+            },
+            "type": "array",
+            "title": "Groups"
+          },
+          "strengths": {
+            "items": {
+              "$ref": "#/components/schemas/PlayerInsightResponse"
+            },
+            "type": "array",
+            "title": "Strengths"
+          },
+          "watch_outs": {
+            "items": {
+              "$ref": "#/components/schemas/PlayerInsightResponse"
+            },
+            "type": "array",
+            "title": "Watch Outs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "position_group",
+          "sample",
+          "groups",
+          "strengths",
+          "watch_outs"
+        ],
+        "title": "PlayerIntelligenceResponse",
+        "description": "Position-aware tournament intelligence."
+      },
+      "PlayerPerformanceMetricGroupResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/PlayerPerformanceMetricResponse"
+            },
+            "type": "array",
+            "title": "Metrics"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "metrics"
+        ],
+        "title": "PlayerPerformanceMetricGroupResponse",
+        "description": "Grouped player metrics."
+      },
+      "PlayerPerformanceMetricResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "short_label": {
+            "type": "string",
+            "title": "Short Label"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "performance_percentile": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Performance Percentile"
+          },
+          "peer_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Peer Count"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "short_label",
+          "unit",
+          "value",
+          "peer_count"
+        ],
+        "title": "PlayerPerformanceMetricResponse",
+        "description": "One position-aware tournament metric."
+      },
       "PlayerProfileResponse": {
         "properties": {
           "player_id": {
@@ -2226,6 +2920,26 @@
               }
             ],
             "title": "Role Reason"
+          },
+          "tournament": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlayerTournamentSummaryResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "intelligence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlayerIntelligenceResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -2258,6 +2972,46 @@
         ],
         "title": "PlayerProfileResponse",
         "description": "Detailed profile returned for one player."
+      },
+      "PlayerSampleContextResponse": {
+        "properties": {
+          "target_minutes": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Minutes"
+          },
+          "minimum_peer_minutes": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Minimum Peer Minutes"
+          },
+          "target_meets_peer_minimum": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Meets Peer Minimum"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "target_minutes",
+          "minimum_peer_minutes",
+          "target_meets_peer_minimum"
+        ],
+        "title": "PlayerSampleContextResponse",
+        "description": "Sample-size context for percentile interpretation."
       },
       "PlayerSearchItemResponse": {
         "properties": {
@@ -2391,6 +3145,280 @@
         ],
         "title": "PlayerSearchResponse",
         "description": "Structured response returned by player search."
+      },
+      "PlayerTournamentSummaryResponse": {
+        "properties": {
+          "matches": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matches"
+          },
+          "starts": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Starts"
+          },
+          "substitute_appearances": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Substitute Appearances"
+          },
+          "captain_appearances": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Captain Appearances"
+          },
+          "minutes": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minutes"
+          },
+          "formations_used": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formations Used"
+          },
+          "primary_formation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Formation"
+          },
+          "primary_lineup_position": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Lineup Position"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "matches",
+          "starts",
+          "substitute_appearances",
+          "captain_appearances",
+          "minutes",
+          "formations_used",
+          "primary_formation",
+          "primary_lineup_position"
+        ],
+        "title": "PlayerTournamentSummaryResponse",
+        "description": "Tournament participation context for one player."
+      },
+      "RadarComparisonMetadataResponse": {
+        "properties": {
+          "same_position": {
+            "type": "boolean",
+            "title": "Same Position"
+          },
+          "overlay_available": {
+            "type": "boolean",
+            "title": "Overlay Available"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "profiles_unavailable",
+                  "target_profile_unavailable",
+                  "candidate_profile_unavailable",
+                  "different_position_profiles",
+                  "dimension_contract_mismatch"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "same_position",
+          "overlay_available",
+          "reason"
+        ],
+        "title": "RadarComparisonMetadataResponse",
+        "description": "Rendering compatibility for two playing-style profiles."
+      },
+      "RadarComparisonResponse": {
+        "properties": {
+          "target": {
+            "$ref": "#/components/schemas/RadarPlayerResponse"
+          },
+          "candidate": {
+            "$ref": "#/components/schemas/RadarPlayerResponse"
+          },
+          "comparison": {
+            "$ref": "#/components/schemas/RadarComparisonMetadataResponse"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "target",
+          "candidate",
+          "comparison"
+        ],
+        "title": "RadarComparisonResponse",
+        "description": "Target-to-candidate playing-style radar comparison."
+      },
+      "RadarDimensionResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Label"
+          },
+          "raw_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Score"
+          },
+          "percentile": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentile"
+          },
+          "peer_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Peer Count"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "raw_score",
+          "percentile",
+          "peer_count"
+        ],
+        "title": "RadarDimensionResponse",
+        "description": "One position-relative playing-style radar dimension."
+      },
+      "RadarPlayerResponse": {
+        "properties": {
+          "player_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Player Id"
+          },
+          "player_name": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Player Name"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "peer_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Peer Count"
+          },
+          "dimensions": {
+            "items": {
+              "$ref": "#/components/schemas/RadarDimensionResponse"
+            },
+            "type": "array",
+            "title": "Dimensions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "player_id",
+          "player_name",
+          "position",
+          "available",
+          "peer_count",
+          "dimensions"
+        ],
+        "title": "RadarPlayerResponse",
+        "description": "Position-relative playing-style profile for one player."
       },
       "ReadinessResponse": {
         "properties": {
@@ -3129,6 +4157,9 @@
             ],
             "title": "Same Archetype"
           },
+          "explainability": {
+            "$ref": "#/components/schemas/TransferRecommendationExplainabilityResponse"
+          },
           "recommendation_type": {
             "type": "string",
             "title": "Recommendation Type"
@@ -3158,6 +4189,7 @@
         "required": [
           "player_id",
           "player_name",
+          "explainability",
           "recommendation_type",
           "recommendation_strength",
           "why_recommended",
@@ -3261,6 +4293,194 @@
         "title": "TransferAnalysisResponse",
         "description": "Structured transfer analysis API response."
       },
+      "TransferExplainabilityBonusResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Label"
+          },
+          "configured_points": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Configured Points"
+          },
+          "applied": {
+            "type": "boolean",
+            "title": "Applied"
+          },
+          "applied_points": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Applied Points"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "configured_points",
+          "applied",
+          "applied_points"
+        ],
+        "title": "TransferExplainabilityBonusResponse",
+        "description": "One explicit mode-specific recommendation bonus."
+      },
+      "TransferExplainabilityReasonResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key"
+          },
+          "group": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Group"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "group",
+          "text"
+        ],
+        "title": "TransferExplainabilityReasonResponse",
+        "description": "One structured human-readable recommendation reason."
+      },
+      "TransferExplainabilityScoreResponse": {
+        "properties": {
+          "weighted_signal_total": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Weighted Signal Total"
+          },
+          "bonus_total": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Bonus Total"
+          },
+          "pre_clip_score": {
+            "type": "number",
+            "title": "Pre Clip Score"
+          },
+          "final_score": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Final Score"
+          },
+          "was_clipped": {
+            "type": "boolean",
+            "title": "Was Clipped"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "weighted_signal_total",
+          "bonus_total",
+          "pre_clip_score",
+          "final_score",
+          "was_clipped"
+        ],
+        "title": "TransferExplainabilityScoreResponse",
+        "description": "Mathematical composition of one recommendation score."
+      },
+      "TransferExplainabilitySignalResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Description"
+          },
+          "source_score": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Score"
+          },
+          "input_score": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Input Score"
+          },
+          "weight": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Weight"
+          },
+          "weighted_contribution": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Weighted Contribution"
+          },
+          "evidence_status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "fallback",
+              "missing"
+            ],
+            "title": "Evidence Status"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "description",
+          "input_score",
+          "weight",
+          "weighted_contribution",
+          "evidence_status"
+        ],
+        "title": "TransferExplainabilitySignalResponse",
+        "description": "One weighted input used by the recommendation scorer."
+      },
       "TransferModesResponse": {
         "properties": {
           "immediate": {
@@ -3286,6 +4506,55 @@
         ],
         "title": "TransferModesResponse",
         "description": "All supported Transfer Intelligence recruitment scenarios."
+      },
+      "TransferRecommendationExplainabilityResponse": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "immediate",
+              "development",
+              "value",
+              "short_term"
+            ],
+            "title": "Mode"
+          },
+          "score": {
+            "$ref": "#/components/schemas/TransferExplainabilityScoreResponse"
+          },
+          "signals": {
+            "items": {
+              "$ref": "#/components/schemas/TransferExplainabilitySignalResponse"
+            },
+            "type": "array",
+            "title": "Signals"
+          },
+          "bonuses": {
+            "items": {
+              "$ref": "#/components/schemas/TransferExplainabilityBonusResponse"
+            },
+            "type": "array",
+            "title": "Bonuses"
+          },
+          "reasons": {
+            "items": {
+              "$ref": "#/components/schemas/TransferExplainabilityReasonResponse"
+            },
+            "type": "array",
+            "title": "Reasons"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "mode",
+          "score",
+          "signals",
+          "bonuses",
+          "reasons"
+        ],
+        "title": "TransferRecommendationExplainabilityResponse",
+        "description": "Structured explanation of one transfer recommendation."
       },
       "TransferTargetResponse": {
         "properties": {
@@ -4438,6 +5707,9 @@
             ],
             "title": "Same Archetype"
           },
+          "explainability": {
+            "$ref": "#/components/schemas/TransferRecommendationExplainabilityResponse"
+          },
           "recommendation_type": {
             "type": "string",
             "title": "Recommendation Type"
@@ -4467,6 +5739,7 @@
         "required": [
           "player_id",
           "player_name",
+          "explainability",
           "recommendation_type",
           "recommendation_strength",
           "why_recommended",

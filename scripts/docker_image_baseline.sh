@@ -241,6 +241,10 @@ runtime_datasets = (
         "transfer_feature_table.csv"
     ),
     Path(
+        "/app/data/processed/player_matches_analysis/"
+        "player_tournament_full_summary_enriched.csv"
+    ),
+    Path(
         "/app/data/processed/player_similarity/"
         "player_similarity_breakdown_long.csv"
     ),
@@ -251,6 +255,10 @@ runtime_datasets = (
     Path(
         "/app/data/processed/player_heatmaps/"
         "player_heatmap_profiles.csv"
+    ),
+    Path(
+        "/app/data/processed/player_heatmaps/"
+        "player_heatmap_grids.npz"
     ),
 )
 

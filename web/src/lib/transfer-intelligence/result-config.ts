@@ -1,6 +1,5 @@
 import type {
   TransferModeName,
-  TransferRecommendationResponse,
 } from "@/lib/api/types";
 
 export const TRANSFER_MODE_ORDER = [
@@ -16,6 +15,18 @@ type TransferModeDetails =
     shortLabel: string;
     description: string;
     scoreLabel: string;
+  }>;
+
+type RecommendationScoreRankFields =
+  Readonly<{
+    immediate_score?: number | null;
+    immediate_rank?: number | null;
+    development_score?: number | null;
+    development_rank?: number | null;
+    value_score?: number | null;
+    value_rank?: number | null;
+    short_term_score?: number | null;
+    short_term_rank?: number | null;
   }>;
 
 export const TRANSFER_MODE_DETAILS = {
@@ -73,7 +84,7 @@ export function parseTransferMode(
 export function getRecommendationScore(
   mode: TransferModeName,
   recommendation:
-    TransferRecommendationResponse,
+    RecommendationScoreRankFields,
 ): number | null {
   switch (mode) {
     case "immediate":
@@ -121,7 +132,7 @@ export function getRecommendationScore(
 export function getRecommendationRank(
   mode: TransferModeName,
   recommendation:
-    TransferRecommendationResponse,
+    RecommendationScoreRankFields,
 ): number | null {
   switch (mode) {
     case "immediate":

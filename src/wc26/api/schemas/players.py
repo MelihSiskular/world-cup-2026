@@ -31,6 +31,90 @@ class PlayerSearchResponse(BaseModel):
     players: list[PlayerSearchItemResponse]
 
 
+class PlayerTournamentSummaryResponse(BaseModel):
+    """Tournament participation context for one player."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    matches: int | None
+    starts: int | None
+    substitute_appearances: int | None
+    captain_appearances: int | None
+    minutes: float | None
+    formations_used: int | None
+    primary_formation: str | None
+    primary_lineup_position: str | None
+
+
+class PlayerSampleContextResponse(BaseModel):
+    """Sample-size context for percentile interpretation."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    target_minutes: float | None
+    minimum_peer_minutes: float = Field(ge=0)
+    target_meets_peer_minimum: bool | None
+
+
+class PlayerPerformanceMetricResponse(BaseModel):
+    """One position-aware tournament metric."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    key: str
+    label: str
+    short_label: str
+    unit: str
+    value: float
+    performance_percentile: float | None = Field(
+        default=None,
+        ge=0,
+        le=100,
+    )
+    peer_count: int = Field(ge=0)
+
+
+class PlayerPerformanceMetricGroupResponse(BaseModel):
+    """Grouped player metrics."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    key: str
+    metrics: list[PlayerPerformanceMetricResponse]
+
+
+class PlayerInsightResponse(BaseModel):
+    """Explainable strength or watch-out."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    kind: str
+    group: str
+    group_label: str
+    metric_key: str
+    metric_label: str
+    metric_short_label: str
+    value: float
+    percentile: float = Field(
+        ge=0,
+        le=100,
+    )
+    peer_count: int = Field(ge=0)
+    evidence: str
+
+
+class PlayerIntelligenceResponse(BaseModel):
+    """Position-aware tournament intelligence."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    position_group: str
+    sample: PlayerSampleContextResponse
+    groups: list[PlayerPerformanceMetricGroupResponse]
+    strengths: list[PlayerInsightResponse]
+    watch_outs: list[PlayerInsightResponse]
+
+
 class PlayerProfileResponse(BaseModel):
     """Detailed profile returned for one player."""
 
@@ -60,9 +144,17 @@ class PlayerProfileResponse(BaseModel):
     data_reliability_score: float | None
     player_quality_score: float | None
     role_reason: str | None
+    tournament: PlayerTournamentSummaryResponse | None = None
+    intelligence: PlayerIntelligenceResponse | None = None
 
 
 __all__ = [
+    "PlayerInsightResponse",
+    "PlayerIntelligenceResponse",
+    "PlayerPerformanceMetricGroupResponse",
+    "PlayerPerformanceMetricResponse",
+    "PlayerSampleContextResponse",
+    "PlayerTournamentSummaryResponse",
     "PlayerProfileResponse",
     "PlayerSearchItemResponse",
     "PlayerSearchResponse",

@@ -12,12 +12,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, cast
 
+import numpy as np
+
 from wc26.deployment.dataset_manifest import (
     MANIFEST_VERSION,
+    DatasetArtifactType,
     DatasetManifestError,
     calculate_bundle_sha256,
     calculate_file_sha256,
     inspect_csv,
+    inspect_heatmap_grid_npz,
 )
 
 DEFAULT_MANIFEST_PATH = Path("config/runtime_dataset_manifest.json")
@@ -35,24 +39,60 @@ class ManifestDataset:
 
     key: str
     path: str
+    artifact_type: DatasetArtifactType
     size_bytes: int
     sha256: str
-    row_count: int
-    column_count: int
-    columns: tuple[str, ...]
+    row_count: int | None = None
+    column_count: int | None = None
+    columns: tuple[str, ...] | None = None
+    grid_count: int | None = None
+    grid_height: int | None = None
+    grid_width: int | None = None
+    dtype: str | None = None
 
     def to_manifest_payload(self) -> dict[str, Any]:
         """Return the canonical payload used by the bundle hash."""
 
-        return {
+        payload: dict[str, Any] = {
             "key": self.key,
             "path": self.path,
+            "artifact_type": self.artifact_type,
             "size_bytes": self.size_bytes,
             "sha256": self.sha256,
-            "row_count": self.row_count,
-            "column_count": self.column_count,
-            "columns": self.columns,
         }
+
+        if self.artifact_type == "csv":
+            if self.row_count is None or self.column_count is None or self.columns is None:
+                raise DatasetIntegrityError("CSV manifest metadata is incomplete.")
+
+            payload.update(
+                {
+                    "row_count": self.row_count,
+                    "column_count": self.column_count,
+                    "columns": self.columns,
+                }
+            )
+
+            return payload
+
+        if (
+            self.grid_count is None
+            or self.grid_height is None
+            or self.grid_width is None
+            or self.dtype is None
+        ):
+            raise DatasetIntegrityError("Heatmap grid manifest metadata is incomplete.")
+
+        payload.update(
+            {
+                "grid_count": self.grid_count,
+                "grid_height": self.grid_height,
+                "grid_width": self.grid_width,
+                "dtype": self.dtype,
+            }
+        )
+
+        return payload
 
 
 @dataclass(frozen=True, slots=True)
@@ -145,6 +185,10 @@ def _parse_manifest_dataset(
         item.get("path"),
         label=f"{label}.path",
     )
+    artifact_type_raw = _require_string(
+        item.get("artifact_type"),
+        label=f"{label}.artifact_type",
+    )
     size_bytes = _require_integer(
         item.get("size_bytes"),
         label=f"{label}.size_bytes",
@@ -154,19 +198,16 @@ def _parse_manifest_dataset(
         item.get("sha256"),
         label=f"{label}.sha256",
     )
-    row_count = _require_integer(
-        item.get("row_count"),
-        label=f"{label}.row_count",
-        minimum=0,
-    )
-    column_count = _require_integer(
-        item.get("column_count"),
-        label=f"{label}.column_count",
-        minimum=1,
-    )
-    columns = _require_columns(
-        item.get("columns"),
-        label=f"{label}.columns",
+
+    if artifact_type_raw not in {
+        "csv",
+        "heatmap_grid_npz",
+    }:
+        raise DatasetIntegrityError(f"{label}.artifact_type is unsupported: {artifact_type_raw}")
+
+    artifact_type = cast(
+        DatasetArtifactType,
+        artifact_type_raw,
     )
 
     relative_path = Path(manifest_path)
@@ -179,17 +220,85 @@ def _parse_manifest_dataset(
             f"{label}.sha256 must contain 64 lowercase hexadecimal characters."
         )
 
-    if column_count != len(columns):
-        raise DatasetIntegrityError(f"{label}.column_count does not match the number of columns.")
+    if artifact_type == "csv":
+        row_count = _require_integer(
+            item.get("row_count"),
+            label=f"{label}.row_count",
+            minimum=0,
+        )
+        column_count = _require_integer(
+            item.get("column_count"),
+            label=f"{label}.column_count",
+            minimum=1,
+        )
+        columns = _require_columns(
+            item.get("columns"),
+            label=f"{label}.columns",
+        )
+
+        if column_count != len(columns):
+            raise DatasetIntegrityError(
+                f"{label}.column_count does not match the number of columns."
+            )
+
+        return ManifestDataset(
+            key=key,
+            path=manifest_path,
+            artifact_type=artifact_type,
+            size_bytes=size_bytes,
+            sha256=sha256,
+            row_count=row_count,
+            column_count=column_count,
+            columns=columns,
+        )
+
+    grid_count = _require_integer(
+        item.get("grid_count"),
+        label=f"{label}.grid_count",
+        minimum=1,
+    )
+    grid_height = _require_integer(
+        item.get("grid_height"),
+        label=f"{label}.grid_height",
+        minimum=2,
+    )
+    grid_width = _require_integer(
+        item.get("grid_width"),
+        label=f"{label}.grid_width",
+        minimum=2,
+    )
+    dtype = _require_string(
+        item.get("dtype"),
+        label=f"{label}.dtype",
+    )
+
+    try:
+        parsed_dtype = np.dtype(dtype)
+    except (
+        TypeError,
+        ValueError,
+    ) as exc:
+        raise DatasetIntegrityError(f"{label}.dtype is not a valid NumPy dtype.") from exc
+
+    if not np.issubdtype(
+        parsed_dtype,
+        np.floating,
+    ):
+        raise DatasetIntegrityError(f"{label}.dtype must be a floating dtype.")
+
+    if parsed_dtype.name != dtype:
+        raise DatasetIntegrityError(f"{label}.dtype must use its canonical name.")
 
     return ManifestDataset(
         key=key,
         path=manifest_path,
+        artifact_type=artifact_type,
         size_bytes=size_bytes,
         sha256=sha256,
-        row_count=row_count,
-        column_count=column_count,
-        columns=columns,
+        grid_count=grid_count,
+        grid_height=grid_height,
+        grid_width=grid_width,
+        dtype=dtype,
     )
 
 
@@ -302,7 +411,7 @@ def validate_runtime_dataset_integrity(
     manifest_path: Path,
     dataset_paths: Mapping[str, Path],
 ) -> DatasetIntegrityReport:
-    """Validate runtime files against size, hash and CSV metadata."""
+    """Validate runtime files against size, hash and artifact metadata."""
 
     bundle_sha256, datasets = load_dataset_manifest(manifest_path.resolve())
 
@@ -358,31 +467,89 @@ def validate_runtime_dataset_integrity(
                     f"actual={actual_sha256}"
                 )
 
-        try:
-            actual_columns, actual_row_count = inspect_csv(runtime_path)
-        except DatasetManifestError as exc:
-            errors.append(f"{dataset.key}: CSV inspection failed: {exc}")
+        if dataset.artifact_type == "csv":
+            assert dataset.columns is not None
+            assert dataset.column_count is not None
+            assert dataset.row_count is not None
+
+            try:
+                (
+                    actual_columns,
+                    actual_row_count,
+                ) = inspect_csv(runtime_path)
+            except DatasetManifestError as exc:
+                errors.append(f"{dataset.key}: CSV inspection failed: {exc}")
+                continue
+
+            if actual_columns != dataset.columns:
+                errors.append(
+                    f"{dataset.key}: "
+                    "column names mismatch: "
+                    f"expected={dataset.columns}, "
+                    f"actual={actual_columns}"
+                )
+
+            if len(actual_columns) != dataset.column_count:
+                errors.append(
+                    f"{dataset.key}: "
+                    "column count mismatch: "
+                    f"expected={dataset.column_count}, "
+                    f"actual={len(actual_columns)}"
+                )
+
+            if actual_row_count != dataset.row_count:
+                errors.append(
+                    f"{dataset.key}: "
+                    "row count mismatch: "
+                    f"expected={dataset.row_count}, "
+                    f"actual={actual_row_count}"
+                )
+
             continue
 
-        if actual_columns != dataset.columns:
+        assert dataset.grid_count is not None
+        assert dataset.grid_height is not None
+        assert dataset.grid_width is not None
+        assert dataset.dtype is not None
+
+        try:
+            (
+                actual_grid_count,
+                actual_grid_height,
+                actual_grid_width,
+                actual_dtype,
+            ) = inspect_heatmap_grid_npz(runtime_path)
+        except DatasetManifestError as exc:
+            errors.append(f"{dataset.key}: heatmap grid inspection failed: {exc}")
+            continue
+
+        if actual_grid_count != dataset.grid_count:
             errors.append(
-                f"{dataset.key}: column names mismatch: "
-                f"expected={dataset.columns}, "
-                f"actual={actual_columns}"
+                f"{dataset.key}: "
+                "grid count mismatch: "
+                f"expected={dataset.grid_count}, "
+                f"actual={actual_grid_count}"
             )
 
-        if len(actual_columns) != dataset.column_count:
+        if actual_grid_height != dataset.grid_height:
             errors.append(
-                f"{dataset.key}: column count mismatch: "
-                f"expected={dataset.column_count}, "
-                f"actual={len(actual_columns)}"
+                f"{dataset.key}: "
+                "grid height mismatch: "
+                f"expected={dataset.grid_height}, "
+                f"actual={actual_grid_height}"
             )
 
-        if actual_row_count != dataset.row_count:
+        if actual_grid_width != dataset.grid_width:
             errors.append(
-                f"{dataset.key}: row count mismatch: "
-                f"expected={dataset.row_count}, "
-                f"actual={actual_row_count}"
+                f"{dataset.key}: "
+                "grid width mismatch: "
+                f"expected={dataset.grid_width}, "
+                f"actual={actual_grid_width}"
+            )
+
+        if actual_dtype != dataset.dtype:
+            errors.append(
+                f"{dataset.key}: dtype mismatch: expected={dataset.dtype}, actual={actual_dtype}"
             )
 
     if errors:
@@ -416,9 +583,11 @@ def _runtime_dataset_paths() -> dict[str, Path]:
 
     return {
         "features": paths.features,
+        "player_tournament_summary": (paths.player_tournament_summary),
         "similarity": paths.similarity,
         "heatmap_similarity": (paths.heatmap_similarity),
         "heatmap_profiles": (paths.heatmap_profiles),
+        "heatmap_grids": (paths.heatmap_grids),
     }
 
 

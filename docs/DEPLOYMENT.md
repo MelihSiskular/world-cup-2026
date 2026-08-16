@@ -40,7 +40,7 @@ Example response shape:
 ```json
 {
   "service": "wc26-transfer-intelligence",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "environment": "production",
   "provider": "railway",
   "commit_sha": "<40-character-git-sha>",
@@ -61,7 +61,7 @@ Runtime environment validation
     ↓
 Dataset manifest validation
     ↓
-File size, SHA-256 and CSV contract validation
+File size, SHA-256 and dataset contract validation
     ↓
 Runtime catalog loading
     ↓
@@ -92,9 +92,11 @@ The application reads configuration from environment variables.
 | `WC26_API_SUMMARY` | Project default | OpenAPI summary |
 | `WC26_SERVICE_NAME` | `wc26-transfer-intelligence` | Operational service name |
 | `WC26_FEATURES_PATH` | Project default | Transfer feature table |
+| `WC26_PLAYER_TOURNAMENT_SUMMARY_PATH` | Project default | Enriched player tournament summary |
 | `WC26_SIMILARITY_PATH` | Project default | Statistical similarity table |
 | `WC26_HEATMAP_SIMILARITY_PATH` | Project default | Heatmap similarity table |
 | `WC26_HEATMAP_PROFILES_PATH` | Project default | Heatmap profile table |
+| `WC26_HEATMAP_GRIDS_PATH` | Project default | Heatmap grid NPZ bundle |
 | `WC26_DATASET_MANIFEST_PATH` | Project default | Runtime dataset manifest |
 | `WC26_CORS_ORIGINS` | empty | Comma-separated trusted origins |
 | `WC26_LOG_LEVEL` | `INFO` | Python logging level |
@@ -111,14 +113,16 @@ See `.env.example` for a copyable local configuration template.
 
 ## Runtime Datasets
 
-The production API requires four processed CSV files:
+The production API requires six processed runtime datasets: five CSV files and one NPZ heatmap-grid bundle:
 
 | Logical key | Default path |
 |---|---|
 | `features` | `data/processed/transfer_intelligence/transfer_feature_table.csv` |
+| `player_tournament_summary` | `data/processed/player_matches_analysis/player_tournament_full_summary_enriched.csv` |
 | `similarity` | `data/processed/player_similarity/player_similarity_breakdown_long.csv` |
 | `heatmap_similarity` | `data/processed/player_heatmaps/heatmap_similarity_long.csv` |
 | `heatmap_profiles` | `data/processed/player_heatmaps/player_heatmap_profiles.csv` |
+| `heatmap_grids` | `data/processed/player_heatmaps/player_heatmap_grids.npz` |
 
 The API loads the complete catalog once during process startup. A running process does not automatically reload files when dataset pointers change.
 
@@ -175,8 +179,8 @@ Validation covers:
 - required dataset keys;
 - file existence and readability;
 - file size and SHA-256;
-- ordered columns;
-- row and column counts.
+- ordered CSV columns and tabular row/column counts;
+- heatmap-grid array structure and expected dataset metadata.
 
 Production startup runs the same checks through:
 
@@ -268,7 +272,7 @@ This verifies that externally mounted datasets override embedded paths, remain r
 
 ### Embedded Mode
 
-The production image includes the four runtime datasets and manifest under `/app`.
+The production image includes all six runtime datasets and the manifest under `/app`.
 
 ```bash
 ./scripts/docker_smoke_test.sh
@@ -495,9 +499,11 @@ The script checks public pages, readiness, health, deployment identity, player s
 
 Vercel configuration and rollback procedures are documented in `docs/WEB_DEPLOYMENT.md`.
 
+For isolated release-candidate validation, use a branch-specific Vercel Preview `WC26_API_BASE_URL` that points to the matching Railway validation environment. Do not repoint canonical Vercel Production while validating a branch candidate.
+
 ## CI/CD Workflows
 
-The repository contains four GitHub Actions workflows.
+The repository contains five GitHub Actions workflows.
 
 ### Python Quality
 
@@ -530,6 +536,14 @@ docker-validation-<run-id>-<attempt>
 ```
 
 Runs the frontend environment check, generated OpenAPI type check, Vitest suite, ESLint, TypeScript validation, production build and production-dependency audit using Node.js 24.
+
+### Browser Validation
+
+```text
+.github/workflows/browser-validation.yml
+```
+
+Runs the Playwright browser suite across desktop and mobile Chromium and WebKit configurations. It validates the browser journey separately from the deployed Vercel Preview acceptance performed during release validation.
 
 ### Production Verification
 
@@ -630,15 +644,9 @@ Download the diagnostic artifact from the workflow run. It contains the command 
 ## Release Checklist
 
 ```bash
-python -m ruff check \
-  src/transfer_intelligence/find_replacements.py \
-  src/wc26 \
-  tests
+python -m ruff check src/wc26 tests
 
-python -m ruff format --check \
-  src/transfer_intelligence/find_replacements.py \
-  src/wc26 \
-  tests
+python -m ruff format --check src/wc26 tests
 
 python -m mypy src/wc26
 
@@ -685,4 +693,4 @@ After the frontend is deployed:
   "https://your-vercel-domain.vercel.app"
 ```
 
-After push, confirm that all four GitHub Actions workflows pass, Railway `/deployment` reports the exact release SHA and the Vercel frontend smoke test succeeds.
+After push, confirm that all five GitHub Actions workflows pass, Railway `/deployment` reports the exact release SHA and dataset bundle, and the Vercel frontend smoke test succeeds.

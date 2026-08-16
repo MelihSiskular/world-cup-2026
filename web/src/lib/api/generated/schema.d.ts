@@ -64,6 +64,46 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/api/v1/transfer-intelligence/heatmap-comparison/{target_player_id}/{candidate_player_id}": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /**
+         * Compare measured player heatmaps
+         * @description Return measured tournament heatmap evidence for two players.
+         */
+        readonly get: operations["compare_player_heatmaps_api_v1_transfer_intelligence_heatmap_comparison__target_player_id___candidate_player_id__get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/api/v1/transfer-intelligence/radar-comparison/{target_player_id}/{candidate_player_id}": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /**
+         * Compare position-relative player style profiles
+         * @description Return position-relative playing-style profiles for two players.
+         */
+        readonly get: operations["compare_player_radars_api_v1_transfer_intelligence_radar_comparison__target_player_id___candidate_player_id__get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/deployment": {
         readonly parameters: {
             readonly query?: never;
@@ -214,6 +254,7 @@ export interface components {
             readonly effective_heatmap_score_pct?: number | null;
             /** Entropy Similarity Pct */
             readonly entropy_similarity_pct?: number | null;
+            readonly explainability: components["schemas"]["TransferRecommendationExplainabilityResponse"];
             /** Final Role */
             readonly final_role?: string | null;
             /** Has Heatmap Similarity */
@@ -341,6 +382,75 @@ export interface components {
             /** Version */
             readonly version: string;
         };
+        /**
+         * HeatmapComparisonResponse
+         * @description Target-to-candidate tournament heatmap comparison.
+         */
+        readonly HeatmapComparisonResponse: {
+            readonly candidate: components["schemas"]["HeatmapPlayerResponse"];
+            readonly similarity: components["schemas"]["HeatmapSimilarityResponse"];
+            readonly target: components["schemas"]["HeatmapPlayerResponse"];
+        };
+        /**
+         * HeatmapPlayerResponse
+         * @description Measured tournament heatmap evidence for one player.
+         */
+        readonly HeatmapPlayerResponse: {
+            /** Available */
+            readonly available: boolean;
+            /** Grid */
+            readonly grid?: readonly (readonly number[])[] | null;
+            /** Grid Height */
+            readonly grid_height?: number | null;
+            /** Grid Width */
+            readonly grid_width?: number | null;
+            /** Heatmap Entropy */
+            readonly heatmap_entropy?: number | null;
+            /** Heatmap Point Count */
+            readonly heatmap_point_count?: number | null;
+            /** Matches With Heatmap */
+            readonly matches_with_heatmap?: number | null;
+            /** Peak Cell X */
+            readonly peak_cell_x?: number | null;
+            /** Peak Cell Y */
+            readonly peak_cell_y?: number | null;
+            /** Player Id */
+            readonly player_id: number;
+            /** Player Name */
+            readonly player_name: string;
+            /** Weighted Mean X */
+            readonly weighted_mean_x?: number | null;
+            /** Weighted Mean Y */
+            readonly weighted_mean_y?: number | null;
+        };
+        /**
+         * HeatmapSimilarityResponse
+         * @description Measured pairwise heatmap similarity evidence.
+         */
+        readonly HeatmapSimilarityResponse: {
+            /** Available */
+            readonly available: boolean;
+            /** Candidate Heatmap Points */
+            readonly candidate_heatmap_points?: number | null;
+            /** Candidate Matches With Heatmap */
+            readonly candidate_matches_with_heatmap?: number | null;
+            /** Entropy Similarity Pct */
+            readonly entropy_similarity_pct?: number | null;
+            /** Heatmap Cosine Similarity Pct */
+            readonly heatmap_cosine_similarity_pct?: number | null;
+            /** Heatmap Similarity Score Pct */
+            readonly heatmap_similarity_score_pct?: number | null;
+            /** Occupation Overlap Pct */
+            readonly occupation_overlap_pct?: number | null;
+            /** Peak Zone Distance */
+            readonly peak_zone_distance?: number | null;
+            /** Peak Zone Similarity Pct */
+            readonly peak_zone_similarity_pct?: number | null;
+            /** Target Heatmap Points */
+            readonly target_heatmap_points?: number | null;
+            /** Target Matches With Heatmap */
+            readonly target_matches_with_heatmap?: number | null;
+        };
         /** HTTPValidationError */
         readonly HTTPValidationError: {
             /** Detail */
@@ -388,6 +498,7 @@ export interface components {
             readonly effective_heatmap_score_pct?: number | null;
             /** Entropy Similarity Pct */
             readonly entropy_similarity_pct?: number | null;
+            readonly explainability: components["schemas"]["TransferRecommendationExplainabilityResponse"];
             /** Final Role */
             readonly final_role?: string | null;
             /** Has Heatmap Similarity */
@@ -497,6 +608,77 @@ export interface components {
         };
         readonly JsonValue: unknown;
         /**
+         * PlayerInsightResponse
+         * @description Explainable strength or watch-out.
+         */
+        readonly PlayerInsightResponse: {
+            /** Evidence */
+            readonly evidence: string;
+            /** Group */
+            readonly group: string;
+            /** Group Label */
+            readonly group_label: string;
+            /** Kind */
+            readonly kind: string;
+            /** Metric Key */
+            readonly metric_key: string;
+            /** Metric Label */
+            readonly metric_label: string;
+            /** Metric Short Label */
+            readonly metric_short_label: string;
+            /** Peer Count */
+            readonly peer_count: number;
+            /** Percentile */
+            readonly percentile: number;
+            /** Value */
+            readonly value: number;
+        };
+        /**
+         * PlayerIntelligenceResponse
+         * @description Position-aware tournament intelligence.
+         */
+        readonly PlayerIntelligenceResponse: {
+            /** Groups */
+            readonly groups: readonly components["schemas"]["PlayerPerformanceMetricGroupResponse"][];
+            /** Position Group */
+            readonly position_group: string;
+            readonly sample: components["schemas"]["PlayerSampleContextResponse"];
+            /** Strengths */
+            readonly strengths: readonly components["schemas"]["PlayerInsightResponse"][];
+            /** Watch Outs */
+            readonly watch_outs: readonly components["schemas"]["PlayerInsightResponse"][];
+        };
+        /**
+         * PlayerPerformanceMetricGroupResponse
+         * @description Grouped player metrics.
+         */
+        readonly PlayerPerformanceMetricGroupResponse: {
+            /** Key */
+            readonly key: string;
+            /** Metrics */
+            readonly metrics: readonly components["schemas"]["PlayerPerformanceMetricResponse"][];
+        };
+        /**
+         * PlayerPerformanceMetricResponse
+         * @description One position-aware tournament metric.
+         */
+        readonly PlayerPerformanceMetricResponse: {
+            /** Key */
+            readonly key: string;
+            /** Label */
+            readonly label: string;
+            /** Peer Count */
+            readonly peer_count: number;
+            /** Performance Percentile */
+            readonly performance_percentile?: number | null;
+            /** Short Label */
+            readonly short_label: string;
+            /** Unit */
+            readonly unit: string;
+            /** Value */
+            readonly value: number;
+        };
+        /**
          * PlayerProfileResponse
          * @description Detailed profile returned for one player.
          */
@@ -515,6 +697,7 @@ export interface components {
             readonly final_role: string | null;
             /** Height Cm */
             readonly height_cm: number | null;
+            readonly intelligence?: components["schemas"]["PlayerIntelligenceResponse"] | null;
             /** Lateral Profile */
             readonly lateral_profile: string | null;
             /** Market Value */
@@ -545,10 +728,23 @@ export interface components {
             readonly spatial_role: string | null;
             /** Starts */
             readonly starts: number | null;
+            readonly tournament?: components["schemas"]["PlayerTournamentSummaryResponse"] | null;
             /** Vertical Profile */
             readonly vertical_profile: string | null;
             /** Weighted Rating */
             readonly weighted_rating: number | null;
+        };
+        /**
+         * PlayerSampleContextResponse
+         * @description Sample-size context for percentile interpretation.
+         */
+        readonly PlayerSampleContextResponse: {
+            /** Minimum Peer Minutes */
+            readonly minimum_peer_minutes: number;
+            /** Target Meets Peer Minimum */
+            readonly target_meets_peer_minimum: boolean | null;
+            /** Target Minutes */
+            readonly target_minutes: number | null;
         };
         /**
          * PlayerSearchItemResponse
@@ -585,6 +781,83 @@ export interface components {
             readonly players: readonly components["schemas"]["PlayerSearchItemResponse"][];
             /** Query */
             readonly query: string;
+        };
+        /**
+         * PlayerTournamentSummaryResponse
+         * @description Tournament participation context for one player.
+         */
+        readonly PlayerTournamentSummaryResponse: {
+            /** Captain Appearances */
+            readonly captain_appearances: number | null;
+            /** Formations Used */
+            readonly formations_used: number | null;
+            /** Matches */
+            readonly matches: number | null;
+            /** Minutes */
+            readonly minutes: number | null;
+            /** Primary Formation */
+            readonly primary_formation: string | null;
+            /** Primary Lineup Position */
+            readonly primary_lineup_position: string | null;
+            /** Starts */
+            readonly starts: number | null;
+            /** Substitute Appearances */
+            readonly substitute_appearances: number | null;
+        };
+        /**
+         * RadarComparisonMetadataResponse
+         * @description Rendering compatibility for two playing-style profiles.
+         */
+        readonly RadarComparisonMetadataResponse: {
+            /** Overlay Available */
+            readonly overlay_available: boolean;
+            /** Reason */
+            readonly reason: ("profiles_unavailable" | "target_profile_unavailable" | "candidate_profile_unavailable" | "different_position_profiles" | "dimension_contract_mismatch") | null;
+            /** Same Position */
+            readonly same_position: boolean;
+        };
+        /**
+         * RadarComparisonResponse
+         * @description Target-to-candidate playing-style radar comparison.
+         */
+        readonly RadarComparisonResponse: {
+            readonly candidate: components["schemas"]["RadarPlayerResponse"];
+            readonly comparison: components["schemas"]["RadarComparisonMetadataResponse"];
+            readonly target: components["schemas"]["RadarPlayerResponse"];
+        };
+        /**
+         * RadarDimensionResponse
+         * @description One position-relative playing-style radar dimension.
+         */
+        readonly RadarDimensionResponse: {
+            /** Key */
+            readonly key: string;
+            /** Label */
+            readonly label: string;
+            /** Peer Count */
+            readonly peer_count: number;
+            /** Percentile */
+            readonly percentile: number | null;
+            /** Raw Score */
+            readonly raw_score: number | null;
+        };
+        /**
+         * RadarPlayerResponse
+         * @description Position-relative playing-style profile for one player.
+         */
+        readonly RadarPlayerResponse: {
+            /** Available */
+            readonly available: boolean;
+            /** Dimensions */
+            readonly dimensions: readonly components["schemas"]["RadarDimensionResponse"][];
+            /** Peer Count */
+            readonly peer_count: number;
+            /** Player Id */
+            readonly player_id: number;
+            /** Player Name */
+            readonly player_name: string;
+            /** Position */
+            readonly position: string | null;
         };
         /**
          * ReadinessResponse
@@ -654,6 +927,7 @@ export interface components {
             readonly effective_heatmap_score_pct?: number | null;
             /** Entropy Similarity Pct */
             readonly entropy_similarity_pct?: number | null;
+            readonly explainability: components["schemas"]["TransferRecommendationExplainabilityResponse"];
             /** Final Role */
             readonly final_role?: string | null;
             /** Has Heatmap Similarity */
@@ -811,6 +1085,77 @@ export interface components {
             readonly target: components["schemas"]["TransferTargetResponse"];
         };
         /**
+         * TransferExplainabilityBonusResponse
+         * @description One explicit mode-specific recommendation bonus.
+         */
+        readonly TransferExplainabilityBonusResponse: {
+            /** Applied */
+            readonly applied: boolean;
+            /** Applied Points */
+            readonly applied_points: number;
+            /** Configured Points */
+            readonly configured_points: number;
+            /** Key */
+            readonly key: string;
+            /** Label */
+            readonly label: string;
+        };
+        /**
+         * TransferExplainabilityReasonResponse
+         * @description One structured human-readable recommendation reason.
+         */
+        readonly TransferExplainabilityReasonResponse: {
+            /** Group */
+            readonly group: string;
+            /** Key */
+            readonly key: string;
+            /** Text */
+            readonly text: string;
+        };
+        /**
+         * TransferExplainabilityScoreResponse
+         * @description Mathematical composition of one recommendation score.
+         */
+        readonly TransferExplainabilityScoreResponse: {
+            /** Bonus Total */
+            readonly bonus_total: number;
+            /** Final Score */
+            readonly final_score: number;
+            /** Pre Clip Score */
+            readonly pre_clip_score: number;
+            /** Was Clipped */
+            readonly was_clipped: boolean;
+            /** Weighted Signal Total */
+            readonly weighted_signal_total: number;
+        };
+        /**
+         * TransferExplainabilitySignalResponse
+         * @description One weighted input used by the recommendation scorer.
+         */
+        readonly TransferExplainabilitySignalResponse: {
+            /** Description */
+            readonly description: string;
+            /**
+             * Evidence Status
+             * @enum {string}
+             */
+            readonly evidence_status: "available" | "fallback" | "missing";
+            /** Input Score */
+            readonly input_score: number;
+            /** Key */
+            readonly key: string;
+            /** Label */
+            readonly label: string;
+            /** Note */
+            readonly note?: string | null;
+            /** Source Score */
+            readonly source_score?: number | null;
+            /** Weight */
+            readonly weight: number;
+            /** Weighted Contribution */
+            readonly weighted_contribution: number;
+        };
+        /**
          * TransferModesResponse
          * @description All supported Transfer Intelligence recruitment scenarios.
          */
@@ -819,6 +1164,24 @@ export interface components {
             readonly immediate: components["schemas"]["ImmediateTransferModeResponse"];
             readonly short_term: components["schemas"]["ShortTermTransferModeResponse"];
             readonly value: components["schemas"]["ValueTransferModeResponse"];
+        };
+        /**
+         * TransferRecommendationExplainabilityResponse
+         * @description Structured explanation of one transfer recommendation.
+         */
+        readonly TransferRecommendationExplainabilityResponse: {
+            /** Bonuses */
+            readonly bonuses: readonly components["schemas"]["TransferExplainabilityBonusResponse"][];
+            /**
+             * Mode
+             * @enum {string}
+             */
+            readonly mode: "immediate" | "development" | "value" | "short_term";
+            /** Reasons */
+            readonly reasons: readonly components["schemas"]["TransferExplainabilityReasonResponse"][];
+            readonly score: components["schemas"]["TransferExplainabilityScoreResponse"];
+            /** Signals */
+            readonly signals: readonly components["schemas"]["TransferExplainabilitySignalResponse"][];
         };
         /**
          * TransferTargetResponse
@@ -959,6 +1322,7 @@ export interface components {
             readonly effective_heatmap_score_pct?: number | null;
             /** Entropy Similarity Pct */
             readonly entropy_similarity_pct?: number | null;
+            readonly explainability: components["schemas"]["TransferRecommendationExplainabilityResponse"];
             /** Final Role */
             readonly final_role?: string | null;
             /** Has Heatmap Similarity */
@@ -1193,7 +1557,7 @@ export interface operations {
                     readonly "application/json": components["schemas"]["ApiErrorResponse"];
                 };
             };
-            /** @description The player feature dataset is missing or invalid. */
+            /** @description The player profile datasets are missing or invalid. */
             readonly 503: {
                 headers: {
                     readonly [name: string]: unknown;
@@ -1272,6 +1636,142 @@ export interface operations {
                 };
             };
             /** @description A required analytics dataset is missing or invalid. */
+            readonly 503: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+        };
+    };
+    readonly compare_player_heatmaps_api_v1_transfer_intelligence_heatmap_comparison__target_player_id___candidate_player_id__get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly candidate_player_id: number;
+                readonly target_player_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HeatmapComparisonResponse"];
+                };
+            };
+            /** @description The heatmap comparison request is invalid. */
+            readonly 400: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description One of the requested players was not found. */
+            readonly 404: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Heatmap comparison failed unexpectedly. */
+            readonly 500: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description Required heatmap analytics data is unavailable. */
+            readonly 503: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+        };
+    };
+    readonly compare_player_radars_api_v1_transfer_intelligence_radar_comparison__target_player_id___candidate_player_id__get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly candidate_player_id: number;
+                readonly target_player_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["RadarComparisonResponse"];
+                };
+            };
+            /** @description The radar comparison request is invalid. */
+            readonly 400: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description One of the requested players was not found. */
+            readonly 404: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Radar comparison failed unexpectedly. */
+            readonly 500: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description Required radar analytics data is unavailable. */
             readonly 503: {
                 headers: {
                     readonly [name: string]: unknown;

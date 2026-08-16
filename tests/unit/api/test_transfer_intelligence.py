@@ -11,6 +11,16 @@ from wc26.analytics.transfer_intelligence.errors import (
     InvalidTransferAnalysisRequestError,
 )
 from wc26.analytics.transfer_intelligence.models import (
+    HeatmapComparisonRequest,
+    HeatmapComparisonResult,
+    HeatmapPlayerResult,
+    HeatmapSimilarityResult,
+    JsonObject,
+    RadarComparisonMetadataResult,
+    RadarComparisonRequest,
+    RadarComparisonResult,
+    RadarDimensionResult,
+    RadarPlayerResult,
     TransferAnalysisRequest,
     TransferAnalysisResult,
     TransferModeResult,
@@ -18,11 +28,90 @@ from wc26.analytics.transfer_intelligence.models import (
 )
 from wc26.api import create_app
 from wc26.api.dependencies import (
+    HeatmapComparisonRunner,
+    RadarComparisonRunner,
     TransferAnalysisRunner,
     TransferDatasetPaths,
+    get_heatmap_comparison_runner,
+    get_radar_comparison_runner,
     get_transfer_analysis_runner,
     get_transfer_dataset_paths,
 )
+
+
+def _build_explainability_payload() -> JsonObject:
+    """Return deterministic recommendation explainability."""
+
+    return {
+        "mode": "immediate",
+        "score": {
+            "weighted_signal_total": 80.5,
+            "bonus_total": 8.0,
+            "pre_clip_score": 88.5,
+            "final_score": 88.5,
+            "was_clipped": False,
+        },
+        "signals": [
+            {
+                "key": "role_fit_pct",
+                "label": "Role fit",
+                "description": (
+                    "Alignment between the candidate and target across the tactical role model."
+                ),
+                "source_score": 90.0,
+                "input_score": 90.0,
+                "weight": 0.23,
+                "weighted_contribution": 20.7,
+                "evidence_status": "available",
+                "note": None,
+            },
+            {
+                "key": "effective_heatmap_score_pct",
+                "label": "Heatmap evidence",
+                "description": (
+                    "Heatmap occupation evidence used by the recruitment scoring model."
+                ),
+                "source_score": None,
+                "input_score": 70.0,
+                "weight": 0.12,
+                "weighted_contribution": 8.4,
+                "evidence_status": "fallback",
+                "note": (
+                    "Direct heatmap evidence is unavailable; "
+                    "the configured neutral fallback is used "
+                    "for scoring."
+                ),
+            },
+        ],
+        "bonuses": [
+            {
+                "key": "same_final_role",
+                "label": "Same final role",
+                "configured_points": 6.0,
+                "applied": True,
+                "applied_points": 6.0,
+            },
+            {
+                "key": "same_archetype",
+                "label": "Same statistical archetype",
+                "configured_points": 2.0,
+                "applied": True,
+                "applied_points": 2.0,
+            },
+        ],
+        "reasons": [
+            {
+                "key": "same_final_role",
+                "group": "role",
+                "text": "same final role",
+            },
+            {
+                "key": "statistical_similarity",
+                "group": "statistics",
+                "text": ("very strong statistical similarity (80.0%)"),
+            },
+        ],
+    }
 
 
 def _build_analysis_result() -> TransferAnalysisResult:
@@ -44,6 +133,7 @@ def _build_analysis_result() -> TransferAnalysisResult:
                             "recommendation_type": "like_for_like",
                             "recommendation_strength": "strong",
                             "why_recommended": ("Strong immediate replacement profile."),
+                            "explainability": _build_explainability_payload(),
                             "immediate_score": 88.5,
                             "immediate_rank": 1,
                         }
@@ -144,8 +234,39 @@ def test_transfer_analysis_route_is_in_openapi_schema() -> None:
         assert "player_name" in recommendation_properties
         assert "recommendation_strength" in recommendation_properties
         assert "why_recommended" in recommendation_properties
+        assert "explainability" in recommendation_properties
         assert score_field in recommendation_properties
         assert rank_field in recommendation_properties
+
+        explainability_reference = recommendation_properties["explainability"]["$ref"]
+
+        assert explainability_reference.endswith("/TransferRecommendationExplainabilityResponse")
+
+    explainability_schema = schemas["TransferRecommendationExplainabilityResponse"]
+
+    assert set(explainability_schema["required"]) == {
+        "mode",
+        "score",
+        "signals",
+        "bonuses",
+        "reasons",
+    }
+
+    assert explainability_schema["properties"]["score"]["$ref"].endswith(
+        "/TransferExplainabilityScoreResponse"
+    )
+
+    signal_reference = explainability_schema["properties"]["signals"]["items"]["$ref"]
+
+    assert signal_reference.endswith("/TransferExplainabilitySignalResponse")
+
+    bonus_reference = explainability_schema["properties"]["bonuses"]["items"]["$ref"]
+
+    assert bonus_reference.endswith("/TransferExplainabilityBonusResponse")
+
+    reason_reference = explainability_schema["properties"]["reasons"]["items"]["$ref"]
+
+    assert reason_reference.endswith("/TransferExplainabilityReasonResponse")
 
 
 def test_transfer_analysis_endpoint_delegates_name_to_application_service() -> None:
@@ -220,6 +341,7 @@ def test_transfer_analysis_endpoint_delegates_name_to_application_service() -> N
                         "recommendation_type": "like_for_like",
                         "recommendation_strength": "strong",
                         "why_recommended": ("Strong immediate replacement profile."),
+                        "explainability": _build_explainability_payload(),
                         "immediate_score": 88.5,
                         "immediate_rank": 1,
                     }
@@ -474,3 +596,368 @@ def test_transfer_analysis_endpoint_rejects_dataset_paths() -> None:
         )
 
     assert response.status_code == 422
+
+
+def _build_heatmap_comparison_result() -> HeatmapComparisonResult:
+    """Return deterministic measured heatmap comparison evidence."""
+
+    return HeatmapComparisonResult(
+        target=HeatmapPlayerResult(
+            player_id=10,
+            player_name="Michael Olise",
+            available=True,
+            grid_width=2,
+            grid_height=2,
+            grid=(
+                (0.10, 0.20),
+                (0.30, 0.40),
+            ),
+            matches_with_heatmap=6,
+            heatmap_point_count=509,
+            weighted_mean_x=61.3,
+            weighted_mean_y=41.2,
+            peak_cell_x=62.5,
+            peak_cell_y=42.5,
+            heatmap_entropy=0.944,
+        ),
+        candidate=HeatmapPlayerResult(
+            player_id=20,
+            player_name="Dani Olmo",
+            available=True,
+            grid_width=2,
+            grid_height=2,
+            grid=(
+                (0.15, 0.15),
+                (0.25, 0.45),
+            ),
+            matches_with_heatmap=6,
+            heatmap_point_count=268,
+            weighted_mean_x=58.5,
+            weighted_mean_y=41.7,
+            peak_cell_x=57.5,
+            peak_cell_y=42.5,
+            heatmap_entropy=0.932,
+        ),
+        similarity=HeatmapSimilarityResult(
+            available=True,
+            heatmap_similarity_score_pct=90.9,
+            heatmap_cosine_similarity_pct=92.8,
+            occupation_overlap_pct=81.4,
+            peak_zone_similarity_pct=93.9,
+            peak_zone_distance=8.58,
+            entropy_similarity_pct=98.8,
+            target_matches_with_heatmap=6,
+            candidate_matches_with_heatmap=6,
+            target_heatmap_points=509,
+            candidate_heatmap_points=268,
+        ),
+    )
+
+
+def test_heatmap_comparison_route_is_in_openapi_schema() -> None:
+    application = create_app()
+    schema = application.openapi()
+
+    route = (
+        "/api/v1/transfer-intelligence/heatmap-comparison/{target_player_id}/{candidate_player_id}"
+    )
+
+    operation = schema["paths"][route]["get"]
+
+    assert "400" in operation["responses"]
+    assert "404" in operation["responses"]
+    assert "500" in operation["responses"]
+    assert "503" in operation["responses"]
+
+    schemas = schema["components"]["schemas"]
+
+    response_schema = schemas["HeatmapComparisonResponse"]
+
+    assert response_schema["properties"]["target"]["$ref"].endswith("/HeatmapPlayerResponse")
+    assert response_schema["properties"]["candidate"]["$ref"].endswith("/HeatmapPlayerResponse")
+    assert response_schema["properties"]["similarity"]["$ref"].endswith(
+        "/HeatmapSimilarityResponse"
+    )
+
+    similarity_properties = schemas["HeatmapSimilarityResponse"]["properties"]
+
+    assert "heatmap_similarity_score_pct" in similarity_properties
+    assert "occupation_overlap_pct" in similarity_properties
+    assert "peak_zone_distance" in similarity_properties
+
+    assert "effective_heatmap_score_pct" not in similarity_properties
+
+
+def test_heatmap_comparison_endpoint_delegates_player_ids() -> None:
+    application = create_app()
+
+    captured_requests: list[HeatmapComparisonRequest] = []
+
+    expected = _build_heatmap_comparison_result()
+
+    def fake_runner(
+        request: HeatmapComparisonRequest,
+    ) -> HeatmapComparisonResult:
+        captured_requests.append(request)
+
+        return expected
+
+    def override_runner() -> HeatmapComparisonRunner:
+        return fake_runner
+
+    application.dependency_overrides[get_heatmap_comparison_runner] = override_runner
+
+    with TestClient(application) as client:
+        response = client.get("/api/v1/transfer-intelligence/heatmap-comparison/10/20")
+
+    assert response.status_code == 200
+
+    assert captured_requests == [
+        HeatmapComparisonRequest(
+            target_player_id=10,
+            candidate_player_id=20,
+        )
+    ]
+
+    payload = response.json()
+
+    assert payload["target"]["player_id"] == 10
+    assert payload["target"]["player_name"] == "Michael Olise"
+    assert payload["target"]["available"] is True
+    assert payload["target"]["grid"] == [
+        [0.1, 0.2],
+        [0.3, 0.4],
+    ]
+
+    assert payload["candidate"]["player_id"] == 20
+
+    assert payload["similarity"]["available"] is True
+    assert payload["similarity"]["heatmap_similarity_score_pct"] == 90.9
+
+    assert "effective_heatmap_score_pct" not in payload["similarity"]
+
+
+def test_heatmap_comparison_endpoint_preserves_invalid_request_error() -> None:
+    application = create_app()
+
+    def fake_runner(
+        request: HeatmapComparisonRequest,
+    ) -> HeatmapComparisonResult:
+        del request
+
+        raise InvalidTransferAnalysisRequestError(
+            "Heatmap comparison requires two different players."
+        )
+
+    def override_runner() -> HeatmapComparisonRunner:
+        return fake_runner
+
+    application.dependency_overrides[get_heatmap_comparison_runner] = override_runner
+
+    with TestClient(application) as client:
+        response = client.get("/api/v1/transfer-intelligence/heatmap-comparison/10/10")
+
+    assert response.status_code == 400
+
+
+def _build_radar_comparison_result() -> RadarComparisonResult:
+    """Return deterministic position-relative radar comparison evidence."""
+
+    target_dimensions = (
+        RadarDimensionResult(
+            key="creativity",
+            label="Creativity",
+            raw_score=4.516,
+            percentile=100.0,
+            peer_count=216,
+        ),
+        RadarDimensionResult(
+            key="progression",
+            label="Progression",
+            raw_score=2.870,
+            percentile=98.6,
+            peer_count=216,
+        ),
+        RadarDimensionResult(
+            key="dribbling",
+            label="Dribbling",
+            raw_score=1.626,
+            percentile=94.0,
+            peer_count=216,
+        ),
+    )
+
+    candidate_dimensions = (
+        RadarDimensionResult(
+            key="creativity",
+            label="Creativity",
+            raw_score=1.604,
+            percentile=91.7,
+            peer_count=216,
+        ),
+        RadarDimensionResult(
+            key="progression",
+            label="Progression",
+            raw_score=0.115,
+            percentile=60.6,
+            peer_count=216,
+        ),
+        RadarDimensionResult(
+            key="dribbling",
+            label="Dribbling",
+            raw_score=0.621,
+            percentile=79.2,
+            peer_count=216,
+        ),
+    )
+
+    return RadarComparisonResult(
+        target=RadarPlayerResult(
+            player_id=10,
+            player_name="Michael Olise",
+            position="M",
+            available=True,
+            peer_count=216,
+            dimensions=target_dimensions,
+        ),
+        candidate=RadarPlayerResult(
+            player_id=20,
+            player_name="Dani Olmo",
+            position="M",
+            available=True,
+            peer_count=216,
+            dimensions=candidate_dimensions,
+        ),
+        comparison=RadarComparisonMetadataResult(
+            same_position=True,
+            overlay_available=True,
+            reason=None,
+        ),
+    )
+
+
+def test_radar_comparison_route_is_in_openapi_schema() -> None:
+    application = create_app()
+    schema = application.openapi()
+
+    route = (
+        "/api/v1/transfer-intelligence/radar-comparison/{target_player_id}/{candidate_player_id}"
+    )
+
+    operation = schema["paths"][route]["get"]
+
+    assert "400" in operation["responses"]
+    assert "404" in operation["responses"]
+    assert "500" in operation["responses"]
+    assert "503" in operation["responses"]
+
+    schemas = schema["components"]["schemas"]
+
+    response_schema = schemas["RadarComparisonResponse"]
+
+    assert response_schema["properties"]["target"]["$ref"].endswith("/RadarPlayerResponse")
+
+    assert response_schema["properties"]["candidate"]["$ref"].endswith("/RadarPlayerResponse")
+
+    assert response_schema["properties"]["comparison"]["$ref"].endswith(
+        "/RadarComparisonMetadataResponse"
+    )
+
+    player_schema = schemas["RadarPlayerResponse"]
+
+    dimension_reference = player_schema["properties"]["dimensions"]["items"]["$ref"]
+
+    assert dimension_reference.endswith("/RadarDimensionResponse")
+
+    dimension_properties = schemas["RadarDimensionResponse"]["properties"]
+
+    assert "raw_score" in dimension_properties
+    assert "percentile" in dimension_properties
+    assert "peer_count" in dimension_properties
+
+
+def test_radar_comparison_endpoint_delegates_player_ids() -> None:
+    application = create_app()
+
+    captured_requests: list[RadarComparisonRequest] = []
+
+    expected = _build_radar_comparison_result()
+
+    def fake_runner(
+        request: RadarComparisonRequest,
+    ) -> RadarComparisonResult:
+        captured_requests.append(request)
+
+        return expected
+
+    def override_runner() -> RadarComparisonRunner:
+        return fake_runner
+
+    application.dependency_overrides[get_radar_comparison_runner] = override_runner
+
+    with TestClient(application) as client:
+        response = client.get("/api/v1/transfer-intelligence/radar-comparison/10/20")
+
+    assert response.status_code == 200
+
+    assert captured_requests == [
+        RadarComparisonRequest(
+            target_player_id=10,
+            candidate_player_id=20,
+        )
+    ]
+
+    payload = response.json()
+
+    assert payload["target"]["player_id"] == 10
+    assert payload["target"]["player_name"] == "Michael Olise"
+    assert payload["target"]["position"] == "M"
+    assert payload["target"]["available"] is True
+    assert payload["target"]["peer_count"] == 216
+
+    assert payload["target"]["dimensions"][0] == {
+        "key": "creativity",
+        "label": "Creativity",
+        "raw_score": 4.516,
+        "percentile": 100.0,
+        "peer_count": 216,
+    }
+
+    assert payload["candidate"]["player_id"] == 20
+    assert payload["candidate"]["player_name"] == "Dani Olmo"
+
+    assert payload["comparison"] == {
+        "same_position": True,
+        "overlay_available": True,
+        "reason": None,
+    }
+
+
+def test_radar_comparison_endpoint_preserves_invalid_request_error() -> None:
+    application = create_app()
+
+    def fake_runner(
+        request: RadarComparisonRequest,
+    ) -> RadarComparisonResult:
+        del request
+
+        raise InvalidTransferAnalysisRequestError(
+            "Radar comparison requires two different players."
+        )
+
+    def override_runner() -> RadarComparisonRunner:
+        return fake_runner
+
+    application.dependency_overrides[get_radar_comparison_runner] = override_runner
+
+    with TestClient(application) as client:
+        response = client.get("/api/v1/transfer-intelligence/radar-comparison/10/10")
+
+    assert response.status_code == 400
+
+    assert response.json() == {
+        "error": {
+            "code": "invalid_transfer_analysis_request",
+            "message": ("Radar comparison requires two different players."),
+        }
+    }

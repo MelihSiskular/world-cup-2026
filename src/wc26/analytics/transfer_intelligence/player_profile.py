@@ -4,13 +4,19 @@ from __future__ import annotations
 
 import math
 from collections.abc import Mapping
+from dataclasses import replace
 from typing import Any, Final, cast
 
 import numpy as np
 import pandas as pd
 
+from wc26.analytics.player_intelligence.profile import (
+    PlayerIntelligenceProfile,
+    build_player_intelligence_profile,
+)
 from wc26.analytics.transfer_intelligence.datasets import (
     load_player_features,
+    load_player_tournament_summary,
 )
 from wc26.analytics.transfer_intelligence.errors import (
     InvalidDatasetError,
@@ -18,8 +24,14 @@ from wc26.analytics.transfer_intelligence.errors import (
     PlayerNotFoundError,
 )
 from wc26.analytics.transfer_intelligence.models import (
+    PlayerInsightResult,
+    PlayerIntelligenceResult,
+    PlayerPerformanceMetricGroupResult,
+    PlayerPerformanceMetricResult,
     PlayerProfileRequest,
     PlayerProfileResult,
+    PlayerSampleContextResult,
+    PlayerTournamentSummaryResult,
 )
 
 PLAYER_PROFILE_COLUMNS: Final[tuple[str, ...]] = (
@@ -226,9 +238,112 @@ def _record_to_profile(
     )
 
 
+def _convert_player_intelligence(
+    profile: PlayerIntelligenceProfile,
+) -> tuple[
+    PlayerTournamentSummaryResult,
+    PlayerIntelligenceResult,
+]:
+    """Convert internal analytics into the stable profile result contract."""
+
+    tournament = PlayerTournamentSummaryResult(
+        matches=profile.tournament.matches,
+        starts=profile.tournament.starts,
+        substitute_appearances=(profile.tournament.substitute_appearances),
+        captain_appearances=(profile.tournament.captain_appearances),
+        minutes=profile.tournament.minutes,
+        formations_used=profile.tournament.formations_used,
+        primary_formation=profile.tournament.primary_formation,
+        primary_lineup_position=(profile.tournament.primary_lineup_position),
+    )
+
+    groups = tuple(
+        PlayerPerformanceMetricGroupResult(
+            key=group.key.value,
+            metrics=tuple(
+                PlayerPerformanceMetricResult(
+                    key=metric.key,
+                    label=metric.label,
+                    short_label=metric.short_label,
+                    unit=metric.unit.value,
+                    value=metric.value,
+                    performance_percentile=(metric.performance_percentile),
+                    peer_count=metric.peer_count,
+                )
+                for metric in group.metrics
+            ),
+        )
+        for group in profile.groups
+    )
+
+    def convert_insight(
+        insight: object,
+    ) -> PlayerInsightResult:
+        from wc26.analytics.player_intelligence.insights import (
+            PlayerInsight,
+        )
+
+        if not isinstance(insight, PlayerInsight):
+            raise TypeError("Unexpected player intelligence insight.")
+
+        return PlayerInsightResult(
+            kind=insight.kind.value,
+            group=insight.group.value,
+            group_label=insight.group_label,
+            metric_key=insight.metric_key,
+            metric_label=insight.metric_label,
+            metric_short_label=insight.metric_short_label,
+            value=insight.value,
+            percentile=insight.percentile,
+            peer_count=insight.peer_count,
+            evidence=insight.evidence,
+        )
+
+    intelligence = PlayerIntelligenceResult(
+        position_group=profile.position_group.value,
+        sample=PlayerSampleContextResult(
+            target_minutes=profile.sample.target_minutes,
+            minimum_peer_minutes=(profile.sample.minimum_peer_minutes),
+            target_meets_peer_minimum=(profile.sample.target_meets_peer_minimum),
+        ),
+        groups=groups,
+        strengths=tuple(convert_insight(insight) for insight in profile.strengths),
+        watch_outs=tuple(convert_insight(insight) for insight in profile.watch_outs),
+    )
+
+    return tournament, intelligence
+
+
+def _enrich_player_profile(
+    profile: PlayerProfileResult,
+    tournament_dataframe: pd.DataFrame | None,
+) -> PlayerProfileResult:
+    """Attach tournament intelligence when an enriched table is available."""
+
+    if tournament_dataframe is None or tournament_dataframe.empty:
+        return profile
+
+    try:
+        intelligence_profile = build_player_intelligence_profile(
+            tournament_dataframe,
+            player_id=profile.player_id,
+        )
+    except ValueError as exc:
+        raise InvalidDatasetError(f"Player intelligence dataset is invalid: {exc}") from exc
+
+    tournament, intelligence = _convert_player_intelligence(intelligence_profile)
+
+    return replace(
+        profile,
+        tournament=tournament,
+        intelligence=intelligence,
+    )
+
+
 def _get_player_profile_from_validated_request(
     request: PlayerProfileRequest,
     dataframe: pd.DataFrame,
+    player_tournament_summary: pd.DataFrame | None = None,
 ) -> PlayerProfileResult:
     """Return one profile from an already loaded table."""
 
@@ -252,12 +367,18 @@ def _get_player_profile_from_validated_request(
         matches.iloc[0][list(PLAYER_PROFILE_COLUMNS)].to_dict(),
     )
 
-    return _record_to_profile(record)
+    profile = _record_to_profile(record)
+
+    return _enrich_player_profile(
+        profile,
+        player_tournament_summary,
+    )
 
 
 def get_player_profile_from_dataframe(
     request: PlayerProfileRequest,
     dataframe: pd.DataFrame,
+    player_tournament_summary: pd.DataFrame | None = None,
 ) -> PlayerProfileResult:
     """Return one profile using an already loaded feature table."""
 
@@ -266,6 +387,7 @@ def get_player_profile_from_dataframe(
     return _get_player_profile_from_validated_request(
         request,
         dataframe,
+        player_tournament_summary,
     )
 
 
@@ -278,9 +400,16 @@ def get_player_profile(
 
     dataframe = load_player_features(request.features)
 
+    player_tournament_summary = (
+        load_player_tournament_summary(request.player_tournament_summary)
+        if request.player_tournament_summary is not None
+        else None
+    )
+
     return _get_player_profile_from_validated_request(
         request,
         dataframe,
+        player_tournament_summary,
     )
 
 

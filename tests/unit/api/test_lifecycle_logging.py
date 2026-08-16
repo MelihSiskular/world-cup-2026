@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
@@ -51,6 +52,13 @@ def _catalog() -> TransferDataCatalog:
                 "player_id": [978838],
             }
         ),
+        heatmap_grids={
+            978838: np.full(
+                (2, 2),
+                0.25,
+                dtype=np.float32,
+            )
+        },
     )
 
 
@@ -62,6 +70,7 @@ def _dataset_paths() -> TransferDatasetPaths:
         similarity=Path("runtime/similarity.csv"),
         heatmap_similarity=Path("runtime/heatmap-similarity.csv"),
         heatmap_profiles=Path("runtime/heatmap-profiles.csv"),
+        heatmap_grids=Path("runtime/heatmap-grids.npz"),
     )
 
 
@@ -118,15 +127,19 @@ def test_catalog_lifecycle_logs_include_identity_and_counts(
     def fake_catalog_loader(
         *,
         features: Path,
+        player_tournament_summary: Path,
         similarity: Path,
         heatmap_similarity: Path,
         heatmap_profiles: Path,
+        heatmap_grids: Path,
     ) -> TransferDataCatalog:
+        _ = player_tournament_summary
         del (
             features,
             similarity,
             heatmap_similarity,
             heatmap_profiles,
+            heatmap_grids,
         )
 
         return catalog
@@ -186,6 +199,7 @@ def test_catalog_lifecycle_logs_include_identity_and_counts(
 
     assert loading.features_path == "runtime/features.csv"
     assert loading.similarity_path == "runtime/similarity.csv"
+    assert loading.heatmap_grids_path == "runtime/heatmap-grids.npz"
 
     loaded = _event_record(
         records,
@@ -196,6 +210,7 @@ def test_catalog_lifecycle_logs_include_identity_and_counts(
     assert loaded.similarity_rows == 1
     assert loaded.heatmap_similarity_rows == 1
     assert loaded.heatmap_profiles_rows == 1
+    assert loaded.heatmap_grids_count == 1
     assert loaded.duration_ms >= 0
 
     ready = _event_record(
@@ -286,15 +301,19 @@ def test_catalog_failure_emits_failure_and_cleanup_logs(
     def failing_catalog_loader(
         *,
         features: Path,
+        player_tournament_summary: Path,
         similarity: Path,
         heatmap_similarity: Path,
         heatmap_profiles: Path,
+        heatmap_grids: Path,
     ) -> TransferDataCatalog:
+        _ = player_tournament_summary
         del (
             features,
             similarity,
             heatmap_similarity,
             heatmap_profiles,
+            heatmap_grids,
         )
 
         raise InvalidDatasetError("Catalog lifecycle failure.")

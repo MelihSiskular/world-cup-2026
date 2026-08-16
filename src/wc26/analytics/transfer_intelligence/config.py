@@ -3,6 +3,10 @@
 from pathlib import Path
 from typing import Final, TypedDict
 
+DEFAULT_PLAYER_TOURNAMENT_SUMMARY: Final[Path] = Path(
+    "data/processed/player_matches_analysis/player_tournament_full_summary_enriched.csv"
+)
+
 DEFAULT_FEATURES: Final[Path] = Path(
     "data/processed/transfer_intelligence/transfer_feature_table.csv"
 )
@@ -18,6 +22,8 @@ DEFAULT_HEATMAP_SIMILARITY: Final[Path] = Path(
 DEFAULT_HEATMAP_PROFILES: Final[Path] = Path(
     "data/processed/player_heatmaps/player_heatmap_profiles.csv"
 )
+
+DEFAULT_HEATMAP_GRIDS: Final[Path] = Path("data/processed/player_heatmaps/player_heatmap_grids.npz")
 
 DEFAULT_OUTPUT_DIR: Final[Path] = Path("data/processed/transfer_intelligence/replacement_results")
 
@@ -149,6 +155,7 @@ HEATMAP_METRIC_COLUMNS: Final[list[str]] = [
 
 __all__ = [
     "DEFAULT_FEATURES",
+    "DEFAULT_PLAYER_TOURNAMENT_SUMMARY",
     "DEFAULT_HEATMAP_PROFILES",
     "DEFAULT_HEATMAP_SIMILARITY",
     "DEFAULT_OUTPUT_DIR",

@@ -59,6 +59,10 @@ def _dataset_requirements(
             path=dataset_paths.features,
         ),
         RuntimeFileRequirement(
+            environment_variable=("WC26_PLAYER_TOURNAMENT_SUMMARY_PATH"),
+            path=(dataset_paths.player_tournament_summary),
+        ),
+        RuntimeFileRequirement(
             environment_variable="WC26_SIMILARITY_PATH",
             path=dataset_paths.similarity,
         ),
@@ -69,6 +73,10 @@ def _dataset_requirements(
         RuntimeFileRequirement(
             environment_variable=("WC26_HEATMAP_PROFILES_PATH"),
             path=dataset_paths.heatmap_profiles,
+        ),
+        RuntimeFileRequirement(
+            environment_variable=("WC26_HEATMAP_GRIDS_PATH"),
+            path=dataset_paths.heatmap_grids,
         ),
     )
 
@@ -96,9 +104,11 @@ def _runtime_dataset_paths(
 
     return {
         "features": dataset_paths.features,
+        "player_tournament_summary": (dataset_paths.player_tournament_summary),
         "similarity": dataset_paths.similarity,
         "heatmap_similarity": (dataset_paths.heatmap_similarity),
         "heatmap_profiles": (dataset_paths.heatmap_profiles),
+        "heatmap_grids": (dataset_paths.heatmap_grids),
     }
 
 

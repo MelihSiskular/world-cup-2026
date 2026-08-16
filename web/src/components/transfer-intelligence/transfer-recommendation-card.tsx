@@ -1,5 +1,11 @@
 import Link from "next/link";
 
+import {
+  PlayerImage,
+} from "@/components/players/player-image";
+import {
+  RecommendationExplainability,
+} from "@/components/transfer-intelligence/recommendation-explainability";
 import type {
   TransferModeName,
   TransferRecommendationResponse,
@@ -87,7 +93,7 @@ export function TransferRecommendationCard({
       label: "Spatial similarity",
       value: formatMetricPercentage(
         recommendation
-          .effective_heatmap_score_pct,
+          .spatial_similarity_pct,
       ),
     },
     {
@@ -109,45 +115,66 @@ export function TransferRecommendationCard({
     <article className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
       <div className="grid lg:grid-cols-[minmax(0,1fr)_13rem]">
         <div className="p-5 sm:p-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex size-9 items-center justify-center rounded-xl bg-brand-dark text-sm font-bold text-white">
-              {rank ?? "—"}
-            </span>
-
-            <span className="rounded-full bg-surface-secondary px-3 py-1.5 text-xs font-semibold text-brand-dark">
-              {formatPlayerPosition(
-                recommendation.position,
-              )}
-            </span>
-
-            <span className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted">
-              {
-                recommendation
-                  .recommendation_strength
+          <div className="flex items-start gap-4">
+            <PlayerImage
+              playerId={
+                recommendation.player_id
               }
-            </span>
+              playerName={
+                recommendation.player_name
+              }
+              size="card"
+              className="bg-page"
+            />
+
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex size-9 items-center justify-center rounded-xl bg-brand-dark text-sm font-bold text-white">
+                  {rank ?? "—"}
+                </span>
+
+                <span className="rounded-full bg-surface-secondary px-3 py-1.5 text-xs font-semibold text-brand-dark">
+                  {formatPlayerPosition(
+                    recommendation.position,
+                  )}
+                </span>
+
+                <span className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted">
+                  {
+                    recommendation
+                      .recommendation_strength
+                  }
+                </span>
+              </div>
+
+              <div className="mt-3">
+                <h3 className="break-words text-2xl font-bold tracking-[-0.035em]">
+                  {
+                    recommendation
+                      .player_name
+                  }
+                </h3>
+
+                <p className="mt-1 break-words text-sm font-medium text-muted">
+                  {recommendation
+                    .national_team_name ??
+                    recommendation
+                      .country_name ??
+                    "National team unavailable"}
+                </p>
+
+                <p className="mt-2 break-words font-semibold text-brand">
+                  {recommendation
+                    .final_role ??
+                    recommendation
+                      .archetype ??
+                    "Role unavailable"}
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="mt-5">
-            <h3 className="text-2xl font-bold tracking-[-0.035em]">
-              {recommendation.player_name}
-            </h3>
-
-            <p className="mt-1 text-sm font-medium text-muted">
-              {recommendation
-                .national_team_name ??
-                recommendation.country_name ??
-                "National team unavailable"}
-            </p>
-
-            <p className="mt-3 font-semibold text-brand">
-              {recommendation.final_role ??
-                recommendation.archetype ??
-                "Role unavailable"}
-            </p>
-          </div>
-
-          <dl className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <dl className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {metrics.map((metric) => (
               <div
                 key={metric.label}
@@ -164,20 +191,13 @@ export function TransferRecommendationCard({
             ))}
           </dl>
 
-          <div className="mt-6 rounded-xl border border-brand/15 bg-surface-secondary p-4">
-            <p className="text-xs font-semibold tracking-[0.12em] text-brand uppercase">
-              Why recommended
-            </p>
+          <RecommendationExplainability
+            explainability={
+              recommendation.explainability
+            }
+          />
 
-            <p className="mt-2 text-sm leading-6 text-muted">
-              {
-                recommendation
-                  .why_recommended
-              }
-            </p>
-          </div>
-
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap gap-3">
             <Link
               href={comparisonHref}
               className="rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"

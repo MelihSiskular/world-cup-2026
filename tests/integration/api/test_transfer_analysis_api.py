@@ -29,6 +29,88 @@ EXPECTED_MODES = {
 }
 
 
+def _assert_valid_explainability(
+    recommendation: dict[str, Any],
+    *,
+    mode_name: str,
+) -> None:
+    """Validate one real recommendation explanation."""
+
+    explanation = recommendation["explainability"]
+
+    assert explanation["mode"] == mode_name
+
+    score = explanation["score"]
+
+    assert score["final_score"] == pytest.approx(recommendation[f"{mode_name}_score"])
+
+    assert score["weighted_signal_total"] + score["bonus_total"] == pytest.approx(
+        score["pre_clip_score"],
+        abs=0.02,
+    )
+
+    expected_final_score = min(
+        100.0,
+        max(
+            0.0,
+            score["pre_clip_score"],
+        ),
+    )
+
+    assert score["final_score"] == pytest.approx(
+        expected_final_score,
+        abs=0.01,
+    )
+
+    assert score["was_clipped"] is (
+        score["pre_clip_score"] < 0.0 or score["pre_clip_score"] > 100.0
+    )
+
+    signals = explanation["signals"]
+
+    assert len(signals) == 8
+
+    assert {signal["key"] for signal in signals} == {
+        "statistical_similarity_pct",
+        "role_fit_pct",
+        "spatial_similarity_pct",
+        "effective_heatmap_score_pct",
+        "player_quality_score",
+        "data_reliability_score",
+        "market_value_advantage_pct",
+        "age_suitability_pct",
+    }
+
+    heatmap_signal = next(
+        signal for signal in signals if signal["key"] == "effective_heatmap_score_pct"
+    )
+
+    assert heatmap_signal["evidence_status"] in {
+        "available",
+        "fallback",
+        "missing",
+    }
+
+    if heatmap_signal["evidence_status"] == "fallback":
+        assert heatmap_signal["source_score"] is None
+
+    if heatmap_signal["evidence_status"] == "available":
+        assert heatmap_signal["source_score"] is not None
+
+    bonuses = explanation["bonuses"]
+
+    assert {bonus["key"] for bonus in bonuses} == {
+        "same_final_role",
+        "same_archetype",
+    }
+
+    reasons = explanation["reasons"]
+
+    assert 1 <= len(reasons) <= 4
+
+    assert recommendation["why_recommended"] == "; ".join(reason["text"] for reason in reasons)
+
+
 def _assert_valid_analysis_payload(
     payload: dict[str, Any],
     *,
@@ -48,6 +130,12 @@ def _assert_valid_analysis_payload(
             mode_result["recommendations"],
             list,
         )
+
+        for recommendation in mode_result["recommendations"]:
+            _assert_valid_explainability(
+                recommendation,
+                mode_name=mode_name,
+            )
 
     recommendation_counts = [
         len(mode_result["recommendations"]) for mode_result in payload["modes"].values()

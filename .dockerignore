@@ -39,11 +39,15 @@ data/*
 
 data/processed/*
 !data/processed/transfer_intelligence/
+!data/processed/player_matches_analysis/
 !data/processed/player_similarity/
 !data/processed/player_heatmaps/
 
 data/processed/transfer_intelligence/*
 !data/processed/transfer_intelligence/transfer_feature_table.csv
+
+data/processed/player_matches_analysis/*
+!data/processed/player_matches_analysis/player_tournament_full_summary_enriched.csv
 
 data/processed/player_similarity/*
 !data/processed/player_similarity/player_similarity_breakdown_long.csv
@@ -51,3 +55,4 @@ data/processed/player_similarity/*
 data/processed/player_heatmaps/*
 !data/processed/player_heatmaps/heatmap_similarity_long.csv
 !data/processed/player_heatmaps/player_heatmap_profiles.csv
+!data/processed/player_heatmaps/player_heatmap_grids.npz

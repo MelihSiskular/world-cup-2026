@@ -1,0 +1,144 @@
+name: Browser Validation
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "24"
+  WC26_PRODUCTION_API_BASE_URL: https://world-cup-2026-production.up.railway.app
+  WC26_VALIDATION_API_BASE_URL: https://world-cup-2026-phase-6-validation.up.railway.app
+  WC26_E2E_LOCAL_SERVER: "1"
+  WC26_CLOUD_OBSERVABILITY_MAX_ATTEMPTS: "150"
+  WC26_CLOUD_OBSERVABILITY_POLL_INTERVAL: "2"
+  WC26_PR_HEAD_SHA: "${{ github.event.pull_request.head.sha }}"
+
+jobs:
+  browser:
+    name: Chromium and WebKit Journey
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    defaults:
+      run:
+        working-directory: web
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Select browser validation backend
+        shell: bash
+        working-directory: .
+        run: |
+          set -euo pipefail
+
+          exact_sha_required="0"
+          expected_backend_sha=""
+
+          case "${GITHUB_EVENT_NAME}:${GITHUB_REF_NAME}" in
+            push:main)
+              api_base_url="${WC26_PRODUCTION_API_BASE_URL}"
+              exact_sha_required="1"
+              expected_backend_sha="${GITHUB_SHA}"
+              ;;
+            push:test/phase-6-production-validation)
+              api_base_url="${WC26_VALIDATION_API_BASE_URL}"
+              exact_sha_required="1"
+              expected_backend_sha="${GITHUB_SHA}"
+              ;;
+            pull_request:*)
+              if [[ "${GITHUB_HEAD_REF:-}" == "test/phase-6-production-validation" ]]; then
+                api_base_url="${WC26_VALIDATION_API_BASE_URL}"
+                exact_sha_required="1"
+                expected_backend_sha="${WC26_PR_HEAD_SHA}"
+              else
+                api_base_url="${WC26_PRODUCTION_API_BASE_URL}"
+              fi
+              ;;
+            *)
+              api_base_url="${WC26_PRODUCTION_API_BASE_URL}"
+              ;;
+          esac
+
+          if [[ "${exact_sha_required}" == "1" ]]; then
+            if [[ ! "${expected_backend_sha}" =~ ^[0-9a-fA-F]{40}$ ]]; then
+              echo "::error::Expected backend commit SHA is invalid."
+              exit 1
+            fi
+          fi
+
+          {
+            echo "WC26_API_BASE_URL=${api_base_url}"
+            echo "WC26_REQUIRE_EXACT_BACKEND_SHA=${exact_sha_required}"
+            echo "WC26_EXPECTED_BACKEND_SHA=${expected_backend_sha}"
+          } >> "${GITHUB_ENV}"
+
+          echo "BrowserValidationBackend=${api_base_url}"
+          echo "ExactBackendSHARequired=${exact_sha_required}"
+          echo "ExpectedBackendSHA=${expected_backend_sha:-not-required}"
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Validate frontend environment
+        run: npm run env:check
+
+      - name: Build production frontend
+        run: npm run build
+
+      - name: Wait for matching Railway deployment
+        shell: bash
+        working-directory: .
+        run: |
+          set -euo pipefail
+
+          if [[ "${WC26_REQUIRE_EXACT_BACKEND_SHA}" != "1" ]]; then
+            echo "Exact backend SHA wait is not required for this ref."
+            exit 0
+          fi
+
+          export WC26_EXPECTED_COMMIT_SHA="${WC26_EXPECTED_BACKEND_SHA}"
+
+          ./scripts/cloud_observability_test.sh             "${WC26_API_BASE_URL}"
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Run browser validation
+        run: npm run test:e2e
+
+      - name: Upload Playwright diagnostics
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            web/playwright-report
+            web/test-results
+          if-no-files-found: warn
+          retention-days: 14

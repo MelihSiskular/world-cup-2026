@@ -117,6 +117,20 @@ class _ServiceDoubles:
                     "recommendation_score": np.float64(91.2),
                     "market_value_eur": np.int64(60_000_000),
                     "missing_metric": np.nan,
+                    "explainability": {
+                        "mode": self.first_mode,
+                        "score": {
+                            "final_score": np.float64(91.2),
+                            "was_clipped": np.bool_(False),
+                        },
+                        "signals": [
+                            {
+                                "key": "effective_heatmap_score_pct",
+                                "source_score": np.nan,
+                                "input_score": np.float64(70.0),
+                            }
+                        ],
+                    },
                 }
             ]
         )
@@ -270,6 +284,20 @@ def test_run_transfer_analysis_from_catalog_returns_structured_result(
         "recommendation_score": 91.2,
         "market_value_eur": 60_000_000,
         "missing_metric": None,
+        "explainability": {
+            "mode": mode_names[0],
+            "score": {
+                "final_score": 91.2,
+                "was_clipped": False,
+            },
+            "signals": [
+                {
+                    "key": "effective_heatmap_score_pct",
+                    "source_score": None,
+                    "input_score": 70.0,
+                }
+            ],
+        },
     }
 
     assert all(not mode.recommendations for mode in result.modes[1:])

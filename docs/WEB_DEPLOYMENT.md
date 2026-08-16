@@ -44,11 +44,13 @@ Local development:
 WC26_API_BASE_URL=http://127.0.0.1:8000
 ```
 
-Vercel Preview and Production:
+Vercel Production:
 
 ```env
 WC26_API_BASE_URL=https://world-cup-2026-production.up.railway.app
 ```
+
+Release-validation Preview deployments should use a branch-specific override that points to the matching isolated Railway validation environment instead of changing canonical Production.
 
 The variable must remain server-only and must not use the `NEXT_PUBLIC_` prefix.
 
@@ -134,6 +136,14 @@ It validates:
 - the production Next.js build;
 - production dependency vulnerabilities.
 
+### Browser Validation
+
+```text
+.github/workflows/browser-validation.yml
+```
+
+Runs the Playwright browser suite across desktop and mobile Chromium and WebKit. This workflow validates a built frontend independently from the deployed Vercel Preview release-acceptance step.
+
 ### Production Verification
 
 ```text
@@ -169,14 +179,24 @@ Do not configure a second frontend backend URL through a `NEXT_PUBLIC_*` variabl
 
 ## Vercel Environment Variables
 
-Add the following variable to both Preview and Production:
+Canonical Production uses the canonical Railway production service:
 
 ```text
-Name:  WC26_API_BASE_URL
-Value: https://world-cup-2026-production.up.railway.app
+Environment: Production
+Name:        WC26_API_BASE_URL
+Value:       https://world-cup-2026-production.up.railway.app
 ```
 
-Environment-variable changes affect only new deployments. Redeploy the application after changing a value.
+For isolated release validation, create a branch-specific Preview override so the candidate frontend talks to the matching Railway candidate without changing Production. The Phase 6 validation setup is:
+
+```text
+Environment: Preview
+Branch:      test/phase-6-production-validation
+Name:        WC26_API_BASE_URL
+Value:       https://world-cup-2026-phase-6-validation.up.railway.app
+```
+
+Branch-specific Preview values override the shared Preview value for that branch. Environment-variable changes affect only new deployments, so redeploy the Preview after changing a value.
 
 ## Deployment Flow
 
@@ -186,6 +206,7 @@ Feature branch
 Python Quality
 Docker Validation
 Web Quality
+Browser Validation
     ↓
 Vercel preview deployment
     ↓
@@ -204,6 +225,21 @@ Frontend production smoke test
 Vercel Preview deployments should be used to inspect branch changes before merging.
 
 The production deployment must originate from `main`.
+
+### Protected Preview Browser Validation
+
+When Vercel Deployment Protection is enabled, deployed Playwright tests use an automation bypass secret through the optional `VERCEL_AUTOMATION_BYPASS_SECRET` environment variable. The secret value must never be committed.
+
+```bash
+read -s "VERCEL_AUTOMATION_BYPASS_SECRET?Vercel bypass secret: "
+echo
+export VERCEL_AUTOMATION_BYPASS_SECRET
+
+WC26_E2E_BASE_URL="https://your-preview-domain.vercel.app" \
+  npm run test:e2e
+```
+
+The Playwright configuration sends the protection-bypass header only when the secret is present. Without the variable, local and public-production browser validation behaves normally.
 
 ## Production Acceptance
 
@@ -302,6 +338,8 @@ After deployment, verify:
 8. Recommendation and comparison pages work.
 9. `/methodology` shows the active dataset identity.
 10. The production smoke script passes.
+11. The deployed Playwright journey passes on Chromium and WebKit.
+12. The deployed Playwright journey passes on mobile Chromium and mobile WebKit.
 
 ## Frontend Rollback
 

@@ -319,7 +319,7 @@ export function TransferAnalysisForm({
         </div>
       </form>
 
-      <aside className="h-fit rounded-2xl border border-border bg-surface-secondary p-6 lg:sticky lg:top-24">
+      <aside className="min-w-0 h-fit rounded-2xl border border-border bg-surface-secondary p-6 lg:sticky lg:top-24">
         <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
           Analysis target
         </p>
@@ -349,7 +349,7 @@ export function TransferAnalysisForm({
           </div>
         ) : (
           <>
-            <h2 className="mt-4 text-2xl font-bold tracking-[-0.03em]">
+            <h2 className="mt-4 break-words text-2xl font-bold tracking-[-0.03em]">
               {
                 playerProfile.data
                   .player_name

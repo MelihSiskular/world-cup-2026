@@ -9,11 +9,21 @@ from fastapi import Request
 from wc26.analytics.transfer_intelligence.catalog import (
     TransferDataCatalog,
 )
+from wc26.analytics.transfer_intelligence.errors import (
+    InvalidDatasetError,
+)
+from wc26.analytics.transfer_intelligence.heatmap_comparison import (
+    get_heatmap_comparison_from_catalog,
+)
 from wc26.analytics.transfer_intelligence.models import (
+    HeatmapComparisonRequest,
+    HeatmapComparisonResult,
     PlayerProfileRequest,
     PlayerProfileResult,
     PlayerSearchRequest,
     PlayerSearchResult,
+    RadarComparisonRequest,
+    RadarComparisonResult,
     TransferAnalysisRequest,
     TransferAnalysisResult,
 )
@@ -25,6 +35,9 @@ from wc26.analytics.transfer_intelligence.player_search import (
     search_players,
     search_players_from_dataframe,
 )
+from wc26.analytics.transfer_intelligence.radar_comparison import (
+    get_radar_comparison_from_catalog,
+)
 from wc26.analytics.transfer_intelligence.service import (
     run_transfer_analysis,
     run_transfer_analysis_from_catalog,
@@ -35,6 +48,18 @@ from wc26.api.settings import TransferDatasetPaths
 type TransferAnalysisRunner = Callable[
     [TransferAnalysisRequest],
     TransferAnalysisResult,
+]
+
+
+type HeatmapComparisonRunner = Callable[
+    [HeatmapComparisonRequest],
+    HeatmapComparisonResult,
+]
+
+
+type RadarComparisonRunner = Callable[
+    [RadarComparisonRequest],
+    RadarComparisonResult,
 ]
 
 type PlayerSearchRunner = Callable[
@@ -75,6 +100,39 @@ def create_catalog_player_profile_runner(
         return get_player_profile_from_dataframe(
             request,
             catalog.players,
+            catalog.player_tournament_summary,
+        )
+
+    return runner
+
+
+def create_catalog_heatmap_comparison_runner(
+    catalog: TransferDataCatalog,
+) -> HeatmapComparisonRunner:
+    """Create a heatmap-comparison runner backed by a loaded catalog."""
+
+    def runner(
+        request: HeatmapComparisonRequest,
+    ) -> HeatmapComparisonResult:
+        return get_heatmap_comparison_from_catalog(
+            request,
+            catalog,
+        )
+
+    return runner
+
+
+def create_catalog_radar_comparison_runner(
+    catalog: TransferDataCatalog,
+) -> RadarComparisonRunner:
+    """Create a radar-comparison runner backed by a loaded catalog."""
+
+    def runner(
+        request: RadarComparisonRequest,
+    ) -> RadarComparisonResult:
+        return get_radar_comparison_from_catalog(
+            request,
+            catalog,
         )
 
     return runner
@@ -132,6 +190,32 @@ def get_player_search_runner(
     return create_catalog_player_search_runner(catalog)
 
 
+def get_heatmap_comparison_runner(
+    request: Request,
+) -> HeatmapComparisonRunner:
+    """Return the startup-catalog heatmap comparison service."""
+
+    catalog = _get_runtime_catalog(request)
+
+    if catalog is None:
+        raise InvalidDatasetError("Runtime transfer data catalog is unavailable.")
+
+    return create_catalog_heatmap_comparison_runner(catalog)
+
+
+def get_radar_comparison_runner(
+    request: Request,
+) -> RadarComparisonRunner:
+    """Return the startup-catalog radar comparison service."""
+
+    catalog = _get_runtime_catalog(request)
+
+    if catalog is None:
+        raise InvalidDatasetError("Runtime transfer data catalog is unavailable.")
+
+    return create_catalog_radar_comparison_runner(catalog)
+
+
 def get_transfer_dataset_paths(
     request: Request,
 ) -> TransferDatasetPaths:
@@ -156,13 +240,19 @@ def get_transfer_analysis_runner(
 
 
 __all__ = [
+    "HeatmapComparisonRunner",
+    "RadarComparisonRunner",
     "PlayerProfileRunner",
     "PlayerSearchRunner",
     "TransferAnalysisRunner",
     "TransferDatasetPaths",
+    "create_catalog_heatmap_comparison_runner",
+    "create_catalog_radar_comparison_runner",
     "create_catalog_player_profile_runner",
     "create_catalog_player_search_runner",
     "create_catalog_transfer_analysis_runner",
+    "get_heatmap_comparison_runner",
+    "get_radar_comparison_runner",
     "get_player_profile_runner",
     "get_player_search_runner",
     "get_transfer_analysis_runner",

@@ -8,13 +8,20 @@ import pandas as pd
 from wc26.analytics.transfer_intelligence.config import (
     MODE_CONFIG,
 )
+from wc26.analytics.transfer_intelligence.explainability import (
+    build_recommendation_explainability,
+)
 from wc26.analytics.transfer_intelligence.explanations import (
-    build_reason,
-    classify_candidate,
-    recommendation_strength,
+    build_reason as build_reason,
+)
+from wc26.analytics.transfer_intelligence.explanations import (
+    classify_candidate as classify_candidate,
+)
+from wc26.analytics.transfer_intelligence.explanations import (
+    recommendation_strength as recommendation_strength,
 )
 from wc26.analytics.transfer_intelligence.scoring import (
-    calculate_mode_score,
+    calculate_mode_score as calculate_mode_score,
 )
 
 
@@ -100,6 +107,15 @@ def generate_mode_results(
             mode,
             target_heatmap_profile,
         ),
+        axis=1,
+    )
+
+    result["explainability"] = result.apply(
+        lambda row: build_recommendation_explainability(
+            row,
+            mode,
+            target_heatmap_profile,
+        ).to_dict(),
         axis=1,
     )
 

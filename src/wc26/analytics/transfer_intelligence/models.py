@@ -141,11 +141,172 @@ class PlayerSearchResult:
 
 
 @dataclass(frozen=True, slots=True)
+class PlayerTournamentSummaryResult:
+    """Tournament participation context exposed by the player profile."""
+
+    matches: int | None
+    starts: int | None
+    substitute_appearances: int | None
+    captain_appearances: int | None
+    minutes: float | None
+    formations_used: int | None
+    primary_formation: str | None
+    primary_lineup_position: str | None
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible tournament context."""
+
+        return {
+            "matches": self.matches,
+            "starts": self.starts,
+            "substitute_appearances": self.substitute_appearances,
+            "captain_appearances": self.captain_appearances,
+            "minutes": self.minutes,
+            "formations_used": self.formations_used,
+            "primary_formation": self.primary_formation,
+            "primary_lineup_position": self.primary_lineup_position,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerSampleContextResult:
+    """Evidence boundary for percentile interpretation."""
+
+    target_minutes: float | None
+    minimum_peer_minutes: float
+    target_meets_peer_minimum: bool | None
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible sample context."""
+
+        return {
+            "target_minutes": self.target_minutes,
+            "minimum_peer_minutes": self.minimum_peer_minutes,
+            "target_meets_peer_minimum": (self.target_meets_peer_minimum),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerPerformanceMetricResult:
+    """One presentation-ready player performance metric."""
+
+    key: str
+    label: str
+    short_label: str
+    unit: str
+    value: float
+    performance_percentile: float | None
+    peer_count: int
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible performance metric."""
+
+        return {
+            "key": self.key,
+            "label": self.label,
+            "short_label": self.short_label,
+            "unit": self.unit,
+            "value": self.value,
+            "performance_percentile": (self.performance_percentile),
+            "peer_count": self.peer_count,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerPerformanceMetricGroupResult:
+    """One grouped family of player performance metrics."""
+
+    key: str
+    metrics: tuple[
+        PlayerPerformanceMetricResult,
+        ...,
+    ]
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible metric group."""
+
+        metric_values: list[JsonValue] = [metric.to_dict() for metric in self.metrics]
+
+        return {
+            "key": self.key,
+            "metrics": metric_values,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerInsightResult:
+    """One explainable player strength or watch-out."""
+
+    kind: str
+    group: str
+    group_label: str
+    metric_key: str
+    metric_label: str
+    metric_short_label: str
+    value: float
+    percentile: float
+    peer_count: int
+    evidence: str
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible player insight."""
+
+        return {
+            "kind": self.kind,
+            "group": self.group,
+            "group_label": self.group_label,
+            "metric_key": self.metric_key,
+            "metric_label": self.metric_label,
+            "metric_short_label": self.metric_short_label,
+            "value": self.value,
+            "percentile": self.percentile,
+            "peer_count": self.peer_count,
+            "evidence": self.evidence,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerIntelligenceResult:
+    """Position-aware tournament intelligence for one player."""
+
+    position_group: str
+    sample: PlayerSampleContextResult
+    groups: tuple[
+        PlayerPerformanceMetricGroupResult,
+        ...,
+    ]
+    strengths: tuple[
+        PlayerInsightResult,
+        ...,
+    ]
+    watch_outs: tuple[
+        PlayerInsightResult,
+        ...,
+    ]
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible player intelligence."""
+
+        group_values: list[JsonValue] = [group.to_dict() for group in self.groups]
+        strength_values: list[JsonValue] = [insight.to_dict() for insight in self.strengths]
+        watch_out_values: list[JsonValue] = [insight.to_dict() for insight in self.watch_outs]
+
+        return {
+            "position_group": self.position_group,
+            "sample": self.sample.to_dict(),
+            "groups": group_values,
+            "strengths": strength_values,
+            "watch_outs": watch_out_values,
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class PlayerProfileRequest:
     """Input required to retrieve one player profile."""
 
     player_id: int
     features: Path
+    player_tournament_summary: Path | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -176,6 +337,8 @@ class PlayerProfileResult:
     data_reliability_score: float | None
     player_quality_score: float | None
     role_reason: str | None
+    tournament: PlayerTournamentSummaryResult | None = None
+    intelligence: PlayerIntelligenceResult | None = None
 
     def to_dict(self) -> JsonObject:
         """Return a JSON-compatible player profile."""
@@ -205,18 +368,236 @@ class PlayerProfileResult:
             "data_reliability_score": self.data_reliability_score,
             "player_quality_score": self.player_quality_score,
             "role_reason": self.role_reason,
+            "tournament": (None if self.tournament is None else self.tournament.to_dict()),
+            "intelligence": (None if self.intelligence is None else self.intelligence.to_dict()),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class HeatmapComparisonRequest:
+    """Stable player identifiers for one heatmap comparison."""
+
+    target_player_id: int
+    candidate_player_id: int
+
+
+@dataclass(frozen=True, slots=True)
+class HeatmapPlayerResult:
+    """Heatmap evidence available for one comparison player."""
+
+    player_id: int
+    player_name: str
+    available: bool
+    grid_width: int | None
+    grid_height: int | None
+    grid: tuple[tuple[float, ...], ...] | None
+    matches_with_heatmap: int | None
+    heatmap_point_count: int | None
+    weighted_mean_x: float | None
+    weighted_mean_y: float | None
+    peak_cell_x: float | None
+    peak_cell_y: float | None
+    heatmap_entropy: float | None
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible player heatmap evidence."""
+
+        grid_value: JsonValue = None
+
+        if self.grid is not None:
+            grid_rows: list[JsonValue] = []
+
+            for row in self.grid:
+                row_values: list[JsonValue] = [float(value) for value in row]
+                grid_rows.append(row_values)
+
+            grid_value = grid_rows
+
+        return {
+            "player_id": self.player_id,
+            "player_name": self.player_name,
+            "available": self.available,
+            "grid_width": self.grid_width,
+            "grid_height": self.grid_height,
+            "grid": grid_value,
+            "matches_with_heatmap": self.matches_with_heatmap,
+            "heatmap_point_count": self.heatmap_point_count,
+            "weighted_mean_x": self.weighted_mean_x,
+            "weighted_mean_y": self.weighted_mean_y,
+            "peak_cell_x": self.peak_cell_x,
+            "peak_cell_y": self.peak_cell_y,
+            "heatmap_entropy": self.heatmap_entropy,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class HeatmapSimilarityResult:
+    """Measured pairwise heatmap similarity evidence."""
+
+    available: bool
+    heatmap_similarity_score_pct: float | None
+    heatmap_cosine_similarity_pct: float | None
+    occupation_overlap_pct: float | None
+    peak_zone_similarity_pct: float | None
+    peak_zone_distance: float | None
+    entropy_similarity_pct: float | None
+    target_matches_with_heatmap: int | None
+    candidate_matches_with_heatmap: int | None
+    target_heatmap_points: int | None
+    candidate_heatmap_points: int | None
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible measured similarity evidence."""
+
+        return {
+            "available": self.available,
+            "heatmap_similarity_score_pct": (self.heatmap_similarity_score_pct),
+            "heatmap_cosine_similarity_pct": (self.heatmap_cosine_similarity_pct),
+            "occupation_overlap_pct": (self.occupation_overlap_pct),
+            "peak_zone_similarity_pct": (self.peak_zone_similarity_pct),
+            "peak_zone_distance": self.peak_zone_distance,
+            "entropy_similarity_pct": (self.entropy_similarity_pct),
+            "target_matches_with_heatmap": (self.target_matches_with_heatmap),
+            "candidate_matches_with_heatmap": (self.candidate_matches_with_heatmap),
+            "target_heatmap_points": (self.target_heatmap_points),
+            "candidate_heatmap_points": (self.candidate_heatmap_points),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class HeatmapComparisonResult:
+    """Complete target-to-candidate heatmap comparison."""
+
+    target: HeatmapPlayerResult
+    candidate: HeatmapPlayerResult
+    similarity: HeatmapSimilarityResult
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible heatmap comparison."""
+
+        return {
+            "target": self.target.to_dict(),
+            "candidate": self.candidate.to_dict(),
+            "similarity": self.similarity.to_dict(),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class RadarComparisonRequest:
+    """Stable player identifiers for one radar comparison."""
+
+    target_player_id: int
+    candidate_player_id: int
+
+
+@dataclass(frozen=True, slots=True)
+class RadarDimensionResult:
+    """One position-relative playing-style radar dimension."""
+
+    key: str
+    label: str
+    raw_score: float | None
+    percentile: float | None
+    peer_count: int
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible radar dimension evidence."""
+
+        return {
+            "key": self.key,
+            "label": self.label,
+            "raw_score": self.raw_score,
+            "percentile": self.percentile,
+            "peer_count": self.peer_count,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class RadarPlayerResult:
+    """Position-relative radar profile for one player."""
+
+    player_id: int
+    player_name: str
+    position: str | None
+    available: bool
+    peer_count: int
+    dimensions: tuple[RadarDimensionResult, ...]
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible radar player profile."""
+
+        dimension_values: list[JsonValue] = [dimension.to_dict() for dimension in self.dimensions]
+
+        return {
+            "player_id": self.player_id,
+            "player_name": self.player_name,
+            "position": self.position,
+            "available": self.available,
+            "peer_count": self.peer_count,
+            "dimensions": dimension_values,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class RadarComparisonMetadataResult:
+    """Compatibility metadata for rendering two radar profiles."""
+
+    same_position: bool
+    overlay_available: bool
+    reason: str | None
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible radar comparison metadata."""
+
+        return {
+            "same_position": self.same_position,
+            "overlay_available": self.overlay_available,
+            "reason": self.reason,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class RadarComparisonResult:
+    """Complete target-to-candidate playing-style radar comparison."""
+
+    target: RadarPlayerResult
+    candidate: RadarPlayerResult
+    comparison: RadarComparisonMetadataResult
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible radar comparison."""
+
+        return {
+            "target": self.target.to_dict(),
+            "candidate": self.candidate.to_dict(),
+            "comparison": self.comparison.to_dict(),
         }
 
 
 __all__ = [
+    "HeatmapComparisonRequest",
+    "HeatmapComparisonResult",
+    "HeatmapPlayerResult",
+    "HeatmapSimilarityResult",
     "JsonObject",
     "JsonScalar",
     "JsonValue",
+    "PlayerInsightResult",
+    "PlayerIntelligenceResult",
+    "PlayerPerformanceMetricGroupResult",
+    "PlayerPerformanceMetricResult",
+    "PlayerSampleContextResult",
+    "PlayerTournamentSummaryResult",
     "PlayerProfileRequest",
     "PlayerProfileResult",
     "PlayerSearchItem",
     "PlayerSearchRequest",
     "PlayerSearchResult",
+    "RadarComparisonMetadataResult",
+    "RadarComparisonRequest",
+    "RadarComparisonResult",
+    "RadarDimensionResult",
+    "RadarPlayerResult",
     "TransferAnalysisRequest",
     "TransferAnalysisResult",
     "TransferModeResult",

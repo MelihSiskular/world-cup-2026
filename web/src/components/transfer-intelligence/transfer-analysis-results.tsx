@@ -214,12 +214,12 @@ export function TransferAnalysisResults({
     <div className="space-y-6">
       <section className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm">
         <div className="grid lg:grid-cols-[minmax(0,1fr)_20rem]">
-          <div className="p-6 sm:p-8">
+          <div className="min-w-0 p-6 sm:p-8">
             <p className="text-sm font-semibold tracking-[0.15em] text-brand uppercase">
               Analysis target
             </p>
 
-            <h2 className="mt-3 text-4xl font-bold tracking-[-0.045em]">
+            <h2 className="mt-3 break-words text-4xl font-bold tracking-[-0.045em]">
               {target.player_name}
             </h2>
 
