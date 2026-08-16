@@ -14,6 +14,9 @@ const baseURL = useLocalServer
   : process.env.WC26_E2E_BASE_URL ??
     PRODUCTION_BASE_URL;
 
+const vercelAutomationBypassSecret =
+  process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+
 export default defineConfig({
   testDir: "./e2e",
 
@@ -43,6 +46,15 @@ export default defineConfig({
 
   use: {
     baseURL,
+    ...(vercelAutomationBypassSecret
+      ? {
+          extraHTTPHeaders: {
+            "x-vercel-protection-bypass":
+              vercelAutomationBypassSecret,
+            "x-vercel-set-bypass-cookie": "true",
+          },
+        }
+      : {}),
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
