@@ -661,6 +661,7 @@ export function PlayerComparison({
               <RadarProfile
                 primary={radarComparison.data.target}
                 secondary={radarComparison.data.candidate}
+                showHeader={false}
               />
             ) : (
               <>
@@ -684,6 +685,7 @@ export function PlayerComparison({
 
                     <RadarProfile
                       primary={radarComparison.data.target}
+                      showHeader={false}
                     />
                   </article>
 
@@ -700,6 +702,7 @@ export function PlayerComparison({
 
                     <RadarProfile
                       primary={radarComparison.data.candidate}
+                      showHeader={false}
                     />
                   </article>
                 </div>
@@ -707,13 +710,6 @@ export function PlayerComparison({
             )
           ) : null}
 
-          {radarComparison.data ? (
-            <div className="mt-5 rounded-xl border border-border bg-surface-secondary px-4 py-3 text-xs leading-5 text-muted">
-              Percentiles are calculated against same-position tournament
-              peers. Radar shape represents playing-style expression, not an
-              overall player-quality score.
-            </div>
-          ) : null}
         </div>
       </section>
 

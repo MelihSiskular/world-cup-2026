@@ -15,16 +15,17 @@ type RadarProfileProps = Readonly<{
   primary: RadarProfileSeries;
   secondary?: RadarProfileSeries;
   ariaLabel?: string;
+  showHeader?: boolean;
 }>;
 
 const VIEWBOX_WIDTH = 560;
-const VIEWBOX_HEIGHT = 440;
+const VIEWBOX_HEIGHT = 390;
 
 const CENTER_X = VIEWBOX_WIDTH / 2;
 const CENTER_Y = VIEWBOX_HEIGHT / 2;
 
-const RADAR_RADIUS = 120;
-const LABEL_RADIUS = 170;
+const RADAR_RADIUS = 108;
+const LABEL_RADIUS = 148;
 
 const RING_LEVELS = [
   25,
@@ -312,6 +313,7 @@ export function RadarProfile({
   primary,
   secondary,
   ariaLabel,
+  showHeader = true,
 }: RadarProfileProps) {
   if (
     !hasRenderableAxisContract(
@@ -384,17 +386,19 @@ export function RadarProfile({
       : false;
 
   return (
-    <div className="mx-auto w-full min-w-0 max-w-3xl">
+    <div className="mx-auto w-full min-w-0 max-w-2xl">
       <div className="overflow-hidden rounded-2xl border border-border bg-page p-3 sm:p-5">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-3 px-1">
-          <p className="text-xs font-semibold text-foreground">
-            Position-relative playing style
-          </p>
+        {showHeader ? (
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3 px-1">
+            <p className="text-xs font-semibold text-foreground">
+              Position-relative playing style
+            </p>
 
-          <span className="rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold text-muted">
-            Percentile · 0–100
-          </span>
-        </div>
+            <span className="rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold text-muted">
+              Percentile · 0–100
+            </span>
+          </div>
+        ) : null}
 
         <svg
           role="img"
@@ -404,10 +408,6 @@ export function RadarProfile({
           viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
           className="block h-auto w-full"
         >
-          <title>
-            {resolvedAriaLabel}
-          </title>
-
           <desc>
             {axisDescription(
               primary,

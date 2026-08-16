@@ -267,7 +267,7 @@ describe(
           zeroPoint,
         ).toHaveAttribute(
           "cy",
-          "220",
+          "195",
         );
       },
     );
@@ -406,6 +406,40 @@ describe(
             "img",
           ),
         ).not.toBeInTheDocument();
+      },
+    );
+
+    it(
+      "can hide internal guidance in compact comparison layouts",
+      () => {
+        render(
+          <RadarProfile
+            primary={createSeries()}
+            showHeader={false}
+          />,
+        );
+
+        expect(
+          screen.queryByText(
+            "Position-relative playing style",
+          ),
+        ).not.toBeInTheDocument();
+
+        expect(
+          screen.queryByText(
+            "Percentile · 0–100",
+          ),
+        ).not.toBeInTheDocument();
+
+        expect(
+          screen.getByRole(
+            "img",
+            {
+              name:
+                "Playing style radar for Michael Olise",
+            },
+          ),
+        ).toBeInTheDocument();
       },
     );
 
