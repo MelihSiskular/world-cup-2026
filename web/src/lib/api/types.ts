@@ -45,6 +45,18 @@ export type HeatmapSimilarityResponse =
 export type HeatmapComparisonResponse =
   components["schemas"]["HeatmapComparisonResponse"];
 
+export type RadarDimensionResponse =
+  components["schemas"]["RadarDimensionResponse"];
+
+export type RadarPlayerResponse =
+  components["schemas"]["RadarPlayerResponse"];
+
+export type RadarComparisonMetadataResponse =
+  components["schemas"]["RadarComparisonMetadataResponse"];
+
+export type RadarComparisonResponse =
+  components["schemas"]["RadarComparisonResponse"];
+
 export type TransferAnalysisPayload =
   components["schemas"]["TransferAnalysisPayload"];
 
@@ -103,6 +115,11 @@ export type PlayerProfilePath =
 export type HeatmapComparisonPath =
   paths[
     "/api/v1/transfer-intelligence/heatmap-comparison/{target_player_id}/{candidate_player_id}"
+  ]["get"]["parameters"]["path"];
+
+export type RadarComparisonPath =
+  paths[
+    "/api/v1/transfer-intelligence/radar-comparison/{target_player_id}/{candidate_player_id}"
   ]["get"]["parameters"]["path"];
 
 export type WebApiErrorCode =
