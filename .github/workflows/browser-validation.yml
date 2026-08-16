@@ -18,8 +18,11 @@ concurrency:
 
 env:
   NODE_VERSION: "24"
-  WC26_API_BASE_URL: https://world-cup-2026-production.up.railway.app
+  WC26_PRODUCTION_API_BASE_URL: https://world-cup-2026-production.up.railway.app
+  WC26_VALIDATION_API_BASE_URL: https://world-cup-2026-phase-6-validation.up.railway.app
   WC26_E2E_LOCAL_SERVER: "1"
+  WC26_CLOUD_OBSERVABILITY_MAX_ATTEMPTS: "150"
+  WC26_CLOUD_OBSERVABILITY_POLL_INTERVAL: "2"
 
 jobs:
   browser:
@@ -34,6 +37,41 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+
+      - name: Select browser validation backend
+        shell: bash
+        working-directory: .
+        run: |
+          set -euo pipefail
+
+          exact_sha_required="0"
+
+          case "${GITHUB_EVENT_NAME}:${GITHUB_REF_NAME}" in
+            push:main)
+              api_base_url="${WC26_PRODUCTION_API_BASE_URL}"
+              exact_sha_required="1"
+              ;;
+            push:test/phase-6-production-validation)
+              api_base_url="${WC26_VALIDATION_API_BASE_URL}"
+              exact_sha_required="1"
+              ;;
+            *)
+              api_base_url="${WC26_PRODUCTION_API_BASE_URL}"
+              ;;
+          esac
+
+          {
+            echo "WC26_API_BASE_URL=${api_base_url}"
+            echo "WC26_REQUIRE_EXACT_BACKEND_SHA=${exact_sha_required}"
+          } >> "${GITHUB_ENV}"
+
+          echo "BrowserValidationBackend=${api_base_url}"
+          echo "ExactBackendSHARequired=${exact_sha_required}"
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -50,6 +88,21 @@ jobs:
 
       - name: Build production frontend
         run: npm run build
+
+      - name: Wait for matching Railway deployment
+        shell: bash
+        working-directory: .
+        run: |
+          set -euo pipefail
+
+          if [[ "${WC26_REQUIRE_EXACT_BACKEND_SHA}" != "1" ]]; then
+            echo "Exact backend SHA wait is not required for this ref."
+            exit 0
+          fi
+
+          export WC26_EXPECTED_COMMIT_SHA="${GITHUB_SHA}"
+
+          ./scripts/cloud_observability_test.sh             "${WC26_API_BASE_URL}"
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium webkit
