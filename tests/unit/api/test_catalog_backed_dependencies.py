@@ -16,6 +16,8 @@ from wc26.analytics.transfer_intelligence.models import (
     PlayerProfileResult,
     PlayerSearchRequest,
     PlayerSearchResult,
+    RadarComparisonRequest,
+    RadarComparisonResult,
     TransferAnalysisRequest,
     TransferAnalysisResult,
 )
@@ -220,6 +222,69 @@ def test_catalog_transfer_analysis_runner_uses_entire_catalog(
     result = runner(request)
 
     assert result is expected
+    assert calls == [
+        (
+            request,
+            catalog,
+        )
+    ]
+
+
+
+def test_catalog_radar_comparison_runner_uses_entire_catalog(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    catalog = _catalog()
+
+    request = RadarComparisonRequest(
+        target_player_id=978838,
+        candidate_player_id=789071,
+    )
+
+    expected = cast(
+        RadarComparisonResult,
+        object(),
+    )
+
+    calls: list[
+        tuple[
+            RadarComparisonRequest,
+            TransferDataCatalog,
+        ]
+    ] = []
+
+    def fake_get_radar_comparison_from_catalog(
+        delegated_request: RadarComparisonRequest,
+        delegated_catalog: TransferDataCatalog,
+    ) -> RadarComparisonResult:
+        calls.append(
+            (
+                delegated_request,
+                delegated_catalog,
+            )
+        )
+
+        return expected
+
+    monkeypatch.setattr(
+        dependencies,
+        "get_radar_comparison_from_catalog",
+        fake_get_radar_comparison_from_catalog,
+    )
+
+    runner = (
+        dependencies
+        .create_catalog_radar_comparison_runner(
+            catalog
+        )
+    )
+
+    result = runner(
+        request
+    )
+
+    assert result is expected
+
     assert calls == [
         (
             request,

@@ -205,6 +205,205 @@ class HeatmapComparisonResponse(BaseModel):
     similarity: HeatmapSimilarityResponse
 
 
+class RadarDimensionResponse(BaseModel):
+    """One position-relative playing-style radar dimension."""
+
+    model_config = ConfigDict(
+        extra="forbid",
+        allow_inf_nan=False,
+    )
+
+    key: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+
+    raw_score: float | None
+    percentile: float | None = Field(
+        ge=0.0,
+        le=100.0,
+    )
+
+    peer_count: int = Field(ge=0)
+
+    @model_validator(mode="after")
+    def validate_dimension_evidence(
+        self,
+    ) -> Self:
+        """Keep raw-score and percentile evidence consistent."""
+
+        if (
+            self.percentile is not None
+            and self.raw_score is None
+        ):
+            raise ValueError(
+                "Radar percentile requires a raw score."
+            )
+
+        return self
+
+
+class RadarPlayerResponse(BaseModel):
+    """Position-relative playing-style profile for one player."""
+
+    model_config = ConfigDict(
+        extra="forbid",
+        allow_inf_nan=False,
+    )
+
+    player_id: int = Field(gt=0)
+    player_name: str = Field(min_length=1)
+
+    position: str | None
+
+    available: bool
+
+    peer_count: int = Field(ge=0)
+
+    dimensions: list[
+        RadarDimensionResponse
+    ]
+
+    @model_validator(mode="after")
+    def validate_profile_contract(
+        self,
+    ) -> Self:
+        """Validate one radar profile's evidence boundary."""
+
+        keys = [
+            dimension.key
+            for dimension in self.dimensions
+        ]
+
+        if len(keys) != len(set(keys)):
+            raise ValueError(
+                "Radar dimension keys must be unique."
+            )
+
+        if any(
+            dimension.peer_count > self.peer_count
+            for dimension in self.dimensions
+        ):
+            raise ValueError(
+                "Radar dimension peer_count cannot exceed "
+                "the player profile peer_count."
+            )
+
+        usable_dimensions = sum(
+            dimension.percentile is not None
+            for dimension in self.dimensions
+        )
+
+        if self.available:
+            if self.position is None:
+                raise ValueError(
+                    "Available radar profiles require a position."
+                )
+
+            if usable_dimensions < 3:
+                raise ValueError(
+                    "Available radar profiles require at least "
+                    "three percentile dimensions."
+                )
+
+        return self
+
+
+class RadarComparisonMetadataResponse(BaseModel):
+    """Rendering compatibility for two playing-style profiles."""
+
+    model_config = ConfigDict(
+        extra="forbid"
+    )
+
+    same_position: bool
+    overlay_available: bool
+
+    reason: Literal[
+        "profiles_unavailable",
+        "target_profile_unavailable",
+        "candidate_profile_unavailable",
+        "different_position_profiles",
+        "dimension_contract_mismatch",
+    ] | None
+
+    @model_validator(mode="after")
+    def validate_comparison_metadata(
+        self,
+    ) -> Self:
+        """Keep overlay state and explanation internally consistent."""
+
+        if self.overlay_available:
+            if not self.same_position:
+                raise ValueError(
+                    "Radar overlay requires the same position."
+                )
+
+            if self.reason is not None:
+                raise ValueError(
+                    "Available radar overlay must not expose "
+                    "an unavailable reason."
+                )
+
+            return self
+
+        if self.reason is None:
+            raise ValueError(
+                "Unavailable radar overlay requires a reason."
+            )
+
+        return self
+
+
+class RadarComparisonResponse(BaseModel):
+    """Target-to-candidate playing-style radar comparison."""
+
+    model_config = ConfigDict(
+        extra="forbid"
+    )
+
+    target: RadarPlayerResponse
+    candidate: RadarPlayerResponse
+    comparison: RadarComparisonMetadataResponse
+
+    @model_validator(mode="after")
+    def validate_overlay_contract(
+        self,
+    ) -> Self:
+        """Validate shared-axis requirements for an overlay radar."""
+
+        if not self.comparison.overlay_available:
+            return self
+
+        if (
+            not self.target.available
+            or not self.candidate.available
+        ):
+            raise ValueError(
+                "Radar overlay requires two available profiles."
+            )
+
+        if self.target.position != self.candidate.position:
+            raise ValueError(
+                "Radar overlay requires matching positions."
+            )
+
+        target_keys = [
+            dimension.key
+            for dimension in self.target.dimensions
+        ]
+
+        candidate_keys = [
+            dimension.key
+            for dimension in self.candidate.dimensions
+        ]
+
+        if target_keys != candidate_keys:
+            raise ValueError(
+                "Radar overlay requires matching ordered dimensions."
+            )
+
+        return self
+
+
 class TransferAnalysisPayload(BaseModel):
     """Client-provided parameters for transfer analysis."""
 
