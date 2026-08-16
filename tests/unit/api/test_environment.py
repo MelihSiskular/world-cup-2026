@@ -195,11 +195,7 @@ def _create_runtime_manifest(
         ),
         DatasetDefinition(
             key="heatmap_grids",
-            relative_path=(
-                dataset_paths.heatmap_grids.relative_to(
-                    tmp_path
-                )
-            ),
+            relative_path=(dataset_paths.heatmap_grids.relative_to(tmp_path)),
             artifact_type="heatmap_grid_npz",
         ),
     )

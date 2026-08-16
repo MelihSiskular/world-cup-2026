@@ -62,14 +62,8 @@ class ManifestDataset:
         }
 
         if self.artifact_type == "csv":
-            if (
-                self.row_count is None
-                or self.column_count is None
-                or self.columns is None
-            ):
-                raise DatasetIntegrityError(
-                    "CSV manifest metadata is incomplete."
-                )
+            if self.row_count is None or self.column_count is None or self.columns is None:
+                raise DatasetIntegrityError("CSV manifest metadata is incomplete.")
 
             payload.update(
                 {
@@ -87,9 +81,7 @@ class ManifestDataset:
             or self.grid_width is None
             or self.dtype is None
         ):
-            raise DatasetIntegrityError(
-                "Heatmap grid manifest metadata is incomplete."
-            )
+            raise DatasetIntegrityError("Heatmap grid manifest metadata is incomplete.")
 
         payload.update(
             {
@@ -211,34 +203,21 @@ def _parse_manifest_dataset(
         "csv",
         "heatmap_grid_npz",
     }:
-        raise DatasetIntegrityError(
-            f"{label}.artifact_type is unsupported: "
-            f"{artifact_type_raw}"
-        )
+        raise DatasetIntegrityError(f"{label}.artifact_type is unsupported: {artifact_type_raw}")
 
     artifact_type = cast(
         DatasetArtifactType,
         artifact_type_raw,
     )
 
-    relative_path = Path(
-        manifest_path
-    )
+    relative_path = Path(manifest_path)
 
-    if (
-        relative_path.is_absolute()
-        or ".." in relative_path.parts
-    ):
-        raise DatasetIntegrityError(
-            f"{label}.path must be repository-relative."
-        )
+    if relative_path.is_absolute() or ".." in relative_path.parts:
+        raise DatasetIntegrityError(f"{label}.path must be repository-relative.")
 
-    if not _SHA256_PATTERN.fullmatch(
-        sha256
-    ):
+    if not _SHA256_PATTERN.fullmatch(sha256):
         raise DatasetIntegrityError(
-            f"{label}.sha256 must contain "
-            "64 lowercase hexadecimal characters."
+            f"{label}.sha256 must contain 64 lowercase hexadecimal characters."
         )
 
     if artifact_type == "csv":
@@ -259,8 +238,7 @@ def _parse_manifest_dataset(
 
         if column_count != len(columns):
             raise DatasetIntegrityError(
-                f"{label}.column_count does not match "
-                "the number of columns."
+                f"{label}.column_count does not match the number of columns."
             )
 
         return ManifestDataset(
@@ -295,29 +273,21 @@ def _parse_manifest_dataset(
     )
 
     try:
-        parsed_dtype = np.dtype(
-            dtype
-        )
+        parsed_dtype = np.dtype(dtype)
     except (
         TypeError,
         ValueError,
     ) as exc:
-        raise DatasetIntegrityError(
-            f"{label}.dtype is not a valid NumPy dtype."
-        ) from exc
+        raise DatasetIntegrityError(f"{label}.dtype is not a valid NumPy dtype.") from exc
 
     if not np.issubdtype(
         parsed_dtype,
         np.floating,
     ):
-        raise DatasetIntegrityError(
-            f"{label}.dtype must be a floating dtype."
-        )
+        raise DatasetIntegrityError(f"{label}.dtype must be a floating dtype.")
 
     if parsed_dtype.name != dtype:
-        raise DatasetIntegrityError(
-            f"{label}.dtype must use its canonical name."
-        )
+        raise DatasetIntegrityError(f"{label}.dtype must use its canonical name.")
 
     return ManifestDataset(
         key=key,
@@ -506,14 +476,9 @@ def validate_runtime_dataset_integrity(
                 (
                     actual_columns,
                     actual_row_count,
-                ) = inspect_csv(
-                    runtime_path
-                )
+                ) = inspect_csv(runtime_path)
             except DatasetManifestError as exc:
-                errors.append(
-                    f"{dataset.key}: "
-                    f"CSV inspection failed: {exc}"
-                )
+                errors.append(f"{dataset.key}: CSV inspection failed: {exc}")
                 continue
 
             if actual_columns != dataset.columns:
@@ -524,10 +489,7 @@ def validate_runtime_dataset_integrity(
                     f"actual={actual_columns}"
                 )
 
-            if (
-                len(actual_columns)
-                != dataset.column_count
-            ):
+            if len(actual_columns) != dataset.column_count:
                 errors.append(
                     f"{dataset.key}: "
                     "column count mismatch: "
@@ -535,10 +497,7 @@ def validate_runtime_dataset_integrity(
                     f"actual={len(actual_columns)}"
                 )
 
-            if (
-                actual_row_count
-                != dataset.row_count
-            ):
+            if actual_row_count != dataset.row_count:
                 errors.append(
                     f"{dataset.key}: "
                     "row count mismatch: "
@@ -559,15 +518,9 @@ def validate_runtime_dataset_integrity(
                 actual_grid_height,
                 actual_grid_width,
                 actual_dtype,
-            ) = inspect_heatmap_grid_npz(
-                runtime_path
-            )
+            ) = inspect_heatmap_grid_npz(runtime_path)
         except DatasetManifestError as exc:
-            errors.append(
-                f"{dataset.key}: "
-                "heatmap grid inspection failed: "
-                f"{exc}"
-            )
+            errors.append(f"{dataset.key}: heatmap grid inspection failed: {exc}")
             continue
 
         if actual_grid_count != dataset.grid_count:
@@ -596,10 +549,7 @@ def validate_runtime_dataset_integrity(
 
         if actual_dtype != dataset.dtype:
             errors.append(
-                f"{dataset.key}: "
-                "dtype mismatch: "
-                f"expected={dataset.dtype}, "
-                f"actual={actual_dtype}"
+                f"{dataset.key}: dtype mismatch: expected={dataset.dtype}, actual={actual_dtype}"
             )
 
     if errors:

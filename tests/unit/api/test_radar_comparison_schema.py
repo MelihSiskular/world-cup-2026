@@ -78,21 +78,13 @@ def test_radar_comparison_schema_accepts_valid_overlay() -> None:
     assert response.target.available is True
     assert response.candidate.available is True
 
-    assert (
-        response.comparison.overlay_available
-        is True
-    )
+    assert response.comparison.overlay_available is True
 
-    assert (
-        response.comparison.reason
-        is None
-    )
+    assert response.comparison.reason is None
 
 
 def test_radar_dimension_rejects_out_of_range_percentile() -> None:
-    with pytest.raises(
-        ValidationError
-    ):
+    with pytest.raises(ValidationError):
         RadarDimensionResponse.model_validate(
             {
                 "key": "creativity",

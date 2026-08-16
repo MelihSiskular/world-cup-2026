@@ -221,7 +221,6 @@ def test_load_heatmap_profiles_cleans_ids_and_duplicates(
     assert result.iloc[0]["central_share"] == pytest.approx(0.4)
 
 
-
 def test_load_heatmap_grids_loads_immutable_grids(
     tmp_path: Path,
 ) -> None:

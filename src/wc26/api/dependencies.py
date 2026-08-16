@@ -122,7 +122,6 @@ def create_catalog_heatmap_comparison_runner(
     return runner
 
 
-
 def create_catalog_radar_comparison_runner(
     catalog: TransferDataCatalog,
 ) -> RadarComparisonRunner:
@@ -196,19 +195,12 @@ def get_heatmap_comparison_runner(
 ) -> HeatmapComparisonRunner:
     """Return the startup-catalog heatmap comparison service."""
 
-    catalog = _get_runtime_catalog(
-        request
-    )
+    catalog = _get_runtime_catalog(request)
 
     if catalog is None:
-        raise InvalidDatasetError(
-            "Runtime transfer data catalog is unavailable."
-        )
+        raise InvalidDatasetError("Runtime transfer data catalog is unavailable.")
 
-    return create_catalog_heatmap_comparison_runner(
-        catalog
-    )
-
+    return create_catalog_heatmap_comparison_runner(catalog)
 
 
 def get_radar_comparison_runner(
@@ -216,18 +208,12 @@ def get_radar_comparison_runner(
 ) -> RadarComparisonRunner:
     """Return the startup-catalog radar comparison service."""
 
-    catalog = _get_runtime_catalog(
-        request
-    )
+    catalog = _get_runtime_catalog(request)
 
     if catalog is None:
-        raise InvalidDatasetError(
-            "Runtime transfer data catalog is unavailable."
-        )
+        raise InvalidDatasetError("Runtime transfer data catalog is unavailable.")
 
-    return create_catalog_radar_comparison_runner(
-        catalog
-    )
+    return create_catalog_radar_comparison_runner(catalog)
 
 
 def get_transfer_dataset_paths(

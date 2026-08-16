@@ -55,27 +55,19 @@ router = APIRouter(
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "model": ApiErrorResponse,
-            "description": (
-                "The heatmap comparison request is invalid."
-            ),
+            "description": ("The heatmap comparison request is invalid."),
         },
         status.HTTP_404_NOT_FOUND: {
             "model": ApiErrorResponse,
-            "description": (
-                "One of the requested players was not found."
-            ),
+            "description": ("One of the requested players was not found."),
         },
         status.HTTP_503_SERVICE_UNAVAILABLE: {
             "model": ApiErrorResponse,
-            "description": (
-                "Required heatmap analytics data is unavailable."
-            ),
+            "description": ("Required heatmap analytics data is unavailable."),
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
             "model": ApiErrorResponse,
-            "description": (
-                "Heatmap comparison failed unexpectedly."
-            ),
+            "description": ("Heatmap comparison failed unexpectedly."),
         },
     },
 )
@@ -94,14 +86,9 @@ def compare_player_heatmaps(
         candidate_player_id=candidate_player_id,
     )
 
-    result = comparison_runner(
-        request
-    )
+    result = comparison_runner(request)
 
-    return HeatmapComparisonResponse.model_validate(
-        result.to_dict()
-    )
-
+    return HeatmapComparisonResponse.model_validate(result.to_dict())
 
 
 @router.get(
@@ -112,27 +99,19 @@ def compare_player_heatmaps(
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "model": ApiErrorResponse,
-            "description": (
-                "The radar comparison request is invalid."
-            ),
+            "description": ("The radar comparison request is invalid."),
         },
         status.HTTP_404_NOT_FOUND: {
             "model": ApiErrorResponse,
-            "description": (
-                "One of the requested players was not found."
-            ),
+            "description": ("One of the requested players was not found."),
         },
         status.HTTP_503_SERVICE_UNAVAILABLE: {
             "model": ApiErrorResponse,
-            "description": (
-                "Required radar analytics data is unavailable."
-            ),
+            "description": ("Required radar analytics data is unavailable."),
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
             "model": ApiErrorResponse,
-            "description": (
-                "Radar comparison failed unexpectedly."
-            ),
+            "description": ("Radar comparison failed unexpectedly."),
         },
     },
 )
@@ -151,13 +130,9 @@ def compare_player_radars(
         candidate_player_id=candidate_player_id,
     )
 
-    result = comparison_runner(
-        request
-    )
+    result = comparison_runner(request)
 
-    return RadarComparisonResponse.model_validate(
-        result.to_dict()
-    )
+    return RadarComparisonResponse.model_validate(result.to_dict())
 
 
 @router.post(

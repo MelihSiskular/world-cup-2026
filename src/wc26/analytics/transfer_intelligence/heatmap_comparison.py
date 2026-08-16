@@ -40,17 +40,11 @@ def _optional_float(
 ) -> float | None:
     """Return one finite float or None for unavailable evidence."""
 
-    if (
-        value is None
-        or value is pd.NA
-        or value is pd.NaT
-    ):
+    if value is None or value is pd.NA or value is pd.NaT:
         return None
 
     try:
-        result = float(
-            str(value).strip()
-        )
+        result = float(str(value).strip())
     except (
         TypeError,
         ValueError,
@@ -87,16 +81,12 @@ def _player_name(
     value = player.get("player_name")
 
     if value is None or pd.isna(value):
-        raise InvalidDatasetError(
-            "Player catalog contains a missing player_name."
-        )
+        raise InvalidDatasetError("Player catalog contains a missing player_name.")
 
     result = str(value).strip()
 
     if not result:
-        raise InvalidDatasetError(
-            "Player catalog contains an empty player_name."
-        )
+        raise InvalidDatasetError("Player catalog contains an empty player_name.")
 
     return result
 
@@ -108,10 +98,7 @@ def _resolve_heatmap_profile(
 ) -> pd.Series[Any] | None:
     """Resolve at most one heatmap profile for a player."""
 
-    if (
-        heatmap_profiles.empty
-        or "player_id" not in heatmap_profiles.columns
-    ):
+    if heatmap_profiles.empty or "player_id" not in heatmap_profiles.columns:
         return None
 
     player_ids = pd.to_numeric(
@@ -119,18 +106,13 @@ def _resolve_heatmap_profile(
         errors="coerce",
     )
 
-    matches = heatmap_profiles.loc[
-        player_ids.eq(player_id)
-    ]
+    matches = heatmap_profiles.loc[player_ids.eq(player_id)]
 
     if matches.empty:
         return None
 
     if len(matches) != 1:
-        raise InvalidDatasetError(
-            "Multiple heatmap profiles matched player ID: "
-            f"{player_id}"
-        )
+        raise InvalidDatasetError(f"Multiple heatmap profiles matched player ID: {player_id}")
 
     return matches.iloc[0]
 
@@ -140,13 +122,7 @@ def _serialize_grid(
 ) -> tuple[tuple[float, ...], ...]:
     """Detach one NumPy grid into an immutable result value."""
 
-    return tuple(
-        tuple(
-            float(value)
-            for value in row
-        )
-        for row in grid
-    )
+    return tuple(tuple(float(value) for value in row) for row in grid)
 
 
 def _build_player_result(
@@ -158,17 +134,14 @@ def _build_player_result(
 ) -> HeatmapPlayerResult:
     """Build one player-side heatmap result."""
 
-    grid = heatmap_grids.get(
-        player_id
-    )
+    grid = heatmap_grids.get(player_id)
 
     if grid is not None and not isinstance(
         grid,
         np.ndarray,
     ):
         raise InvalidDatasetError(
-            "Heatmap grid catalog contains a non-array value "
-            f"for player ID: {player_id}"
+            f"Heatmap grid catalog contains a non-array value for player ID: {player_id}"
         )
 
     profile = _resolve_heatmap_profile(
@@ -183,19 +156,12 @@ def _build_player_result(
     else:
         if grid.ndim != 2:
             raise InvalidDatasetError(
-                "Heatmap grid must be two-dimensional "
-                f"for player ID: {player_id}"
+                f"Heatmap grid must be two-dimensional for player ID: {player_id}"
             )
 
-        grid_height = int(
-            grid.shape[0]
-        )
-        grid_width = int(
-            grid.shape[1]
-        )
-        serialized_grid = _serialize_grid(
-            grid
-        )
+        grid_height = int(grid.shape[0])
+        grid_width = int(grid.shape[1])
+        serialized_grid = _serialize_grid(grid)
 
     def profile_value(
         column: str,
@@ -212,41 +178,13 @@ def _build_player_result(
         grid_width=grid_width,
         grid_height=grid_height,
         grid=serialized_grid,
-        matches_with_heatmap=_optional_int(
-            profile_value(
-                "matches_with_heatmap"
-            )
-        ),
-        heatmap_point_count=_optional_int(
-            profile_value(
-                "heatmap_point_count"
-            )
-        ),
-        weighted_mean_x=_optional_float(
-            profile_value(
-                "weighted_mean_x"
-            )
-        ),
-        weighted_mean_y=_optional_float(
-            profile_value(
-                "weighted_mean_y"
-            )
-        ),
-        peak_cell_x=_optional_float(
-            profile_value(
-                "peak_cell_x"
-            )
-        ),
-        peak_cell_y=_optional_float(
-            profile_value(
-                "peak_cell_y"
-            )
-        ),
-        heatmap_entropy=_optional_float(
-            profile_value(
-                "heatmap_entropy"
-            )
-        ),
+        matches_with_heatmap=_optional_int(profile_value("matches_with_heatmap")),
+        heatmap_point_count=_optional_int(profile_value("heatmap_point_count")),
+        weighted_mean_x=_optional_float(profile_value("weighted_mean_x")),
+        weighted_mean_y=_optional_float(profile_value("weighted_mean_y")),
+        peak_cell_x=_optional_float(profile_value("peak_cell_x")),
+        peak_cell_y=_optional_float(profile_value("peak_cell_y")),
+        heatmap_entropy=_optional_float(profile_value("heatmap_entropy")),
     )
 
 
@@ -279,68 +217,38 @@ def _resolve_measured_similarity(
     if heatmap_similarity.empty:
         return _unavailable_similarity()
 
-    missing_columns = (
-        _REQUIRED_SIMILARITY_COLUMNS.difference(
-            heatmap_similarity.columns
-        )
-    )
+    missing_columns = _REQUIRED_SIMILARITY_COLUMNS.difference(heatmap_similarity.columns)
 
     if missing_columns:
         raise InvalidDatasetError(
             "Heatmap similarity catalog is missing required columns: "
-            + ", ".join(
-                sorted(
-                    missing_columns
-                )
-            )
+            + ", ".join(sorted(missing_columns))
         )
 
     target_ids = pd.to_numeric(
-        heatmap_similarity[
-            "target_player_id"
-        ],
+        heatmap_similarity["target_player_id"],
         errors="coerce",
     )
     candidate_ids = pd.to_numeric(
-        heatmap_similarity[
-            "candidate_player_id"
-        ],
+        heatmap_similarity["candidate_player_id"],
         errors="coerce",
     )
 
     direct = heatmap_similarity.loc[
-        target_ids.eq(
-            target_player_id
-        )
-        & candidate_ids.eq(
-            candidate_player_id
-        )
+        target_ids.eq(target_player_id) & candidate_ids.eq(candidate_player_id)
     ].copy()
 
     reverse = heatmap_similarity.loc[
-        target_ids.eq(
-            candidate_player_id
-        )
-        & candidate_ids.eq(
-            target_player_id
-        )
+        target_ids.eq(candidate_player_id) & candidate_ids.eq(target_player_id)
     ].copy()
 
     if not reverse.empty:
         reverse = reverse.rename(
             columns={
-                "candidate_matches_with_heatmap": (
-                    "target_matches_with_heatmap"
-                ),
-                "target_matches_with_heatmap": (
-                    "candidate_matches_with_heatmap"
-                ),
-                "candidate_heatmap_points": (
-                    "target_heatmap_points"
-                ),
-                "target_heatmap_points": (
-                    "candidate_heatmap_points"
-                ),
+                "candidate_matches_with_heatmap": ("target_matches_with_heatmap"),
+                "target_matches_with_heatmap": ("candidate_matches_with_heatmap"),
+                "candidate_heatmap_points": ("target_heatmap_points"),
+                "target_heatmap_points": ("candidate_heatmap_points"),
             }
         )
 
@@ -355,37 +263,22 @@ def _resolve_measured_similarity(
     if pairwise.empty:
         return _unavailable_similarity()
 
-    pairwise[
-        "heatmap_similarity_score_pct"
-    ] = pd.to_numeric(
-        pairwise[
-            "heatmap_similarity_score_pct"
-        ],
+    pairwise["heatmap_similarity_score_pct"] = pd.to_numeric(
+        pairwise["heatmap_similarity_score_pct"],
         errors="coerce",
     )
 
-    pairwise = pairwise.dropna(
-        subset=[
-            "heatmap_similarity_score_pct"
-        ]
-    )
+    pairwise = pairwise.dropna(subset=["heatmap_similarity_score_pct"])
 
     if pairwise.empty:
         return _unavailable_similarity()
 
-    row = (
-        pairwise.sort_values(
-            "heatmap_similarity_score_pct",
-            ascending=False,
-        )
-        .iloc[0]
-    )
+    row = pairwise.sort_values(
+        "heatmap_similarity_score_pct",
+        ascending=False,
+    ).iloc[0]
 
-    score = _optional_float(
-        row.get(
-            "heatmap_similarity_score_pct"
-        )
-    )
+    score = _optional_float(row.get("heatmap_similarity_score_pct"))
 
     if score is None:
         return _unavailable_similarity()
@@ -393,53 +286,15 @@ def _resolve_measured_similarity(
     return HeatmapSimilarityResult(
         available=True,
         heatmap_similarity_score_pct=score,
-        heatmap_cosine_similarity_pct=(
-            _optional_float(
-                row.get(
-                    "heatmap_cosine_similarity_pct"
-                )
-            )
-        ),
-        occupation_overlap_pct=_optional_float(
-            row.get(
-                "occupation_overlap_pct"
-            )
-        ),
-        peak_zone_similarity_pct=_optional_float(
-            row.get(
-                "peak_zone_similarity_pct"
-            )
-        ),
-        peak_zone_distance=_optional_float(
-            row.get(
-                "peak_zone_distance"
-            )
-        ),
-        entropy_similarity_pct=_optional_float(
-            row.get(
-                "entropy_similarity_pct"
-            )
-        ),
-        target_matches_with_heatmap=_optional_int(
-            row.get(
-                "target_matches_with_heatmap"
-            )
-        ),
-        candidate_matches_with_heatmap=_optional_int(
-            row.get(
-                "candidate_matches_with_heatmap"
-            )
-        ),
-        target_heatmap_points=_optional_int(
-            row.get(
-                "target_heatmap_points"
-            )
-        ),
-        candidate_heatmap_points=_optional_int(
-            row.get(
-                "candidate_heatmap_points"
-            )
-        ),
+        heatmap_cosine_similarity_pct=(_optional_float(row.get("heatmap_cosine_similarity_pct"))),
+        occupation_overlap_pct=_optional_float(row.get("occupation_overlap_pct")),
+        peak_zone_similarity_pct=_optional_float(row.get("peak_zone_similarity_pct")),
+        peak_zone_distance=_optional_float(row.get("peak_zone_distance")),
+        entropy_similarity_pct=_optional_float(row.get("entropy_similarity_pct")),
+        target_matches_with_heatmap=_optional_int(row.get("target_matches_with_heatmap")),
+        candidate_matches_with_heatmap=_optional_int(row.get("candidate_matches_with_heatmap")),
+        target_heatmap_points=_optional_int(row.get("target_heatmap_points")),
+        candidate_heatmap_points=_optional_int(row.get("candidate_heatmap_points")),
     )
 
 
@@ -449,22 +304,14 @@ def get_heatmap_comparison_from_catalog(
 ) -> HeatmapComparisonResult:
     """Compare two players using measured tournament heatmap evidence."""
 
-    if (
-        request.target_player_id <= 0
-        or request.candidate_player_id <= 0
-    ):
+    if request.target_player_id <= 0 or request.candidate_player_id <= 0:
         raise InvalidTransferAnalysisRequestError(
-            "Heatmap comparison player IDs "
-            "must be positive integers."
+            "Heatmap comparison player IDs must be positive integers."
         )
 
-    if (
-        request.target_player_id
-        == request.candidate_player_id
-    ):
+    if request.target_player_id == request.candidate_player_id:
         raise InvalidTransferAnalysisRequestError(
-            "Heatmap comparison requires "
-            "two different players."
+            "Heatmap comparison requires two different players."
         )
 
     target = resolve_player_by_id(
@@ -491,12 +338,8 @@ def get_heatmap_comparison_from_catalog(
 
     similarity = _resolve_measured_similarity(
         catalog.heatmap_similarity,
-        target_player_id=(
-            request.target_player_id
-        ),
-        candidate_player_id=(
-            request.candidate_player_id
-        ),
+        target_player_id=(request.target_player_id),
+        candidate_player_id=(request.candidate_player_id),
     )
 
     return HeatmapComparisonResult(

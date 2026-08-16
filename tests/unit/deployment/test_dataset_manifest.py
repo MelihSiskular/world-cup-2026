@@ -161,14 +161,10 @@ def test_manifest_rejects_inconsistent_rows(
         )
 
 
-
 def test_generate_manifest_contains_heatmap_grid_metadata(
     tmp_path: Path,
 ) -> None:
-    dataset_path = (
-        tmp_path
-        / "data/player_heatmap_grids.npz"
-    )
+    dataset_path = tmp_path / "data/player_heatmap_grids.npz"
     dataset_path.parent.mkdir(
         parents=True,
         exist_ok=True,
@@ -198,9 +194,7 @@ def test_generate_manifest_contains_heatmap_grid_metadata(
         definitions=(
             DatasetDefinition(
                 key="heatmap_grids",
-                relative_path=Path(
-                    "data/player_heatmap_grids.npz"
-                ),
+                relative_path=Path("data/player_heatmap_grids.npz"),
                 artifact_type="heatmap_grid_npz",
             ),
         ),
@@ -226,10 +220,7 @@ def test_generate_manifest_contains_heatmap_grid_metadata(
 def test_manifest_rejects_inconsistent_heatmap_grid_shapes(
     tmp_path: Path,
 ) -> None:
-    dataset_path = (
-        tmp_path
-        / "data/player_heatmap_grids.npz"
-    )
+    dataset_path = tmp_path / "data/player_heatmap_grids.npz"
     dataset_path.parent.mkdir(
         parents=True,
         exist_ok=True,
@@ -260,9 +251,7 @@ def test_manifest_rejects_inconsistent_heatmap_grid_shapes(
             definitions=(
                 DatasetDefinition(
                     key="heatmap_grids",
-                    relative_path=Path(
-                        "data/player_heatmap_grids.npz"
-                    ),
+                    relative_path=Path("data/player_heatmap_grids.npz"),
                     artifact_type="heatmap_grid_npz",
                 ),
             ),

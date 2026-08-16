@@ -40,17 +40,13 @@ def test_heatmap_comparison_api_uses_real_dataset(
     monkeypatch.chdir(PROJECT_ROOT)
 
     application = create_app(
-        catalog_loader=(
-            catalog_module.load_transfer_data_catalog
-        ),
+        catalog_loader=(catalog_module.load_transfer_data_catalog),
     )
 
     with TestClient(application) as client:
         response = client.get(
-            
-                "/api/v1/transfer-intelligence/"
-                f"heatmap-comparison/{TARGET_PLAYER_ID}/{CANDIDATE_PLAYER_ID}"
-            
+            "/api/v1/transfer-intelligence/"
+            f"heatmap-comparison/{TARGET_PLAYER_ID}/{CANDIDATE_PLAYER_ID}"
         )
 
     assert response.status_code == 200, response.text
@@ -85,17 +81,13 @@ def test_radar_comparison_api_uses_real_dataset(
     monkeypatch.chdir(PROJECT_ROOT)
 
     application = create_app(
-        catalog_loader=(
-            catalog_module.load_transfer_data_catalog
-        ),
+        catalog_loader=(catalog_module.load_transfer_data_catalog),
     )
 
     with TestClient(application) as client:
         response = client.get(
-            
-                "/api/v1/transfer-intelligence/"
-                f"radar-comparison/{TARGET_PLAYER_ID}/{CANDIDATE_PLAYER_ID}"
-            
+            "/api/v1/transfer-intelligence/"
+            f"radar-comparison/{TARGET_PLAYER_ID}/{CANDIDATE_PLAYER_ID}"
         )
 
     assert response.status_code == 200, response.text

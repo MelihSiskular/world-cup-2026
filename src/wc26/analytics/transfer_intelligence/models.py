@@ -373,7 +373,6 @@ class PlayerProfileResult:
         }
 
 
-
 @dataclass(frozen=True, slots=True)
 class HeatmapComparisonRequest:
     """Stable player identifiers for one heatmap comparison."""
@@ -409,10 +408,7 @@ class HeatmapPlayerResult:
             grid_rows: list[JsonValue] = []
 
             for row in self.grid:
-                row_values: list[JsonValue] = [
-                    float(value)
-                    for value in row
-                ]
+                row_values: list[JsonValue] = [float(value) for value in row]
                 grid_rows.append(row_values)
 
             grid_value = grid_rows
@@ -455,34 +451,16 @@ class HeatmapSimilarityResult:
 
         return {
             "available": self.available,
-            "heatmap_similarity_score_pct": (
-                self.heatmap_similarity_score_pct
-            ),
-            "heatmap_cosine_similarity_pct": (
-                self.heatmap_cosine_similarity_pct
-            ),
-            "occupation_overlap_pct": (
-                self.occupation_overlap_pct
-            ),
-            "peak_zone_similarity_pct": (
-                self.peak_zone_similarity_pct
-            ),
+            "heatmap_similarity_score_pct": (self.heatmap_similarity_score_pct),
+            "heatmap_cosine_similarity_pct": (self.heatmap_cosine_similarity_pct),
+            "occupation_overlap_pct": (self.occupation_overlap_pct),
+            "peak_zone_similarity_pct": (self.peak_zone_similarity_pct),
             "peak_zone_distance": self.peak_zone_distance,
-            "entropy_similarity_pct": (
-                self.entropy_similarity_pct
-            ),
-            "target_matches_with_heatmap": (
-                self.target_matches_with_heatmap
-            ),
-            "candidate_matches_with_heatmap": (
-                self.candidate_matches_with_heatmap
-            ),
-            "target_heatmap_points": (
-                self.target_heatmap_points
-            ),
-            "candidate_heatmap_points": (
-                self.candidate_heatmap_points
-            ),
+            "entropy_similarity_pct": (self.entropy_similarity_pct),
+            "target_matches_with_heatmap": (self.target_matches_with_heatmap),
+            "candidate_matches_with_heatmap": (self.candidate_matches_with_heatmap),
+            "target_heatmap_points": (self.target_heatmap_points),
+            "candidate_heatmap_points": (self.candidate_heatmap_points),
         }
 
 
@@ -502,6 +480,7 @@ class HeatmapComparisonResult:
             "candidate": self.candidate.to_dict(),
             "similarity": self.similarity.to_dict(),
         }
+
 
 @dataclass(frozen=True, slots=True)
 class RadarComparisonRequest:
@@ -547,10 +526,7 @@ class RadarPlayerResult:
     def to_dict(self) -> JsonObject:
         """Return JSON-compatible radar player profile."""
 
-        dimension_values: list[JsonValue] = [
-            dimension.to_dict()
-            for dimension in self.dimensions
-        ]
+        dimension_values: list[JsonValue] = [dimension.to_dict() for dimension in self.dimensions]
 
         return {
             "player_id": self.player_id,
@@ -596,6 +572,7 @@ class RadarComparisonResult:
             "candidate": self.candidate.to_dict(),
             "comparison": self.comparison.to_dict(),
         }
+
 
 __all__ = [
     "HeatmapComparisonRequest",

@@ -70,14 +70,8 @@ class DatasetMetadata:
         }
 
         if self.artifact_type == "csv":
-            if (
-                self.row_count is None
-                or self.column_count is None
-                or self.columns is None
-            ):
-                raise DatasetManifestError(
-                    "CSV dataset metadata is incomplete."
-                )
+            if self.row_count is None or self.column_count is None or self.columns is None:
+                raise DatasetManifestError("CSV dataset metadata is incomplete.")
 
             payload.update(
                 {
@@ -95,9 +89,7 @@ class DatasetMetadata:
             or self.grid_width is None
             or self.dtype is None
         ):
-            raise DatasetManifestError(
-                "Heatmap grid dataset metadata is incomplete."
-            )
+            raise DatasetManifestError("Heatmap grid dataset metadata is incomplete.")
 
         payload.update(
             {
@@ -136,9 +128,7 @@ DEFAULT_DATASETS: tuple[DatasetDefinition, ...] = (
     ),
     DatasetDefinition(
         key="heatmap_grids",
-        relative_path=Path(
-            "data/processed/player_heatmaps/player_heatmap_grids.npz"
-        ),
+        relative_path=Path("data/processed/player_heatmaps/player_heatmap_grids.npz"),
         artifact_type="heatmap_grid_npz",
     ),
 )
@@ -216,7 +206,6 @@ def inspect_csv(path: Path) -> tuple[tuple[str, ...], int]:
         file.close()
 
 
-
 def inspect_heatmap_grid_npz(
     path: Path,
 ) -> tuple[int, int, int, str]:
@@ -233,17 +222,13 @@ def inspect_heatmap_grid_npz(
         EOFError,
         BadZipFile,
     ) as exc:
-        raise DatasetManifestError(
-            f"Could not read heatmap grid archive {path}: {exc}"
-        ) from exc
+        raise DatasetManifestError(f"Could not read heatmap grid archive {path}: {exc}") from exc
 
     if not isinstance(
         archive,
         np.lib.npyio.NpzFile,
     ):
-        raise DatasetManifestError(
-            f"Heatmap grid artifact is not an NPZ archive: {path}"
-        )
+        raise DatasetManifestError(f"Heatmap grid artifact is not an NPZ archive: {path}")
 
     player_ids: set[int] = set()
     expected_shape: tuple[int, int] | None = None
@@ -251,36 +236,29 @@ def inspect_heatmap_grid_npz(
 
     try:
         if not archive.files:
-            raise DatasetManifestError(
-                f"Heatmap grid archive is empty: {path}"
-            )
+            raise DatasetManifestError(f"Heatmap grid archive is empty: {path}")
 
         for key in archive.files:
             try:
                 player_id = int(key)
             except ValueError as exc:
                 raise DatasetManifestError(
-                    "Heatmap grid archive contains "
-                    f"an invalid player key: {key!r}"
+                    f"Heatmap grid archive contains an invalid player key: {key!r}"
                 ) from exc
 
             if player_id <= 0:
                 raise DatasetManifestError(
-                    "Heatmap grid archive contains "
-                    f"a non-positive player ID: {player_id}"
+                    f"Heatmap grid archive contains a non-positive player ID: {player_id}"
                 )
 
             if player_id in player_ids:
                 raise DatasetManifestError(
-                    "Heatmap grid archive contains "
-                    f"duplicate player ID: {player_id}"
+                    f"Heatmap grid archive contains duplicate player ID: {player_id}"
                 )
 
             player_ids.add(player_id)
 
-            grid = np.asarray(
-                archive[key]
-            )
+            grid = np.asarray(archive[key])
 
             if grid.ndim != 2:
                 raise DatasetManifestError(
@@ -311,9 +289,7 @@ def inspect_heatmap_grid_npz(
                     f"dtype={grid.dtype}"
                 )
 
-            dtype = np.dtype(
-                grid.dtype
-            ).name
+            dtype = np.dtype(grid.dtype).name
 
             if expected_shape is None:
                 expected_shape = shape
@@ -343,16 +319,12 @@ def inspect_heatmap_grid_npz(
         EOFError,
         BadZipFile,
     ) as exc:
-        raise DatasetManifestError(
-            f"Could not inspect heatmap grid archive {path}: {exc}"
-        ) from exc
+        raise DatasetManifestError(f"Could not inspect heatmap grid archive {path}: {exc}") from exc
     finally:
         archive.close()
 
     if expected_shape is None or expected_dtype is None:
-        raise DatasetManifestError(
-            f"Heatmap grid archive contains no usable grids: {path}"
-        )
+        raise DatasetManifestError(f"Heatmap grid archive contains no usable grids: {path}")
 
     return (
         len(player_ids),
@@ -361,6 +333,7 @@ def inspect_heatmap_grid_npz(
         expected_dtype,
     )
 
+
 def inspect_dataset(
     repository_root: Path,
     definition: DatasetDefinition,
@@ -368,42 +341,28 @@ def inspect_dataset(
     """Build deterministic metadata for one configured dataset."""
 
     repository_root = repository_root.resolve()
-    dataset_path = (
-        repository_root
-        / definition.relative_path
-    ).resolve()
+    dataset_path = (repository_root / definition.relative_path).resolve()
 
     if repository_root not in dataset_path.parents:
         raise DatasetManifestError(
-            "Dataset path resolves outside repository root: "
-            f"{definition.relative_path}"
+            f"Dataset path resolves outside repository root: {definition.relative_path}"
         )
 
     if not dataset_path.exists():
-        raise DatasetManifestError(
-            f"Dataset does not exist: {dataset_path}"
-        )
+        raise DatasetManifestError(f"Dataset does not exist: {dataset_path}")
 
     if not dataset_path.is_file():
-        raise DatasetManifestError(
-            f"Dataset path is not a file: {dataset_path}"
-        )
+        raise DatasetManifestError(f"Dataset path is not a file: {dataset_path}")
 
     try:
         size_bytes = dataset_path.stat().st_size
     except OSError as exc:
-        raise DatasetManifestError(
-            f"Could not inspect dataset {dataset_path}: {exc}"
-        ) from exc
+        raise DatasetManifestError(f"Could not inspect dataset {dataset_path}: {exc}") from exc
 
-    sha256 = calculate_file_sha256(
-        dataset_path
-    )
+    sha256 = calculate_file_sha256(dataset_path)
 
     if definition.artifact_type == "csv":
-        columns, row_count = inspect_csv(
-            dataset_path
-        )
+        columns, row_count = inspect_csv(dataset_path)
 
         return DatasetMetadata(
             key=definition.key,
@@ -422,9 +381,7 @@ def inspect_dataset(
             grid_height,
             grid_width,
             dtype,
-        ) = inspect_heatmap_grid_npz(
-            dataset_path
-        )
+        ) = inspect_heatmap_grid_npz(dataset_path)
 
         return DatasetMetadata(
             key=definition.key,
@@ -438,10 +395,7 @@ def inspect_dataset(
             dtype=dtype,
         )
 
-    raise DatasetManifestError(
-        "Unsupported dataset artifact type: "
-        f"{definition.artifact_type}"
-    )
+    raise DatasetManifestError(f"Unsupported dataset artifact type: {definition.artifact_type}")
 
 
 def calculate_bundle_sha256(

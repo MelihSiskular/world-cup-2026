@@ -73,47 +73,22 @@ class HeatmapPlayerResponse(BaseModel):
         """Keep availability and grid dimensions internally consistent."""
 
         if not self.available:
-            if (
-                self.grid is not None
-                or self.grid_width is not None
-                or self.grid_height is not None
-            ):
-                raise ValueError(
-                    "Unavailable heatmaps must not expose grid data."
-                )
+            if self.grid is not None or self.grid_width is not None or self.grid_height is not None:
+                raise ValueError("Unavailable heatmaps must not expose grid data.")
 
             return self
 
-        if (
-            self.grid is None
-            or self.grid_width is None
-            or self.grid_height is None
-        ):
-            raise ValueError(
-                "Available heatmaps require grid data and dimensions."
-            )
+        if self.grid is None or self.grid_width is None or self.grid_height is None:
+            raise ValueError("Available heatmaps require grid data and dimensions.")
 
         if len(self.grid) != self.grid_height:
-            raise ValueError(
-                "Heatmap grid height does not match grid_height."
-            )
+            raise ValueError("Heatmap grid height does not match grid_height.")
 
-        if any(
-            len(row) != self.grid_width
-            for row in self.grid
-        ):
-            raise ValueError(
-                "Heatmap grid width does not match grid_width."
-            )
+        if any(len(row) != self.grid_width for row in self.grid):
+            raise ValueError("Heatmap grid width does not match grid_width.")
 
-        if any(
-            value < 0.0
-            for row in self.grid
-            for value in row
-        ):
-            raise ValueError(
-                "Heatmap grid values must be non-negative."
-            )
+        if any(value < 0.0 for row in self.grid for value in row):
+            raise ValueError("Heatmap grid values must be non-negative.")
 
         return self
 
@@ -176,21 +151,11 @@ class HeatmapSimilarityResponse(BaseModel):
     def validate_measured_evidence(self) -> Self:
         """Require a measured headline score only when evidence is available."""
 
-        if (
-            self.available
-            and self.heatmap_similarity_score_pct is None
-        ):
-            raise ValueError(
-                "Available heatmap similarity requires a measured score."
-            )
+        if self.available and self.heatmap_similarity_score_pct is None:
+            raise ValueError("Available heatmap similarity requires a measured score.")
 
-        if (
-            not self.available
-            and self.heatmap_similarity_score_pct is not None
-        ):
-            raise ValueError(
-                "Unavailable heatmap similarity must not expose a measured score."
-            )
+        if not self.available and self.heatmap_similarity_score_pct is not None:
+            raise ValueError("Unavailable heatmap similarity must not expose a measured score.")
 
         return self
 
@@ -230,13 +195,8 @@ class RadarDimensionResponse(BaseModel):
     ) -> Self:
         """Keep raw-score and percentile evidence consistent."""
 
-        if (
-            self.percentile is not None
-            and self.raw_score is None
-        ):
-            raise ValueError(
-                "Radar percentile requires a raw score."
-            )
+        if self.percentile is not None and self.raw_score is None:
+            raise ValueError("Radar percentile requires a raw score.")
 
         return self
 
@@ -258,9 +218,7 @@ class RadarPlayerResponse(BaseModel):
 
     peer_count: int = Field(ge=0)
 
-    dimensions: list[
-        RadarDimensionResponse
-    ]
+    dimensions: list[RadarDimensionResponse]
 
     @model_validator(mode="after")
     def validate_profile_contract(
@@ -268,40 +226,25 @@ class RadarPlayerResponse(BaseModel):
     ) -> Self:
         """Validate one radar profile's evidence boundary."""
 
-        keys = [
-            dimension.key
-            for dimension in self.dimensions
-        ]
+        keys = [dimension.key for dimension in self.dimensions]
 
         if len(keys) != len(set(keys)):
+            raise ValueError("Radar dimension keys must be unique.")
+
+        if any(dimension.peer_count > self.peer_count for dimension in self.dimensions):
             raise ValueError(
-                "Radar dimension keys must be unique."
+                "Radar dimension peer_count cannot exceed the player profile peer_count."
             )
 
-        if any(
-            dimension.peer_count > self.peer_count
-            for dimension in self.dimensions
-        ):
-            raise ValueError(
-                "Radar dimension peer_count cannot exceed "
-                "the player profile peer_count."
-            )
-
-        usable_dimensions = sum(
-            dimension.percentile is not None
-            for dimension in self.dimensions
-        )
+        usable_dimensions = sum(dimension.percentile is not None for dimension in self.dimensions)
 
         if self.available:
             if self.position is None:
-                raise ValueError(
-                    "Available radar profiles require a position."
-                )
+                raise ValueError("Available radar profiles require a position.")
 
             if usable_dimensions < 3:
                 raise ValueError(
-                    "Available radar profiles require at least "
-                    "three percentile dimensions."
+                    "Available radar profiles require at least three percentile dimensions."
                 )
 
         return self
@@ -310,20 +253,21 @@ class RadarPlayerResponse(BaseModel):
 class RadarComparisonMetadataResponse(BaseModel):
     """Rendering compatibility for two playing-style profiles."""
 
-    model_config = ConfigDict(
-        extra="forbid"
-    )
+    model_config = ConfigDict(extra="forbid")
 
     same_position: bool
     overlay_available: bool
 
-    reason: Literal[
-        "profiles_unavailable",
-        "target_profile_unavailable",
-        "candidate_profile_unavailable",
-        "different_position_profiles",
-        "dimension_contract_mismatch",
-    ] | None
+    reason: (
+        Literal[
+            "profiles_unavailable",
+            "target_profile_unavailable",
+            "candidate_profile_unavailable",
+            "different_position_profiles",
+            "dimension_contract_mismatch",
+        ]
+        | None
+    )
 
     @model_validator(mode="after")
     def validate_comparison_metadata(
@@ -333,22 +277,15 @@ class RadarComparisonMetadataResponse(BaseModel):
 
         if self.overlay_available:
             if not self.same_position:
-                raise ValueError(
-                    "Radar overlay requires the same position."
-                )
+                raise ValueError("Radar overlay requires the same position.")
 
             if self.reason is not None:
-                raise ValueError(
-                    "Available radar overlay must not expose "
-                    "an unavailable reason."
-                )
+                raise ValueError("Available radar overlay must not expose an unavailable reason.")
 
             return self
 
         if self.reason is None:
-            raise ValueError(
-                "Unavailable radar overlay requires a reason."
-            )
+            raise ValueError("Unavailable radar overlay requires a reason.")
 
         return self
 
@@ -356,9 +293,7 @@ class RadarComparisonMetadataResponse(BaseModel):
 class RadarComparisonResponse(BaseModel):
     """Target-to-candidate playing-style radar comparison."""
 
-    model_config = ConfigDict(
-        extra="forbid"
-    )
+    model_config = ConfigDict(extra="forbid")
 
     target: RadarPlayerResponse
     candidate: RadarPlayerResponse
@@ -373,33 +308,18 @@ class RadarComparisonResponse(BaseModel):
         if not self.comparison.overlay_available:
             return self
 
-        if (
-            not self.target.available
-            or not self.candidate.available
-        ):
-            raise ValueError(
-                "Radar overlay requires two available profiles."
-            )
+        if not self.target.available or not self.candidate.available:
+            raise ValueError("Radar overlay requires two available profiles.")
 
         if self.target.position != self.candidate.position:
-            raise ValueError(
-                "Radar overlay requires matching positions."
-            )
+            raise ValueError("Radar overlay requires matching positions.")
 
-        target_keys = [
-            dimension.key
-            for dimension in self.target.dimensions
-        ]
+        target_keys = [dimension.key for dimension in self.target.dimensions]
 
-        candidate_keys = [
-            dimension.key
-            for dimension in self.candidate.dimensions
-        ]
+        candidate_keys = [dimension.key for dimension in self.candidate.dimensions]
 
         if target_keys != candidate_keys:
-            raise ValueError(
-                "Radar overlay requires matching ordered dimensions."
-            )
+            raise ValueError("Radar overlay requires matching ordered dimensions.")
 
         return self
 

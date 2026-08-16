@@ -659,9 +659,7 @@ def test_heatmap_comparison_route_is_in_openapi_schema() -> None:
     schema = application.openapi()
 
     route = (
-        "/api/v1/transfer-intelligence/"
-        "heatmap-comparison/"
-        "{target_player_id}/{candidate_player_id}"
+        "/api/v1/transfer-intelligence/heatmap-comparison/{target_player_id}/{candidate_player_id}"
     )
 
     operation = schema["paths"][route]["get"]
@@ -673,64 +671,44 @@ def test_heatmap_comparison_route_is_in_openapi_schema() -> None:
 
     schemas = schema["components"]["schemas"]
 
-    response_schema = schemas[
-        "HeatmapComparisonResponse"
-    ]
+    response_schema = schemas["HeatmapComparisonResponse"]
 
-    assert response_schema["properties"]["target"]["$ref"].endswith(
-        "/HeatmapPlayerResponse"
-    )
-    assert response_schema["properties"]["candidate"]["$ref"].endswith(
-        "/HeatmapPlayerResponse"
-    )
+    assert response_schema["properties"]["target"]["$ref"].endswith("/HeatmapPlayerResponse")
+    assert response_schema["properties"]["candidate"]["$ref"].endswith("/HeatmapPlayerResponse")
     assert response_schema["properties"]["similarity"]["$ref"].endswith(
         "/HeatmapSimilarityResponse"
     )
 
-    similarity_properties = schemas[
-        "HeatmapSimilarityResponse"
-    ]["properties"]
+    similarity_properties = schemas["HeatmapSimilarityResponse"]["properties"]
 
     assert "heatmap_similarity_score_pct" in similarity_properties
     assert "occupation_overlap_pct" in similarity_properties
     assert "peak_zone_distance" in similarity_properties
 
-    assert (
-        "effective_heatmap_score_pct"
-        not in similarity_properties
-    )
+    assert "effective_heatmap_score_pct" not in similarity_properties
 
 
 def test_heatmap_comparison_endpoint_delegates_player_ids() -> None:
     application = create_app()
 
-    captured_requests: list[
-        HeatmapComparisonRequest
-    ] = []
+    captured_requests: list[HeatmapComparisonRequest] = []
 
     expected = _build_heatmap_comparison_result()
 
     def fake_runner(
         request: HeatmapComparisonRequest,
     ) -> HeatmapComparisonResult:
-        captured_requests.append(
-            request
-        )
+        captured_requests.append(request)
 
         return expected
 
     def override_runner() -> HeatmapComparisonRunner:
         return fake_runner
 
-    application.dependency_overrides[
-        get_heatmap_comparison_runner
-    ] = override_runner
+    application.dependency_overrides[get_heatmap_comparison_runner] = override_runner
 
     with TestClient(application) as client:
-        response = client.get(
-            "/api/v1/transfer-intelligence/"
-            "heatmap-comparison/10/20"
-        )
+        response = client.get("/api/v1/transfer-intelligence/heatmap-comparison/10/20")
 
     assert response.status_code == 200
 
@@ -754,17 +732,9 @@ def test_heatmap_comparison_endpoint_delegates_player_ids() -> None:
     assert payload["candidate"]["player_id"] == 20
 
     assert payload["similarity"]["available"] is True
-    assert (
-        payload["similarity"][
-            "heatmap_similarity_score_pct"
-        ]
-        == 90.9
-    )
+    assert payload["similarity"]["heatmap_similarity_score_pct"] == 90.9
 
-    assert (
-        "effective_heatmap_score_pct"
-        not in payload["similarity"]
-    )
+    assert "effective_heatmap_score_pct" not in payload["similarity"]
 
 
 def test_heatmap_comparison_endpoint_preserves_invalid_request_error() -> None:
@@ -782,18 +752,12 @@ def test_heatmap_comparison_endpoint_preserves_invalid_request_error() -> None:
     def override_runner() -> HeatmapComparisonRunner:
         return fake_runner
 
-    application.dependency_overrides[
-        get_heatmap_comparison_runner
-    ] = override_runner
+    application.dependency_overrides[get_heatmap_comparison_runner] = override_runner
 
     with TestClient(application) as client:
-        response = client.get(
-            "/api/v1/transfer-intelligence/"
-            "heatmap-comparison/10/10"
-        )
+        response = client.get("/api/v1/transfer-intelligence/heatmap-comparison/10/10")
 
     assert response.status_code == 400
-
 
 
 def _build_radar_comparison_result() -> RadarComparisonResult:
@@ -877,9 +841,7 @@ def test_radar_comparison_route_is_in_openapi_schema() -> None:
     schema = application.openapi()
 
     route = (
-        "/api/v1/transfer-intelligence/"
-        "radar-comparison/"
-        "{target_player_id}/{candidate_player_id}"
+        "/api/v1/transfer-intelligence/radar-comparison/{target_player_id}/{candidate_player_id}"
     )
 
     operation = schema["paths"][route]["get"]
@@ -891,45 +853,23 @@ def test_radar_comparison_route_is_in_openapi_schema() -> None:
 
     schemas = schema["components"]["schemas"]
 
-    response_schema = schemas[
-        "RadarComparisonResponse"
-    ]
+    response_schema = schemas["RadarComparisonResponse"]
 
-    assert response_schema["properties"]["target"]["$ref"].endswith(
-        "/RadarPlayerResponse"
-    )
+    assert response_schema["properties"]["target"]["$ref"].endswith("/RadarPlayerResponse")
 
-    assert response_schema["properties"]["candidate"]["$ref"].endswith(
-        "/RadarPlayerResponse"
-    )
+    assert response_schema["properties"]["candidate"]["$ref"].endswith("/RadarPlayerResponse")
 
     assert response_schema["properties"]["comparison"]["$ref"].endswith(
         "/RadarComparisonMetadataResponse"
     )
 
-    player_schema = schemas[
-        "RadarPlayerResponse"
-    ]
+    player_schema = schemas["RadarPlayerResponse"]
 
-    dimension_reference = (
-        player_schema[
-            "properties"
-        ][
-            "dimensions"
-        ][
-            "items"
-        ][
-            "$ref"
-        ]
-    )
+    dimension_reference = player_schema["properties"]["dimensions"]["items"]["$ref"]
 
-    assert dimension_reference.endswith(
-        "/RadarDimensionResponse"
-    )
+    assert dimension_reference.endswith("/RadarDimensionResponse")
 
-    dimension_properties = schemas[
-        "RadarDimensionResponse"
-    ]["properties"]
+    dimension_properties = schemas["RadarDimensionResponse"]["properties"]
 
     assert "raw_score" in dimension_properties
     assert "percentile" in dimension_properties
@@ -939,33 +879,24 @@ def test_radar_comparison_route_is_in_openapi_schema() -> None:
 def test_radar_comparison_endpoint_delegates_player_ids() -> None:
     application = create_app()
 
-    captured_requests: list[
-        RadarComparisonRequest
-    ] = []
+    captured_requests: list[RadarComparisonRequest] = []
 
     expected = _build_radar_comparison_result()
 
     def fake_runner(
         request: RadarComparisonRequest,
     ) -> RadarComparisonResult:
-        captured_requests.append(
-            request
-        )
+        captured_requests.append(request)
 
         return expected
 
     def override_runner() -> RadarComparisonRunner:
         return fake_runner
 
-    application.dependency_overrides[
-        get_radar_comparison_runner
-    ] = override_runner
+    application.dependency_overrides[get_radar_comparison_runner] = override_runner
 
     with TestClient(application) as client:
-        response = client.get(
-            "/api/v1/transfer-intelligence/"
-            "radar-comparison/10/20"
-        )
+        response = client.get("/api/v1/transfer-intelligence/radar-comparison/10/20")
 
     assert response.status_code == 200
 
@@ -1017,23 +948,16 @@ def test_radar_comparison_endpoint_preserves_invalid_request_error() -> None:
     def override_runner() -> RadarComparisonRunner:
         return fake_runner
 
-    application.dependency_overrides[
-        get_radar_comparison_runner
-    ] = override_runner
+    application.dependency_overrides[get_radar_comparison_runner] = override_runner
 
     with TestClient(application) as client:
-        response = client.get(
-            "/api/v1/transfer-intelligence/"
-            "radar-comparison/10/10"
-        )
+        response = client.get("/api/v1/transfer-intelligence/radar-comparison/10/10")
 
     assert response.status_code == 400
 
     assert response.json() == {
         "error": {
             "code": "invalid_transfer_analysis_request",
-            "message": (
-                "Radar comparison requires two different players."
-            ),
+            "message": ("Radar comparison requires two different players."),
         }
     }

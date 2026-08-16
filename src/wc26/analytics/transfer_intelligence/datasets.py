@@ -260,9 +260,7 @@ def load_heatmap_grids(
     """Load and validate normalized player heatmap grids."""
 
     if not path.exists():
-        raise DatasetNotFoundError(
-            f"Heatmap grid archive not found: {path}"
-        )
+        raise DatasetNotFoundError(f"Heatmap grid archive not found: {path}")
 
     try:
         archive = np.load(
@@ -275,46 +273,37 @@ def load_heatmap_grids(
         EOFError,
         BadZipFile,
     ) as exception:
-        raise InvalidDatasetError(
-            "Heatmap grid archive could not be read."
-        ) from exception
+        raise InvalidDatasetError("Heatmap grid archive could not be read.") from exception
 
     if not isinstance(
         archive,
         np.lib.npyio.NpzFile,
     ):
-        raise InvalidDatasetError(
-            "Heatmap grid artifact must be an NPZ archive."
-        )
+        raise InvalidDatasetError("Heatmap grid artifact must be an NPZ archive.")
 
     grids: dict[int, np.ndarray] = {}
     expected_shape: tuple[int, int] | None = None
 
     try:
         if not archive.files:
-            raise InvalidDatasetError(
-                "Heatmap grid archive contains no player grids."
-            )
+            raise InvalidDatasetError("Heatmap grid archive contains no player grids.")
 
         for key in archive.files:
             try:
                 player_id = int(key)
             except ValueError as exception:
                 raise InvalidDatasetError(
-                    "Heatmap grid archive contains "
-                    f"an invalid player key: {key!r}."
+                    f"Heatmap grid archive contains an invalid player key: {key!r}."
                 ) from exception
 
             if player_id <= 0:
                 raise InvalidDatasetError(
-                    "Heatmap grid archive contains "
-                    f"a non-positive player ID: {player_id}."
+                    f"Heatmap grid archive contains a non-positive player ID: {player_id}."
                 )
 
             if player_id in grids:
                 raise InvalidDatasetError(
-                    "Heatmap grid archive contains "
-                    f"duplicate player ID: {player_id}."
+                    f"Heatmap grid archive contains duplicate player ID: {player_id}."
                 )
 
             try:
@@ -329,8 +318,7 @@ def load_heatmap_grids(
                 BadZipFile,
             ) as exception:
                 raise InvalidDatasetError(
-                    "Heatmap grid could not be read "
-                    f"for player_id={player_id}."
+                    f"Heatmap grid could not be read for player_id={player_id}."
                 ) from exception
 
             if grid.ndim != 2:
@@ -365,19 +353,15 @@ def load_heatmap_grids(
 
             if not np.isfinite(grid).all():
                 raise InvalidDatasetError(
-                    "Heatmap grid contains non-finite values "
-                    f"for player_id={player_id}."
+                    f"Heatmap grid contains non-finite values for player_id={player_id}."
                 )
 
             if np.any(grid < 0):
                 raise InvalidDatasetError(
-                    "Heatmap grid contains negative density "
-                    f"for player_id={player_id}."
+                    f"Heatmap grid contains negative density for player_id={player_id}."
                 )
 
-            total = float(
-                grid.sum(dtype=np.float64)
-            )
+            total = float(grid.sum(dtype=np.float64))
 
             if not np.isclose(
                 total,
@@ -386,9 +370,7 @@ def load_heatmap_grids(
                 atol=1e-6,
             ):
                 raise InvalidDatasetError(
-                    "Heatmap grid is not normalized "
-                    f"for player_id={player_id}; "
-                    f"sum={total:.8f}."
+                    f"Heatmap grid is not normalized for player_id={player_id}; sum={total:.8f}."
                 )
 
             immutable_grid = np.array(

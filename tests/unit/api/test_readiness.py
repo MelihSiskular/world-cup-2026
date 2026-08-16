@@ -163,6 +163,4 @@ def test_readiness_returns_catalog_runtime_metadata() -> None:
     assert _parse_datetime(payload["catalog_loaded_at"]) == expected_catalog_loaded_at
 
     assert len(loader_calls) == 1
-    assert loader_calls[0][-1] == (
-        application.state.api_runtime.dataset_paths.heatmap_grids
-    )
+    assert loader_calls[0][-1] == (application.state.api_runtime.dataset_paths.heatmap_grids)

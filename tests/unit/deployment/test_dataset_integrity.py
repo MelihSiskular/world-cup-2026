@@ -220,14 +220,10 @@ def test_runtime_dataset_can_use_external_path(
     assert report.total_size_bytes == (external_path.stat().st_size)
 
 
-
 def test_runtime_heatmap_grid_integrity_passes(
     tmp_path: Path,
 ) -> None:
-    dataset_path = (
-        tmp_path
-        / "runtime/player_heatmap_grids.npz"
-    )
+    dataset_path = tmp_path / "runtime/player_heatmap_grids.npz"
     dataset_path.parent.mkdir(
         parents=True,
         exist_ok=True,
@@ -254,18 +250,13 @@ def test_runtime_heatmap_grid_integrity_passes(
         definitions=(
             DatasetDefinition(
                 key="heatmap_grids",
-                relative_path=Path(
-                    "runtime/player_heatmap_grids.npz"
-                ),
+                relative_path=Path("runtime/player_heatmap_grids.npz"),
                 artifact_type="heatmap_grid_npz",
             ),
         ),
     )
 
-    manifest_path = (
-        tmp_path
-        / "config/heatmap-manifest.json"
-    )
+    manifest_path = tmp_path / "config/heatmap-manifest.json"
     manifest_path.parent.mkdir(
         parents=True,
         exist_ok=True,
@@ -283,18 +274,13 @@ def test_runtime_heatmap_grid_integrity_passes(
     )
 
     assert report.dataset_count == 1
-    assert report.total_size_bytes == (
-        dataset_path.stat().st_size
-    )
+    assert report.total_size_bytes == (dataset_path.stat().st_size)
 
 
 def test_runtime_heatmap_grid_integrity_rejects_metadata_mismatch(
     tmp_path: Path,
 ) -> None:
-    dataset_path = (
-        tmp_path
-        / "runtime/player_heatmap_grids.npz"
-    )
+    dataset_path = tmp_path / "runtime/player_heatmap_grids.npz"
     dataset_path.parent.mkdir(
         parents=True,
         exist_ok=True,
@@ -316,25 +302,16 @@ def test_runtime_heatmap_grid_integrity_rejects_metadata_mismatch(
         definitions=(
             DatasetDefinition(
                 key="heatmap_grids",
-                relative_path=Path(
-                    "runtime/player_heatmap_grids.npz"
-                ),
+                relative_path=Path("runtime/player_heatmap_grids.npz"),
                 artifact_type="heatmap_grid_npz",
             ),
         ),
     )
 
     manifest["datasets"][0]["grid_width"] = 99
-    manifest["bundle_sha256"] = (
-        calculate_bundle_sha256(
-            manifest["datasets"]
-        )
-    )
+    manifest["bundle_sha256"] = calculate_bundle_sha256(manifest["datasets"])
 
-    manifest_path = (
-        tmp_path
-        / "config/heatmap-manifest.json"
-    )
+    manifest_path = tmp_path / "config/heatmap-manifest.json"
     manifest_path.parent.mkdir(
         parents=True,
         exist_ok=True,

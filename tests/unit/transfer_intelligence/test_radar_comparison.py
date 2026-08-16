@@ -53,10 +53,7 @@ def _midfielder(
         "player_id": player_id,
         "player_name": player_name,
         "position": "M",
-        **{
-            f"archetype_score_{dimension}": score
-            for dimension in MIDFIELDER_DIMENSIONS
-        },
+        **{f"archetype_score_{dimension}": score for dimension in MIDFIELDER_DIMENSIONS},
     }
 
 
@@ -69,10 +66,7 @@ def _forward(
         "player_id": player_id,
         "player_name": player_name,
         "position": "F",
-        **{
-            f"archetype_score_{dimension}": score
-            for dimension in FORWARD_DIMENSIONS
-        },
+        **{f"archetype_score_{dimension}": score for dimension in FORWARD_DIMENSIONS},
     }
 
 
@@ -113,9 +107,7 @@ def _midfielder_catalog() -> TransferDataCatalog:
         ]
     )
 
-    return _catalog(
-        players
-    )
+    return _catalog(players)
 
 
 def test_radar_comparison_request_is_immutable() -> None:
@@ -124,9 +116,7 @@ def test_radar_comparison_request_is_immutable() -> None:
         candidate_player_id=20,
     )
 
-    with pytest.raises(
-        FrozenInstanceError
-    ):
+    with pytest.raises(FrozenInstanceError):
         request.target_player_id = 1
 
 
@@ -144,32 +134,17 @@ def test_same_position_radar_builds_ordered_percentile_profiles() -> None:
     assert result.target.available is True
     assert result.target.peer_count == 4
 
-    assert tuple(
-        dimension.key
-        for dimension in result.target.dimensions
-    ) == MIDFIELDER_DIMENSIONS
+    assert tuple(dimension.key for dimension in result.target.dimensions) == MIDFIELDER_DIMENSIONS
 
-    assert all(
-        dimension.raw_score == 3.0
-        for dimension in result.target.dimensions
-    )
+    assert all(dimension.raw_score == 3.0 for dimension in result.target.dimensions)
 
-    assert all(
-        dimension.percentile == 75.0
-        for dimension in result.target.dimensions
-    )
+    assert all(dimension.percentile == 75.0 for dimension in result.target.dimensions)
 
-    assert all(
-        dimension.peer_count == 4
-        for dimension in result.target.dimensions
-    )
+    assert all(dimension.peer_count == 4 for dimension in result.target.dimensions)
 
     assert result.candidate.available is True
 
-    assert all(
-        dimension.percentile == 100.0
-        for dimension in result.candidate.dimensions
-    )
+    assert all(dimension.percentile == 100.0 for dimension in result.candidate.dimensions)
 
     assert result.comparison.same_position is True
     assert result.comparison.overlay_available is True
@@ -186,15 +161,11 @@ def test_radar_comparison_preserves_directional_archetype_scores() -> None:
     )
 
     target_security = next(
-        dimension
-        for dimension in result.target.dimensions
-        if dimension.key == "ball_security"
+        dimension for dimension in result.target.dimensions if dimension.key == "ball_security"
     )
 
     candidate_security = next(
-        dimension
-        for dimension in result.candidate.dimensions
-        if dimension.key == "ball_security"
+        dimension for dimension in result.candidate.dimensions if dimension.key == "ball_security"
     )
 
     assert target_security.raw_score == 3.0
@@ -219,15 +190,11 @@ def test_radar_comparison_keeps_missing_dimension_explicit() -> None:
             target_player_id=10,
             candidate_player_id=20,
         ),
-        _catalog(
-            players
-        ),
+        _catalog(players),
     )
 
     passing = next(
-        dimension
-        for dimension in result.target.dimensions
-        if dimension.key == "passing_volume"
+        dimension for dimension in result.target.dimensions if dimension.key == "passing_volume"
     )
 
     assert result.target.available is True
@@ -268,33 +235,22 @@ def test_cross_position_comparison_uses_separate_profiles() -> None:
             target_player_id=10,
             candidate_player_id=20,
         ),
-        _catalog(
-            players
-        ),
+        _catalog(players),
     )
 
     assert result.target.position == "M"
     assert result.candidate.position == "F"
 
-    assert tuple(
-        dimension.key
-        for dimension in result.target.dimensions
-    ) == MIDFIELDER_DIMENSIONS
+    assert tuple(dimension.key for dimension in result.target.dimensions) == MIDFIELDER_DIMENSIONS
 
-    assert tuple(
-        dimension.key
-        for dimension in result.candidate.dimensions
-    ) == FORWARD_DIMENSIONS
+    assert tuple(dimension.key for dimension in result.candidate.dimensions) == FORWARD_DIMENSIONS
 
     assert result.target.available is True
     assert result.candidate.available is True
 
     assert result.comparison.same_position is False
     assert result.comparison.overlay_available is False
-    assert (
-        result.comparison.reason
-        == "different_position_profiles"
-    )
+    assert result.comparison.reason == "different_position_profiles"
 
 
 def test_unsupported_position_keeps_profile_unavailable() -> None:
@@ -320,9 +276,7 @@ def test_unsupported_position_keeps_profile_unavailable() -> None:
             target_player_id=10,
             candidate_player_id=20,
         ),
-        _catalog(
-            players
-        ),
+        _catalog(players),
     )
 
     assert result.target.position == "X"
@@ -331,10 +285,7 @@ def test_unsupported_position_keeps_profile_unavailable() -> None:
     assert result.target.dimensions == ()
 
     assert result.comparison.overlay_available is False
-    assert (
-        result.comparison.reason
-        == "target_profile_unavailable"
-    )
+    assert result.comparison.reason == "target_profile_unavailable"
 
 
 def test_radar_comparison_serializes_without_nan() -> None:

@@ -198,17 +198,11 @@ def _optional_float(
 ) -> float | None:
     """Return one finite analytical value or None."""
 
-    if (
-        value is None
-        or value is pd.NA
-        or value is pd.NaT
-    ):
+    if value is None or value is pd.NA or value is pd.NaT:
         return None
 
     try:
-        result = float(
-            str(value).strip()
-        )
+        result = float(str(value).strip())
     except (
         TypeError,
         ValueError,
@@ -226,21 +220,15 @@ def _player_name(
 ) -> str:
     """Return a valid player display name."""
 
-    value = player.get(
-        "player_name"
-    )
+    value = player.get("player_name")
 
     if value is None or pd.isna(value):
-        raise InvalidDatasetError(
-            "Player catalog contains a missing player_name."
-        )
+        raise InvalidDatasetError("Player catalog contains a missing player_name.")
 
     result = str(value).strip()
 
     if not result:
-        raise InvalidDatasetError(
-            "Player catalog contains an empty player_name."
-        )
+        raise InvalidDatasetError("Player catalog contains an empty player_name.")
 
     return result
 
@@ -250,11 +238,7 @@ def _normalize_position_value(
 ) -> str | None:
     """Normalize one player position code."""
 
-    if (
-        value is None
-        or value is pd.NA
-        or value is pd.NaT
-    ):
+    if value is None or value is pd.NA or value is pd.NaT:
         return None
 
     text = str(value).strip().upper()
@@ -277,12 +261,7 @@ def _normalized_positions(
             dtype="string",
         )
 
-    return (
-        players["position"]
-        .astype("string")
-        .str.strip()
-        .str.upper()
-    )
+    return players["position"].astype("string").str.strip().str.upper()
 
 
 def _dimension_population(
@@ -294,13 +273,9 @@ def _dimension_population(
     """Return finite same-position values for one radar dimension."""
 
     if column not in players.columns:
-        return pd.Series(
-            dtype="float64"
-        )
+        return pd.Series(dtype="float64")
 
-    positions = _normalized_positions(
-        players
-    )
+    positions = _normalized_positions(players)
 
     values = pd.to_numeric(
         players.loc[
@@ -330,10 +305,7 @@ def _percentile_rank(
     if value is None or population.empty:
         return None
 
-    percentile = float(
-        population.le(value).mean()
-        * 100.0
-    )
+    percentile = float(population.le(value).mean() * 100.0)
 
     return max(
         0.0,
@@ -352,59 +324,32 @@ def _build_player_result(
 ) -> RadarPlayerResult:
     """Build one position-relative radar profile."""
 
-    position = _normalize_position_value(
-        player.get(
-            "position"
-        )
-    )
+    position = _normalize_position_value(player.get("position"))
 
-    if (
-        position is None
-        or position not in POSITION_RADAR_DIMENSIONS
-    ):
+    if position is None or position not in POSITION_RADAR_DIMENSIONS:
         return RadarPlayerResult(
             player_id=player_id,
-            player_name=_player_name(
-                player
-            ),
+            player_name=_player_name(player),
             position=position,
             available=False,
             peer_count=0,
             dimensions=(),
         )
 
-    normalized_positions = _normalized_positions(
-        players
-    )
+    normalized_positions = _normalized_positions(players)
 
-    position_population = players.loc[
-        normalized_positions.eq(
-            position
-        )
-    ]
+    position_population = players.loc[normalized_positions.eq(position)]
 
-    peer_count = int(
-        len(
-            position_population
-        )
-    )
+    peer_count = int(len(position_population))
 
-    dimensions: list[
-        RadarDimensionResult
-    ] = []
+    dimensions: list[RadarDimensionResult] = []
 
     for (
         key,
         label,
         column,
-    ) in POSITION_RADAR_DIMENSIONS[
-        position
-    ]:
-        raw_score = _optional_float(
-            player.get(
-                column
-            )
-        )
+    ) in POSITION_RADAR_DIMENSIONS[position]:
+        raw_score = _optional_float(player.get(column))
 
         population = _dimension_population(
             players,
@@ -421,33 +366,19 @@ def _build_player_result(
                     raw_score,
                     population,
                 ),
-                peer_count=int(
-                    len(
-                        population
-                    )
-                ),
+                peer_count=int(len(population)),
             )
         )
 
-    available_dimension_count = sum(
-        dimension.percentile is not None
-        for dimension in dimensions
-    )
+    available_dimension_count = sum(dimension.percentile is not None for dimension in dimensions)
 
     return RadarPlayerResult(
         player_id=player_id,
-        player_name=_player_name(
-            player
-        ),
+        player_name=_player_name(player),
         position=position,
-        available=(
-            available_dimension_count
-            >= _MINIMUM_AVAILABLE_DIMENSIONS
-        ),
+        available=(available_dimension_count >= _MINIMUM_AVAILABLE_DIMENSIONS),
         peer_count=peer_count,
-        dimensions=tuple(
-            dimensions
-        ),
+        dimensions=tuple(dimensions),
     )
 
 
@@ -457,16 +388,9 @@ def _comparison_metadata(
 ) -> RadarComparisonMetadataResult:
     """Resolve whether both profiles can share one overlay radar."""
 
-    same_position = (
-        target.position is not None
-        and target.position
-        == candidate.position
-    )
+    same_position = target.position is not None and target.position == candidate.position
 
-    if (
-        not target.available
-        and not candidate.available
-    ):
+    if not target.available and not candidate.available:
         return RadarComparisonMetadataResult(
             same_position=same_position,
             overlay_available=False,
@@ -494,14 +418,8 @@ def _comparison_metadata(
             reason="different_position_profiles",
         )
 
-    target_keys = tuple(
-        dimension.key
-        for dimension in target.dimensions
-    )
-    candidate_keys = tuple(
-        dimension.key
-        for dimension in candidate.dimensions
-    )
+    target_keys = tuple(dimension.key for dimension in target.dimensions)
+    candidate_keys = tuple(dimension.key for dimension in candidate.dimensions)
 
     if target_keys != candidate_keys:
         return RadarComparisonMetadataResult(
@@ -523,22 +441,14 @@ def get_radar_comparison_from_catalog(
 ) -> RadarComparisonResult:
     """Compare two position-relative playing-style radar profiles."""
 
-    if (
-        request.target_player_id <= 0
-        or request.candidate_player_id <= 0
-    ):
+    if request.target_player_id <= 0 or request.candidate_player_id <= 0:
         raise InvalidTransferAnalysisRequestError(
-            "Radar comparison player IDs "
-            "must be positive integers."
+            "Radar comparison player IDs must be positive integers."
         )
 
-    if (
-        request.target_player_id
-        == request.candidate_player_id
-    ):
+    if request.target_player_id == request.candidate_player_id:
         raise InvalidTransferAnalysisRequestError(
-            "Radar comparison requires "
-            "two different players."
+            "Radar comparison requires two different players."
         )
 
     target = resolve_player_by_id(

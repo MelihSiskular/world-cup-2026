@@ -48,11 +48,7 @@ def load_transfer_data_catalog(
         else pd.DataFrame()
     )
 
-    grids = (
-        load_heatmap_grids(heatmap_grids)
-        if heatmap_grids is not None
-        else {}
-    )
+    grids = load_heatmap_grids(heatmap_grids) if heatmap_grids is not None else {}
 
     return TransferDataCatalog(
         players=load_player_features(features),

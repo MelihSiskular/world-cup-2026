@@ -230,7 +230,6 @@ def test_catalog_transfer_analysis_runner_uses_entire_catalog(
     ]
 
 
-
 def test_catalog_radar_comparison_runner_uses_entire_catalog(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -272,16 +271,9 @@ def test_catalog_radar_comparison_runner_uses_entire_catalog(
         fake_get_radar_comparison_from_catalog,
     )
 
-    runner = (
-        dependencies
-        .create_catalog_radar_comparison_runner(
-            catalog
-        )
-    )
+    runner = dependencies.create_catalog_radar_comparison_runner(catalog)
 
-    result = runner(
-        request
-    )
+    result = runner(request)
 
     assert result is expected
 

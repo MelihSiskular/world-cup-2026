@@ -107,7 +107,6 @@ def test_runtime_catalog_loads_once_and_serves_complete_api_flow(
 
         return cast(pd.DataFrame, original_load_heatmap_profiles(path))
 
-
     def counted_load_heatmap_grids(
         path: Path,
     ) -> Mapping[int, np.ndarray]:
