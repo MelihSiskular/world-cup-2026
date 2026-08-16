@@ -84,6 +84,26 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/api/v1/transfer-intelligence/radar-comparison/{target_player_id}/{candidate_player_id}": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /**
+         * Compare position-relative player style profiles
+         * @description Return position-relative playing-style profiles for two players.
+         */
+        readonly get: operations["compare_player_radars_api_v1_transfer_intelligence_radar_comparison__target_player_id___candidate_player_id__get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/deployment": {
         readonly parameters: {
             readonly query?: never;
@@ -783,6 +803,61 @@ export interface components {
             readonly starts: number | null;
             /** Substitute Appearances */
             readonly substitute_appearances: number | null;
+        };
+        /**
+         * RadarComparisonMetadataResponse
+         * @description Rendering compatibility for two playing-style profiles.
+         */
+        readonly RadarComparisonMetadataResponse: {
+            /** Overlay Available */
+            readonly overlay_available: boolean;
+            /** Reason */
+            readonly reason: ("profiles_unavailable" | "target_profile_unavailable" | "candidate_profile_unavailable" | "different_position_profiles" | "dimension_contract_mismatch") | null;
+            /** Same Position */
+            readonly same_position: boolean;
+        };
+        /**
+         * RadarComparisonResponse
+         * @description Target-to-candidate playing-style radar comparison.
+         */
+        readonly RadarComparisonResponse: {
+            readonly candidate: components["schemas"]["RadarPlayerResponse"];
+            readonly comparison: components["schemas"]["RadarComparisonMetadataResponse"];
+            readonly target: components["schemas"]["RadarPlayerResponse"];
+        };
+        /**
+         * RadarDimensionResponse
+         * @description One position-relative playing-style radar dimension.
+         */
+        readonly RadarDimensionResponse: {
+            /** Key */
+            readonly key: string;
+            /** Label */
+            readonly label: string;
+            /** Peer Count */
+            readonly peer_count: number;
+            /** Percentile */
+            readonly percentile: number | null;
+            /** Raw Score */
+            readonly raw_score: number | null;
+        };
+        /**
+         * RadarPlayerResponse
+         * @description Position-relative playing-style profile for one player.
+         */
+        readonly RadarPlayerResponse: {
+            /** Available */
+            readonly available: boolean;
+            /** Dimensions */
+            readonly dimensions: readonly components["schemas"]["RadarDimensionResponse"][];
+            /** Peer Count */
+            readonly peer_count: number;
+            /** Player Id */
+            readonly player_id: number;
+            /** Player Name */
+            readonly player_name: string;
+            /** Position */
+            readonly position: string | null;
         };
         /**
          * ReadinessResponse
@@ -1629,6 +1704,74 @@ export interface operations {
                 };
             };
             /** @description Required heatmap analytics data is unavailable. */
+            readonly 503: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+        };
+    };
+    readonly compare_player_radars_api_v1_transfer_intelligence_radar_comparison__target_player_id___candidate_player_id__get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly candidate_player_id: number;
+                readonly target_player_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["RadarComparisonResponse"];
+                };
+            };
+            /** @description The radar comparison request is invalid. */
+            readonly 400: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description One of the requested players was not found. */
+            readonly 404: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Radar comparison failed unexpectedly. */
+            readonly 500: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description Required radar analytics data is unavailable. */
             readonly 503: {
                 headers: {
                     readonly [name: string]: unknown;

@@ -357,6 +357,98 @@
         }
       }
     },
+    "/api/v1/transfer-intelligence/radar-comparison/{target_player_id}/{candidate_player_id}": {
+      "get": {
+        "tags": [
+          "transfer-intelligence"
+        ],
+        "summary": "Compare position-relative player style profiles",
+        "description": "Return position-relative playing-style profiles for two players.",
+        "operationId": "compare_player_radars_api_v1_transfer_intelligence_radar_comparison__target_player_id___candidate_player_id__get",
+        "parameters": [
+          {
+            "name": "target_player_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Target Player Id"
+            }
+          },
+          {
+            "name": "candidate_player_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Candidate Player Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadarComparisonResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The radar comparison request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the requested players was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required radar analytics data is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Radar comparison failed unexpectedly.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/transfer-intelligence/analyze": {
       "post": {
         "tags": [
@@ -3159,6 +3251,174 @@
         ],
         "title": "PlayerTournamentSummaryResponse",
         "description": "Tournament participation context for one player."
+      },
+      "RadarComparisonMetadataResponse": {
+        "properties": {
+          "same_position": {
+            "type": "boolean",
+            "title": "Same Position"
+          },
+          "overlay_available": {
+            "type": "boolean",
+            "title": "Overlay Available"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "profiles_unavailable",
+                  "target_profile_unavailable",
+                  "candidate_profile_unavailable",
+                  "different_position_profiles",
+                  "dimension_contract_mismatch"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "same_position",
+          "overlay_available",
+          "reason"
+        ],
+        "title": "RadarComparisonMetadataResponse",
+        "description": "Rendering compatibility for two playing-style profiles."
+      },
+      "RadarComparisonResponse": {
+        "properties": {
+          "target": {
+            "$ref": "#/components/schemas/RadarPlayerResponse"
+          },
+          "candidate": {
+            "$ref": "#/components/schemas/RadarPlayerResponse"
+          },
+          "comparison": {
+            "$ref": "#/components/schemas/RadarComparisonMetadataResponse"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "target",
+          "candidate",
+          "comparison"
+        ],
+        "title": "RadarComparisonResponse",
+        "description": "Target-to-candidate playing-style radar comparison."
+      },
+      "RadarDimensionResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Label"
+          },
+          "raw_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Score"
+          },
+          "percentile": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentile"
+          },
+          "peer_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Peer Count"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "raw_score",
+          "percentile",
+          "peer_count"
+        ],
+        "title": "RadarDimensionResponse",
+        "description": "One position-relative playing-style radar dimension."
+      },
+      "RadarPlayerResponse": {
+        "properties": {
+          "player_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Player Id"
+          },
+          "player_name": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Player Name"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "peer_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Peer Count"
+          },
+          "dimensions": {
+            "items": {
+              "$ref": "#/components/schemas/RadarDimensionResponse"
+            },
+            "type": "array",
+            "title": "Dimensions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "player_id",
+          "player_name",
+          "position",
+          "available",
+          "peer_count",
+          "dimensions"
+        ],
+        "title": "RadarPlayerResponse",
+        "description": "Position-relative playing-style profile for one player."
       },
       "ReadinessResponse": {
         "properties": {
