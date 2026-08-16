@@ -503,6 +503,99 @@ class HeatmapComparisonResult:
             "similarity": self.similarity.to_dict(),
         }
 
+@dataclass(frozen=True, slots=True)
+class RadarComparisonRequest:
+    """Stable player identifiers for one radar comparison."""
+
+    target_player_id: int
+    candidate_player_id: int
+
+
+@dataclass(frozen=True, slots=True)
+class RadarDimensionResult:
+    """One position-relative playing-style radar dimension."""
+
+    key: str
+    label: str
+    raw_score: float | None
+    percentile: float | None
+    peer_count: int
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible radar dimension evidence."""
+
+        return {
+            "key": self.key,
+            "label": self.label,
+            "raw_score": self.raw_score,
+            "percentile": self.percentile,
+            "peer_count": self.peer_count,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class RadarPlayerResult:
+    """Position-relative radar profile for one player."""
+
+    player_id: int
+    player_name: str
+    position: str | None
+    available: bool
+    peer_count: int
+    dimensions: tuple[RadarDimensionResult, ...]
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible radar player profile."""
+
+        dimension_values: list[JsonValue] = [
+            dimension.to_dict()
+            for dimension in self.dimensions
+        ]
+
+        return {
+            "player_id": self.player_id,
+            "player_name": self.player_name,
+            "position": self.position,
+            "available": self.available,
+            "peer_count": self.peer_count,
+            "dimensions": dimension_values,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class RadarComparisonMetadataResult:
+    """Compatibility metadata for rendering two radar profiles."""
+
+    same_position: bool
+    overlay_available: bool
+    reason: str | None
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible radar comparison metadata."""
+
+        return {
+            "same_position": self.same_position,
+            "overlay_available": self.overlay_available,
+            "reason": self.reason,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class RadarComparisonResult:
+    """Complete target-to-candidate playing-style radar comparison."""
+
+    target: RadarPlayerResult
+    candidate: RadarPlayerResult
+    comparison: RadarComparisonMetadataResult
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible radar comparison."""
+
+        return {
+            "target": self.target.to_dict(),
+            "candidate": self.candidate.to_dict(),
+            "comparison": self.comparison.to_dict(),
+        }
 
 __all__ = [
     "HeatmapComparisonRequest",
@@ -523,6 +616,11 @@ __all__ = [
     "PlayerSearchItem",
     "PlayerSearchRequest",
     "PlayerSearchResult",
+    "RadarComparisonMetadataResult",
+    "RadarComparisonRequest",
+    "RadarComparisonResult",
+    "RadarDimensionResult",
+    "RadarPlayerResult",
     "TransferAnalysisRequest",
     "TransferAnalysisResult",
     "TransferModeResult",
