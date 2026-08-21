@@ -8,6 +8,7 @@ import {
 type PlayerImageSize =
   | "compact"
   | "card"
+  | "target"
   | "profile";
 
 type PlayerImageProps =
@@ -45,6 +46,14 @@ const SIZE_CONFIG: Record<
       "text-xl",
     sizes:
       "72px",
+  },
+  target: {
+    container:
+      "h-20 w-20 rounded-2xl",
+    initials:
+      "text-xl",
+    sizes:
+      "80px",
   },
   profile: {
     container:
@@ -149,7 +158,7 @@ export function PlayerImage({
         sizes={config.sizes}
         priority={priority}
         unoptimized
-        className="object-contain object-bottom p-1"
+        className="object-cover object-bottom"
         onError={() => {
           setFailedSource(
             source,
