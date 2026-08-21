@@ -156,13 +156,13 @@ export function PlayerProfileView({
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,26rem)] lg:items-start">
           <div className="flex flex-col gap-7 sm:flex-row sm:items-start">
             <PlayerImage
-            playerId={player.player_id}
-            playerName={player.player_name}
-            size="profile"
-            priority
-          />
+              playerId={player.player_id}
+              playerName={player.player_name}
+              size="profile"
+              priority
+            />
 
-          <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1">
             <h1 className="break-words text-4xl font-bold tracking-[-0.045em] sm:text-5xl">
               {player.player_name}
             </h1>
