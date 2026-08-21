@@ -9,7 +9,7 @@ const productSteps = [
     number: "01",
     title: "Find a player",
     description:
-      "Search the World Cup 2026 player catalogue using stable player identities.",
+      "Search the World Cup 2026 player catalogue.",
   },
   {
     number: "02",
@@ -36,12 +36,7 @@ export default function HomePage() {
           />
 
           <div className="relative max-w-5xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-surface-secondary px-4 py-2 text-sm font-semibold text-brand-dark">
-              <span className="size-2 rounded-full bg-brand" />
-              World Cup 2026 recruitment intelligence
-            </div>
-
-            <h1 className="mt-8 text-5xl leading-[1.02] font-bold tracking-[-0.055em] text-balance sm:text-6xl lg:text-7xl">
+            <h1 className="mt-1 text-5xl leading-[1.02] font-bold tracking-[-0.055em] text-balance sm:text-6xl lg:text-7xl">
               Find the right replacement.
               <span className="mt-2 block text-brand">
                 Not just the most similar player.
@@ -59,7 +54,7 @@ export default function HomePage() {
                 href="/players"
                 className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
               >
-                Explore players
+                Search players
               </Link>
 
               <Link
@@ -86,28 +81,24 @@ export default function HomePage() {
               </h2>
             </div>
 
-            <p className="max-w-xl text-sm leading-6 text-muted">
-              Analytical ranking remains inside the FastAPI backend.
-              The web application presents and explains the results
-              without recalculating recommendation scores.
-            </p>
+
           </div>
 
-          <div className="mt-9 grid gap-5 lg:grid-cols-3">
+          <div className="mt-5 grid gap-5 lg:grid-cols-3">
             {productSteps.map((step) => (
               <article
                 key={step.number}
-                className="rounded-2xl border border-border bg-surface p-6 shadow-sm"
+                className="rounded-2xl border border-border bg-surface p-4 shadow-sm"
               >
                 <span className="font-mono text-sm font-semibold text-brand">
                   {step.number}
                 </span>
 
-                <h3 className="mt-5 text-xl font-bold tracking-[-0.025em]">
+                <h3 className="mt-2 text-xl font-bold tracking-[-0.025em]">
                   {step.title}
                 </h3>
 
-                <p className="mt-3 text-sm leading-6 text-muted">
+                <p className="mt-2 text-sm leading-6 text-muted">
                   {step.description}
                 </p>
               </article>
