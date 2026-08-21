@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CountryFlag } from "@/components/players/country-flag";
+import { PlayerFeaturedMetrics } from "@/components/players/player-featured-metrics";
 import { PlayerImage } from "@/components/players/player-image";
 import { PlayerScoutingInsights } from "@/components/players/player-scouting-insights";
 import { PlayerPerformanceProfile } from "@/components/players/player-performance-profile";
@@ -26,12 +27,12 @@ type MetricCardProps = Readonly<{
 
 function MetricCard({ label, value, description }: MetricCardProps) {
   return (
-    <article className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
-      <p className="text-sm font-semibold text-muted">{label}</p>
+    <article className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
+      <p className="text-xs font-semibold text-muted">{label}</p>
 
-      <p className="mt-3 text-3xl font-bold tracking-[-0.04em]">{value}</p>
+      <p className="mt-2 text-xl font-bold tracking-[-0.03em]">{value}</p>
 
-      <p className="mt-2 text-xs leading-5 text-muted">{description}</p>
+      <p className="mt-1.5 text-xs leading-5 text-muted">{description}</p>
     </article>
   );
 }
@@ -51,6 +52,67 @@ function DetailRow({
     </div>
   );
 }
+
+function PlayerModelContext({
+  player,
+}: Readonly<{
+  player: PlayerProfileResponse;
+}>) {
+  return (
+    <section
+      aria-labelledby="player-model-context-title"
+      className="rounded-3xl border border-border bg-surface p-5 shadow-sm sm:p-6"
+    >
+      <div className="max-w-3xl">
+        <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
+          Model context
+        </p>
+
+        <h2
+          id="player-model-context-title"
+          className="mt-2 text-xl font-bold tracking-[-0.025em]"
+        >
+          Confidence behind the profile
+        </h2>
+
+        <p className="mt-2 text-sm leading-6 text-muted">
+          Supporting quality and reliability signals used to interpret the
+          tournament profile.
+        </p>
+      </div>
+
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <MetricCard
+          label="Weighted rating"
+          value={formatProfileNumber(player.weighted_rating, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+          description="Reliability-aware tournament performance rating"
+        />
+
+        <MetricCard
+          label="Player quality"
+          value={formatProfilePercentage(player.player_quality_score)}
+          description="Combined performance-quality assessment"
+        />
+
+        <MetricCard
+          label="Data reliability"
+          value={formatProfilePercentage(player.data_reliability_score)}
+          description="Confidence supported by available tournament data"
+        />
+
+        <MetricCard
+          label="Role confidence"
+          value={formatProfilePercentage(player.role_confidence_pct)}
+          description="Confidence in the assigned tactical role"
+        />
+      </div>
+    </section>
+  );
+}
+
 
 export function PlayerProfileView({ player }: PlayerProfileViewProps) {
   const roleReasonParts =
@@ -188,39 +250,9 @@ export function PlayerProfileView({ player }: PlayerProfileViewProps) {
         </div>
       </section>
 
+      <PlayerFeaturedMetrics intelligence={player.intelligence} />
+
       <PlayerScoutingInsights intelligence={player.intelligence} />
-
-      <section
-        aria-label="Player model context"
-        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
-      >
-        <MetricCard
-          label="Weighted rating"
-          value={formatProfileNumber(player.weighted_rating, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
-          description="Reliability-aware tournament performance rating"
-        />
-
-        <MetricCard
-          label="Player quality"
-          value={formatProfilePercentage(player.player_quality_score)}
-          description="Combined performance-quality assessment"
-        />
-
-        <MetricCard
-          label="Data reliability"
-          value={formatProfilePercentage(player.data_reliability_score)}
-          description="Confidence supported by available tournament data"
-        />
-
-        <MetricCard
-          label="Role confidence"
-          value={formatProfilePercentage(player.role_confidence_pct)}
-          description="Confidence in the assigned tactical role"
-        />
-      </section>
 
       <section className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-6">
         <article className="self-start rounded-2xl border border-border bg-surface p-5 shadow-sm sm:p-6">
@@ -414,6 +446,8 @@ export function PlayerProfileView({ player }: PlayerProfileViewProps) {
         </aside>
 
       </section>
+
+      <PlayerModelContext player={player} />
 
       <PlayerPerformanceProfile intelligence={player.intelligence} />
     </div>
