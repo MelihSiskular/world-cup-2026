@@ -107,6 +107,54 @@ def _required_text(
     return result
 
 
+def _country_alpha3_from_tournament_summary(
+    dataframe: pd.DataFrame,
+    *,
+    player_id: int,
+) -> str | None:
+    """Return the normalized tournament country alpha-3 code when available."""
+
+    if "country_alpha3" not in dataframe.columns:
+        return None
+
+    player_ids = pd.to_numeric(
+        dataframe["player_id"],
+        errors="coerce",
+    )
+
+    matches = dataframe.loc[
+        player_ids.eq(player_id)
+    ]
+
+    if matches.empty:
+        return None
+
+    if len(matches) != 1:
+        raise InvalidDatasetError(
+            "Player tournament summary returned multiple rows for one player ID."
+        )
+
+    value = _optional_text(
+        matches.iloc[0]["country_alpha3"]
+    )
+
+    if value is None:
+        return None
+
+    normalized = value.upper()
+
+    if (
+        len(normalized) != 3
+        or not normalized.isascii()
+        or not normalized.isalpha()
+    ):
+        raise InvalidDatasetError(
+            "Player tournament summary contains an invalid country_alpha3."
+        )
+
+    return normalized
+
+
 def _optional_float(
     value: object,
 ) -> float | None:
@@ -215,6 +263,7 @@ def _record_to_profile(
         ),
         national_team_name=_optional_text(record["national_team_name"]),
         country_name=_optional_text(record["country_name"]),
+        country_alpha3=None,
         position=_optional_text(record["position"]),
         age=_optional_float(record["age"]),
         height_cm=_optional_float(record["height_cm"]),
@@ -333,8 +382,14 @@ def _enrich_player_profile(
 
     tournament, intelligence = _convert_player_intelligence(intelligence_profile)
 
+    country_alpha3 = _country_alpha3_from_tournament_summary(
+        tournament_dataframe,
+        player_id=profile.player_id,
+    )
+
     return replace(
         profile,
+        country_alpha3=country_alpha3,
         tournament=tournament,
         intelligence=intelligence,
     )

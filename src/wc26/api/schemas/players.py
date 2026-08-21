@@ -124,6 +124,7 @@ class PlayerProfileResponse(BaseModel):
     player_name: str
     national_team_name: str | None
     country_name: str | None
+    country_alpha3: str | None
     position: str | None
     age: float | None
     height_cm: float | None

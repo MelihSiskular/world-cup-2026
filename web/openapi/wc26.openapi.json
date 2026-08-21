@@ -2701,6 +2701,17 @@
             ],
             "title": "Country Name"
           },
+          "country_alpha3": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country Alpha3"
+          },
           "position": {
             "anyOf": [
               {
@@ -2949,6 +2960,7 @@
           "player_name",
           "national_team_name",
           "country_name",
+          "country_alpha3",
           "position",
           "age",
           "height_cm",

@@ -10,6 +10,7 @@ const basePlayer: PlayerProfileResponse = {
   player_name: "Michael Olise",
   national_team_name: "France",
   country_name: "France",
+  country_alpha3: "FRA",
   position: "M",
   age: 24,
   height_cm: 184,

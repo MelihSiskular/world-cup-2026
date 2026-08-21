@@ -317,6 +317,7 @@ class PlayerProfileResult:
     player_name: str
     national_team_name: str | None
     country_name: str | None
+    country_alpha3: str | None
     position: str | None
     age: float | None
     height_cm: float | None
@@ -348,6 +349,7 @@ class PlayerProfileResult:
             "player_name": self.player_name,
             "national_team_name": self.national_team_name,
             "country_name": self.country_name,
+            "country_alpha3": self.country_alpha3,
             "position": self.position,
             "age": self.age,
             "height_cm": self.height_cm,

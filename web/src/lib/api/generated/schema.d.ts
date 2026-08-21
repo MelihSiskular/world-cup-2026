@@ -689,6 +689,8 @@ export interface components {
             readonly appearances: number | null;
             /** Archetype */
             readonly archetype: string | null;
+            /** Country Alpha3 */
+            readonly country_alpha3: string | null;
             /** Country Name */
             readonly country_name: string | null;
             /** Data Reliability Score */
