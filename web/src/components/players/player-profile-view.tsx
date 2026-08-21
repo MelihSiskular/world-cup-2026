@@ -104,9 +104,6 @@ export function PlayerProfileView({ player }: PlayerProfileViewProps) {
                     {player.national_team_name ?? "National team unavailable"}
                   </span>
 
-                  <span className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted">
-                    ID {player.player_id}
-                  </span>
                 </div>
 
                 <h1 className="mt-5 break-words text-4xl font-bold tracking-[-0.045em] sm:text-5xl">
@@ -184,8 +181,10 @@ export function PlayerProfileView({ player }: PlayerProfileViewProps) {
         </div>
       </section>
 
+      <PlayerScoutingInsights intelligence={player.intelligence} />
+
       <section
-        aria-label="Player profile scores"
+        aria-label="Player model context"
         className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
       >
         <MetricCard
@@ -312,7 +311,7 @@ export function PlayerProfileView({ player }: PlayerProfileViewProps) {
           ) : null}
         </article>
 
-        <aside className="self-start rounded-2xl border border-border bg-surface p-6 shadow-sm lg:col-start-2 lg:row-span-2 lg:row-start-1">
+        <aside className="self-start rounded-2xl border border-border bg-surface p-6 shadow-sm lg:col-start-2">
           <p className="text-sm font-semibold tracking-[0.15em] text-brand uppercase">
             Tournament context
           </p>
@@ -407,9 +406,6 @@ export function PlayerProfileView({ player }: PlayerProfileViewProps) {
           </div>
         </aside>
 
-        <div className="min-w-0 lg:col-start-1 lg:row-start-2">
-          <PlayerScoutingInsights intelligence={player.intelligence} />
-        </div>
       </section>
 
       <PlayerPerformanceProfile intelligence={player.intelligence} />
