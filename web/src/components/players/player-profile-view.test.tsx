@@ -125,6 +125,36 @@ describe("PlayerProfileView", () => {
     ).toBe("/player-images/978838.png");
   });
 
+  it("renders the player country flag and compact identity context", () => {
+    const { container } = render(
+      <PlayerProfileView player={basePlayer} />,
+    );
+
+    expect(
+      screen.getByText("France", {
+        exact: true,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Midfielder", {
+        exact: true,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      container.querySelector(
+        '[data-country-code="FRA"]',
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(
+        `ID ${basePlayer.player_id}`,
+      ),
+    ).not.toBeInTheDocument();
+  });
+
   it("includes the position-aware scouting insights section", () => {
     render(<PlayerProfileView player={basePlayer} />);
 
@@ -163,6 +193,7 @@ describe("PlayerProfileView", () => {
         player={createPlayer({
           national_team_name: null,
           country_name: null,
+          country_alpha3: null,
           position: null,
           age: null,
           height_cm: null,
@@ -191,7 +222,7 @@ describe("PlayerProfileView", () => {
 
     expect(screen.getByText("Position unavailable")).toBeInTheDocument();
 
-    expect(screen.getByText("National team unavailable")).toBeInTheDocument();
+    expect(screen.getByText("Country unavailable")).toBeInTheDocument();
 
     expect(screen.getByText(/Archetype unavailable/)).toBeInTheDocument();
 
@@ -231,17 +262,7 @@ describe("PlayerProfileView", () => {
       ),
     ).toBeInTheDocument();
 
-    const marketValueLabel = screen.getByText("Estimated market value");
-
-    const marketValueSection = marketValueLabel.closest("aside");
-
-    if (!marketValueSection) {
-      throw new Error("Market value section not found");
-    }
-
-    expect(
-      within(marketValueSection).getAllByText("Not reported").length,
-    ).toBeGreaterThan(0);
+    expectDetailValue("Market value", "Not reported");
   });
 
   it("keeps reported zero values distinct from missing data", () => {
@@ -313,21 +334,7 @@ describe("PlayerProfileView", () => {
       ),
     ).toBeInTheDocument();
 
-    const marketValueLabel = screen.getByText("Estimated market value");
-
-    const marketValueSection = marketValueLabel.closest("aside");
-
-    if (!marketValueSection) {
-      throw new Error("Market value section not found");
-    }
-
-    expect(
-      within(marketValueSection).queryByText("Not reported", {
-        exact: true,
-      }),
-    ).not.toBeInTheDocument();
-
-    expect(marketValueSection.textContent).toMatch(/0/);
+    expectDetailValue("Market value", "€0");
   });
 
   it("keeps long player identity content available without truncating the data", () => {

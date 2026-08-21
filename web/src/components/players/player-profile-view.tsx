@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { CountryFlag } from "@/components/players/country-flag";
 import { PlayerImage } from "@/components/players/player-image";
 import { PlayerScoutingInsights } from "@/components/players/player-scouting-insights";
 import { PlayerPerformanceProfile } from "@/components/players/player-performance-profile";
@@ -83,46 +84,92 @@ export function PlayerProfileView({ player }: PlayerProfileViewProps) {
 
   return (
     <div className="space-y-6">
-      <section className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm">
-        <div className="grid lg:grid-cols-[minmax(0,1fr)_19rem]">
-          <div className="p-6 sm:p-8">
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
-              <PlayerImage
-                playerId={player.player_id}
-                playerName={player.player_name}
-                size="profile"
-                priority
+      <section className="rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-8">
+        <div className="flex flex-col gap-7 sm:flex-row sm:items-start">
+          <PlayerImage
+            playerId={player.player_id}
+            playerName={player.player_name}
+            size="profile"
+            priority
+          />
+
+          <div className="min-w-0 flex-1">
+            <h1 className="break-words text-4xl font-bold tracking-[-0.045em] sm:text-5xl">
+              {player.player_name}
+            </h1>
+
+            <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-2 text-sm font-semibold text-muted">
+              <CountryFlag
+                countryAlpha3={player.country_alpha3}
               />
 
-              <div className="min-w-0">
-                <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-surface-secondary px-3 py-1.5 text-xs font-semibold text-brand-dark">
-                    {formatPlayerPosition(player.position)}
-                  </span>
+              <span>
+                {player.country_name ??
+                  player.national_team_name ??
+                  "Country unavailable"}
+              </span>
 
-                  <span className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-muted">
-                    {player.national_team_name ?? "National team unavailable"}
-                  </span>
+              <span aria-hidden="true" className="text-border">
+                ·
+              </span>
 
-                </div>
-
-                <h1 className="mt-5 break-words text-4xl font-bold tracking-[-0.045em] sm:text-5xl">
-                  {player.player_name}
-                </h1>
-
-                <p className="mt-3 break-words text-lg font-medium text-brand">
-                  {player.final_role ?? "Final role unavailable"}
-                </p>
-
-                <p className="mt-2 break-words text-sm text-muted">
-                  {player.archetype ?? "Archetype unavailable"}
-                  {" · "}
-                  {player.spatial_role ?? "Spatial role unavailable"}
-                </p>
-              </div>
+              <span>
+                {formatPlayerPosition(player.position)}
+              </span>
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <p className="mt-4 break-words text-lg font-semibold text-brand">
+              {player.final_role ?? "Final role unavailable"}
+            </p>
+
+            <p className="mt-1.5 break-words text-sm leading-6 text-muted">
+              {player.archetype ?? "Archetype unavailable"}
+              {" · "}
+              {player.spatial_role ?? "Spatial role unavailable"}
+            </p>
+
+            <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-4 border-t border-border pt-5">
+              <div>
+                <dt className="text-xs font-medium text-muted">
+                  Age
+                </dt>
+
+                <dd className="mt-1 text-sm font-bold">
+                  {player.age === null
+                    ? "Not reported"
+                    : `${formatProfileNumber(player.age, {
+                        maximumFractionDigits: 0,
+                      })} years`}
+                </dd>
+              </div>
+
+              <div>
+                <dt className="text-xs font-medium text-muted">
+                  Height
+                </dt>
+
+                <dd className="mt-1 text-sm font-bold">
+                  {player.height_cm === null
+                    ? "Not reported"
+                    : `${formatProfileNumber(player.height_cm)} cm`}
+                </dd>
+              </div>
+
+              <div>
+                <dt className="text-xs font-medium text-muted">
+                  Market value
+                </dt>
+
+                <dd className="mt-1 text-sm font-bold text-brand-dark">
+                  {formatMarketValue(
+                    player.market_value,
+                    player.market_value_currency,
+                  )}
+                </dd>
+              </div>
+            </dl>
+
+            <div className="mt-7 flex flex-wrap gap-3">
               <Link
                 href={`/analysis/${player.player_id}`}
                 className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
@@ -138,46 +185,6 @@ export function PlayerProfileView({ player }: PlayerProfileViewProps) {
               </Link>
             </div>
           </div>
-
-          <aside className="border-t border-border bg-surface-secondary p-6 lg:border-t-0 lg:border-l">
-            <p className="text-sm font-semibold text-muted">
-              Estimated market value
-            </p>
-
-            <p className="mt-3 text-3xl font-bold tracking-[-0.04em] text-brand-dark">
-              {formatMarketValue(
-                player.market_value,
-                player.market_value_currency,
-              )}
-            </p>
-
-            <dl className="mt-7">
-              <DetailRow
-                label="Age"
-                value={
-                  player.age === null
-                    ? "Not reported"
-                    : `${formatProfileNumber(player.age, {
-                        maximumFractionDigits: 0,
-                      })} years`
-                }
-              />
-
-              <DetailRow
-                label="Height"
-                value={
-                  player.height_cm === null
-                    ? "Not reported"
-                    : `${formatProfileNumber(player.height_cm)} cm`
-                }
-              />
-
-              <DetailRow
-                label="Country"
-                value={player.country_name ?? "Not reported"}
-              />
-            </dl>
-          </aside>
         </div>
       </section>
 
