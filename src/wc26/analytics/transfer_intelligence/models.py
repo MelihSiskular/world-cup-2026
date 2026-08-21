@@ -376,6 +376,13 @@ class PlayerProfileResult:
 
 
 @dataclass(frozen=True, slots=True)
+class HeatmapPlayerRequest:
+    """Stable player identifier for one measured heatmap."""
+
+    player_id: int
+
+
+@dataclass(frozen=True, slots=True)
 class HeatmapComparisonRequest:
     """Stable player identifiers for one heatmap comparison."""
 
@@ -579,6 +586,7 @@ class RadarComparisonResult:
 __all__ = [
     "HeatmapComparisonRequest",
     "HeatmapComparisonResult",
+    "HeatmapPlayerRequest",
     "HeatmapPlayerResult",
     "HeatmapSimilarityResult",
     "JsonObject",

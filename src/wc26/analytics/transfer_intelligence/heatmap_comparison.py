@@ -22,6 +22,7 @@ from wc26.analytics.transfer_intelligence.matching import (
 from wc26.analytics.transfer_intelligence.models import (
     HeatmapComparisonRequest,
     HeatmapComparisonResult,
+    HeatmapPlayerRequest,
     HeatmapPlayerResult,
     HeatmapSimilarityResult,
 )
@@ -298,6 +299,30 @@ def _resolve_measured_similarity(
     )
 
 
+def get_heatmap_player_from_catalog(
+    request: HeatmapPlayerRequest,
+    catalog: TransferDataCatalog,
+) -> HeatmapPlayerResult:
+    """Return measured tournament heatmap evidence for one player."""
+
+    if request.player_id <= 0:
+        raise InvalidTransferAnalysisRequestError(
+            "Heatmap player ID must be a positive integer."
+        )
+
+    player = resolve_player_by_id(
+        catalog.players,
+        request.player_id,
+    )
+
+    return _build_player_result(
+        player=player,
+        heatmap_profiles=catalog.heatmap_profiles,
+        heatmap_grids=catalog.heatmap_grids,
+        player_id=request.player_id,
+    )
+
+
 def get_heatmap_comparison_from_catalog(
     request: HeatmapComparisonRequest,
     catalog: TransferDataCatalog,
@@ -351,4 +376,5 @@ def get_heatmap_comparison_from_catalog(
 
 __all__ = [
     "get_heatmap_comparison_from_catalog",
+    "get_heatmap_player_from_catalog",
 ]

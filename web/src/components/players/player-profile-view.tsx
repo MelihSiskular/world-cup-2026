@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import Link from "next/link";
 
 import { CountryFlag } from "@/components/players/country-flag";
@@ -17,6 +19,7 @@ import {
 
 type PlayerProfileViewProps = Readonly<{
   player: PlayerProfileResponse;
+  spatialProfile?: ReactNode;
 }>;
 
 type MetricCardProps = Readonly<{
@@ -114,7 +117,10 @@ function PlayerModelContext({
 }
 
 
-export function PlayerProfileView({ player }: PlayerProfileViewProps) {
+export function PlayerProfileView({
+  player,
+  spatialProfile,
+}: PlayerProfileViewProps) {
   const roleReasonParts =
     player.role_reason
       ?.split("|")
@@ -147,8 +153,9 @@ export function PlayerProfileView({ player }: PlayerProfileViewProps) {
   return (
     <div className="space-y-6">
       <section className="rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-8">
-        <div className="flex flex-col gap-7 sm:flex-row sm:items-start">
-          <PlayerImage
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,26rem)] lg:items-start">
+          <div className="flex flex-col gap-7 sm:flex-row sm:items-start">
+            <PlayerImage
             playerId={player.player_id}
             playerName={player.player_name}
             size="profile"
@@ -247,6 +254,13 @@ export function PlayerProfileView({ player }: PlayerProfileViewProps) {
               </Link>
             </div>
           </div>
+        </div>
+
+          {spatialProfile ? (
+            <div className="min-w-0">
+              {spatialProfile}
+            </div>
+          ) : null}
         </div>
       </section>
 

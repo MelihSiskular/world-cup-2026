@@ -14,10 +14,13 @@ from wc26.analytics.transfer_intelligence.errors import (
 )
 from wc26.analytics.transfer_intelligence.heatmap_comparison import (
     get_heatmap_comparison_from_catalog,
+    get_heatmap_player_from_catalog,
 )
 from wc26.analytics.transfer_intelligence.models import (
     HeatmapComparisonRequest,
     HeatmapComparisonResult,
+    HeatmapPlayerRequest,
+    HeatmapPlayerResult,
     PlayerProfileRequest,
     PlayerProfileResult,
     PlayerSearchRequest,
@@ -48,6 +51,12 @@ from wc26.api.settings import TransferDatasetPaths
 type TransferAnalysisRunner = Callable[
     [TransferAnalysisRequest],
     TransferAnalysisResult,
+]
+
+
+type HeatmapPlayerRunner = Callable[
+    [HeatmapPlayerRequest],
+    HeatmapPlayerResult,
 ]
 
 
@@ -101,6 +110,22 @@ def create_catalog_player_profile_runner(
             request,
             catalog.players,
             catalog.player_tournament_summary,
+        )
+
+    return runner
+
+
+def create_catalog_heatmap_player_runner(
+    catalog: TransferDataCatalog,
+) -> HeatmapPlayerRunner:
+    """Create a single-player heatmap runner backed by a loaded catalog."""
+
+    def runner(
+        request: HeatmapPlayerRequest,
+    ) -> HeatmapPlayerResult:
+        return get_heatmap_player_from_catalog(
+            request,
+            catalog,
         )
 
     return runner
@@ -190,6 +215,23 @@ def get_player_search_runner(
     return create_catalog_player_search_runner(catalog)
 
 
+def get_heatmap_player_runner(
+    request: Request,
+) -> HeatmapPlayerRunner:
+    """Return the startup-catalog single-player heatmap service."""
+
+    catalog = _get_runtime_catalog(request)
+
+    if catalog is None:
+        raise InvalidDatasetError(
+            "Runtime transfer data catalog is unavailable."
+        )
+
+    return create_catalog_heatmap_player_runner(
+        catalog
+    )
+
+
 def get_heatmap_comparison_runner(
     request: Request,
 ) -> HeatmapComparisonRunner:
@@ -241,17 +283,20 @@ def get_transfer_analysis_runner(
 
 __all__ = [
     "HeatmapComparisonRunner",
+    "HeatmapPlayerRunner",
     "RadarComparisonRunner",
     "PlayerProfileRunner",
     "PlayerSearchRunner",
     "TransferAnalysisRunner",
     "TransferDatasetPaths",
     "create_catalog_heatmap_comparison_runner",
+    "create_catalog_heatmap_player_runner",
     "create_catalog_radar_comparison_runner",
     "create_catalog_player_profile_runner",
     "create_catalog_player_search_runner",
     "create_catalog_transfer_analysis_runner",
     "get_heatmap_comparison_runner",
+    "get_heatmap_player_runner",
     "get_radar_comparison_runner",
     "get_player_profile_runner",
     "get_player_search_runner",

@@ -265,6 +265,89 @@
         }
       }
     },
+    "/api/v1/transfer-intelligence/heatmap/{player_id}": {
+      "get": {
+        "tags": [
+          "transfer-intelligence"
+        ],
+        "summary": "Get measured player heatmap",
+        "description": "Return measured tournament heatmap evidence for one player.",
+        "operationId": "get_player_heatmap_api_v1_transfer_intelligence_heatmap__player_id__get",
+        "parameters": [
+          {
+            "name": "player_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Player Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HeatmapPlayerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The heatmap player identifier is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The requested player was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required heatmap analytics data is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Player heatmap retrieval failed unexpectedly.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/transfer-intelligence/heatmap-comparison/{target_player_id}/{candidate_player_id}": {
       "get": {
         "tags": [

@@ -8,6 +8,7 @@ import {
 
 import {
   fetchHeatmapComparison,
+  fetchPlayerHeatmap,
   fetchRadarComparison,
 } from "@/lib/api/browser-transfer-intelligence";
 
@@ -18,6 +19,82 @@ afterEach(() => {
   fetchMock.mockReset();
   vi.unstubAllGlobals();
 });
+
+describe(
+  "fetchPlayerHeatmap",
+  () => {
+    it(
+      "requests the single-player heatmap BFF route",
+      async () => {
+        fetchMock.mockResolvedValue(
+          new Response(
+            JSON.stringify({
+              player_id: 978838,
+              player_name: "Michael Olise",
+              available: true,
+              grid_width: 21,
+              grid_height: 14,
+              grid: [],
+              matches_with_heatmap: 6,
+              heatmap_point_count: 509,
+              weighted_mean_x: 61.3,
+              weighted_mean_y: 41.2,
+            }),
+            {
+              status: 200,
+              headers: {
+                "content-type":
+                  "application/json",
+              },
+            },
+          ),
+        );
+
+        vi.stubGlobal(
+          "fetch",
+          fetchMock,
+        );
+
+        const result =
+          await fetchPlayerHeatmap(
+            978838,
+          );
+
+        expect(
+          fetchMock,
+        ).toHaveBeenCalledTimes(1);
+
+        const [
+          requestPath,
+          options,
+        ] =
+          fetchMock.mock.calls[0] ??
+          [];
+
+        expect(requestPath).toBe(
+          "/api/transfer-intelligence/heatmap/978838",
+        );
+
+        expect(options).toMatchObject({
+          cache: "no-store",
+        });
+
+        expect(result.player_id).toBe(
+          978838,
+        );
+
+        expect(
+          result.weighted_mean_x,
+        ).toBe(61.3);
+
+        expect(
+          result.weighted_mean_y,
+        ).toBe(41.2);
+      },
+    );
+  },
+);
+
 
 describe(
   "fetchHeatmapComparison",

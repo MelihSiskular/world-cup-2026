@@ -19,15 +19,18 @@ from wc26.analytics.transfer_intelligence.errors import (
 )
 from wc26.analytics.transfer_intelligence.models import (
     HeatmapComparisonRequest,
+    HeatmapPlayerRequest,
     RadarComparisonRequest,
     TransferAnalysisRequest,
 )
 from wc26.api.dependencies import (
     HeatmapComparisonRunner,
+    HeatmapPlayerRunner,
     RadarComparisonRunner,
     TransferAnalysisRunner,
     TransferDatasetPaths,
     get_heatmap_comparison_runner,
+    get_heatmap_player_runner,
     get_radar_comparison_runner,
     get_transfer_analysis_runner,
     get_transfer_dataset_paths,
@@ -36,6 +39,7 @@ from wc26.api.errors import TransferAnalysisExecutionError
 from wc26.api.schemas.errors import ApiErrorResponse
 from wc26.api.schemas.transfer_intelligence import (
     HeatmapComparisonResponse,
+    HeatmapPlayerResponse,
     RadarComparisonResponse,
     TransferAnalysisPayload,
     TransferAnalysisResponse,
@@ -45,6 +49,50 @@ router = APIRouter(
     prefix="/api/v1/transfer-intelligence",
     tags=["transfer-intelligence"],
 )
+
+
+@router.get(
+    "/heatmap/{player_id}",
+    response_model=HeatmapPlayerResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get measured player heatmap",
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "model": ApiErrorResponse,
+            "description": "The heatmap player identifier is invalid.",
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "model": ApiErrorResponse,
+            "description": "The requested player was not found.",
+        },
+        status.HTTP_503_SERVICE_UNAVAILABLE: {
+            "model": ApiErrorResponse,
+            "description": "Required heatmap analytics data is unavailable.",
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ApiErrorResponse,
+            "description": "Player heatmap retrieval failed unexpectedly.",
+        },
+    },
+)
+def get_player_heatmap(
+    player_id: int,
+    heatmap_runner: Annotated[
+        HeatmapPlayerRunner,
+        Depends(get_heatmap_player_runner),
+    ],
+) -> HeatmapPlayerResponse:
+    """Return measured tournament heatmap evidence for one player."""
+
+    request = HeatmapPlayerRequest(
+        player_id=player_id,
+    )
+
+    result = heatmap_runner(request)
+
+    return HeatmapPlayerResponse.model_validate(
+        result.to_dict()
+    )
 
 
 @router.get(

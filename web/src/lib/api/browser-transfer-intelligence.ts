@@ -3,6 +3,7 @@ import {
 } from "@/lib/api/browser-client";
 import type {
   HeatmapComparisonResponse,
+  HeatmapPlayerResponse,
   RadarComparisonResponse,
   TransferAnalysisPayload,
   TransferAnalysisResponse,
@@ -17,6 +18,19 @@ export function runTransferAnalysis(
     {
       method: "POST",
       body: payload,
+      signal,
+    },
+  );
+}
+
+
+export function fetchPlayerHeatmap(
+  playerId: number,
+  signal?: AbortSignal,
+): Promise<HeatmapPlayerResponse> {
+  return requestBrowserJson<HeatmapPlayerResponse>(
+    `/api/transfer-intelligence/heatmap/${playerId}`,
+    {
       signal,
     },
   );

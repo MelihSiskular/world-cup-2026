@@ -4,6 +4,8 @@ type HeatmapPitchProps = Readonly<{
   player: HeatmapPlayerResponse;
   scaleMax?: number | null;
   showDensityLegend?: boolean;
+  showAveragePosition?: boolean;
+  showEvidenceSummary?: boolean;
 }>;
 
 const PITCH_LENGTH = 105;
@@ -73,6 +75,100 @@ function heatmapOpacity(value: number, scaleMaximum: number): number {
 
   return Math.pow(adjusted, DISPLAY_GAMMA) * MAX_HEATMAP_OPACITY;
 }
+
+function clampCoordinate(
+  value: number,
+): number {
+  return Math.min(
+    100,
+    Math.max(0, value),
+  );
+}
+
+function projectX(
+  value: number,
+): number {
+  return (
+    clampCoordinate(value) /
+    100
+  ) * PITCH_LENGTH;
+}
+
+function projectY(
+  value: number,
+): number {
+  return (
+    PITCH_WIDTH -
+    (clampCoordinate(value) / 100) *
+      PITCH_WIDTH
+  );
+}
+
+function hasAveragePosition(
+  player: HeatmapPlayerResponse,
+): player is HeatmapPlayerResponse &
+  Readonly<{
+    weighted_mean_x: number;
+    weighted_mean_y: number;
+  }> {
+  return (
+    typeof player.weighted_mean_x ===
+      "number" &&
+    Number.isFinite(
+      player.weighted_mean_x,
+    ) &&
+    typeof player.weighted_mean_y ===
+      "number" &&
+    Number.isFinite(
+      player.weighted_mean_y,
+    )
+  );
+}
+
+function AveragePositionMarker({
+  player,
+}: Readonly<{
+  player: HeatmapPlayerResponse;
+}>) {
+  if (!hasAveragePosition(player)) {
+    return null;
+  }
+
+  const x = projectX(
+    player.weighted_mean_x,
+  );
+
+  const y = projectY(
+    player.weighted_mean_y,
+  );
+
+  return (
+    <g data-testid="heatmap-average-position">
+      <circle
+        cx={x}
+        cy={y}
+        r="3.6"
+        className="fill-brand-dark stroke-white"
+        strokeWidth="1"
+      />
+
+      <circle
+        cx={x}
+        cy={y}
+        r="1.05"
+        className="fill-white"
+      />
+
+      <title>
+        {player.player_name}: average
+        tournament position (
+        {player.weighted_mean_x.toFixed(1)},{" "}
+        {player.weighted_mean_y.toFixed(1)})
+      </title>
+    </g>
+  );
+}
+
 
 function hasRenderableGrid(player: HeatmapPlayerResponse): boolean {
   const {
@@ -237,6 +333,8 @@ export function HeatmapPitch({
   player,
   scaleMax,
   showDensityLegend = true,
+  showAveragePosition = false,
+  showEvidenceSummary = true,
 }: HeatmapPitchProps) {
   if (!hasRenderableGrid(player)) {
     return (
@@ -332,7 +430,24 @@ export function HeatmapPitch({
           </g>
 
           <PitchLines />
+
+          {showAveragePosition ? (
+            <AveragePositionMarker
+              player={player}
+            />
+          ) : null}
         </svg>
+
+        {showAveragePosition &&
+        hasAveragePosition(player) ? (
+          <div className="mt-3 flex items-center gap-2 px-1 text-[11px] font-medium text-muted">
+            <span
+              aria-hidden="true"
+              className="inline-flex size-3 shrink-0 rounded-full border-2 border-white bg-brand-dark shadow-sm"
+            />
+            Average tournament position
+          </div>
+        ) : null}
 
         {showDensityLegend ? (
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
@@ -350,43 +465,45 @@ export function HeatmapPitch({
             <HeatmapDensityLegend />
           </div>
         ) : null}
-       <dl className="mt-3 grid grid-cols-3 divide-x divide-border border-t border-border pt-3 text-center">
-  <div className="px-2">
-    <dt className="text-[11px] text-muted">
-      Matches
-    </dt>
+       {showEvidenceSummary ? (
+         <dl className="mt-3 grid grid-cols-3 divide-x divide-border border-t border-border pt-3 text-center">
+           <div className="px-2">
+             <dt className="text-[11px] text-muted">
+               Matches
+             </dt>
 
-    <dd className="mt-1 text-sm font-bold text-brand-dark">
-      {formatEvidenceNumber(
-        player.matches_with_heatmap,
-      )}
-    </dd>
-  </div>
+             <dd className="mt-1 text-sm font-bold text-brand-dark">
+               {formatEvidenceNumber(
+                 player.matches_with_heatmap,
+               )}
+             </dd>
+           </div>
 
-  <div className="px-2">
-    <dt className="text-[11px] text-muted">
-      Points
-    </dt>
+           <div className="px-2">
+             <dt className="text-[11px] text-muted">
+               Points
+             </dt>
 
-    <dd className="mt-1 text-sm font-bold text-brand-dark">
-      {formatEvidenceNumber(
-        player.heatmap_point_count,
-      )}
-    </dd>
-  </div>
+             <dd className="mt-1 text-sm font-bold text-brand-dark">
+               {formatEvidenceNumber(
+                 player.heatmap_point_count,
+               )}
+             </dd>
+           </div>
 
-  <div className="px-2">
-    <dt className="text-[11px] text-muted">
-      Entropy
-    </dt>
+           <div className="px-2">
+             <dt className="text-[11px] text-muted">
+               Entropy
+             </dt>
 
-    <dd className="mt-1 text-sm font-bold text-brand-dark">
-      {formatEntropy(
-        player.heatmap_entropy,
-      )}
-    </dd>
-  </div>
-</dl>
+             <dd className="mt-1 text-sm font-bold text-brand-dark">
+               {formatEntropy(
+                 player.heatmap_entropy,
+               )}
+             </dd>
+           </div>
+         </dl>
+       ) : null}
       </div>
     </div>
   );

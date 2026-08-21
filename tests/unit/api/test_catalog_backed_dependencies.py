@@ -12,6 +12,8 @@ from wc26.analytics.transfer_intelligence.catalog import (
     TransferDataCatalog,
 )
 from wc26.analytics.transfer_intelligence.models import (
+    HeatmapPlayerRequest,
+    HeatmapPlayerResult,
     PlayerProfileRequest,
     PlayerProfileResult,
     PlayerSearchRequest,
@@ -222,6 +224,64 @@ def test_catalog_transfer_analysis_runner_uses_entire_catalog(
     result = runner(request)
 
     assert result is expected
+    assert calls == [
+        (
+            request,
+            catalog,
+        )
+    ]
+
+
+def test_catalog_heatmap_player_runner_uses_entire_catalog(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    catalog = _catalog()
+
+    request = HeatmapPlayerRequest(
+        player_id=978838,
+    )
+
+    expected = cast(
+        HeatmapPlayerResult,
+        object(),
+    )
+
+    calls: list[
+        tuple[
+            HeatmapPlayerRequest,
+            TransferDataCatalog,
+        ]
+    ] = []
+
+    def fake_get_heatmap_player_from_catalog(
+        delegated_request: HeatmapPlayerRequest,
+        delegated_catalog: TransferDataCatalog,
+    ) -> HeatmapPlayerResult:
+        calls.append(
+            (
+                delegated_request,
+                delegated_catalog,
+            )
+        )
+
+        return expected
+
+    monkeypatch.setattr(
+        dependencies,
+        "get_heatmap_player_from_catalog",
+        fake_get_heatmap_player_from_catalog,
+    )
+
+    runner = (
+        dependencies.create_catalog_heatmap_player_runner(
+            catalog
+        )
+    )
+
+    result = runner(request)
+
+    assert result is expected
+
     assert calls == [
         (
             request,
