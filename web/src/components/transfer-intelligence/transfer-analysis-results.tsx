@@ -12,6 +12,9 @@ import {
   ApiErrorReference,
 } from "@/components/feedback/api-error-reference";
 import {
+  PlayerImage,
+} from "@/components/players/player-image";
+import {
   TransferAnalysisResultsSkeleton,
 } from "@/components/transfer-intelligence/transfer-analysis-results-skeleton";
 import {
@@ -194,12 +197,22 @@ export function TransferAnalysisResults({
     modes[activeMode]
       .recommendations as readonly TransferRecommendationResponse[];
 
-  const visibleRecommendations =
+  const featuredRecommendation =
+    activeRecommendations[0] ??
+    null;
+
+  const remainingRecommendations =
+    activeRecommendations.slice(1);
+
+  const visibleRemainingRecommendations =
     showAllRecommendations
-      ? activeRecommendations
-      : activeRecommendations.slice(
+      ? remainingRecommendations
+      : remainingRecommendations.slice(
           0,
-          DEFAULT_VISIBLE_RECOMMENDATIONS,
+          Math.max(
+            DEFAULT_VISIBLE_RECOMMENDATIONS - 1,
+            0,
+          ),
         );
 
   const queryString =
@@ -211,197 +224,109 @@ export function TransferAnalysisResults({
     `/analysis/${playerId}?${queryString}`;
 
   return (
-    <div className="space-y-6">
-      <section className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm">
-        <div className="grid lg:grid-cols-[minmax(0,1fr)_20rem]">
-          <div className="min-w-0 p-6 sm:p-8">
-            <p className="text-sm font-semibold tracking-[0.15em] text-brand uppercase">
-              Analysis target
-            </p>
+    <div className="space-y-10">
+      <section className="rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-7">
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex min-w-0 items-center gap-4">
+            <PlayerImage
+              playerId={target.player_id}
+              playerName={target.player_name}
+              size="target"
+              priority
+            />
 
-            <h2 className="mt-3 break-words text-4xl font-bold tracking-[-0.045em]">
-              {target.player_name}
-            </h2>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
+                Analysis target
+              </p>
 
-            <p className="mt-2 font-semibold text-brand">
-              {target.final_role ??
-                target.archetype ??
-                "Role unavailable"}
-            </p>
+              <h2 className="mt-2 break-words text-2xl font-bold tracking-[-0.035em]">
+                {target.player_name}
+              </h2>
 
-            <p className="mt-2 text-sm text-muted">
-              {target.national_team_name ??
-                target.country_name ??
-                "National team unavailable"}
-              {" · "}
-              {formatProfileNumber(
-                target.appearances,
-              )}{" "}
-              appearances
-              {" · "}
-              {formatProfileNumber(
-                target.minutes,
-              )}{" "}
-              minutes
-            </p>
+              <p className="mt-1 break-words text-sm font-semibold text-brand">
+                {target.final_role ??
+                  target.archetype ??
+                  "Role unavailable"}
+              </p>
 
-            <div className="mt-7 flex flex-wrap gap-2">
-              <span className="rounded-lg border border-border bg-page px-3 py-2 text-xs font-medium">
-                Minimum minutes:{" "}
-                {values.minimumMinutes}
-              </span>
-
-              <span className="rounded-lg border border-border bg-page px-3 py-2 text-xs font-medium">
-                Role confidence:{" "}
-                {values.minimumRoleConfidence}%
-              </span>
-
-              <span className="rounded-lg border border-border bg-page px-3 py-2 text-xs font-medium">
-                Heatmap fallback:{" "}
-                {values.neutralHeatmapScore}%
-              </span>
-
-              <span className="rounded-lg border border-border bg-page px-3 py-2 text-xs font-medium">
-                Budget:{" "}
-                {values
-                  .maximumMarketValueMillions ===
-                undefined
-                  ? "No limit"
-                  : `€${values.maximumMarketValueMillions}M`}
-              </span>
+              <p className="mt-1 text-sm text-muted">
+                {target.national_team_name ??
+                  target.country_name ??
+                  "National team unavailable"}
+                {" · "}
+                {formatProfileNumber(
+                  target.appearances,
+                )}{" "}
+                appearances
+                {" · "}
+                {formatProfileNumber(
+                  target.minutes,
+                )}{" "}
+                minutes
+              </p>
             </div>
           </div>
 
-          <aside className="border-t border-border bg-surface-secondary p-6 lg:border-t-0 lg:border-l">
-            <p className="text-sm font-semibold text-muted">
-              Market value
-            </p>
+          <div className="grid gap-2 sm:grid-cols-3 xl:min-w-[31rem]">
+            <div className="rounded-xl border border-border bg-surface-secondary px-4 py-3">
+              <p className="text-xs text-muted">
+                Market value
+              </p>
 
-            <p className="mt-2 text-3xl font-bold tracking-[-0.04em] text-brand-dark">
-              {formatMarketValue(
-                target.market_value,
-                target.market_value_currency,
-              )}
-            </p>
+              <p className="mt-1 text-lg font-bold tracking-[-0.02em]">
+                {formatMarketValue(
+                  target.market_value,
+                  target.market_value_currency,
+                )}
+              </p>
+            </div>
 
-            <dl className="mt-6 space-y-4 text-sm">
-              <div>
-                <dt className="text-muted">
-                  Player quality
-                </dt>
-                <dd className="mt-1 font-semibold">
-                  {formatProfilePercentage(
-                    target.player_quality_score,
-                  )}
-                </dd>
-              </div>
+            <div className="rounded-xl border border-border bg-surface-secondary px-4 py-3">
+              <p className="text-xs text-muted">
+                Player quality
+              </p>
 
-              <div>
-                <dt className="text-muted">
-                  Role confidence
-                </dt>
-                <dd className="mt-1 font-semibold">
-                  {formatProfilePercentage(
-                    target.role_confidence_pct,
-                  )}
-                </dd>
-              </div>
-            </dl>
+              <p className="mt-1 text-lg font-bold tracking-[-0.02em]">
+                {formatProfilePercentage(
+                  target.player_quality_score,
+                )}
+              </p>
+            </div>
 
-            <Link
-              href={adjustParametersHref}
-              className="mt-7 inline-flex rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-page"
-            >
-              Adjust parameters
-            </Link>
-          </aside>
+            <div className="rounded-xl border border-border bg-surface-secondary px-4 py-3">
+              <p className="text-xs text-muted">
+                Role confidence
+              </p>
+
+              <p className="mt-1 text-lg font-bold tracking-[-0.02em]">
+                {formatProfilePercentage(
+                  target.role_confidence_pct,
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-5 border-t border-border pt-5">
+          <Link
+            href={adjustParametersHref}
+            className="inline-flex rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-surface-secondary"
+          >
+            Adjust recruitment criteria
+          </Link>
         </div>
       </section>
 
-      <section
-        aria-label="Recruitment scenarios"
-      >
-        <div
-          role="tablist"
-          aria-label="Transfer recommendation modes"
-          className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
-        >
-          {TRANSFER_MODE_ORDER.map(
-            (modeName) => {
-              const details =
-                TRANSFER_MODE_DETAILS[
-                  modeName
-                ];
 
-              const recommendationCount =
-                modes[modeName]
-                  .recommendations.length;
-
-              const active =
-                activeMode === modeName;
-
-              return (
-                <button
-                  key={modeName}
-                  type="button"
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => {
-                    setActiveMode(
-                      modeName,
-                    );
-                    setShowAllRecommendations(
-                      false,
-                    );
-                  }}
-                  className={[
-                    "rounded-2xl border p-5 text-left transition",
-                    active
-                      ? "border-brand bg-brand-dark text-white shadow-sm"
-                      : "border-border bg-surface hover:border-brand/35",
-                  ].join(" ")}
-                >
-                  <span className="flex items-center justify-between gap-3">
-                    <span className="font-bold">
-                      {details.shortLabel}
-                    </span>
-
-                    <span
-                      className={[
-                        "rounded-full px-2.5 py-1 text-xs font-bold",
-                        active
-                          ? "bg-white/15 text-white"
-                          : "bg-surface-secondary text-brand-dark",
-                      ].join(" ")}
-                    >
-                      {recommendationCount}
-                    </span>
-                  </span>
-
-                  <span
-                    className={[
-                      "mt-2 block text-xs leading-5",
-                      active
-                        ? "text-white/75"
-                        : "text-muted",
-                    ].join(" ")}
-                  >
-                    {details.description}
-                  </span>
-                </button>
-              );
-            },
-          )}
-        </div>
-      </section>
 
       <section
         aria-labelledby="active-mode-heading"
       >
-        <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-              Recruitment scenario
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
+              Active scenario
             </p>
 
             <h2
@@ -414,19 +339,84 @@ export function TransferAnalysisResults({
                 ].label
               }
             </h2>
+
+            <p className="mt-2 text-sm leading-6 text-muted">
+              {
+                TRANSFER_MODE_DETAILS[
+                  activeMode
+                ].description
+              }
+            </p>
           </div>
 
-          <p className="text-sm text-muted">
-            {activeRecommendations.length}{" "}
-            {activeRecommendations.length ===
-            1
-              ? "candidate"
-              : "candidates"}
-          </p>
+          <div className="xl:text-right">
+            <p className="mb-2 text-xs font-semibold tracking-[0.14em] text-brand uppercase">
+              Recruitment strategy
+            </p>
+
+            <div
+              role="tablist"
+              aria-label="Transfer recommendation modes"
+              className="flex max-w-2xl flex-wrap gap-2 xl:justify-end"
+            >
+            {TRANSFER_MODE_ORDER.map(
+              (modeName) => {
+                const details =
+                  TRANSFER_MODE_DETAILS[
+                    modeName
+                  ];
+
+                const recommendationCount =
+                  modes[modeName]
+                    .recommendations.length;
+
+                const active =
+                  activeMode === modeName;
+
+                return (
+                  <button
+                    key={modeName}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => {
+                      setActiveMode(
+                        modeName,
+                      );
+                      setShowAllRecommendations(
+                        false,
+                      );
+                    }}
+                    className={[
+                      "inline-flex min-h-10 items-center gap-2.5 rounded-xl border px-3.5 py-2 text-sm font-semibold transition",
+                      active
+                        ? "border-brand bg-brand-dark text-white shadow-sm"
+                        : "border-border bg-surface text-foreground hover:border-brand/35 hover:bg-surface-secondary",
+                    ].join(" ")}
+                  >
+                    <span>
+                      {details.shortLabel}
+                    </span>
+
+                    <span
+                      className={[
+                        "rounded-full px-2 py-0.5 text-xs font-bold",
+                        active
+                          ? "bg-white/15 text-white"
+                          : "bg-page text-brand-dark",
+                      ].join(" ")}
+                    >
+                      {recommendationCount}
+                    </span>
+                  </button>
+                );
+              },
+            )}
+            </div>
+          </div>
         </div>
 
-        {activeRecommendations.length ===
-        0 ? (
+        {featuredRecommendation === null ? (
           <div className="rounded-2xl border border-dashed border-border bg-surface p-8 text-center">
             <p className="font-semibold">
               No eligible candidates
@@ -440,48 +430,113 @@ export function TransferAnalysisResults({
           </div>
         ) : (
           <>
-            <div className="space-y-4">
-              {visibleRecommendations.map(
-                (recommendation) => (
-                  <TransferRecommendationCard
-                    key={
-                      recommendation.player_id
-                    }
-                    targetPlayerId={
-                      target.player_id
-                    }
-                    mode={activeMode}
-                    analysisValues={values}
-                    recommendation={
-                      recommendation
-                    }
-                  />
-                ),
-              )}
-            </div>
+            <section
+              aria-labelledby="leading-recommendation-heading"
+              className="mt-10 sm:mt-12"
+            >
+              <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
+                    Leading recommendation
+                  </p>
 
-            {activeRecommendations.length >
-            DEFAULT_VISIBLE_RECOMMENDATIONS ? (
-              <div className="mt-6 text-center">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAllRecommendations(
-                      (current) =>
-                        !current,
-                    );
-                  }}
-                  className="rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold hover:bg-surface-secondary"
-                >
-                  {showAllRecommendations
-                    ? "Show top recommendations"
-                    : `Show all ${activeRecommendations.length} candidates`}
-                </button>
+                  <h3
+                    id="leading-recommendation-heading"
+                    className="mt-1 text-xl font-bold tracking-[-0.025em]"
+                  >
+                    Best-ranked candidate for this scenario
+                  </h3>
+                </div>
               </div>
+
+              <TransferRecommendationCard
+                targetPlayerId={
+                  target.player_id
+                }
+                mode={activeMode}
+                analysisValues={values}
+                recommendation={
+                  featuredRecommendation
+                }
+                variant="featured"
+              />
+            </section>
+
+            {remainingRecommendations.length >
+            0 ? (
+              <section
+                aria-labelledby="other-candidates-heading"
+                className="mt-8"
+              >
+                <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
+                      Other candidates
+                    </p>
+
+                    <h3
+                      id="other-candidates-heading"
+                      className="mt-1 text-xl font-bold tracking-[-0.025em]"
+                    >
+                      Alternative recruitment options
+                    </h3>
+                  </div>
+
+                  <p className="text-sm text-muted">
+                    {remainingRecommendations.length}{" "}
+                    {remainingRecommendations.length ===
+                    1
+                      ? "alternative"
+                      : "alternatives"}
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {visibleRemainingRecommendations.map(
+                    (recommendation) => (
+                      <TransferRecommendationCard
+                        key={
+                          recommendation.player_id
+                        }
+                        targetPlayerId={
+                          target.player_id
+                        }
+                        mode={activeMode}
+                        analysisValues={values}
+                        recommendation={
+                          recommendation
+                        }
+                        variant="compact"
+                      />
+                    ),
+                  )}
+                </div>
+
+                {activeRecommendations.length >
+                DEFAULT_VISIBLE_RECOMMENDATIONS ? (
+                  <div className="mt-6 text-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAllRecommendations(
+                          (current) =>
+                            !current,
+                        );
+                      }}
+                      className="rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold transition-colors hover:bg-surface-secondary"
+                    >
+                      {showAllRecommendations
+                        ? "Show top recommendations"
+                        : `Show all ${activeRecommendations.length} candidates`}
+                    </button>
+                  </div>
+                ) : null}
+              </section>
             ) : null}
           </>
         )}
       </section>
     </div>
   );
+
 }

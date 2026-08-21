@@ -13,7 +13,6 @@ import {
   TransferAnalysisResults,
 } from "@/components/transfer-intelligence/transfer-analysis-results";
 import {
-  createAnalysisSearchParameters,
   parseAnalysisSearchParameters,
 } from "@/lib/transfer-intelligence/analysis-form";
 import type {
@@ -100,38 +99,17 @@ export default async function AnalysisResultsPage({
       resolvedSearchParams.mode,
     ) ?? "immediate";
 
-  const resultParameters =
-    createAnalysisSearchParameters(
-      parsedParameters.values,
-    );
-
-  resultParameters.set(
-    "mode",
-    initialMode,
-  );
-
-  const queryString =
-    resultParameters.toString();
-
   return (
     <PageContainer className="py-10 sm:py-14">
       <PageIntro
         eyebrow="Transfer intelligence"
         title="Replacement recommendations"
         description="Review candidates across four recruitment scenarios, inspect the recommendation evidence and continue to direct player comparison."
-        actions={
-          <Link
-            href={`/analysis/${parsedPlayerId}?${queryString}`}
-            className="rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold hover:bg-surface-secondary"
-          >
-            Adjust parameters
-          </Link>
-        }
       />
 
       <div className="mt-10">
         <TransferAnalysisResults
-          key={`${parsedPlayerId}:${initialMode}:${queryString}`}
+          key={`${parsedPlayerId}:${initialMode}`}
           playerId={parsedPlayerId}
           values={
             parsedParameters.values
