@@ -39,13 +39,7 @@ function TacticalProfileComparison({
   row: TacticalProfileRow;
 }>) {
   return (
-    <div
-      className="grid items-center gap-4 border-b border-border/70 py-4 last:border-b-0"
-      style={{
-        gridTemplateColumns:
-          "7.5rem minmax(0, 1fr) 1.5rem minmax(0, 1fr)",
-      }}
-    >
+    <div className="tactical-profile-row grid items-start gap-x-4 gap-y-2 border-b border-border/70 py-4 sm:items-center sm:gap-y-0 last:border-b-0">
       <p className="text-xs font-medium text-muted">
         {row.label}
       </p>
@@ -169,13 +163,7 @@ export function RoleCompatibilityPanel({
           Tactical profile
         </p>
 
-        <div
-          className="grid gap-4 border-b border-border pb-3"
-          style={{
-            gridTemplateColumns:
-              "7.5rem minmax(0, 1fr) 1.5rem minmax(0, 1fr)",
-          }}
-        >
+        <div className="tactical-profile-header hidden gap-4 border-b border-border pb-3 sm:grid">
           <span />
 
           <p className="text-xs font-semibold tracking-[0.1em] text-muted uppercase">

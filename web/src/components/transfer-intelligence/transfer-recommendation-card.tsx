@@ -276,17 +276,17 @@ export function TransferRecommendationCard({
             </span>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex w-full gap-2 sm:w-auto">
             <Link
               href={comparisonHref}
-              className="rounded-xl bg-brand px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-dark"
+              className="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl bg-brand px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-dark sm:flex-none"
             >
               Compare
             </Link>
 
             <Link
               href={`/players/${recommendation.player_id}`}
-              className="rounded-xl border border-border px-4 py-2 text-xs font-semibold transition-colors hover:bg-surface-secondary"
+              className="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl border border-border px-4 py-2 text-xs font-semibold transition-colors hover:bg-surface-secondary sm:flex-none"
             >
               Profile
             </Link>
@@ -382,17 +382,17 @@ export function TransferRecommendationCard({
             }
           />
 
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Link
               href={comparisonHref}
-              className="rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-dark sm:w-auto"
             >
               Compare with target
             </Link>
 
             <Link
               href={`/players/${recommendation.player_id}`}
-              className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-surface-secondary"
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-border px-4 py-2.5 text-center text-sm font-semibold transition-colors hover:bg-surface-secondary sm:w-auto"
             >
               Open player profile
             </Link>

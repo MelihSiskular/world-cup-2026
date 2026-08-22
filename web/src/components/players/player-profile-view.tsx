@@ -48,10 +48,14 @@ function DetailRow({
   value: string;
 }>) {
   return (
-    <div className="flex items-start justify-between gap-6 border-b border-border py-3 last:border-b-0">
-      <dt className="text-sm text-muted">{label}</dt>
+    <div className="flex flex-col gap-1.5 border-b border-border py-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6 last:border-b-0">
+      <dt className="text-sm text-muted">
+        {label}
+      </dt>
 
-      <dd className="text-right text-sm font-semibold">{value}</dd>
+      <dd className="min-w-0 break-words text-sm font-semibold sm:text-right">
+        {value}
+      </dd>
     </div>
   );
 }
@@ -154,7 +158,7 @@ export function PlayerProfileView({
     <div className="space-y-6">
       <section className="rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-8">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,26rem)] lg:items-start">
-          <div className="flex flex-col gap-7 sm:flex-row sm:items-start">
+          <div className="flex min-w-0 flex-col gap-7 sm:flex-row sm:items-start">
             <PlayerImage
               playerId={player.player_id}
               playerName={player.player_name}
@@ -163,7 +167,7 @@ export function PlayerProfileView({
             />
 
             <div className="min-w-0 flex-1">
-            <h1 className="break-words text-4xl font-bold tracking-[-0.045em] sm:text-5xl">
+            <h1 className="min-w-0 [overflow-wrap:anywhere] text-4xl font-bold tracking-[-0.045em] sm:text-5xl">
               {player.player_name}
             </h1>
 
@@ -238,17 +242,17 @@ export function PlayerProfileView({
               </div>
             </dl>
 
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
                 href={`/analysis/${player.player_id}`}
-                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+                className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-5 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-dark sm:w-auto"
               >
                 Run transfer analysis
               </Link>
 
               <Link
                 href="/players"
-                className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold transition-colors hover:bg-surface-secondary"
+                className="inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-border bg-surface px-5 py-3 text-center text-sm font-semibold transition-colors hover:bg-surface-secondary sm:w-auto"
               >
                 Back to player search
               </Link>

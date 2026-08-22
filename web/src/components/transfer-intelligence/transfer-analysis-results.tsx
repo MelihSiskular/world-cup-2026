@@ -320,7 +320,7 @@ export function TransferAnalysisResults({
             <div
               role="tablist"
               aria-label="Transfer recommendation modes"
-              className="flex max-w-2xl flex-wrap gap-2 xl:justify-end"
+              className="grid w-full max-w-2xl grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap xl:justify-end"
             >
             {TRANSFER_MODE_ORDER.map(
               (modeName) => {
@@ -351,7 +351,7 @@ export function TransferAnalysisResults({
                       );
                     }}
                     className={[
-                      "inline-flex min-h-10 items-center gap-2.5 rounded-xl border px-3.5 py-2 text-sm font-semibold transition",
+                      "inline-flex min-h-11 min-w-0 items-center justify-between gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition sm:justify-center sm:px-3.5",
                       active
                         ? "border-brand bg-brand-dark text-white shadow-sm"
                         : "border-border bg-surface text-foreground hover:border-brand/35 hover:bg-surface-secondary",

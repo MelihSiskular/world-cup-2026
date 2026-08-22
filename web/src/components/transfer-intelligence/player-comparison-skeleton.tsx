@@ -143,11 +143,7 @@ export function PlayerComparisonSkeleton() {
 
       <section
         aria-hidden="true"
-        className="grid gap-3 py-5"
-        style={{
-          gridTemplateColumns:
-            "repeat(5, minmax(0, 1fr))",
-        }}
+        className="comparison-indicator-grid grid gap-3 py-5"
       >
         {Array.from({
           length: 5,

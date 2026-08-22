@@ -544,11 +544,7 @@ export function PlayerComparison({
 
       <section
         aria-label="Comparison indicators"
-        className="grid gap-3 py-5"
-        style={{
-          gridTemplateColumns:
-            "repeat(5, minmax(0, 1fr))",
-        }}
+        className="comparison-indicator-grid grid gap-3 py-5"
       >
         {comparisonMetrics.map(
           (metric) => (
@@ -886,11 +882,7 @@ export function PlayerComparison({
           ) : radarComparison.data ? (
             radarComparison.data.comparison.overlay_available ? (
               <div
-                className="grid min-w-0 gap-5"
-                style={{
-                  gridTemplateColumns:
-                    "minmax(0, 1.15fr) minmax(25rem, 0.85fr)",
-                }}
+                className="comparison-radar-layout grid min-w-0 gap-5"
               >
                 <div className="min-w-0">
                   <RadarProfile
@@ -900,7 +892,7 @@ export function PlayerComparison({
                   />
                 </div>
 
-                <aside className="min-w-0 rounded-2xl border border-border bg-surface-secondary p-5">
+                <aside className="min-w-0 rounded-2xl border border-border bg-surface-secondary p-4 sm:p-5">
                   <div className="border-b border-border pb-4">
                     <p className="text-xs font-semibold tracking-[0.12em] text-brand uppercase">
                       Dimension percentiles
@@ -913,11 +905,7 @@ export function PlayerComparison({
                   </div>
 
                   <div
-                    className="mt-4 grid items-center gap-x-3 border-b border-border pb-3"
-                    style={{
-                      gridTemplateColumns:
-                        "minmax(0, 1fr) 7rem 7rem",
-                    }}
+                    className="comparison-percentile-grid mt-4 grid items-center gap-x-2 border-b border-border pb-3 sm:gap-x-3"
                   >
                     <span />
 
@@ -927,7 +915,7 @@ export function PlayerComparison({
                         className="size-2 shrink-0 rounded-full bg-brand"
                       />
 
-                      <p className="text-[11px] font-semibold leading-4 text-foreground">
+                      <p className="min-w-0 [overflow-wrap:anywhere] text-[11px] font-semibold leading-4 text-foreground">
                         {radarComparison.data.target.player_name}
                       </p>
                     </div>
@@ -938,7 +926,7 @@ export function PlayerComparison({
                         className="size-2 shrink-0 rounded-full bg-brand-navy"
                       />
 
-                      <p className="text-[11px] font-semibold leading-4 text-foreground">
+                      <p className="min-w-0 [overflow-wrap:anywhere] text-[11px] font-semibold leading-4 text-foreground">
                         {radarComparison.data.candidate.player_name}
                       </p>
                     </div>
@@ -958,11 +946,7 @@ export function PlayerComparison({
                         return (
                           <div
                             key={dimension.key}
-                            className="grid items-center gap-x-3 border-b border-border/70 py-3 last:border-b-0"
-                            style={{
-                              gridTemplateColumns:
-                                "minmax(0, 1fr) 7rem 7rem",
-                            }}
+                            className="comparison-percentile-grid grid items-center gap-x-2 border-b border-border/70 py-3 sm:gap-x-3 last:border-b-0"
                           >
                             <dt className="min-w-0 text-xs font-medium leading-5 text-muted">
                               {dimension.label}
@@ -1179,11 +1163,7 @@ export function PlayerComparison({
 
               <dl
                 aria-label="Heatmap evidence metrics"
-                className="mt-6 grid gap-3"
-                style={{
-                  gridTemplateColumns:
-                    "repeat(6, minmax(0, 1fr))",
-                }}
+                className="heatmap-evidence-grid mt-6 grid gap-3"
               >
                 <HeatmapEvidenceMetric
                   label="Measured similarity"

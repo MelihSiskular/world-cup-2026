@@ -467,7 +467,7 @@ export function TransferAnalysisForm({
           .
         </p>
 
-        <div className="mt-7 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
+        <div className="mt-7 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="max-w-md text-xs leading-5 text-muted">
             Ranking combines tournament performance, tactical role, spatial
             evidence and market context.
@@ -483,7 +483,7 @@ export function TransferAnalysisForm({
             aria-busy={
               isNavigating
             }
-            className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-6 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             {submittingAnalysis
               ? "Opening recommendations…"
