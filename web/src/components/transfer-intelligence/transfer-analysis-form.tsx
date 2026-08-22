@@ -11,6 +11,9 @@ import {
   useRouter,
 } from "next/navigation";
 import {
+  useTransition,
+} from "react";
+import {
   useForm,
 } from "react-hook-form";
 
@@ -92,6 +95,11 @@ export function TransferAnalysisForm({
   const queryClient =
     useQueryClient();
 
+  const [
+    isNavigating,
+    startNavigation,
+  ] = useTransition();
+
   const playerProfile =
     useQuery({
       queryKey: [
@@ -130,7 +138,7 @@ export function TransferAnalysisForm({
 
   const submitAnalysis =
     handleSubmit(
-      async (
+      (
         values,
       ) => {
         const parameters =
@@ -145,11 +153,17 @@ export function TransferAnalysisForm({
           ),
         );
 
-        router.push(
-          `/analysis/${playerId}/results?${parameters.toString()}`,
-        );
+        startNavigation(() => {
+          router.push(
+            `/analysis/${playerId}/results?${parameters.toString()}`,
+          );
+        });
       },
     );
+
+  const submittingAnalysis =
+    isSubmitting ||
+    isNavigating;
 
   return (
     <div>
@@ -462,13 +476,18 @@ export function TransferAnalysisForm({
           <button
             type="submit"
             disabled={
-              isSubmitting ||
+              submittingAnalysis ||
               playerProfile.isPending ||
               playerProfile.isError
             }
+            aria-busy={
+              isNavigating
+            }
             className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Find transfer alternatives
+            {submittingAnalysis
+              ? "Opening recommendations…"
+              : "Find transfer alternatives"}
           </button>
         </div>
       </form>
