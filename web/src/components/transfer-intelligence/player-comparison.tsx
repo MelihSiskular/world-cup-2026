@@ -14,11 +14,9 @@ import { PlayerComparisonSkeleton } from "@/components/transfer-intelligence/pla
 import { RadarProfile } from "@/components/transfer-intelligence/radar-profile";
 import { RoleCompatibilityPanel } from "@/components/transfer-intelligence/role-compatibility-panel";
 import { SpatialPositionPitch } from "@/components/transfer-intelligence/spatial-position-pitch";
-import { isBrowserApiError } from "@/lib/api/browser-client";
 import {
   fetchHeatmapComparison,
   fetchRadarComparison,
-  runTransferAnalysis,
 } from "@/lib/api/browser-transfer-intelligence";
 import type {
   TransferModeName,
@@ -33,9 +31,11 @@ import {
 } from "@/lib/players/profile-format";
 import {
   createAnalysisSearchParameters,
-  createTransferAnalysisPayload,
 } from "@/lib/transfer-intelligence/analysis-form";
 import type { TransferAnalysisFormValues } from "@/lib/transfer-intelligence/analysis-form";
+import {
+  createTransferAnalysisQueryOptions,
+} from "@/lib/transfer-intelligence/analysis-query";
 import {
   getRecommendationRank,
   getRecommendationScore,
@@ -310,33 +310,13 @@ export function PlayerComparison({
   mode,
   values,
 }: PlayerComparisonProps) {
-  const payload = createTransferAnalysisPayload(targetPlayerId, values);
-
-  const comparison = useQuery({
-    queryKey: [
-      "transfer-intelligence",
-      "comparison",
-      targetPlayerId,
-      candidatePlayerId,
-      mode,
-      values.minimumMinutes,
-      values.minimumRoleConfidence,
-      values.maximumMarketValueMillions ?? null,
-      values.neutralHeatmapScore,
-    ],
-    queryFn: ({ signal }) => runTransferAnalysis(payload, signal),
-    staleTime: 5 * 60 * 1000,
-    retry: (failureCount, error) => {
-      if (
-        isBrowserApiError(error) &&
-        (error.status === 400 || error.status === 404)
-      ) {
-        return false;
-      }
-
-      return failureCount < 1;
-    },
-  });
+  const comparison =
+    useQuery(
+      createTransferAnalysisQueryOptions(
+        targetPlayerId,
+        values,
+      ),
+    );
 
   const supplementalCandidateIsEligible =
     comparison.data?.modes[mode].recommendations.some(
