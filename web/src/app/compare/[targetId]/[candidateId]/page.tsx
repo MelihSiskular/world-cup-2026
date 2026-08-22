@@ -134,11 +134,11 @@ export default async function PlayerComparisonPage({
     `?${resultParameters.toString()}`;
 
   return (
-    <PageContainer className="py-8 sm:py-10">
+    <PageContainer className="py-10 sm:py-14">
       <PageIntro
-        eyebrow="Transfer intelligence"
-        title="Player comparison"
-        description="Assess recruitment fit between the target and selected candidate across tactical, spatial, performance and market evidence."
+        eyebrow="Player comparison"
+        title="Target versus candidate"
+        description="Compare tactical role, tournament performance, reliability, market context and the evidence behind the recruitment recommendation."
         actions={
           <Link
             href={resultsHref}
@@ -149,7 +149,7 @@ export default async function PlayerComparisonPage({
         }
       />
 
-      <div className="mt-8">
+      <div className="mt-10">
         <PlayerComparison
           targetPlayerId={
             parsedTargetId

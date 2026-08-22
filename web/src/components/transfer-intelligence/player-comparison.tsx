@@ -61,6 +61,22 @@ function formatTextValue(value: ComparisonValue): string {
   return String(value);
 }
 
+function getRecommendationReasons(
+  value: string | null | undefined,
+): readonly string[] {
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return [];
+  }
+
+  return value
+    .split(";")
+    .map((reason) => reason.trim())
+    .filter(Boolean);
+}
+
 function ComparisonMetric({
   label,
   value,
@@ -71,12 +87,12 @@ function ComparisonMetric({
   description: string;
 }>) {
   return (
-    <article className="min-w-0 rounded-xl border border-border bg-page px-4 py-3.5">
+    <article className="min-w-0 rounded-xl border border-border bg-surface px-4 py-4 shadow-sm">
       <p className="text-xs font-medium leading-4 text-muted">
         {label}
       </p>
 
-      <p className="mt-1.5 text-2xl font-bold tracking-[-0.035em] text-brand-dark">
+      <p className="mt-2 text-2xl font-bold tracking-[-0.035em] text-brand-dark">
         {value}
       </p>
 
@@ -121,20 +137,20 @@ function PlayerIdentityCard({
   scoreLabel?: string;
 }>) {
   return (
-    <article className="min-w-0 rounded-2xl border border-border bg-surface-secondary p-5 sm:p-6">
+    <article className="min-w-0 rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
+        <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
           {label}
         </p>
 
-        <span className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-brand-dark">
+        <span className="rounded-full bg-surface-secondary px-3 py-1.5 text-xs font-semibold text-brand-dark">
           {formatPlayerPosition(
             player.position,
           )}
         </span>
       </div>
 
-      <div className="mt-4 flex min-w-0 items-center gap-4">
+      <div className="mt-5 flex min-w-0 items-start gap-4">
         <PlayerImage
           playerId={
             player.player_id
@@ -142,22 +158,22 @@ function PlayerIdentityCard({
           playerName={
             player.player_name
           }
-          size="target"
-          className="bg-surface"
+          size="card"
+          className="shrink-0 bg-page"
         />
 
         <div className="min-w-0 flex-1">
-          <h3 className="break-words text-2xl font-bold tracking-[-0.035em]">
+          <h2 className="break-words text-3xl font-bold tracking-[-0.04em]">
             {player.player_name}
-          </h3>
+          </h2>
 
-          <p className="mt-1.5 break-words text-sm font-medium text-muted">
+          <p className="mt-2 break-words text-sm font-medium text-muted">
             {player.national_team_name ??
               player.country_name ??
               "National team unavailable"}
           </p>
 
-          <p className="mt-2 break-words text-sm font-semibold text-brand">
+          <p className="mt-3 break-words font-semibold text-brand">
             {player.final_role ??
               player.archetype ??
               "Role unavailable"}
@@ -165,13 +181,13 @@ function PlayerIdentityCard({
         </div>
       </div>
 
-      <dl className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <div className="rounded-xl border border-border bg-surface px-3 py-3">
-          <dt className="text-[11px] leading-4 text-muted">
+      <dl className="mt-7 grid grid-cols-2 gap-4 rounded-2xl bg-surface-secondary p-5 text-sm">
+        <div>
+          <dt className="text-muted">
             Market value
           </dt>
 
-          <dd className="mt-1 text-sm font-bold">
+          <dd className="mt-1 font-bold">
             {formatMarketValue(
               player.market_value,
               player.market_value_currency,
@@ -179,12 +195,12 @@ function PlayerIdentityCard({
           </dd>
         </div>
 
-        <div className="rounded-xl border border-border bg-surface px-3 py-3">
-          <dt className="text-[11px] leading-4 text-muted">
+        <div>
+          <dt className="text-muted">
             Age
           </dt>
 
-          <dd className="mt-1 text-sm font-bold">
+          <dd className="mt-1 font-bold">
             {player.age === null
               ? "Not reported"
               : `${formatProfileNumber(
@@ -196,25 +212,25 @@ function PlayerIdentityCard({
           </dd>
         </div>
 
-        <div className="rounded-xl border border-border bg-surface px-3 py-3">
-          <dt className="text-[11px] leading-4 text-muted">
+        <div>
+          <dt className="text-muted">
             Tournament minutes
           </dt>
 
-          <dd className="mt-1 text-sm font-bold">
+          <dd className="mt-1 font-bold">
             {formatProfileNumber(
               player.minutes,
             )}
           </dd>
         </div>
 
-        <div className="rounded-xl border border-border bg-surface px-3 py-3">
-          <dt className="text-[11px] leading-4 text-muted">
+        <div>
+          <dt className="text-muted">
             {scoreLabel ??
               "Weighted rating"}
           </dt>
 
-          <dd className="mt-1 text-sm font-bold text-brand-dark">
+          <dd className="mt-1 font-bold">
             {score !== undefined
               ? score === null
                 ? "Not reported"
@@ -510,115 +526,201 @@ export function PlayerComparison({
     }> => typeof item.value === "boolean",
   );
 
+  const recommendationReasons =
+    getRecommendationReasons(
+      candidate.why_recommended,
+    );
+
   return (
     <div className="space-y-8">
+      <section className="grid gap-4 lg:grid-cols-2">
+        <PlayerIdentityCard
+          label="Target player"
+          player={target}
+        />
+
+        <PlayerIdentityCard
+          label={`Candidate · Rank ${candidateRank ?? "—"}`}
+          player={candidate}
+          score={candidateScore}
+          scoreLabel={
+            modeDetails.scoreLabel
+          }
+        />
+      </section>
+
       <section
-        aria-label="Player comparison overview"
-        className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
+        aria-label="Comparison indicators"
+        className="grid gap-3 py-5"
+        style={{
+          gridTemplateColumns:
+            "repeat(5, minmax(0, 1fr))",
+        }}
       >
+        {comparisonMetrics.map(
+          (metric) => (
+            <ComparisonMetric
+              key={metric.label}
+              label={metric.label}
+              value={metric.value}
+              description={
+                metric.description
+              }
+            />
+          ),
+        )}
+      </section>
+
+      <div className="py-1">
+        <section
+          aria-label="Recommendation evidence"
+          className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
+        >
         <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border px-5 py-5 sm:px-7 sm:py-6">
-          <div>
+          <div className="max-w-3xl">
             <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-              Recruitment comparison
+              Recommendation evidence
             </p>
 
             <h2 className="mt-2 text-2xl font-bold tracking-[-0.035em]">
-              Recruitment fit overview
+              Why {candidate.player_name}?
             </h2>
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-              Review the candidate against the target before moving into
-              tactical, spatial and measured tournament evidence.
+            <p className="mt-2 text-sm leading-6 text-muted">
+              The main evidence behind this candidate&apos;s place in{" "}
+              <span className="font-semibold text-foreground">
+                {modeDetails.label.toLowerCase()}
+              </span>
+              .
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
             <span className="rounded-full border border-brand/20 bg-brand/5 px-3 py-1.5 text-xs font-semibold text-brand-dark">
-              {modeDetails.label}
-            </span>
-
-            <span className="rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-foreground">
-              Rank #{candidateRank ?? "—"}
+              {candidate.recommendation_strength}
             </span>
 
             <span className="rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-muted">
-              {candidate.recommendation_strength}
+              Rank #{candidateRank ?? "—"}
             </span>
           </div>
         </div>
 
-        <div className="p-4 sm:p-6">
-          <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_3.5rem_minmax(0,1fr)] lg:items-stretch">
-            <PlayerIdentityCard
-              label="Target player"
-              player={target}
-            />
+        <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)]">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
+              Why recommended
+            </p>
 
-            <div className="hidden items-center justify-center lg:flex">
-              <span className="inline-flex size-11 items-center justify-center rounded-full border border-brand/20 bg-brand-dark text-xs font-bold tracking-[0.08em] text-white">
-                VS
-              </span>
-            </div>
+            {recommendationReasons.length > 0 ? (
+              <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+                {recommendationReasons.map(
+                  (reason) => (
+                    <li
+                      key={reason}
+                      className="flex min-w-0 gap-3 rounded-xl border border-border bg-surface-secondary px-4 py-3.5 text-sm leading-6 text-foreground"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="mt-2 size-1.5 shrink-0 rounded-full bg-brand"
+                      />
 
-            <div className="flex items-center gap-3 lg:hidden">
-              <div className="h-px flex-1 bg-border" />
-
-              <span className="text-xs font-bold tracking-[0.12em] text-muted">
-                VS
-              </span>
-
-              <div className="h-px flex-1 bg-border" />
-            </div>
-
-            <PlayerIdentityCard
-              label={`Candidate · Rank ${candidateRank ?? "—"}`}
-              player={candidate}
-              score={candidateScore}
-              scoreLabel={
-                modeDetails.scoreLabel
-              }
-            />
+                      <span>
+                        {reason}
+                      </span>
+                    </li>
+                  ),
+                )}
+              </ul>
+            ) : (
+              <p className="mt-4 rounded-xl border border-border bg-surface-secondary px-4 py-4 text-sm leading-6 text-muted">
+                Recommendation explanation is not available.
+              </p>
+            )}
           </div>
 
-          <div className="mt-6 border-t border-border pt-5">
-            <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-                  Fit snapshot
-                </p>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
+              Evidence checks
+            </p>
 
-                <p className="mt-1 text-sm text-muted">
-                  Core recruitment signals for this target-candidate pairing.
-                </p>
-              </div>
-            </div>
+            {evidenceItems.length > 0 ? (
+              <dl className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                {evidenceItems.map(
+                  (item) => (
+                    <div
+                      key={item.label}
+                      className={[
+                        "rounded-xl border px-4 py-3.5",
+                        item.value
+                          ? "border-brand/15 bg-brand/5"
+                          : "border-border bg-page",
+                      ].join(" ")}
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <dt className="text-sm font-medium text-foreground">
+                          {item.label}
+                        </dt>
 
-            <section
-              aria-label="Comparison indicators"
-              className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5"
+                        <dd
+                          className={[
+                            "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold",
+                            item.value
+                              ? "border-brand/20 bg-surface text-brand-dark"
+                              : "border-border bg-surface text-muted",
+                          ].join(" ")}
+                        >
+                          <span
+                            aria-hidden="true"
+                            className={[
+                              "size-1.5 rounded-full",
+                              item.value
+                                ? "bg-brand"
+                                : "bg-muted",
+                            ].join(" ")}
+                          />
+
+                          {item.value
+                            ? "Yes"
+                            : "No"}
+                        </dd>
+                      </div>
+                    </div>
+                  ),
+                )}
+              </dl>
+            ) : (
+              <p className="mt-4 text-sm text-muted">
+                No additional evidence checks are available.
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border px-5 py-4 sm:px-7">
+          <p className="max-w-2xl text-xs leading-5 text-muted">
+            Recruitment recommendations support scouting review; detailed
+            tactical, spatial and measured tournament evidence continues below.
+          </p>
+
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href={`/players/${candidate.player_id}`}
+              className="rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
             >
-              {comparisonMetrics.map(
-                (metric) => (
-                  <ComparisonMetric
-                    key={
-                      metric.label
-                    }
-                    label={
-                      metric.label
-                    }
-                    value={
-                      metric.value
-                    }
-                    description={
-                      metric.description
-                    }
-                  />
-                ),
-              )}
-            </section>
+              Candidate profile
+            </Link>
+
+            <Link
+              href={`/players/${target.player_id}`}
+              className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-page"
+            >
+              Target profile
+            </Link>
           </div>
         </div>
       </section>
+      </div>
 
       <section className="grid min-w-0 gap-6 md:grid-cols-2">
         <RoleCompatibilityPanel target={target} candidate={candidate} />
@@ -1107,73 +1209,6 @@ export function PlayerComparison({
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <article className="rounded-2xl border border-border bg-surface p-6 shadow-sm sm:p-7">
-          <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-            Recommendation evidence
-          </p>
-
-          <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
-            Why this candidate appears in {modeDetails.label.toLowerCase()}
-          </h2>
-
-          <p className="mt-5 rounded-xl border border-brand/15 bg-surface-secondary p-5 text-sm leading-7 text-muted">
-            {candidate.why_recommended}
-          </p>
-
-          {evidenceItems.length > 0 ? (
-            <dl className="mt-6 grid gap-3 sm:grid-cols-3">
-              {evidenceItems.map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-xl border border-border bg-page p-4"
-                >
-                  <dt className="text-xs leading-5 text-muted">{item.label}</dt>
-
-                  <dd className="mt-2 font-bold">
-                    {item.value ? "Yes" : "No"}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          ) : null}
-        </article>
-
-        <aside className="h-fit rounded-2xl border border-border bg-surface-secondary p-6 lg:sticky lg:top-24">
-          <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-            Decision context
-          </p>
-
-          <p className="mt-4 text-sm leading-6 text-muted">
-            This comparison explains the recommendation produced with the
-            selected thresholds. It should support, not replace, broader
-            scouting and recruitment review.
-          </p>
-
-          <div className="mt-6 space-y-3">
-            <Link
-              href={resultsHref}
-              className="flex min-h-11 items-center justify-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-dark"
-            >
-              Back to recommendations
-            </Link>
-
-            <Link
-              href={`/players/${candidate.player_id}`}
-              className="flex min-h-11 items-center justify-center rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-page"
-            >
-              Open candidate profile
-            </Link>
-
-            <Link
-              href={`/players/${target.player_id}`}
-              className="flex min-h-11 items-center justify-center rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-page"
-            >
-              Open target profile
-            </Link>
-          </div>
-        </aside>
-      </section>
     </div>
   );
 }
