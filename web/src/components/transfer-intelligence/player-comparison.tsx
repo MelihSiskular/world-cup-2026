@@ -892,11 +892,114 @@ export function PlayerComparison({
             </div>
           ) : radarComparison.data ? (
             radarComparison.data.comparison.overlay_available ? (
-              <RadarProfile
-                primary={radarComparison.data.target}
-                secondary={radarComparison.data.candidate}
-                showHeader={false}
-              />
+              <div
+                className="grid min-w-0 gap-5"
+                style={{
+                  gridTemplateColumns:
+                    "minmax(0, 1.15fr) minmax(25rem, 0.85fr)",
+                }}
+              >
+                <div className="min-w-0">
+                  <RadarProfile
+                    primary={radarComparison.data.target}
+                    secondary={radarComparison.data.candidate}
+                    showHeader={false}
+                  />
+                </div>
+
+                <aside className="min-w-0 rounded-2xl border border-border bg-surface-secondary p-5">
+                  <div className="border-b border-border pb-4">
+                    <p className="text-xs font-semibold tracking-[0.12em] text-brand uppercase">
+                      Dimension percentiles
+                    </p>
+
+                    <p className="mt-2 text-xs leading-5 text-muted">
+                      Position-relative percentile values used by the shared
+                      radar profile.
+                    </p>
+                  </div>
+
+                  <div
+                    className="mt-4 grid items-center gap-x-3 border-b border-border pb-3"
+                    style={{
+                      gridTemplateColumns:
+                        "minmax(0, 1fr) 7rem 7rem",
+                    }}
+                  >
+                    <span />
+
+                    <div className="flex min-w-0 items-center justify-center gap-1.5 text-center">
+                      <span
+                        aria-hidden="true"
+                        className="size-2 shrink-0 rounded-full bg-brand"
+                      />
+
+                      <p className="text-[11px] font-semibold leading-4 text-foreground">
+                        {radarComparison.data.target.player_name}
+                      </p>
+                    </div>
+
+                    <div className="flex min-w-0 items-center justify-center gap-1.5 text-center">
+                      <span
+                        aria-hidden="true"
+                        className="size-2 shrink-0 rounded-full bg-brand-navy"
+                      />
+
+                      <p className="text-[11px] font-semibold leading-4 text-foreground">
+                        {radarComparison.data.candidate.player_name}
+                      </p>
+                    </div>
+                  </div>
+
+                  <dl>
+                    {radarComparison.data.target.dimensions.map(
+                      (
+                        dimension,
+                        index,
+                      ) => {
+                        const candidateDimension =
+                          radarComparison.data.candidate.dimensions[
+                            index
+                          ];
+
+                        return (
+                          <div
+                            key={dimension.key}
+                            className="grid items-center gap-x-3 border-b border-border/70 py-3 last:border-b-0"
+                            style={{
+                              gridTemplateColumns:
+                                "minmax(0, 1fr) 7rem 7rem",
+                            }}
+                          >
+                            <dt className="min-w-0 text-xs font-medium leading-5 text-muted">
+                              {dimension.label}
+                            </dt>
+
+                            <dd className="text-center text-sm font-bold text-brand-dark">
+                              {formatProfilePercentage(
+                                dimension.percentile,
+                              )}
+                            </dd>
+
+                            <dd className="text-center text-sm font-bold text-brand-navy">
+                              {formatProfilePercentage(
+                                candidateDimension?.percentile ??
+                                  null,
+                              )}
+                            </dd>
+                          </div>
+                        );
+                      },
+                    )}
+                  </dl>
+
+                  <p className="mt-2 border-t border-border pt-4 text-[11px] leading-5 text-muted">
+                    Higher percentile values indicate stronger expression of
+                    that playing-style dimension relative to the player&apos;s
+                    positional peer group.
+                  </p>
+                </aside>
+              </div>
             ) : (
               <>
                 <div className="mb-5 rounded-xl border border-border bg-surface-secondary px-4 py-3 text-xs leading-5 text-muted sm:px-5">
