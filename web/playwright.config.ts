@@ -33,15 +33,27 @@ export default defineConfig({
     : [["list"], ["html", { open: "never" }]],
 
   webServer: useLocalServer
-    ? {
-        command:
-          "npm run start -- --hostname 127.0.0.1 --port 3000",
-        url: LOCAL_BASE_URL,
-        reuseExistingServer: !process.env.CI,
-        timeout: 120_000,
-        stdout: "pipe",
-        stderr: "pipe",
-      }
+    ? [
+        {
+          command:
+            "cd .. && .venv/bin/wc26-api",
+          url:
+            "http://127.0.0.1:8000/ready",
+          reuseExistingServer: false,
+          timeout: 120_000,
+          stdout: "pipe",
+          stderr: "pipe",
+        },
+        {
+          command:
+            "npm run start -- --hostname 127.0.0.1 --port 3000",
+          url: LOCAL_BASE_URL,
+          reuseExistingServer: false,
+          timeout: 120_000,
+          stdout: "pipe",
+          stderr: "pipe",
+        },
+      ]
     : undefined,
 
   use: {

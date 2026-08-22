@@ -4,6 +4,16 @@ import {
   type Page,
 } from "@playwright/test";
 
+async function waitForApplicationReady(
+  page: Page,
+): Promise<void> {
+  await page.waitForFunction(
+    () =>
+      document.documentElement.dataset
+        .wc26Hydrated === "true",
+  );
+}
+
 async function expectNoHorizontalPageOverflow(
   page: Page,
 ): Promise<void> {
@@ -75,6 +85,10 @@ test.describe(
 
         await page.goto("/");
 
+        await waitForApplicationReady(
+          page,
+        );
+
         await navigateToPlayers(page);
 
         await expect(page).toHaveURL(
@@ -142,31 +156,34 @@ test.describe(
 
         await expect(
           page.getByLabel(
-            "Minimum tournament minutes",
+            /^Tournament experience/,
           ),
         ).toBeVisible();
 
         await expect(
           page.getByLabel(
-            "Minimum role confidence",
+            /^Role evidence/,
           ),
         ).toBeVisible();
 
         await expect(
           page.getByLabel(
-            "Maximum market value",
+            /^Budget ceiling/,
           ),
         ).toBeVisible();
 
         await expect(
-          page.getByLabel(
-            "Neutral heatmap score",
+          page.getByText(
+            "Advanced settings",
+            {
+              exact: true,
+            },
           ),
         ).toBeVisible();
 
         await page
           .getByRole("button", {
-            name: "Continue to results",
+            name: "Find transfer alternatives",
           })
           .click();
 

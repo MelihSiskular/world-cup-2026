@@ -5,6 +5,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import {
+  useEffect,
   useState,
 } from "react";
 import type {
@@ -33,6 +34,16 @@ export function QueryProvider({
         },
       }),
   );
+
+  useEffect(() => {
+    document.documentElement.dataset.wc26Hydrated =
+      "true";
+
+    return () => {
+      delete document.documentElement.dataset
+        .wc26Hydrated;
+    };
+  }, []);
 
   return (
     <QueryClientProvider
