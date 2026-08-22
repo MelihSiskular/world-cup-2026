@@ -17,8 +17,9 @@ export function SiteFooter() {
           </p>
 
           <p className="mt-1 max-w-xl text-sm leading-6 text-muted">
-            Football scouting and replacement analysis powered by
-            World Cup 2026 tournament data.
+            Football scouting and replacement analysis
+
+            powered by World Cup 2026 tournament data.
           </p>
         </div>
 

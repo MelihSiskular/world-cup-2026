@@ -132,6 +132,115 @@ describe(
     );
 
     it(
+      "keeps previous results visible while a new search is loading",
+      async () => {
+        let resolveNextSearch!: (
+          value: PlayerSearchResponse,
+        ) => void;
+
+        const nextSearch =
+          new Promise<PlayerSearchResponse>(
+            (resolve) => {
+              resolveNextSearch =
+                resolve;
+            },
+          );
+
+        const refreshedResponse = {
+          query: "alex",
+          count: 1,
+          players: [
+            {
+              player_id: 999999,
+              player_name:
+                "Alex Baena",
+              national_team_name:
+                "Spain",
+              position: "M",
+              final_role:
+                "Advanced Central Playmaker",
+              archetype:
+                "Creative Midfielder",
+              age: 25,
+              market_value:
+                55_000_000,
+              market_value_currency:
+                "EUR",
+            },
+          ],
+        } as unknown as PlayerSearchResponse;
+
+        searchPlayersMock
+          .mockResolvedValueOnce(
+            successfulResponse,
+          )
+          .mockReturnValueOnce(
+            nextSearch,
+          );
+
+        renderWithQueryClient(
+          <PlayerSearch />,
+        );
+
+        fireEvent.change(
+          screen.getByRole(
+            "searchbox",
+          ),
+          {
+            target: {
+              value: "olise",
+            },
+          },
+        );
+
+        expect(
+          await screen.findByText(
+            "Michael Olise",
+          ),
+        ).toBeInTheDocument();
+
+        fireEvent.change(
+          screen.getByRole(
+            "searchbox",
+          ),
+          {
+            target: {
+              value: "alex",
+            },
+          },
+        );
+
+        expect(
+          screen.getByText(
+            "Michael Olise",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          await screen.findByText(
+            "Updating…",
+          ),
+        ).toBeInTheDocument();
+
+        resolveNextSearch(
+          refreshedResponse,
+        );
+
+        expect(
+          await screen.findByText(
+            "Alex Baena",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.queryByText(
+            "Michael Olise",
+          ),
+        ).not.toBeInTheDocument();
+      },
+    );
+
+    it(
       "renders the empty state",
       async () => {
         searchPlayersMock

@@ -1,5 +1,13 @@
+"use client";
+
+import {
+  useQueryClient,
+} from "@tanstack/react-query";
 import Link from "next/link";
 
+import {
+  fetchPlayerProfile,
+} from "@/lib/api/browser-players";
 import type {
   PlayerSearchItemResponse,
 } from "@/lib/api/types";
@@ -74,10 +82,39 @@ type PlayerSearchResultCardProps =
 export function PlayerSearchResultCard({
   player,
 }: PlayerSearchResultCardProps) {
+  const queryClient =
+    useQueryClient();
+
+  const prefetchPlayerProfile =
+    () => {
+      void queryClient.prefetchQuery({
+        queryKey: [
+          "players",
+          "profile",
+          player.player_id,
+        ],
+        queryFn: ({
+          signal,
+        }) =>
+          fetchPlayerProfile(
+            player.player_id,
+            signal,
+          ),
+        staleTime:
+          5 * 60 * 1000,
+      });
+    };
+
   return (
     <li>
       <Link
         href={`/players/${player.player_id}`}
+        onMouseEnter={
+          prefetchPlayerProfile
+        }
+        onFocus={
+          prefetchPlayerProfile
+        }
         className="group block rounded-2xl border border-border bg-surface p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand/35 hover:shadow-md"
       >
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">

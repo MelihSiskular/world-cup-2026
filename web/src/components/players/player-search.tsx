@@ -78,14 +78,18 @@ export function PlayerSearch() {
       enabled:
         debouncedQuery.length >=
         MINIMUM_PLAYER_SEARCH_LENGTH,
+      placeholderData: (
+        previousData,
+      ) => previousData,
       staleTime: 60_000,
       retry: false,
     });
 
   const showLoading =
-    waitingForDebounce ||
+    hasMinimumInput &&
+    !playerSearch.data &&
     (
-      hasMinimumInput &&
+      waitingForDebounce ||
       playerSearch.isPending
     );
 
@@ -150,7 +154,10 @@ export function PlayerSearch() {
               spellCheck={false}
               enterKeyHint="search"
               aria-describedby={descriptionId}
-              aria-busy={showLoading}
+              aria-busy={
+                showLoading ||
+                playerSearch.isFetching
+              }
               className="min-h-13 w-full rounded-xl border border-border bg-page py-3 pr-24 pl-12 text-base outline-none transition placeholder:text-muted/70 hover:border-brand/35 focus:border-brand focus:bg-surface"
             />
 
