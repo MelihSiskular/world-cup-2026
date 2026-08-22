@@ -5,6 +5,7 @@ import {
 } from "@hookform/resolvers/zod";
 import {
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import {
   useRouter,
@@ -26,6 +27,9 @@ import {
   createAnalysisSearchParameters,
   transferAnalysisFormSchema,
 } from "@/lib/transfer-intelligence/analysis-form";
+import {
+  createTransferAnalysisQueryOptions,
+} from "@/lib/transfer-intelligence/analysis-query";
 import type {
   TransferAnalysisFormValues,
 } from "@/lib/transfer-intelligence/analysis-form";
@@ -85,6 +89,9 @@ export function TransferAnalysisForm({
 }: TransferAnalysisFormProps) {
   const router = useRouter();
 
+  const queryClient =
+    useQueryClient();
+
   const playerProfile =
     useQuery({
       queryKey: [
@@ -130,6 +137,13 @@ export function TransferAnalysisForm({
           createAnalysisSearchParameters(
             values,
           );
+
+        void queryClient.prefetchQuery(
+          createTransferAnalysisQueryOptions(
+            playerId,
+            values,
+          ),
+        );
 
         router.push(
           `/analysis/${playerId}/results?${parameters.toString()}`,

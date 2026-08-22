@@ -23,9 +23,6 @@ import {
 import {
   isBrowserApiError,
 } from "@/lib/api/browser-client";
-import {
-  runTransferAnalysis,
-} from "@/lib/api/browser-transfer-intelligence";
 import type {
   TransferModeName,
   TransferRecommendationResponse,
@@ -37,11 +34,13 @@ import {
 } from "@/lib/players/profile-format";
 import {
   createAnalysisSearchParameters,
-  createTransferAnalysisPayload,
 } from "@/lib/transfer-intelligence/analysis-form";
 import type {
   TransferAnalysisFormValues,
 } from "@/lib/transfer-intelligence/analysis-form";
+import {
+  createTransferAnalysisQueryOptions,
+} from "@/lib/transfer-intelligence/analysis-query";
 import {
   TRANSFER_MODE_DETAILS,
   TRANSFER_MODE_ORDER,
@@ -73,49 +72,13 @@ export function TransferAnalysisResults({
     setShowAllRecommendations,
   ] = useState(false);
 
-  const payload =
-    createTransferAnalysisPayload(
-      playerId,
-      values,
-    );
-
   const analysis =
-    useQuery({
-      queryKey: [
-        "transfer-intelligence",
-        "analysis",
+    useQuery(
+      createTransferAnalysisQueryOptions(
         playerId,
-        values.minimumMinutes,
-        values.minimumRoleConfidence,
-        values.maximumMarketValueMillions ??
-          null,
-        values.neutralHeatmapScore,
-      ],
-      queryFn: ({
-        signal,
-      }) =>
-        runTransferAnalysis(
-          payload,
-          signal,
-        ),
-      staleTime: 5 * 60 * 1000,
-      retry: (
-        failureCount,
-        error,
-      ) => {
-        if (
-          isBrowserApiError(error) &&
-          (
-            error.status === 400 ||
-            error.status === 404
-          )
-        ) {
-          return false;
-        }
-
-        return failureCount < 1;
-      },
-    });
+        values,
+      ),
+    );
 
   if (analysis.isPending) {
     return (
