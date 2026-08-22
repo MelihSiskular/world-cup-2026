@@ -71,14 +71,18 @@ function ComparisonMetric({
   description: string;
 }>) {
   return (
-    <article className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
-      <p className="text-sm font-semibold text-muted">{label}</p>
+    <article className="min-w-0 rounded-xl border border-border bg-page px-4 py-3.5">
+      <p className="text-xs font-medium leading-4 text-muted">
+        {label}
+      </p>
 
-      <p className="mt-3 text-3xl font-bold tracking-[-0.04em] text-brand-dark">
+      <p className="mt-1.5 text-2xl font-bold tracking-[-0.035em] text-brand-dark">
         {value}
       </p>
 
-      <p className="mt-2 text-xs leading-5 text-muted">{description}</p>
+      <p className="sr-only">
+        {description}
+      </p>
     </article>
   );
 }
@@ -117,46 +121,57 @@ function PlayerIdentityCard({
   scoreLabel?: string;
 }>) {
   return (
-    <article className="min-w-0 rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-7">
+    <article className="min-w-0 rounded-2xl border border-border bg-surface-secondary p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
+        <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
           {label}
         </p>
 
-        <span className="rounded-full bg-surface-secondary px-3 py-1.5 text-xs font-semibold text-brand-dark">
-          {formatPlayerPosition(player.position)}
+        <span className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-brand-dark">
+          {formatPlayerPosition(
+            player.position,
+          )}
         </span>
       </div>
 
-      <div className="mt-5 flex min-w-0 items-start gap-4">
+      <div className="mt-4 flex min-w-0 items-center gap-4">
         <PlayerImage
-          playerId={player.player_id}
-          playerName={player.player_name}
-          size="card"
-          className="shrink-0 bg-page"
+          playerId={
+            player.player_id
+          }
+          playerName={
+            player.player_name
+          }
+          size="target"
+          className="bg-surface"
         />
 
         <div className="min-w-0 flex-1">
-          <h2 className="break-words text-3xl font-bold tracking-[-0.04em]">
+          <h3 className="break-words text-2xl font-bold tracking-[-0.035em]">
             {player.player_name}
-          </h2>
+          </h3>
 
-          <p className="mt-2 break-words text-sm font-medium text-muted">
+          <p className="mt-1.5 break-words text-sm font-medium text-muted">
             {player.national_team_name ??
               player.country_name ??
               "National team unavailable"}
           </p>
 
-          <p className="mt-3 break-words font-semibold text-brand">
-            {player.final_role ?? player.archetype ?? "Role unavailable"}
+          <p className="mt-2 break-words text-sm font-semibold text-brand">
+            {player.final_role ??
+              player.archetype ??
+              "Role unavailable"}
           </p>
         </div>
       </div>
 
-      <dl className="mt-7 grid grid-cols-2 gap-4 rounded-2xl bg-surface-secondary p-5 text-sm">
-        <div>
-          <dt className="text-muted">Market value</dt>
-          <dd className="mt-1 font-bold">
+      <dl className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="rounded-xl border border-border bg-surface px-3 py-3">
+          <dt className="text-[11px] leading-4 text-muted">
+            Market value
+          </dt>
+
+          <dd className="mt-1 text-sm font-bold">
             {formatMarketValue(
               player.market_value,
               player.market_value_currency,
@@ -164,37 +179,58 @@ function PlayerIdentityCard({
           </dd>
         </div>
 
-        <div>
-          <dt className="text-muted">Age</dt>
-          <dd className="mt-1 font-bold">
+        <div className="rounded-xl border border-border bg-surface px-3 py-3">
+          <dt className="text-[11px] leading-4 text-muted">
+            Age
+          </dt>
+
+          <dd className="mt-1 text-sm font-bold">
             {player.age === null
               ? "Not reported"
-              : `${formatProfileNumber(player.age, {
-                  maximumFractionDigits: 1,
-                })} years`}
+              : `${formatProfileNumber(
+                  player.age,
+                  {
+                    maximumFractionDigits: 1,
+                  },
+                )} years`}
           </dd>
         </div>
 
-        <div>
-          <dt className="text-muted">Tournament minutes</dt>
-          <dd className="mt-1 font-bold">
-            {formatProfileNumber(player.minutes)}
+        <div className="rounded-xl border border-border bg-surface px-3 py-3">
+          <dt className="text-[11px] leading-4 text-muted">
+            Tournament minutes
+          </dt>
+
+          <dd className="mt-1 text-sm font-bold">
+            {formatProfileNumber(
+              player.minutes,
+            )}
           </dd>
         </div>
 
-        <div>
-          <dt className="text-muted">{scoreLabel ?? "Weighted rating"}</dt>
-          <dd className="mt-1 font-bold">
+        <div className="rounded-xl border border-border bg-surface px-3 py-3">
+          <dt className="text-[11px] leading-4 text-muted">
+            {scoreLabel ??
+              "Weighted rating"}
+          </dt>
+
+          <dd className="mt-1 text-sm font-bold text-brand-dark">
             {score !== undefined
               ? score === null
                 ? "Not reported"
-                : formatProfileNumber(score, {
-                    maximumFractionDigits: 1,
-                  })
-              : formatProfileNumber(player.weighted_rating, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+                : formatProfileNumber(
+                    score,
+                    {
+                      maximumFractionDigits: 1,
+                    },
+                  )
+              : formatProfileNumber(
+                  player.weighted_rating,
+                  {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  },
+                )}
           </dd>
         </div>
       </dl>
@@ -475,30 +511,113 @@ export function PlayerComparison({
   );
 
   return (
-    <div className="space-y-6">
-      <section className="grid gap-4 lg:grid-cols-2">
-        <PlayerIdentityCard label="Target player" player={target} />
-
-        <PlayerIdentityCard
-          label={`Candidate · Rank ${candidateRank ?? "—"}`}
-          player={candidate}
-          score={candidateScore}
-          scoreLabel={modeDetails.scoreLabel}
-        />
-      </section>
-
+    <div className="space-y-8">
       <section
-        aria-label="Comparison indicators"
-        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5"
+        aria-label="Player comparison overview"
+        className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
       >
-        {comparisonMetrics.map((metric) => (
-          <ComparisonMetric
-            key={metric.label}
-            label={metric.label}
-            value={metric.value}
-            description={metric.description}
-          />
-        ))}
+        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border px-5 py-5 sm:px-7 sm:py-6">
+          <div>
+            <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
+              Recruitment comparison
+            </p>
+
+            <h2 className="mt-2 text-2xl font-bold tracking-[-0.035em]">
+              Recruitment fit overview
+            </h2>
+
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+              Review the candidate against the target before moving into
+              tactical, spatial and measured tournament evidence.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <span className="rounded-full border border-brand/20 bg-brand/5 px-3 py-1.5 text-xs font-semibold text-brand-dark">
+              {modeDetails.label}
+            </span>
+
+            <span className="rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-foreground">
+              Rank #{candidateRank ?? "—"}
+            </span>
+
+            <span className="rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-muted">
+              {candidate.recommendation_strength}
+            </span>
+          </div>
+        </div>
+
+        <div className="p-4 sm:p-6">
+          <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_3.5rem_minmax(0,1fr)] lg:items-stretch">
+            <PlayerIdentityCard
+              label="Target player"
+              player={target}
+            />
+
+            <div className="hidden items-center justify-center lg:flex">
+              <span className="inline-flex size-11 items-center justify-center rounded-full border border-brand/20 bg-brand-dark text-xs font-bold tracking-[0.08em] text-white">
+                VS
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 lg:hidden">
+              <div className="h-px flex-1 bg-border" />
+
+              <span className="text-xs font-bold tracking-[0.12em] text-muted">
+                VS
+              </span>
+
+              <div className="h-px flex-1 bg-border" />
+            </div>
+
+            <PlayerIdentityCard
+              label={`Candidate · Rank ${candidateRank ?? "—"}`}
+              player={candidate}
+              score={candidateScore}
+              scoreLabel={
+                modeDetails.scoreLabel
+              }
+            />
+          </div>
+
+          <div className="mt-6 border-t border-border pt-5">
+            <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
+                  Fit snapshot
+                </p>
+
+                <p className="mt-1 text-sm text-muted">
+                  Core recruitment signals for this target-candidate pairing.
+                </p>
+              </div>
+            </div>
+
+            <section
+              aria-label="Comparison indicators"
+              className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5"
+            >
+              {comparisonMetrics.map(
+                (metric) => (
+                  <ComparisonMetric
+                    key={
+                      metric.label
+                    }
+                    label={
+                      metric.label
+                    }
+                    value={
+                      metric.value
+                    }
+                    description={
+                      metric.description
+                    }
+                  />
+                ),
+              )}
+            </section>
+          </div>
+        </div>
       </section>
 
       <section className="grid min-w-0 gap-6 md:grid-cols-2">
