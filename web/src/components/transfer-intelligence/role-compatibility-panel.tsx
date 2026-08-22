@@ -33,58 +33,19 @@ function formatRoleValue(
   return value;
 }
 
-function EvidenceBadge({
-  label,
-  value,
-}: Readonly<{
-  label: string;
-  value: boolean | null | undefined;
-}>) {
-  if (typeof value !== "boolean") {
-    return (
-      <span className="inline-flex items-center gap-2 rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-muted">
-        <span
-          aria-hidden="true"
-          className="size-1.5 rounded-full bg-muted"
-        />
-        {label} unavailable
-      </span>
-    );
-  }
-
-  return (
-    <span
-      className={
-        value
-          ? "inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/5 px-3 py-1.5 text-xs font-semibold text-brand-dark"
-          : "inline-flex items-center gap-2 rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-muted"
-      }
-    >
-      <span
-        aria-hidden="true"
-        className={
-          value
-            ? "size-1.5 rounded-full bg-brand"
-            : "size-1.5 rounded-full bg-muted"
-        }
-      />
-
-      {label}
-
-      <span className="font-bold">
-        {value ? "Yes" : "No"}
-      </span>
-    </span>
-  );
-}
-
 function TacticalProfileComparison({
   row,
 }: Readonly<{
   row: TacticalProfileRow;
 }>) {
   return (
-    <div className="grid gap-3 border-b border-border/70 py-3 last:border-b-0 sm:grid-cols-[8.5rem_minmax(0,1fr)_1.5rem_minmax(0,1fr)] sm:items-center sm:gap-3">
+    <div
+      className="grid items-center gap-4 border-b border-border/70 py-4 last:border-b-0"
+      style={{
+        gridTemplateColumns:
+          "7.5rem minmax(0, 1fr) 1.5rem minmax(0, 1fr)",
+      }}
+    >
       <p className="text-xs font-medium text-muted">
         {row.label}
       </p>
@@ -168,13 +129,24 @@ export function RoleCompatibilityPanel({
         candidate:
           candidate.mobility_profile,
       },
+      {
+        label: "Role confidence",
+        target:
+          formatProfilePercentage(
+            target.role_confidence_pct,
+          ),
+        candidate:
+          formatProfilePercentage(
+            candidate.role_confidence_pct,
+          ),
+      },
     ];
 
   return (
     <article className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
       <div className="border-b border-border p-5 sm:p-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
+        <div className="flex flex-wrap items-start justify-between gap-5">
+          <div className="max-w-xl">
             <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
               Role compatibility
             </p>
@@ -183,46 +155,27 @@ export function RoleCompatibilityPanel({
               Tactical role alignment
             </h2>
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-              Compare the target and candidate
-              across the tactical role evidence
-              already used by the recruitment
-              model.
+            <p className="mt-2 text-sm leading-6 text-muted">
+              Compare how the target and candidate are profiled across role,
+              archetype, pitch zone and movement behaviour.
             </p>
           </div>
 
-          <div className="min-w-32 rounded-2xl border border-brand/15 bg-surface-secondary px-4 py-3 text-right">
-            <p className="text-xs font-medium text-muted">
-              Role fit
-            </p>
-
-            <p className="mt-1 text-3xl font-bold tracking-[-0.04em] text-brand-dark">
-              {formatProfilePercentage(
-                candidate.role_fit_pct,
-              )}
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-5 flex flex-wrap gap-2">
-          <EvidenceBadge
-            label="Same final role"
-            value={
-              candidate.same_final_role
-            }
-          />
-
-          <EvidenceBadge
-            label="Same archetype"
-            value={
-              candidate.same_archetype
-            }
-          />
         </div>
       </div>
 
       <div className="p-5 sm:p-6">
-        <div className="hidden grid-cols-[8.5rem_minmax(0,1fr)_1.5rem_minmax(0,1fr)] gap-3 border-b border-border pb-3 sm:grid">
+        <p className="mb-4 text-xs font-semibold tracking-[0.12em] text-muted uppercase">
+          Tactical profile
+        </p>
+
+        <div
+          className="grid gap-4 border-b border-border pb-3"
+          style={{
+            gridTemplateColumns:
+              "7.5rem minmax(0, 1fr) 1.5rem minmax(0, 1fr)",
+          }}
+        >
           <span />
 
           <p className="text-xs font-semibold tracking-[0.1em] text-muted uppercase">
@@ -245,31 +198,6 @@ export function RoleCompatibilityPanel({
           ))}
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-xl border border-border bg-page p-4">
-            <p className="text-xs text-muted">
-              Target role confidence
-            </p>
-
-            <p className="mt-2 text-lg font-bold">
-              {formatProfilePercentage(
-                target.role_confidence_pct,
-              )}
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-border bg-page p-4">
-            <p className="text-xs text-muted">
-              Candidate role confidence
-            </p>
-
-            <p className="mt-2 text-lg font-bold">
-              {formatProfilePercentage(
-                candidate.role_confidence_pct,
-              )}
-            </p>
-          </div>
-        </div>
       </div>
     </article>
   );

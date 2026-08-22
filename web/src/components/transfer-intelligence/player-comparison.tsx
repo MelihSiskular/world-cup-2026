@@ -206,7 +206,7 @@ function PlayerIdentityCard({
               : `${formatProfileNumber(
                   player.age,
                   {
-                    maximumFractionDigits: 1,
+                    maximumFractionDigits: 0,
                   },
                 )} years`}
           </dd>
@@ -722,8 +722,29 @@ export function PlayerComparison({
       </section>
       </div>
 
-      <section className="grid min-w-0 gap-6 md:grid-cols-2">
-        <RoleCompatibilityPanel target={target} candidate={candidate} />
+      <section
+        aria-labelledby="tactical-spatial-fit-heading"
+      >
+        <div className="mb-6">
+          <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
+            Tactical & spatial fit
+          </p>
+
+          <h2
+            id="tactical-spatial-fit-heading"
+            className="mt-2 text-2xl font-bold tracking-[-0.03em]"
+          >
+            Role and position context
+          </h2>
+
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
+            Compare how the candidate matches the target&apos;s tactical
+            profile and observed tournament positioning.
+          </p>
+        </div>
+
+        <div className="grid min-w-0 gap-6 md:grid-cols-2">
+          <RoleCompatibilityPanel target={target} candidate={candidate} />
 
         <article className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
           <div className="border-b border-border p-5 sm:p-6">
@@ -743,15 +764,6 @@ export function PlayerComparison({
                 </p>
               </div>
 
-              <div className="min-w-32 rounded-2xl border border-brand/15 bg-surface-secondary px-4 py-3 text-right">
-                <p className="text-xs font-medium text-muted">
-                  Spatial similarity
-                </p>
-
-                <p className="mt-1 text-3xl font-bold tracking-[-0.04em] text-brand-dark">
-                  {formatProfilePercentage(candidate.spatial_similarity_pct)}
-                </p>
-              </div>
             </div>
           </div>
 
@@ -806,6 +818,7 @@ export function PlayerComparison({
             </p>
           </div>
         </article>
+        </div>
       </section>
 
       <section
