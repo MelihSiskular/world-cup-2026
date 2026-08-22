@@ -578,7 +578,7 @@ describe("PlayerComparison", () => {
       await screen.findByText("Heatmap comparison unavailable"),
     ).toBeInTheDocument();
 
-    expect(screen.getByText("Performance context")).toBeInTheDocument();
+    expect(screen.getByText("Statistical similarity")).toBeInTheDocument();
 
     expect(
       screen.queryByText("The player comparison could not be prepared"),
@@ -740,7 +740,7 @@ describe("PlayerComparison", () => {
 
     expect(
       screen.getByText(
-        "Performance context",
+        "Statistical similarity",
       ),
     ).toBeInTheDocument();
 

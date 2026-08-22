@@ -51,16 +51,6 @@ type PlayerComparisonProps = Readonly<{
 
 type ComparisonPlayer = TransferTargetResponse | TransferRecommendationResponse;
 
-type ComparisonValue = string | number | null | undefined;
-
-function formatTextValue(value: ComparisonValue): string {
-  if (value === null || value === undefined || value === "") {
-    return "Not reported";
-  }
-
-  return String(value);
-}
-
 function getRecommendationReasons(
   value: string | null | undefined,
 ): readonly string[] {
@@ -137,18 +127,57 @@ function PlayerIdentityCard({
   player,
   score,
   scoreLabel,
+  scenarioLabel,
 }: Readonly<{
   label: string;
   player: ComparisonPlayer;
   score?: number | null;
   scoreLabel?: string;
+  scenarioLabel?: string;
 }>) {
+  const formattedScenarioScore =
+    score === undefined
+      ? null
+      : score === null
+        ? "—"
+        : formatProfileNumber(
+            score,
+            {
+              maximumFractionDigits: 1,
+            },
+          );
+
   return (
     <article className="min-w-0 rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-7">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-          {label}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
+            {label}
+          </p>
+
+          {scenarioLabel ? (
+            <span className="rounded-full border border-brand/20 bg-brand/5 px-2.5 py-1 text-[11px] font-semibold text-brand-dark">
+              {scenarioLabel}
+            </span>
+          ) : null}
+
+          {score !== undefined ? (
+            <span
+              title={
+                scoreLabel ??
+                "Scenario score"
+              }
+              className="rounded-full bg-brand-dark px-2.5 py-1 text-[11px] font-bold text-white"
+            >
+              <span className="sr-only">
+                {scoreLabel ??
+                  "Scenario score"}{" "}
+              </span>
+              Score{" "}
+              {formattedScenarioScore}
+            </span>
+          ) : null}
+        </div>
 
         <span className="rounded-full bg-surface-secondary px-3 py-1.5 text-xs font-semibold text-brand-dark">
           {formatPlayerPosition(
@@ -188,8 +217,8 @@ function PlayerIdentityCard({
         </div>
       </div>
 
-      <dl className="mt-7 grid grid-cols-2 gap-4 rounded-2xl bg-surface-secondary p-5 text-sm">
-        <div>
+      <dl className="mt-7 grid grid-cols-2 gap-x-4 gap-y-5 rounded-2xl bg-surface-secondary p-5 text-sm sm:grid-cols-3">
+        <div className="min-w-0">
           <dt className="text-muted">
             Market value
           </dt>
@@ -202,7 +231,7 @@ function PlayerIdentityCard({
           </dd>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <dt className="text-muted">
             Age
           </dt>
@@ -219,7 +248,7 @@ function PlayerIdentityCard({
           </dd>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <dt className="text-muted">
             Tournament minutes
           </dt>
@@ -231,29 +260,43 @@ function PlayerIdentityCard({
           </dd>
         </div>
 
-        <div>
+        <div className="min-w-0 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
           <dt className="text-muted">
-            {scoreLabel ??
-              "Weighted rating"}
+            Weighted rating
           </dt>
 
           <dd className="mt-1 font-bold">
-            {score !== undefined
-              ? score === null
-                ? "Not reported"
-                : formatProfileNumber(
-                    score,
-                    {
-                      maximumFractionDigits: 1,
-                    },
-                  )
-              : formatProfileNumber(
-                  player.weighted_rating,
-                  {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  },
-                )}
+            {formatProfileNumber(
+              player.weighted_rating,
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              },
+            )}
+          </dd>
+        </div>
+
+        <div className="min-w-0 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
+          <dt className="text-muted">
+            Role confidence
+          </dt>
+
+          <dd className="mt-1 font-bold">
+            {formatProfilePercentage(
+              player.role_confidence_pct,
+            )}
+          </dd>
+        </div>
+
+        <div className="min-w-0 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
+          <dt className="text-muted">
+            Data reliability
+          </dt>
+
+          <dd className="mt-1 font-bold">
+            {formatProfilePercentage(
+              player.data_reliability_score,
+            )}
           </dd>
         </div>
       </dl>
@@ -471,46 +514,6 @@ export function PlayerComparison({
     },
   ] as const;
 
-  const comparisonRows = [
-    {
-      label: "Weighted rating",
-      target: formatProfileNumber(target.weighted_rating, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }),
-      candidate: formatProfileNumber(candidate.weighted_rating, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }),
-    },
-    {
-      label: "Player quality",
-      target: formatProfilePercentage(target.player_quality_score),
-      candidate: formatProfilePercentage(candidate.player_quality_score),
-    },
-    {
-      label: "Data reliability",
-      target: formatProfilePercentage(target.data_reliability_score),
-      candidate: formatProfilePercentage(candidate.data_reliability_score),
-    },
-    {
-      label: "Tournament minutes",
-      target: formatProfileNumber(target.minutes),
-      candidate: formatProfileNumber(candidate.minutes),
-    },
-    {
-      label: "Market value",
-      target: formatMarketValue(
-        target.market_value,
-        target.market_value_currency,
-      ),
-      candidate: formatMarketValue(
-        candidate.market_value,
-        candidate.market_value_currency,
-      ),
-    },
-  ] as const;
-
   const evidenceItems = [
     {
       label: "Same final role",
@@ -549,6 +552,9 @@ export function PlayerComparison({
         <PlayerIdentityCard
           label={`Candidate · Rank ${candidateRank ?? "—"}`}
           player={candidate}
+          scenarioLabel={
+            modeDetails.shortLabel
+          }
           score={candidateScore}
           scoreLabel={
             modeDetails.scoreLabel
@@ -1258,58 +1264,7 @@ export function PlayerComparison({
         </div>
       </section>
 
-      <section className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
-        <div className="border-b border-border p-6 sm:p-7">
-          <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-            Performance context
-          </p>
 
-          <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
-            Quality, reliability and market context
-          </h2>
-        </div>
-
-        <div className="min-w-0 max-w-full overflow-x-auto">
-          <table className="w-full min-w-[46rem] border-collapse text-left">
-            <thead>
-              <tr className="border-b border-border bg-surface-secondary">
-                <th className="px-6 py-4 text-xs font-semibold tracking-[0.1em] text-muted uppercase">
-                  Metric
-                </th>
-
-                <th className="break-all px-6 py-4 text-xs font-semibold tracking-[0.1em] text-muted uppercase">
-                  {target.player_name}
-                </th>
-
-                <th className="break-all px-6 py-4 text-xs font-semibold tracking-[0.1em] text-muted uppercase">
-                  {candidate.player_name}
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {comparisonRows.map((row) => (
-                <tr
-                  key={row.label}
-                  className="border-b border-border last:border-b-0"
-                >
-                  <th className="px-6 py-4 text-sm font-medium text-muted">
-                    {row.label}
-                  </th>
-
-                  <td className="px-6 py-4 text-sm font-semibold">
-                    {formatTextValue(row.target)}
-                  </td>
-
-                  <td className="px-6 py-4 text-sm font-semibold">
-                    {formatTextValue(row.candidate)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
 
     </div>
   );

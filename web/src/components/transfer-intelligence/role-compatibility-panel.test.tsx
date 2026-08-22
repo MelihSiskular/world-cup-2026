@@ -57,7 +57,7 @@ describe(
   "RoleCompatibilityPanel",
   () => {
     it(
-      "renders backend role fit and tactical evidence",
+      "renders backend tactical profile and role confidence",
       () => {
         render(
           <RoleCompatibilityPanel
@@ -70,19 +70,13 @@ describe(
           screen.getAllByText(
             "Target",
           ),
-        ).toHaveLength(6);
+        ).toHaveLength(7);
 
         expect(
           screen.getAllByText(
             "Candidate",
           ),
-        ).toHaveLength(6);
-
-        expect(
-          screen.getByText(
-            "84.6%",
-          ),
-        ).toBeInTheDocument();
+        ).toHaveLength(7);
 
         expect(
           screen.getAllByText(
@@ -107,11 +101,29 @@ describe(
             "Mobile",
           ),
         ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Role confidence",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "87.2%",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "81.4%",
+          ),
+        ).toBeInTheDocument();
       },
     );
 
     it(
-      "renders backend equality evidence without recomputing it",
+      "does not duplicate equality evidence in the tactical profile",
       () => {
         render(
           <RoleCompatibilityPanel
@@ -125,28 +137,28 @@ describe(
         );
 
         expect(
-          screen.getByText(
+          screen.queryByText(
             "Same final role",
           ),
-        ).toBeInTheDocument();
+        ).not.toBeInTheDocument();
 
         expect(
-          screen.getByText(
+          screen.queryByText(
             "Same archetype",
           ),
-        ).toBeInTheDocument();
+        ).not.toBeInTheDocument();
 
         expect(
-          screen.getByText(
-            "No",
+          screen.getAllByText(
+            "Central Half-Space Creator",
           ),
-        ).toBeInTheDocument();
+        ).toHaveLength(2);
 
         expect(
-          screen.getByText(
-            "Yes",
+          screen.getAllByText(
+            "Wide Creator",
           ),
-        ).toBeInTheDocument();
+        ).toHaveLength(2);
       },
     );
 
@@ -170,12 +182,18 @@ describe(
         expect(
           screen.getAllByText(
             "Not reported",
-          ).length,
-        ).toBeGreaterThan(0);
+          ),
+        ).toHaveLength(2);
+
+        expect(
+          screen.queryByText(
+            "Same final role unavailable",
+          ),
+        ).not.toBeInTheDocument();
 
         expect(
           screen.getByText(
-            "Same final role unavailable",
+            "Role confidence",
           ),
         ).toBeInTheDocument();
       },
