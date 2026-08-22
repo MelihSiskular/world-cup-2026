@@ -113,14 +113,21 @@ function HeatmapEvidenceMetric({
   description: string;
 }>) {
   return (
-    <div className="rounded-xl border border-border bg-page p-4">
-      <dt className="text-xs font-medium text-muted">{label}</dt>
+    <div
+      title={description}
+      className="min-w-0 rounded-xl border border-border bg-page px-4 py-3.5"
+    >
+      <dt className="text-[11px] font-medium leading-4 text-muted">
+        {label}
+      </dt>
 
-      <dd className="mt-2 text-xl font-bold tracking-[-0.025em] text-brand-dark">
+      <dd className="mt-1.5 text-2xl font-bold tracking-[-0.03em] text-brand-dark">
         {value}
       </dd>
 
-      <p className="mt-2 text-[11px] leading-5 text-muted">{description}</p>
+      <span className="sr-only">
+        {description}
+      </span>
     </div>
   );
 }
@@ -1184,7 +1191,14 @@ export function PlayerComparison({
                 </article>
               </div>
 
-              <dl className="mt-6 grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+              <dl
+                aria-label="Heatmap evidence metrics"
+                className="mt-6 grid gap-3"
+                style={{
+                  gridTemplateColumns:
+                    "repeat(6, minmax(0, 1fr))",
+                }}
+              >
                 <HeatmapEvidenceMetric
                   label="Measured similarity"
                   value={formatProfilePercentage(
@@ -1239,34 +1253,6 @@ export function PlayerComparison({
                 />
               </dl>
 
-              <div className="mt-5 rounded-xl border border-border bg-surface-secondary px-4 py-3 text-xs leading-5 text-muted">
-                Pair evidence sample:{" "}
-                <strong className="text-foreground">
-                  {formatProfileNumber(
-                    heatmapComparison.data.similarity
-                      .target_matches_with_heatmap,
-                  )}{" "}
-                  target matches /{" "}
-                  {formatProfileNumber(
-                    heatmapComparison.data.similarity.target_heatmap_points,
-                  )}{" "}
-                  points
-                </strong>
-                {" · "}
-                <strong className="text-foreground">
-                  {formatProfileNumber(
-                    heatmapComparison.data.similarity
-                      .candidate_matches_with_heatmap,
-                  )}{" "}
-                  candidate matches /{" "}
-                  {formatProfileNumber(
-                    heatmapComparison.data.similarity.candidate_heatmap_points,
-                  )}{" "}
-                  points
-                </strong>
-                . No neutral recommendation fallback is presented as measured
-                heatmap evidence.
-              </div>
             </>
           ) : null}
         </div>
