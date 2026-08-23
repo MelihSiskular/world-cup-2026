@@ -82,34 +82,41 @@ function expectDetailValue(label: string, value: string): void {
 }
 
 describe("PlayerProfileView", () => {
-  it("renders enriched tournament and sample context", () => {
+  it("renders compact role and tournament participation context", () => {
     render(<PlayerProfileView player={basePlayer} />);
 
     expectDetailValue("Matches", "8");
 
     expectDetailValue("Starts", "8");
 
-    expectDetailValue("Substitute appearances", "0");
-
-    expectDetailValue("Captain appearances", "0");
-
     expectDetailValue("Minutes", "650");
 
     expectDetailValue("Primary formation", "4-2-3-1");
 
-    expectDetailValue("Lineup position", "M");
-
-    expectDetailValue("Formations used", "1");
+    expect(
+      screen.queryByText("Substitute appearances"),
+    ).not.toBeInTheDocument();
 
     expect(
-      screen.getByText("Target sample meets the 180-minute peer benchmark."),
-    ).toBeInTheDocument();
+      screen.queryByText("Captain appearances"),
+    ).not.toBeInTheDocument();
 
     expect(
-      screen.getByText(
-        /Comparison peers require at least 180 tournament minutes/,
-      ),
-    ).toBeInTheDocument();
+      screen.queryByText("Lineup position"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Formations used"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Analysis boundary"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Sample quality"),
+    ).not.toBeInTheDocument();
+
   });
 
   it("renders the deterministic player photo in the profile identity", () => {
@@ -232,17 +239,9 @@ describe("PlayerProfileView", () => {
 
     expectDetailValue("Starts", "Not reported");
 
-    expectDetailValue("Substitute appearances", "Not reported");
-
-    expectDetailValue("Captain appearances", "Not reported");
-
     expectDetailValue("Minutes", "Not reported");
 
     expectDetailValue("Primary formation", "Not reported");
-
-    expectDetailValue("Lineup position", "Not reported");
-
-    expectDetailValue("Formations used", "Not reported");
 
     expectDetailValue("Lateral profile", "Not reported");
 
@@ -251,16 +250,6 @@ describe("PlayerProfileView", () => {
     expectDetailValue("Mobility profile", "Not reported");
 
     expectDetailValue("Spatial reliability", "Not reported");
-
-    expect(
-      screen.getByText("Tournament-minute sample context is not available."),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText(
-        "Enriched sample evidence was not reported for this player.",
-      ),
-    ).toBeInTheDocument();
 
     expectDetailValue("Market value", "Not reported");
   });
@@ -308,31 +297,11 @@ describe("PlayerProfileView", () => {
 
     expectDetailValue("Starts", "0");
 
-    expectDetailValue("Substitute appearances", "0");
-
-    expectDetailValue("Captain appearances", "0");
-
     expectDetailValue("Minutes", "0");
-
-    expectDetailValue("Formations used", "0");
 
     expectDetailValue("Primary formation", "Not reported");
 
-    expectDetailValue("Lineup position", "Not reported");
-
     expectDetailValue("Spatial reliability", "0%");
-
-    expect(
-      screen.getByText(
-        "Target sample is below the 180-minute peer benchmark; percentile comparisons should be read with added caution.",
-      ),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText(
-        /Comparison peers require at least 180 tournament minutes/,
-      ),
-    ).toBeInTheDocument();
 
     expectDetailValue("Market value", "€0");
   });
@@ -368,7 +337,7 @@ describe("PlayerProfileView", () => {
     }
   });
 
-  it("shows caution for a low-minute target while preserving enriched tournament values", () => {
+  it("preserves reported values for a low-minute tournament sample", () => {
     render(
       <PlayerProfileView
         player={createPlayer({
@@ -401,23 +370,10 @@ describe("PlayerProfileView", () => {
 
     expectDetailValue("Starts", "1");
 
-    expectDetailValue("Substitute appearances", "1");
-
-    expectDetailValue("Captain appearances", "0");
-
     expectDetailValue("Minutes", "95");
-
-    expectDetailValue("Formations used", "2");
 
     expectDetailValue("Primary formation", "4-3-3");
 
-    expectDetailValue("Lineup position", "M");
-
-    expect(
-      screen.getByText(
-        "Target sample is below the 180-minute peer benchmark; percentile comparisons should be read with added caution.",
-      ),
-    ).toBeInTheDocument();
   });
 
   it("keeps role assignment evidence available behind a collapsed disclosure", () => {

@@ -46,20 +46,52 @@ function formatMetricValue(metric: PerformanceMetric): string {
   return value;
 }
 
-function formatMetricUnit(unit: string): string {
-  switch (unit) {
-    case "per90":
-      return "Per 90";
+function getMetricDescription(
+  metric: PerformanceMetric,
+): string | null {
+  const description =
+    metric.unit === "per90"
+      ? metric.label.replace(/\s+per\s+90$/i, "")
+      : metric.label;
 
-    case "percent":
-      return "Percentage";
+  const comparableShortLabel = metric.short_label
+    .replace(/\s*\/\s*90$/i, "")
+    .trim();
 
-    case "raw":
-      return "Raw value";
+  return description.localeCompare(
+    comparableShortLabel,
+    undefined,
+    {
+      sensitivity: "base",
+    },
+  ) === 0
+    ? null
+    : description;
+}
 
-    default:
-      return unit;
+function balancePerformanceGroups(
+  groups: readonly PerformanceGroup[],
+): readonly [PerformanceGroup[], PerformanceGroup[]] {
+  const columns: [
+    PerformanceGroup[],
+    PerformanceGroup[],
+  ] = [[], []];
+
+  const columnWeights: [number, number] = [0, 0];
+
+  for (const group of groups) {
+    const targetColumn: 0 | 1 =
+      columnWeights[0] <= columnWeights[1]
+        ? 0
+        : 1;
+
+    columns[targetColumn].push(group);
+
+    columnWeights[targetColumn] +=
+      group.metrics.length + 1;
   }
+
+  return columns;
 }
 
 function MetricRow({
@@ -69,34 +101,42 @@ function MetricRow({
 }>) {
   const percentile = metric.performance_percentile;
 
-  const hasPercentile = percentile !== null && percentile !== undefined;
+  const hasPercentile =
+    percentile !== null &&
+    percentile !== undefined;
+
+  const description = getMetricDescription(metric);
 
   return (
-    <article className="py-5 first:pt-0 last:pb-0">
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_7.5rem_minmax(13rem,0.9fr)] lg:items-center">
+    <article className="py-4 first:pt-0 last:pb-0">
+      <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_6rem_minmax(10rem,0.9fr)] md:items-center md:gap-4">
         <div className="min-w-0">
-          <p className="break-words text-base font-bold tracking-[-0.015em]">
+          <p className="break-words text-sm font-bold tracking-[-0.015em]">
             {metric.short_label}
           </p>
 
-          <p className="mt-1 break-words text-xs leading-5 text-muted">
-            {metric.label}
-          </p>
+          {description ? (
+            <p className="mt-1 break-words text-xs leading-5 text-muted">
+              {description}
+            </p>
+          ) : null}
         </div>
 
-        <div className="flex items-end justify-between gap-4 lg:block lg:text-right">
-          <p className="text-xs font-semibold tracking-[0.08em] text-muted uppercase lg:hidden">
+        <div className="flex items-end justify-between gap-4 md:block md:text-right">
+          <p className="text-xs font-semibold text-muted md:hidden">
             Value
           </p>
 
           <div>
-            <p className="text-xl font-bold tracking-[-0.03em]">
+            <p className="text-lg font-bold tracking-[-0.03em]">
               {formatMetricValue(metric)}
             </p>
 
-            <p className="mt-1 text-[0.65rem] font-semibold tracking-[0.08em] text-muted uppercase">
-              {formatMetricUnit(metric.unit)}
-            </p>
+            {metric.unit === "raw" ? (
+              <p className="mt-1 text-[0.65rem] font-semibold tracking-[0.08em] text-muted uppercase">
+                Raw value
+              </p>
+            ) : null}
           </div>
         </div>
 
@@ -104,11 +144,11 @@ function MetricRow({
           {hasPercentile ? (
             <>
               <div className="flex items-center justify-between gap-4">
-                <p className="text-xs font-semibold text-muted">
-                  Performance percentile
+                <p className="text-xs font-semibold text-muted md:hidden">
+                  Percentile
                 </p>
 
-                <p className="shrink-0 text-sm font-bold text-brand-dark">
+                <p className="ml-auto shrink-0 text-sm font-bold text-brand-dark">
                   {formatProfileNumber(percentile, {
                     maximumFractionDigits: 1,
                   })}
@@ -126,17 +166,19 @@ function MetricRow({
                 <div
                   className="h-full rounded-full bg-brand"
                   style={{
-                    width: `${clampPercentile(percentile)}%`,
+                    width: `${clampPercentile(
+                      percentile,
+                    )}%`,
                   }}
                 />
               </div>
 
-              <p className="mt-2 text-[0.7rem] leading-5 text-muted">
-                Compared with{" "}
-                <span className="font-semibold text-foreground">
-                  {formatProfileNumber(metric.peer_count)}
-                </span>{" "}
-                eligible same-position players.
+              <p className="mt-1.5 text-right text-[0.7rem] leading-5 text-muted">
+                n=
+                {formatProfileNumber(
+                  metric.peer_count,
+                )}{" "}
+                peers
               </p>
             </>
           ) : (
@@ -148,13 +190,14 @@ function MetricRow({
 
                 <p className="shrink-0 text-[0.7rem] font-semibold text-muted">
                   n=
-                  {formatProfileNumber(metric.peer_count)}
+                  {formatProfileNumber(
+                    metric.peer_count,
+                  )}
                 </p>
               </div>
 
               <p className="mt-1 text-xs leading-5 text-muted">
-                The reported value remains available, but eligible comparison
-                evidence is insufficient.
+                Reported value retained.
               </p>
             </div>
           )}
@@ -172,31 +215,24 @@ function MetricGroup({
   return (
     <section
       aria-labelledby={`performance-group-${group.key}`}
-      className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
+      className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm"
     >
-      <header className="flex flex-wrap items-end justify-between gap-4 border-b border-border bg-surface-secondary/55 px-5 py-5 sm:px-6">
-        <div className="min-w-0">
-          <p className="text-[0.7rem] font-semibold tracking-[0.14em] text-brand uppercase">
-            Metric group
-          </p>
+      <header className="border-b border-border bg-surface-secondary/55 px-5 py-3.5 sm:px-6">
+        <h3
+          id={`performance-group-${group.key}`}
+          className="min-w-0 break-words text-lg font-bold tracking-[-0.025em]"
+        >
+          {getGroupLabel(group.key)}
+        </h3>
 
-          <h3
-            id={`performance-group-${group.key}`}
-            className="mt-2 break-words text-xl font-bold tracking-[-0.025em]"
-          >
-            {getGroupLabel(group.key)}
-          </h3>
-        </div>
-
-        <span className="shrink-0 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-muted">
-          {group.metrics.length}{" "}
-          {group.metrics.length === 1 ? "metric" : "metrics"}
-        </span>
       </header>
 
-      <div className="divide-y divide-border px-5 py-5 sm:px-6">
+      <div className="divide-y divide-border px-5 py-4 sm:px-6">
         {group.metrics.map((metric) => (
-          <MetricRow key={metric.key} metric={metric} />
+          <MetricRow
+            key={metric.key}
+            metric={metric}
+          />
         ))}
       </div>
     </section>
@@ -237,7 +273,8 @@ export function PlayerPerformanceProfile({
   if (!intelligence) {
     return (
       <EmptyPerformanceState>
-        Position-aware performance metrics were not reported for this player.
+        Position-aware performance metrics were
+        not reported for this player.
       </EmptyPerformanceState>
     );
   }
@@ -245,15 +282,24 @@ export function PlayerPerformanceProfile({
   if (intelligence.groups.length === 0) {
     return (
       <EmptyPerformanceState>
-        No position-aware performance metrics were available for this player.
+        No position-aware performance metrics
+        were available for this player.
       </EmptyPerformanceState>
     );
   }
 
+  const [leftGroups, rightGroups] =
+    balancePerformanceGroups(
+      intelligence.groups,
+    );
+
   return (
-    <section aria-labelledby="performance-profile-title" className="space-y-5">
+    <section
+      aria-labelledby="performance-profile-title"
+      className="space-y-5"
+    >
       <div className="rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-7">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-sm font-semibold tracking-[0.15em] text-brand uppercase">
               Performance intelligence
@@ -267,29 +313,94 @@ export function PlayerPerformanceProfile({
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-muted">
-              Position-specific tournament metrics with raw or per-90 output and
+              Position-specific tournament metrics
+              with raw or per-90 output and
               same-position percentile context.
             </p>
           </div>
 
-          <div className="max-w-md rounded-2xl border border-brand/15 bg-surface-secondary px-4 py-3">
-            <p className="text-xs font-semibold text-brand-dark">
+          <aside
+            aria-labelledby="performance-profile-guide-title"
+            className="w-full max-w-md rounded-2xl border border-brand/15 bg-surface-secondary px-4 py-3"
+          >
+            <p
+              id="performance-profile-guide-title"
+              className="text-xs font-semibold text-brand-dark"
+            >
               How to read the profile
             </p>
 
-            <p className="mt-1 text-xs leading-5 text-muted">
-              Higher performance percentile is always more favorable. Raw and
-              per-90 values remain visible even when percentile evidence is
-              unavailable.
+            <div className="mt-3 grid grid-cols-[minmax(0,1fr)_3.5rem_minmax(6.5rem,0.9fr)] items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2.5">
+              <div className="min-w-0">
+                <p className="text-xs font-bold">
+                  Example metric
+                </p>
+
+                <p className="mt-0.5 text-[0.65rem] text-muted">
+                  Illustrative
+                </p>
+              </div>
+
+              <p className="text-right text-sm font-bold">
+                X.XX
+              </p>
+
+              <div className="min-w-0">
+                <p className="text-right text-xs font-bold text-brand-dark">
+                  75.0
+                </p>
+
+                <div
+                  aria-hidden="true"
+                  className="mt-1 h-1.5 overflow-hidden rounded-full bg-border/70"
+                >
+                  <div className="h-full w-3/4 rounded-full bg-brand" />
+                </div>
+
+                <p className="mt-1 text-right text-[0.6rem] text-muted">
+                  n=XXX peers
+                </p>
+              </div>
+            </div>
+
+            <p className="mt-2 text-[0.7rem] leading-5 text-muted">
+              X.XX is the metric output; 75.0 and
+              the bar show the same-position
+              percentile; n is the eligible peer
+              sample. Higher percentile is more
+              favorable.
             </p>
-          </div>
+          </aside>
         </div>
       </div>
 
-      <div className="grid items-start gap-5 xl:grid-cols-2">
-        {intelligence.groups.map((group) => (
-          <MetricGroup key={group.key} group={group} />
-        ))}
+      <div
+        data-testid="performance-group-layout"
+        className="grid items-start gap-5 xl:grid-cols-2"
+      >
+        <div
+          data-testid="performance-group-column"
+          className="space-y-5"
+        >
+          {leftGroups.map((group) => (
+            <MetricGroup
+              key={group.key}
+              group={group}
+            />
+          ))}
+        </div>
+
+        <div
+          data-testid="performance-group-column"
+          className="space-y-5"
+        >
+          {rightGroups.map((group) => (
+            <MetricGroup
+              key={group.key}
+              group={group}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

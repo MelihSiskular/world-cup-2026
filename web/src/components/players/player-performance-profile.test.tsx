@@ -102,6 +102,52 @@ describe("PlayerPerformanceProfile", () => {
     expect(screen.getAllByText(/216/).length).toBeGreaterThan(0);
   });
 
+  it("uses compact metric copy without repeating unit and peer sentences", () => {
+    render(<PlayerPerformanceProfile intelligence={intelligence} />);
+
+    expect(
+      screen.getAllByTestId(
+        "performance-group-column",
+      ),
+    ).toHaveLength(2);
+
+    expect(
+      screen.queryByText("Metric group"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText("2 metrics"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText("1 metric"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Per 90"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText(/Compared with/),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.getAllByText("n=216 peers"),
+    ).toHaveLength(3);
+
+    expect(
+      screen.getByText("X.XX"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("75.0"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("n=XXX peers"),
+    ).toBeInTheDocument();
+  });
+
   it("preserves a reported metric value when percentile evidence is unavailable", () => {
     const limitedEvidence: PlayerIntelligence = {
       ...intelligence,

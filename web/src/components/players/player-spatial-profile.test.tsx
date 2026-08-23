@@ -61,8 +61,18 @@ describe("PlayerSpatialProfile", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("509"),
-    ).toBeInTheDocument();
+      screen.queryByText("Spatial profile"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("heading", {
+        name: "Tournament occupation",
+      }),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText("509"),
+    ).not.toBeInTheDocument();
   });
 
   it("renders a compact unavailable state without inventing spatial evidence", () => {
