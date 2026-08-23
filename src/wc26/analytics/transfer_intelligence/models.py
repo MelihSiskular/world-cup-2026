@@ -98,6 +98,8 @@ class PlayerSearchItem:
     age: float | None
     market_value: float | None
     market_value_currency: str | None
+    country_alpha3: str | None = None
+    spatial_role: str | None = None
 
     def to_dict(self) -> JsonObject:
         """Return a JSON-compatible player representation."""
@@ -106,9 +108,11 @@ class PlayerSearchItem:
             "player_id": self.player_id,
             "player_name": self.player_name,
             "national_team_name": self.national_team_name,
+            "country_alpha3": self.country_alpha3,
             "position": self.position,
             "final_role": self.final_role,
             "archetype": self.archetype,
+            "spatial_role": self.spatial_role,
             "age": self.age,
             "market_value": self.market_value,
             "market_value_currency": self.market_value_currency,

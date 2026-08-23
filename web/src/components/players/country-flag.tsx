@@ -1,12 +1,12 @@
 type CountryFlagProps = Readonly<{
-  countryAlpha3: string | null;
+  countryAlpha3?: string | null;
   className?: string;
 }>;
 
 function normalizeCountryAlpha3(
-  value: string | null,
+  value: string | null | undefined,
 ): string | null {
-  if (value === null) {
+  if (value == null) {
     return null;
   }
 

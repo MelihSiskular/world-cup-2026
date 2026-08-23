@@ -777,6 +777,8 @@ export interface components {
             readonly age: number | null;
             /** Archetype */
             readonly archetype: string | null;
+            /** Country Alpha3 */
+            readonly country_alpha3: string | null;
             /** Final Role */
             readonly final_role: string | null;
             /** Market Value */
@@ -791,6 +793,8 @@ export interface components {
             readonly player_name: string;
             /** Position */
             readonly position: string | null;
+            /** Spatial Role */
+            readonly spatial_role: string | null;
         };
         /**
          * PlayerSearchResponse

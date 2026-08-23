@@ -35,6 +35,7 @@ from wc26.analytics.transfer_intelligence.player_profile import (
     get_player_profile_from_dataframe,
 )
 from wc26.analytics.transfer_intelligence.player_search import (
+    enrich_player_search_country_codes,
     search_players,
     search_players_from_dataframe,
 )
@@ -90,9 +91,14 @@ def create_catalog_player_search_runner(
     def runner(
         request: PlayerSearchRequest,
     ) -> PlayerSearchResult:
-        return search_players_from_dataframe(
+        result = search_players_from_dataframe(
             request,
             catalog.players,
+        )
+
+        return enrich_player_search_country_codes(
+            result,
+            catalog.player_tournament_summary,
         )
 
     return runner

@@ -49,6 +49,8 @@ const player = {
     "Central Half-Space Creator",
   archetype:
     "Wide Creator",
+  spatial_role:
+    "Right Half-Space",
   age: 24.6,
   market_value:
     144_000_000,

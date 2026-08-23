@@ -389,7 +389,7 @@ test.describe(
             "searchbox",
             {
               name:
-                "Search player catalogue",
+                "Search players",
             },
           );
 

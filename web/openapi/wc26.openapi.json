@@ -3129,6 +3129,17 @@
             ],
             "title": "National Team Name"
           },
+          "country_alpha3": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country Alpha3"
+          },
           "position": {
             "anyOf": [
               {
@@ -3161,6 +3172,17 @@
               }
             ],
             "title": "Archetype"
+          },
+          "spatial_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spatial Role"
           },
           "age": {
             "anyOf": [
@@ -3202,9 +3224,11 @@
           "player_id",
           "player_name",
           "national_team_name",
+          "country_alpha3",
           "position",
           "final_role",
           "archetype",
+          "spatial_role",
           "age",
           "market_value",
           "market_value_currency"

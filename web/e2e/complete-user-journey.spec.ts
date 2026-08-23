@@ -97,7 +97,7 @@ test.describe(
 
         const playerSearch =
           page.getByRole("searchbox", {
-            name: "Search player catalogue",
+            name: "Search players",
           });
 
         await expect(
