@@ -6,16 +6,16 @@
   --surface-secondary: #eaf0ed;
 
   --text-primary: #10211b;
-  --text-secondary: #66736d;
+  --text-secondary: #5b6761;
 
   --brand-primary: #0b6b4b;
   --brand-dark: #074735;
   --brand-navy: #163b65;
   --brand-accent: #c8f560;
 
-  --status-success: #16835b;
-  --status-warning: #c27a19;
-  --status-error: #c44747;
+  --status-success: #0b6b4b;
+  --status-warning: #8a5200;
+  --status-error: #9f3434;
 
   --border-default: #d8e1dc;
 }
@@ -190,5 +190,16 @@ a {
 
   .tactical-profile-row > :first-child {
     grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

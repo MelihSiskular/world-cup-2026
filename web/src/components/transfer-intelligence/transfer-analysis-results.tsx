@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-query";
 import Link from "next/link";
 import {
+  type KeyboardEvent,
   useState,
 } from "react";
 
@@ -71,6 +72,88 @@ export function TransferAnalysisResults({
     showAllRecommendations,
     setShowAllRecommendations,
   ] = useState(false);
+
+  function selectMode(
+    modeName: TransferModeName,
+  ): void {
+    setActiveMode(
+      modeName,
+    );
+
+    setShowAllRecommendations(
+      false,
+    );
+  }
+
+  function handleModeKeyDown(
+    event: KeyboardEvent<HTMLButtonElement>,
+    modeName: TransferModeName,
+  ): void {
+    const currentIndex =
+      TRANSFER_MODE_ORDER.indexOf(
+        modeName,
+      );
+
+    let nextIndex: number;
+
+    switch (event.key) {
+      case "ArrowRight":
+        nextIndex =
+          (currentIndex + 1) %
+          TRANSFER_MODE_ORDER.length;
+        break;
+
+      case "ArrowLeft":
+        nextIndex =
+          (
+            currentIndex -
+            1 +
+            TRANSFER_MODE_ORDER.length
+          ) %
+          TRANSFER_MODE_ORDER.length;
+        break;
+
+      case "Home":
+        nextIndex = 0;
+        break;
+
+      case "End":
+        nextIndex =
+          TRANSFER_MODE_ORDER.length -
+          1;
+        break;
+
+      default:
+        return;
+    }
+
+    event.preventDefault();
+
+    const nextMode =
+      TRANSFER_MODE_ORDER[
+        nextIndex
+      ];
+
+    if (nextMode === undefined) {
+      return;
+    }
+
+    selectMode(
+      nextMode,
+    );
+
+    const tabList =
+      event.currentTarget.closest(
+        '[role="tablist"]',
+      );
+
+    const tabs =
+      tabList?.querySelectorAll<HTMLButtonElement>(
+        '[role="tab"]',
+      );
+
+    tabs?.[nextIndex]?.focus();
+  }
 
   const analysis =
     useQuery(
@@ -342,12 +425,20 @@ export function TransferAnalysisResults({
                     type="button"
                     role="tab"
                     aria-selected={active}
+                    tabIndex={
+                      active
+                        ? 0
+                        : -1
+                    }
                     onClick={() => {
-                      setActiveMode(
+                      selectMode(
                         modeName,
                       );
-                      setShowAllRecommendations(
-                        false,
+                    }}
+                    onKeyDown={(event) => {
+                      handleModeKeyDown(
+                        event,
+                        modeName,
                       );
                     }}
                     className={[

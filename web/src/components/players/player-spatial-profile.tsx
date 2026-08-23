@@ -37,7 +37,7 @@ export function PlayerSpatialProfile({
             Spatial profile unavailable
           </p>
 
-          <p className="mt-2 text-xs leading-5 text-muted">
+          <p className="mt-2 text-xs leading-5 text-muted [overflow-wrap:anywhere]">
             The tournament heatmap for {playerName} could not be loaded.
           </p>
 
@@ -57,7 +57,7 @@ export function PlayerSpatialProfile({
               Spatial data unavailable
             </p>
 
-            <p className="mt-2 text-xs leading-5 text-muted">
+            <p className="mt-2 text-xs leading-5 text-muted [overflow-wrap:anywhere]">
               No measured tournament heatmap is available for {playerName}.
             </p>
           </div>

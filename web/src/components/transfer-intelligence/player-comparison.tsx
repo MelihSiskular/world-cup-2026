@@ -113,11 +113,11 @@ function HeatmapEvidenceMetric({
 
       <dd className="mt-1.5 text-2xl font-bold tracking-[-0.03em] text-brand-dark">
         {value}
-      </dd>
 
-      <span className="sr-only">
-        {description}
-      </span>
+        <span className="sr-only">
+          . {description}
+        </span>
+      </dd>
     </div>
   );
 }
@@ -640,40 +640,38 @@ export function PlayerComparison({
                     <div
                       key={item.label}
                       className={[
-                        "rounded-xl border px-4 py-3.5",
+                        "flex items-center justify-between gap-4 rounded-xl border px-4 py-3.5",
                         item.value
                           ? "border-brand/15 bg-brand/5"
                           : "border-border bg-page",
                       ].join(" ")}
                     >
-                      <div className="flex items-center justify-between gap-4">
-                        <dt className="text-sm font-medium text-foreground">
-                          {item.label}
-                        </dt>
+                      <dt className="text-sm font-medium text-foreground">
+                        {item.label}
+                      </dt>
 
-                        <dd
+                      <dd
+                        className={[
+                          "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold",
+                          item.value
+                            ? "border-brand/20 bg-surface text-brand-dark"
+                            : "border-border bg-surface text-muted",
+                        ].join(" ")}
+                      >
+                        <span
+                          aria-hidden="true"
                           className={[
-                            "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold",
+                            "size-1.5 rounded-full",
                             item.value
-                              ? "border-brand/20 bg-surface text-brand-dark"
-                              : "border-border bg-surface text-muted",
+                              ? "bg-brand"
+                              : "bg-muted",
                           ].join(" ")}
-                        >
-                          <span
-                            aria-hidden="true"
-                            className={[
-                              "size-1.5 rounded-full",
-                              item.value
-                                ? "bg-brand"
-                                : "bg-muted",
-                            ].join(" ")}
-                          />
+                        />
 
-                          {item.value
-                            ? "Yes"
-                            : "No"}
-                        </dd>
-                      </div>
+                        {item.value
+                          ? "Yes"
+                          : "No"}
+                      </dd>
                     </div>
                   ),
                 )}
@@ -850,7 +848,9 @@ export function PlayerComparison({
         <div className="p-5 sm:p-6">
           {radarComparison.isPending ? (
             <div
+              role="status"
               aria-label="Loading radar comparison"
+              aria-busy="true"
               className="min-h-96 animate-pulse rounded-2xl bg-surface-secondary"
             />
           ) : radarComparison.isError ? (
@@ -1067,7 +1067,9 @@ export function PlayerComparison({
         <div className="p-5 sm:p-6">
           {heatmapComparison.isPending ? (
             <div
+              role="status"
               aria-label="Loading heatmap comparison"
+              aria-busy="true"
               className="grid gap-5 lg:grid-cols-2"
             >
               <div className="min-h-72 animate-pulse rounded-2xl bg-surface-secondary" />
