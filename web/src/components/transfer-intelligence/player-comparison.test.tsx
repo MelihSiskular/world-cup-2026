@@ -1,4 +1,12 @@
-import { screen, within } from "@testing-library/react";
+import {
+  render,
+  screen,
+  within,
+} from "@testing-library/react";
+import {
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { PlayerComparison } from "@/components/transfer-intelligence/player-comparison";
@@ -14,6 +22,9 @@ import type {
   TransferRecommendationResponse,
 } from "@/lib/api/types";
 import { DEFAULT_TRANSFER_ANALYSIS_VALUES } from "@/lib/transfer-intelligence/analysis-form";
+import {
+  createTransferAnalysisQueryKey,
+} from "@/lib/transfer-intelligence/analysis-query";
 import { renderWithQueryClient } from "@/test/render-with-query-client";
 
 vi.mock("@/lib/api/browser-transfer-intelligence", () => ({
@@ -289,6 +300,58 @@ describe("PlayerComparison", () => {
 
     fetchRadarComparisonMock.mockResolvedValue(createRadarResponse());
   });
+
+  it(
+    "reuses fresh transfer-analysis data from the shared cache",
+    async () => {
+      const values = {
+        ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+      };
+
+      const queryClient =
+        new QueryClient({
+          defaultOptions: {
+            queries: {
+              retry: false,
+            },
+          },
+        });
+
+      queryClient.setQueryData(
+        createTransferAnalysisQueryKey(
+          978838,
+          values,
+        ),
+        createResponse(true),
+      );
+
+      render(
+        <QueryClientProvider
+          client={queryClient}
+        >
+          <PlayerComparison
+            targetPlayerId={978838}
+            candidatePlayerId={12345}
+            mode="immediate"
+            values={values}
+          />
+        </QueryClientProvider>,
+      );
+
+      expect(
+        await screen.findByRole(
+          "heading",
+          {
+            name: "Test Candidate",
+          },
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        runTransferAnalysisMock,
+      ).not.toHaveBeenCalled();
+    },
+  );
 
   it("shows a candidate-unavailable state", async () => {
     runTransferAnalysisMock.mockResolvedValue(createResponse(false));
@@ -578,7 +641,7 @@ describe("PlayerComparison", () => {
       await screen.findByText("Heatmap comparison unavailable"),
     ).toBeInTheDocument();
 
-    expect(screen.getByText("Performance context")).toBeInTheDocument();
+    expect(screen.getByText("Statistical similarity")).toBeInTheDocument();
 
     expect(
       screen.queryByText("The player comparison could not be prepared"),
@@ -740,7 +803,7 @@ describe("PlayerComparison", () => {
 
     expect(
       screen.getByText(
-        "Performance context",
+        "Statistical similarity",
       ),
     ).toBeInTheDocument();
 

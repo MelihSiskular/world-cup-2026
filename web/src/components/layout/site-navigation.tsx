@@ -72,7 +72,7 @@ export function SiteNavigation() {
       <div className="md:hidden">
         <button
           type="button"
-          className="inline-flex size-10 items-center justify-center rounded-lg border border-border bg-surface text-foreground"
+          className="inline-flex size-11 items-center justify-center rounded-lg border border-border bg-surface text-foreground"
           aria-expanded={menuOpen}
           aria-controls="mobile-navigation"
           aria-label={
@@ -134,7 +134,7 @@ export function SiteNavigation() {
                           navigationLinkClasses(
                             active,
                           ),
-                          "block",
+                          "flex min-h-11 items-center",
                         ].join(" ")}
                         onClick={() => {
                           setMenuOpen(false);

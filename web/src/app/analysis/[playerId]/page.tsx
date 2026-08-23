@@ -68,11 +68,11 @@ export default async function TransferAnalysisPage({
         };
 
   return (
-    <PageContainer className="py-14 sm:py-20">
+    <PageContainer className="py-10 sm:py-14">
       <PageIntro
         eyebrow="Transfer intelligence"
-        title="Configure replacement analysis"
-        description="Set recruitment thresholds before ranking candidates across immediate, development, value and short-term scenarios."
+        title="Replacement analysis"
+        description="Define the candidate pool and rank transfer alternatives across four recruitment scenarios."
         actions={
           <Link
             href={`/players/${parsedPlayerId}`}
@@ -83,7 +83,7 @@ export default async function TransferAnalysisPage({
         }
       />
 
-      <div className="mt-12">
+      <div className="mt-8">
         <TransferAnalysisForm
           playerId={parsedPlayerId}
           initialValues={initialValues}

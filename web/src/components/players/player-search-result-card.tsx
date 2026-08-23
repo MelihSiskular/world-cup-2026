@@ -1,5 +1,19 @@
+"use client";
+
+import {
+  useQueryClient,
+} from "@tanstack/react-query";
 import Link from "next/link";
 
+import {
+  CountryFlag,
+} from "@/components/players/country-flag";
+import {
+  PlayerImage,
+} from "@/components/players/player-image";
+import {
+  fetchPlayerProfile,
+} from "@/lib/api/browser-players";
 import type {
   PlayerSearchItemResponse,
 } from "@/lib/api/types";
@@ -35,7 +49,7 @@ function formatAge(
   return `${new Intl.NumberFormat(
     "en",
     {
-      maximumFractionDigits: 1,
+      maximumFractionDigits: 0,
     },
   ).format(age)} years`;
 }
@@ -74,48 +88,102 @@ type PlayerSearchResultCardProps =
 export function PlayerSearchResultCard({
   player,
 }: PlayerSearchResultCardProps) {
+  const queryClient =
+    useQueryClient();
+
+  const prefetchPlayerProfile =
+    () => {
+      void queryClient.prefetchQuery({
+        queryKey: [
+          "players",
+          "profile",
+          player.player_id,
+        ],
+        queryFn: ({
+          signal,
+        }) =>
+          fetchPlayerProfile(
+            player.player_id,
+            signal,
+          ),
+        staleTime:
+          5 * 60 * 1000,
+      });
+    };
+
   return (
     <li>
       <Link
         href={`/players/${player.player_id}`}
+        onMouseEnter={
+          prefetchPlayerProfile
+        }
+        onFocus={
+          prefetchPlayerProfile
+        }
         className="group block rounded-2xl border border-border bg-surface p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand/35 hover:shadow-md"
       >
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-surface-secondary px-2.5 py-1 text-xs font-semibold text-brand-dark">
-                {formatPosition(
-                  player.position,
-                )}
-              </span>
+          <div className="flex min-w-0 items-start gap-4">
+            <PlayerImage
+              playerId={player.player_id}
+              playerName={player.player_name}
+              size="card"
+            />
 
-              <span className="text-xs text-muted">
-                Player ID{" "}
-                {player.player_id}
-              </span>
-            </div>
+            <div className="min-w-0">
+              <h2 className="min-w-0 break-words text-xl font-bold tracking-[-0.025em] transition-colors group-hover:text-brand">
+                {player.player_name}
+              </h2>
 
-            <h2 className="mt-4 break-words text-xl font-bold tracking-[-0.025em] transition-colors group-hover:text-brand">
-              {player.player_name}
-            </h2>
+              <div className="mt-1 flex min-w-0 items-center gap-2">
+                <CountryFlag
+                  countryAlpha3={
+                    player.country_alpha3
+                  }
+                  className="w-4"
+                />
 
-            <p className="mt-1 break-words text-sm font-medium text-muted">
-              {player.national_team_name ??
-                "National team unavailable"}
-            </p>
+                <p className="min-w-0 break-words text-sm font-medium text-muted">
+                  {player.national_team_name ??
+                    "National team unavailable"}
+                </p>
+              </div>
 
-            <div className="mt-5 flex flex-wrap gap-2">
-              {player.final_role ? (
-                <span className="max-w-full break-words rounded-lg border border-border bg-page px-3 py-1.5 text-xs font-medium">
-                  {player.final_role}
-                </span>
-              ) : null}
+              <div className="mt-4 space-y-1.5 text-sm">
+                {player.final_role ? (
+                  <p className="min-w-0 break-words text-base leading-6">
+                    <span className="font-semibold text-brand">
+                      Final role:
+                    </span>{" "}
+                    <span className="font-semibold text-brand-dark">
+                      {player.final_role}
+                    </span>
+                  </p>
+                ) : null}
 
-              {player.archetype ? (
-                <span className="max-w-full break-words rounded-lg border border-border bg-page px-3 py-1.5 text-xs font-medium text-muted">
-                  {player.archetype}
-                </span>
-              ) : null}
+                {player.archetype ? (
+                  <p className="min-w-0 break-words">
+                    <span className="font-semibold text-brand-navy">
+                      Archetype:
+                    </span>{" "}
+                    <span className="font-medium text-foreground">
+                      {player.archetype}
+                    </span>
+                  </p>
+                ) : null}
+
+                {player.spatial_role ? (
+                  <p className="min-w-0 break-words">
+                    <span className="font-semibold text-warning">
+                      Spatial role:
+                    </span>{" "}
+                    <span className="font-medium text-foreground">
+                      {player.spatial_role}
+                    </span>
+                  </p>
+                ) : null}
+              </div>
             </div>
           </div>
 
@@ -139,6 +207,17 @@ export function PlayerSearchResultCard({
                 {formatMarketValue(
                   player.market_value,
                   player.market_value_currency,
+                )}
+              </dd>
+            </div>
+
+            <div className="sm:mt-4">
+              <dt className="text-xs font-medium text-muted">
+                Position
+              </dt>
+              <dd className="mt-1 font-semibold">
+                {formatPosition(
+                  player.position,
                 )}
               </dd>
             </div>

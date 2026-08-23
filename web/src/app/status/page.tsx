@@ -13,9 +13,9 @@ import {
 } from "@/components/status/api-status-overview";
 
 export const metadata: Metadata = {
-  title: "API Status",
+  title: "System Status",
   description:
-    "Live health, readiness and deployment information for the WC26 analytics API.",
+    "Current availability of WC26 player data and scouting services.",
 };
 
 export default function StatusPage() {
@@ -23,8 +23,8 @@ export default function StatusPage() {
     <PageContainer className="py-14 sm:py-20">
       <PageIntro
         eyebrow="System status"
-        title="Analytics API and dataset readiness"
-        description="Live status information is retrieved through the Next.js server layer without exposing the backend configuration to the browser."
+        title="Scouting services at a glance"
+        description="Check whether player data and transfer analysis services are ready to use."
       />
 
       <section className="mt-12">

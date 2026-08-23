@@ -14,11 +14,9 @@ import { PlayerComparisonSkeleton } from "@/components/transfer-intelligence/pla
 import { RadarProfile } from "@/components/transfer-intelligence/radar-profile";
 import { RoleCompatibilityPanel } from "@/components/transfer-intelligence/role-compatibility-panel";
 import { SpatialPositionPitch } from "@/components/transfer-intelligence/spatial-position-pitch";
-import { isBrowserApiError } from "@/lib/api/browser-client";
 import {
   fetchHeatmapComparison,
   fetchRadarComparison,
-  runTransferAnalysis,
 } from "@/lib/api/browser-transfer-intelligence";
 import type {
   TransferModeName,
@@ -33,9 +31,11 @@ import {
 } from "@/lib/players/profile-format";
 import {
   createAnalysisSearchParameters,
-  createTransferAnalysisPayload,
 } from "@/lib/transfer-intelligence/analysis-form";
 import type { TransferAnalysisFormValues } from "@/lib/transfer-intelligence/analysis-form";
+import {
+  createTransferAnalysisQueryOptions,
+} from "@/lib/transfer-intelligence/analysis-query";
 import {
   getRecommendationRank,
   getRecommendationScore,
@@ -51,14 +51,20 @@ type PlayerComparisonProps = Readonly<{
 
 type ComparisonPlayer = TransferTargetResponse | TransferRecommendationResponse;
 
-type ComparisonValue = string | number | null | undefined;
-
-function formatTextValue(value: ComparisonValue): string {
-  if (value === null || value === undefined || value === "") {
-    return "Not reported";
+function getRecommendationReasons(
+  value: string | null | undefined,
+): readonly string[] {
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return [];
   }
 
-  return String(value);
+  return value
+    .split(";")
+    .map((reason) => reason.trim())
+    .filter(Boolean);
 }
 
 function ComparisonMetric({
@@ -71,14 +77,18 @@ function ComparisonMetric({
   description: string;
 }>) {
   return (
-    <article className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
-      <p className="text-sm font-semibold text-muted">{label}</p>
+    <article className="min-w-0 rounded-xl border border-border bg-surface px-4 py-4 shadow-sm">
+      <p className="text-xs font-medium leading-4 text-muted">
+        {label}
+      </p>
 
-      <p className="mt-3 text-3xl font-bold tracking-[-0.04em] text-brand-dark">
+      <p className="mt-2 text-2xl font-bold tracking-[-0.035em] text-brand-dark">
         {value}
       </p>
 
-      <p className="mt-2 text-xs leading-5 text-muted">{description}</p>
+      <p className="sr-only">
+        {description}
+      </p>
     </article>
   );
 }
@@ -93,14 +103,21 @@ function HeatmapEvidenceMetric({
   description: string;
 }>) {
   return (
-    <div className="rounded-xl border border-border bg-page p-4">
-      <dt className="text-xs font-medium text-muted">{label}</dt>
+    <div
+      title={description}
+      className="min-w-0 rounded-xl border border-border bg-page px-4 py-3.5"
+    >
+      <dt className="text-[11px] font-medium leading-4 text-muted">
+        {label}
+      </dt>
 
-      <dd className="mt-2 text-xl font-bold tracking-[-0.025em] text-brand-dark">
+      <dd className="mt-1.5 text-2xl font-bold tracking-[-0.03em] text-brand-dark">
         {value}
-      </dd>
 
-      <p className="mt-2 text-[11px] leading-5 text-muted">{description}</p>
+        <span className="sr-only">
+          . {description}
+        </span>
+      </dd>
     </div>
   );
 }
@@ -110,28 +127,73 @@ function PlayerIdentityCard({
   player,
   score,
   scoreLabel,
+  scenarioLabel,
 }: Readonly<{
   label: string;
   player: ComparisonPlayer;
   score?: number | null;
   scoreLabel?: string;
+  scenarioLabel?: string;
 }>) {
+  const formattedScenarioScore =
+    score === undefined
+      ? null
+      : score === null
+        ? "—"
+        : formatProfileNumber(
+            score,
+            {
+              maximumFractionDigits: 1,
+            },
+          );
+
   return (
     <article className="min-w-0 rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-7">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-          {label}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
+            {label}
+          </p>
+
+          {scenarioLabel ? (
+            <span className="rounded-full border border-brand/20 bg-brand/5 px-2.5 py-1 text-[11px] font-semibold text-brand-dark">
+              {scenarioLabel}
+            </span>
+          ) : null}
+
+          {score !== undefined ? (
+            <span
+              title={
+                scoreLabel ??
+                "Scenario score"
+              }
+              className="rounded-full bg-brand-dark px-2.5 py-1 text-[11px] font-bold text-white"
+            >
+              <span className="sr-only">
+                {scoreLabel ??
+                  "Scenario score"}{" "}
+              </span>
+              Score{" "}
+              {formattedScenarioScore}
+            </span>
+          ) : null}
+        </div>
 
         <span className="rounded-full bg-surface-secondary px-3 py-1.5 text-xs font-semibold text-brand-dark">
-          {formatPlayerPosition(player.position)}
+          {formatPlayerPosition(
+            player.position,
+          )}
         </span>
       </div>
 
       <div className="mt-5 flex min-w-0 items-start gap-4">
         <PlayerImage
-          playerId={player.player_id}
-          playerName={player.player_name}
+          playerId={
+            player.player_id
+          }
+          playerName={
+            player.player_name
+          }
           size="card"
           className="shrink-0 bg-page"
         />
@@ -148,14 +210,19 @@ function PlayerIdentityCard({
           </p>
 
           <p className="mt-3 break-words font-semibold text-brand">
-            {player.final_role ?? player.archetype ?? "Role unavailable"}
+            {player.final_role ??
+              player.archetype ??
+              "Role unavailable"}
           </p>
         </div>
       </div>
 
-      <dl className="mt-7 grid grid-cols-2 gap-4 rounded-2xl bg-surface-secondary p-5 text-sm">
-        <div>
-          <dt className="text-muted">Market value</dt>
+      <dl className="mt-7 grid grid-cols-2 gap-x-4 gap-y-5 rounded-2xl bg-surface-secondary p-5 text-sm sm:grid-cols-3">
+        <div className="min-w-0">
+          <dt className="text-muted">
+            Market value
+          </dt>
+
           <dd className="mt-1 font-bold">
             {formatMarketValue(
               player.market_value,
@@ -164,37 +231,72 @@ function PlayerIdentityCard({
           </dd>
         </div>
 
-        <div>
-          <dt className="text-muted">Age</dt>
+        <div className="min-w-0">
+          <dt className="text-muted">
+            Age
+          </dt>
+
           <dd className="mt-1 font-bold">
             {player.age === null
               ? "Not reported"
-              : `${formatProfileNumber(player.age, {
-                  maximumFractionDigits: 1,
-                })} years`}
+              : `${formatProfileNumber(
+                  player.age,
+                  {
+                    maximumFractionDigits: 0,
+                  },
+                )} years`}
           </dd>
         </div>
 
-        <div>
-          <dt className="text-muted">Tournament minutes</dt>
+        <div className="min-w-0">
+          <dt className="text-muted">
+            Tournament minutes
+          </dt>
+
           <dd className="mt-1 font-bold">
-            {formatProfileNumber(player.minutes)}
+            {formatProfileNumber(
+              player.minutes,
+            )}
           </dd>
         </div>
 
-        <div>
-          <dt className="text-muted">{scoreLabel ?? "Weighted rating"}</dt>
+        <div className="min-w-0 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
+          <dt className="text-muted">
+            Weighted rating
+          </dt>
+
           <dd className="mt-1 font-bold">
-            {score !== undefined
-              ? score === null
-                ? "Not reported"
-                : formatProfileNumber(score, {
-                    maximumFractionDigits: 1,
-                  })
-              : formatProfileNumber(player.weighted_rating, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+            {formatProfileNumber(
+              player.weighted_rating,
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              },
+            )}
+          </dd>
+        </div>
+
+        <div className="min-w-0 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
+          <dt className="text-muted">
+            Role confidence
+          </dt>
+
+          <dd className="mt-1 font-bold">
+            {formatProfilePercentage(
+              player.role_confidence_pct,
+            )}
+          </dd>
+        </div>
+
+        <div className="min-w-0 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
+          <dt className="text-muted">
+            Data reliability
+          </dt>
+
+          <dd className="mt-1 font-bold">
+            {formatProfilePercentage(
+              player.data_reliability_score,
+            )}
           </dd>
         </div>
       </dl>
@@ -208,33 +310,13 @@ export function PlayerComparison({
   mode,
   values,
 }: PlayerComparisonProps) {
-  const payload = createTransferAnalysisPayload(targetPlayerId, values);
-
-  const comparison = useQuery({
-    queryKey: [
-      "transfer-intelligence",
-      "comparison",
-      targetPlayerId,
-      candidatePlayerId,
-      mode,
-      values.minimumMinutes,
-      values.minimumRoleConfidence,
-      values.maximumMarketValueMillions ?? null,
-      values.neutralHeatmapScore,
-    ],
-    queryFn: ({ signal }) => runTransferAnalysis(payload, signal),
-    staleTime: 5 * 60 * 1000,
-    retry: (failureCount, error) => {
-      if (
-        isBrowserApiError(error) &&
-        (error.status === 400 || error.status === 404)
-      ) {
-        return false;
-      }
-
-      return failureCount < 1;
-    },
-  });
+  const comparison =
+    useQuery(
+      createTransferAnalysisQueryOptions(
+        targetPlayerId,
+        values,
+      ),
+    );
 
   const supplementalCandidateIsEligible =
     comparison.data?.modes[mode].recommendations.some(
@@ -412,46 +494,6 @@ export function PlayerComparison({
     },
   ] as const;
 
-  const comparisonRows = [
-    {
-      label: "Weighted rating",
-      target: formatProfileNumber(target.weighted_rating, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }),
-      candidate: formatProfileNumber(candidate.weighted_rating, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }),
-    },
-    {
-      label: "Player quality",
-      target: formatProfilePercentage(target.player_quality_score),
-      candidate: formatProfilePercentage(candidate.player_quality_score),
-    },
-    {
-      label: "Data reliability",
-      target: formatProfilePercentage(target.data_reliability_score),
-      candidate: formatProfilePercentage(candidate.data_reliability_score),
-    },
-    {
-      label: "Tournament minutes",
-      target: formatProfileNumber(target.minutes),
-      candidate: formatProfileNumber(candidate.minutes),
-    },
-    {
-      label: "Market value",
-      target: formatMarketValue(
-        target.market_value,
-        target.market_value_currency,
-      ),
-      candidate: formatMarketValue(
-        candidate.market_value,
-        candidate.market_value_currency,
-      ),
-    },
-  ] as const;
-
   const evidenceItems = [
     {
       label: "Same final role",
@@ -474,35 +516,222 @@ export function PlayerComparison({
     }> => typeof item.value === "boolean",
   );
 
+  const recommendationReasons =
+    getRecommendationReasons(
+      candidate.why_recommended,
+    );
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <section className="grid gap-4 lg:grid-cols-2">
-        <PlayerIdentityCard label="Target player" player={target} />
+        <PlayerIdentityCard
+          label="Target player"
+          player={target}
+        />
 
         <PlayerIdentityCard
           label={`Candidate · Rank ${candidateRank ?? "—"}`}
           player={candidate}
+          scenarioLabel={
+            modeDetails.shortLabel
+          }
           score={candidateScore}
-          scoreLabel={modeDetails.scoreLabel}
+          scoreLabel={
+            modeDetails.scoreLabel
+          }
         />
       </section>
 
       <section
         aria-label="Comparison indicators"
-        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5"
+        className="comparison-indicator-grid grid gap-3 py-5"
       >
-        {comparisonMetrics.map((metric) => (
-          <ComparisonMetric
-            key={metric.label}
-            label={metric.label}
-            value={metric.value}
-            description={metric.description}
-          />
-        ))}
+        {comparisonMetrics.map(
+          (metric) => (
+            <ComparisonMetric
+              key={metric.label}
+              label={metric.label}
+              value={metric.value}
+              description={
+                metric.description
+              }
+            />
+          ),
+        )}
       </section>
 
-      <section className="grid min-w-0 gap-6 md:grid-cols-2">
-        <RoleCompatibilityPanel target={target} candidate={candidate} />
+      <div className="py-1">
+        <section
+          aria-label="Recommendation evidence"
+          className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
+        >
+        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border px-5 py-5 sm:px-7 sm:py-6">
+          <div className="max-w-3xl">
+            <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
+              Recommendation evidence
+            </p>
+
+            <h2 className="mt-2 text-2xl font-bold tracking-[-0.035em]">
+              Why {candidate.player_name}?
+            </h2>
+
+            <p className="mt-2 text-sm leading-6 text-muted">
+              The main evidence behind this candidate&apos;s place in{" "}
+              <span className="font-semibold text-foreground">
+                {modeDetails.label.toLowerCase()}
+              </span>
+              .
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <span className="rounded-full border border-brand/20 bg-brand/5 px-3 py-1.5 text-xs font-semibold text-brand-dark">
+              {candidate.recommendation_strength}
+            </span>
+
+            <span className="rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-muted">
+              Rank #{candidateRank ?? "—"}
+            </span>
+          </div>
+        </div>
+
+        <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)]">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
+              Why recommended
+            </p>
+
+            {recommendationReasons.length > 0 ? (
+              <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+                {recommendationReasons.map(
+                  (reason) => (
+                    <li
+                      key={reason}
+                      className="flex min-w-0 gap-3 rounded-xl border border-border bg-surface-secondary px-4 py-3.5 text-sm leading-6 text-foreground"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="mt-2 size-1.5 shrink-0 rounded-full bg-brand"
+                      />
+
+                      <span>
+                        {reason}
+                      </span>
+                    </li>
+                  ),
+                )}
+              </ul>
+            ) : (
+              <p className="mt-4 rounded-xl border border-border bg-surface-secondary px-4 py-4 text-sm leading-6 text-muted">
+                Recommendation explanation is not available.
+              </p>
+            )}
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
+              Evidence checks
+            </p>
+
+            {evidenceItems.length > 0 ? (
+              <dl className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                {evidenceItems.map(
+                  (item) => (
+                    <div
+                      key={item.label}
+                      className={[
+                        "flex items-center justify-between gap-4 rounded-xl border px-4 py-3.5",
+                        item.value
+                          ? "border-brand/15 bg-brand/5"
+                          : "border-border bg-page",
+                      ].join(" ")}
+                    >
+                      <dt className="text-sm font-medium text-foreground">
+                        {item.label}
+                      </dt>
+
+                      <dd
+                        className={[
+                          "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold",
+                          item.value
+                            ? "border-brand/20 bg-surface text-brand-dark"
+                            : "border-border bg-surface text-muted",
+                        ].join(" ")}
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={[
+                            "size-1.5 rounded-full",
+                            item.value
+                              ? "bg-brand"
+                              : "bg-muted",
+                          ].join(" ")}
+                        />
+
+                        {item.value
+                          ? "Yes"
+                          : "No"}
+                      </dd>
+                    </div>
+                  ),
+                )}
+              </dl>
+            ) : (
+              <p className="mt-4 text-sm text-muted">
+                No additional evidence checks are available.
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border px-5 py-4 sm:px-7">
+          <p className="max-w-2xl text-xs leading-5 text-muted">
+            Recruitment recommendations support scouting review; detailed
+            tactical, spatial and measured tournament evidence continues below.
+          </p>
+
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href={`/players/${candidate.player_id}`}
+              className="rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+            >
+              Candidate profile
+            </Link>
+
+            <Link
+              href={`/players/${target.player_id}`}
+              className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-page"
+            >
+              Target profile
+            </Link>
+          </div>
+        </div>
+      </section>
+      </div>
+
+      <section
+        aria-labelledby="tactical-spatial-fit-heading"
+      >
+        <div className="mb-6">
+          <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
+            Tactical & spatial fit
+          </p>
+
+          <h2
+            id="tactical-spatial-fit-heading"
+            className="mt-2 text-2xl font-bold tracking-[-0.03em]"
+          >
+            Role and position context
+          </h2>
+
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
+            Compare how the candidate matches the target&apos;s tactical
+            profile and observed tournament positioning.
+          </p>
+        </div>
+
+        <div className="grid min-w-0 gap-6 md:grid-cols-2">
+          <RoleCompatibilityPanel target={target} candidate={candidate} />
 
         <article className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
           <div className="border-b border-border p-5 sm:p-6">
@@ -522,15 +751,6 @@ export function PlayerComparison({
                 </p>
               </div>
 
-              <div className="min-w-32 rounded-2xl border border-brand/15 bg-surface-secondary px-4 py-3 text-right">
-                <p className="text-xs font-medium text-muted">
-                  Spatial similarity
-                </p>
-
-                <p className="mt-1 text-3xl font-bold tracking-[-0.04em] text-brand-dark">
-                  {formatProfilePercentage(candidate.spatial_similarity_pct)}
-                </p>
-              </div>
             </div>
           </div>
 
@@ -585,6 +805,7 @@ export function PlayerComparison({
             </p>
           </div>
         </article>
+        </div>
       </section>
 
       <section
@@ -627,7 +848,9 @@ export function PlayerComparison({
         <div className="p-5 sm:p-6">
           {radarComparison.isPending ? (
             <div
+              role="status"
               aria-label="Loading radar comparison"
+              aria-busy="true"
               className="min-h-96 animate-pulse rounded-2xl bg-surface-secondary"
             />
           ) : radarComparison.isError ? (
@@ -658,11 +881,102 @@ export function PlayerComparison({
             </div>
           ) : radarComparison.data ? (
             radarComparison.data.comparison.overlay_available ? (
-              <RadarProfile
-                primary={radarComparison.data.target}
-                secondary={radarComparison.data.candidate}
-                showHeader={false}
-              />
+              <div
+                className="comparison-radar-layout grid min-w-0 gap-5"
+              >
+                <div className="min-w-0">
+                  <RadarProfile
+                    primary={radarComparison.data.target}
+                    secondary={radarComparison.data.candidate}
+                    showHeader={false}
+                  />
+                </div>
+
+                <aside className="min-w-0 rounded-2xl border border-border bg-surface-secondary p-4 sm:p-5">
+                  <div className="border-b border-border pb-4">
+                    <p className="text-xs font-semibold tracking-[0.12em] text-brand uppercase">
+                      Dimension percentiles
+                    </p>
+
+                    <p className="mt-2 text-xs leading-5 text-muted">
+                      Position-relative percentile values used by the shared
+                      radar profile.
+                    </p>
+                  </div>
+
+                  <div
+                    className="comparison-percentile-grid mt-4 grid items-center gap-x-2 border-b border-border pb-3 sm:gap-x-3"
+                  >
+                    <span />
+
+                    <div className="flex min-w-0 items-center justify-center gap-1.5 text-center">
+                      <span
+                        aria-hidden="true"
+                        className="size-2 shrink-0 rounded-full bg-brand"
+                      />
+
+                      <p className="min-w-0 [overflow-wrap:anywhere] text-[11px] font-semibold leading-4 text-foreground">
+                        {radarComparison.data.target.player_name}
+                      </p>
+                    </div>
+
+                    <div className="flex min-w-0 items-center justify-center gap-1.5 text-center">
+                      <span
+                        aria-hidden="true"
+                        className="size-2 shrink-0 rounded-full bg-brand-navy"
+                      />
+
+                      <p className="min-w-0 [overflow-wrap:anywhere] text-[11px] font-semibold leading-4 text-foreground">
+                        {radarComparison.data.candidate.player_name}
+                      </p>
+                    </div>
+                  </div>
+
+                  <dl>
+                    {radarComparison.data.target.dimensions.map(
+                      (
+                        dimension,
+                        index,
+                      ) => {
+                        const candidateDimension =
+                          radarComparison.data.candidate.dimensions[
+                            index
+                          ];
+
+                        return (
+                          <div
+                            key={dimension.key}
+                            className="comparison-percentile-grid grid items-center gap-x-2 border-b border-border/70 py-3 sm:gap-x-3 last:border-b-0"
+                          >
+                            <dt className="min-w-0 text-xs font-medium leading-5 text-muted">
+                              {dimension.label}
+                            </dt>
+
+                            <dd className="text-center text-sm font-bold text-brand-dark">
+                              {formatProfilePercentage(
+                                dimension.percentile,
+                              )}
+                            </dd>
+
+                            <dd className="text-center text-sm font-bold text-brand-navy">
+                              {formatProfilePercentage(
+                                candidateDimension?.percentile ??
+                                  null,
+                              )}
+                            </dd>
+                          </div>
+                        );
+                      },
+                    )}
+                  </dl>
+
+                  <p className="mt-2 border-t border-border pt-4 text-[11px] leading-5 text-muted">
+                    Higher percentile values indicate stronger expression of
+                    that playing-style dimension relative to the player&apos;s
+                    positional peer group.
+                  </p>
+                </aside>
+              </div>
             ) : (
               <>
                 <div className="mb-5 rounded-xl border border-border bg-surface-secondary px-4 py-3 text-xs leading-5 text-muted sm:px-5">
@@ -753,7 +1067,9 @@ export function PlayerComparison({
         <div className="p-5 sm:p-6">
           {heatmapComparison.isPending ? (
             <div
+              role="status"
               aria-label="Loading heatmap comparison"
+              aria-busy="true"
               className="grid gap-5 lg:grid-cols-2"
             >
               <div className="min-h-72 animate-pulse rounded-2xl bg-surface-secondary" />
@@ -847,7 +1163,10 @@ export function PlayerComparison({
                 </article>
               </div>
 
-              <dl className="mt-6 grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+              <dl
+                aria-label="Heatmap evidence metrics"
+                className="heatmap-evidence-grid mt-6 grid gap-3"
+              >
                 <HeatmapEvidenceMetric
                   label="Measured similarity"
                   value={formatProfilePercentage(
@@ -902,159 +1221,13 @@ export function PlayerComparison({
                 />
               </dl>
 
-              <div className="mt-5 rounded-xl border border-border bg-surface-secondary px-4 py-3 text-xs leading-5 text-muted">
-                Pair evidence sample:{" "}
-                <strong className="text-foreground">
-                  {formatProfileNumber(
-                    heatmapComparison.data.similarity
-                      .target_matches_with_heatmap,
-                  )}{" "}
-                  target matches /{" "}
-                  {formatProfileNumber(
-                    heatmapComparison.data.similarity.target_heatmap_points,
-                  )}{" "}
-                  points
-                </strong>
-                {" · "}
-                <strong className="text-foreground">
-                  {formatProfileNumber(
-                    heatmapComparison.data.similarity
-                      .candidate_matches_with_heatmap,
-                  )}{" "}
-                  candidate matches /{" "}
-                  {formatProfileNumber(
-                    heatmapComparison.data.similarity.candidate_heatmap_points,
-                  )}{" "}
-                  points
-                </strong>
-                . No neutral recommendation fallback is presented as measured
-                heatmap evidence.
-              </div>
             </>
           ) : null}
         </div>
       </section>
 
-      <section className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
-        <div className="border-b border-border p-6 sm:p-7">
-          <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-            Performance context
-          </p>
 
-          <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
-            Quality, reliability and market context
-          </h2>
-        </div>
 
-        <div className="min-w-0 max-w-full overflow-x-auto">
-          <table className="w-full min-w-[46rem] border-collapse text-left">
-            <thead>
-              <tr className="border-b border-border bg-surface-secondary">
-                <th className="px-6 py-4 text-xs font-semibold tracking-[0.1em] text-muted uppercase">
-                  Metric
-                </th>
-
-                <th className="break-all px-6 py-4 text-xs font-semibold tracking-[0.1em] text-muted uppercase">
-                  {target.player_name}
-                </th>
-
-                <th className="break-all px-6 py-4 text-xs font-semibold tracking-[0.1em] text-muted uppercase">
-                  {candidate.player_name}
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {comparisonRows.map((row) => (
-                <tr
-                  key={row.label}
-                  className="border-b border-border last:border-b-0"
-                >
-                  <th className="px-6 py-4 text-sm font-medium text-muted">
-                    {row.label}
-                  </th>
-
-                  <td className="px-6 py-4 text-sm font-semibold">
-                    {formatTextValue(row.target)}
-                  </td>
-
-                  <td className="px-6 py-4 text-sm font-semibold">
-                    {formatTextValue(row.candidate)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <article className="rounded-2xl border border-border bg-surface p-6 shadow-sm sm:p-7">
-          <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-            Recommendation evidence
-          </p>
-
-          <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
-            Why this candidate appears in {modeDetails.label.toLowerCase()}
-          </h2>
-
-          <p className="mt-5 rounded-xl border border-brand/15 bg-surface-secondary p-5 text-sm leading-7 text-muted">
-            {candidate.why_recommended}
-          </p>
-
-          {evidenceItems.length > 0 ? (
-            <dl className="mt-6 grid gap-3 sm:grid-cols-3">
-              {evidenceItems.map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-xl border border-border bg-page p-4"
-                >
-                  <dt className="text-xs leading-5 text-muted">{item.label}</dt>
-
-                  <dd className="mt-2 font-bold">
-                    {item.value ? "Yes" : "No"}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          ) : null}
-        </article>
-
-        <aside className="h-fit rounded-2xl border border-border bg-surface-secondary p-6 lg:sticky lg:top-24">
-          <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-            Decision context
-          </p>
-
-          <p className="mt-4 text-sm leading-6 text-muted">
-            This comparison explains the recommendation produced with the
-            selected thresholds. It should support, not replace, broader
-            scouting and recruitment review.
-          </p>
-
-          <div className="mt-6 space-y-3">
-            <Link
-              href={resultsHref}
-              className="flex min-h-11 items-center justify-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-dark"
-            >
-              Back to recommendations
-            </Link>
-
-            <Link
-              href={`/players/${candidate.player_id}`}
-              className="flex min-h-11 items-center justify-center rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-page"
-            >
-              Open candidate profile
-            </Link>
-
-            <Link
-              href={`/players/${target.player_id}`}
-              className="flex min-h-11 items-center justify-center rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-page"
-            >
-              Open target profile
-            </Link>
-          </div>
-        </aside>
-      </section>
     </div>
   );
 }

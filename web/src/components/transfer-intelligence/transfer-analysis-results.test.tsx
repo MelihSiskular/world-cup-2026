@@ -173,5 +173,147 @@ describe(
         ).toBeInTheDocument();
       },
     );
+
+    it(
+      "supports arrow, Home and End navigation across recommendation modes",
+      async () => {
+        runTransferAnalysisMock
+          .mockResolvedValue(
+            createAnalysisResponse(),
+          );
+
+        const user =
+          userEvent.setup();
+
+        renderWithQueryClient(
+          <TransferAnalysisResults
+            playerId={978838}
+            values={{
+              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+            }}
+            initialMode="immediate"
+          />,
+        );
+
+        const immediateTab =
+          await screen.findByRole(
+            "tab",
+            {
+              name:
+                /^Immediate/,
+            },
+          );
+
+        const developmentTab =
+          screen.getByRole(
+            "tab",
+            {
+              name:
+                /^Development/,
+            },
+          );
+
+        const valueTab =
+          screen.getByRole(
+            "tab",
+            {
+              name: /^Value/,
+            },
+          );
+
+        const shortTermTab =
+          screen.getByRole(
+            "tab",
+            {
+              name:
+                /^Short term/,
+            },
+          );
+
+        expect(
+          immediateTab,
+        ).toHaveAttribute(
+          "tabindex",
+          "0",
+        );
+
+        expect(
+          developmentTab,
+        ).toHaveAttribute(
+          "tabindex",
+          "-1",
+        );
+
+        immediateTab.focus();
+
+        await user.keyboard(
+          "{ArrowRight}",
+        );
+
+        expect(
+          developmentTab,
+        ).toHaveFocus();
+
+        expect(
+          developmentTab,
+        ).toHaveAttribute(
+          "aria-selected",
+          "true",
+        );
+
+        await user.keyboard(
+          "{End}",
+        );
+
+        expect(
+          shortTermTab,
+        ).toHaveFocus();
+
+        expect(
+          shortTermTab,
+        ).toHaveAttribute(
+          "aria-selected",
+          "true",
+        );
+
+        await user.keyboard(
+          "{ArrowRight}",
+        );
+
+        expect(
+          immediateTab,
+        ).toHaveFocus();
+
+        await user.keyboard(
+          "{ArrowLeft}",
+        );
+
+        expect(
+          shortTermTab,
+        ).toHaveFocus();
+
+        await user.keyboard(
+          "{Home}",
+        );
+
+        expect(
+          immediateTab,
+        ).toHaveFocus();
+
+        expect(
+          immediateTab,
+        ).toHaveAttribute(
+          "aria-selected",
+          "true",
+        );
+
+        expect(
+          valueTab,
+        ).toHaveAttribute(
+          "tabindex",
+          "-1",
+        );
+      },
+    );
   },
 );

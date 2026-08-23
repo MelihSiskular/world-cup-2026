@@ -6,6 +6,9 @@ const PRODUCTION_BASE_URL =
 const LOCAL_BASE_URL =
   "http://127.0.0.1:3000";
 
+const LOCAL_API_BASE_URL =
+  "http://127.0.0.1:8000";
+
 const useLocalServer =
   process.env.WC26_E2E_LOCAL_SERVER === "1";
 
@@ -33,15 +36,31 @@ export default defineConfig({
     : [["list"], ["html", { open: "never" }]],
 
   webServer: useLocalServer
-    ? {
-        command:
-          "npm run start -- --hostname 127.0.0.1 --port 3000",
-        url: LOCAL_BASE_URL,
-        reuseExistingServer: !process.env.CI,
-        timeout: 120_000,
-        stdout: "pipe",
-        stderr: "pipe",
-      }
+    ? [
+        {
+          command:
+            "cd .. && wc26-api",
+          url:
+            `${LOCAL_API_BASE_URL}/ready`,
+          reuseExistingServer: false,
+          timeout: 120_000,
+          stdout: "pipe",
+          stderr: "pipe",
+        },
+        {
+          command:
+            "npm run start -- --hostname 127.0.0.1 --port 3000",
+          env: {
+            WC26_API_BASE_URL:
+              LOCAL_API_BASE_URL,
+          },
+          url: LOCAL_BASE_URL,
+          reuseExistingServer: false,
+          timeout: 120_000,
+          stdout: "pipe",
+          stderr: "pipe",
+        },
+      ]
     : undefined,
 
   use: {

@@ -35,6 +35,7 @@ def _build_profile() -> PlayerProfileResult:
         player_name="Michael Olise",
         national_team_name="France",
         country_name="France",
+        country_alpha3="FRA",
         position="M",
         age=24.6,
         height_cm=184.0,
@@ -163,6 +164,8 @@ def test_player_profile_endpoint_delegates_to_service() -> None:
     assert response.json()["player_id"] == 978838
     assert response.json()["player_name"] == "Michael Olise"
     payload = response.json()
+
+    assert payload["country_alpha3"] == "FRA"
 
     assert payload["final_role"] == "Advanced Central Playmaker"
 

@@ -78,14 +78,18 @@ export function PlayerSearch() {
       enabled:
         debouncedQuery.length >=
         MINIMUM_PLAYER_SEARCH_LENGTH,
+      placeholderData: (
+        previousData,
+      ) => previousData,
       staleTime: 60_000,
       retry: false,
     });
 
   const showLoading =
-    waitingForDebounce ||
+    hasMinimumInput &&
+    !playerSearch.data &&
     (
-      hasMinimumInput &&
+      waitingForDebounce ||
       playerSearch.isPending
     );
 
@@ -100,33 +104,32 @@ export function PlayerSearch() {
           onSubmit={(event) => {
             event.preventDefault();
           }}
-          className="rounded-2xl border border-border bg-surface p-5 shadow-sm sm:p-6"
+          className="rounded-3xl border border-border bg-surface p-5 shadow-sm sm:p-7"
         >
           <label
             id="player-search-heading"
             htmlFor={inputId}
             className="text-lg font-bold tracking-[-0.025em]"
           >
-            Search player catalogue
+            Search players
           </label>
 
           <p
             id={descriptionId}
             className="mt-2 text-sm leading-6 text-muted"
           >
-            Enter at least{" "}
-            {MINIMUM_PLAYER_SEARCH_LENGTH}{" "}
-            characters of a player&apos;s name.
+            Search the tournament catalogue by player name.
+            Results include role and market context.
           </p>
 
-          <div className="relative mt-5">
+          <div className="relative mt-6">
             <svg
               aria-hidden="true"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted"
+              className="pointer-events-none absolute top-1/2 left-5 size-5 -translate-y-1/2 text-muted"
             >
               <circle
                 cx="11"
@@ -150,8 +153,11 @@ export function PlayerSearch() {
               spellCheck={false}
               enterKeyHint="search"
               aria-describedby={descriptionId}
-              aria-busy={showLoading}
-              className="min-h-13 w-full rounded-xl border border-border bg-page py-3 pr-24 pl-12 text-base outline-none transition placeholder:text-muted/70 hover:border-brand/35 focus:border-brand focus:bg-surface"
+              aria-busy={
+                showLoading ||
+                playerSearch.isFetching
+              }
+              className="min-h-14 w-full rounded-2xl border border-border bg-page py-3 pr-24 pl-13 text-base font-medium outline-none transition placeholder:font-normal placeholder:text-muted/70 hover:border-brand/40 focus:border-brand focus:bg-surface"
             />
 
             {query ? (
@@ -160,7 +166,7 @@ export function PlayerSearch() {
                 onClick={() => {
                   setQuery("");
                 }}
-                className="absolute top-1/2 right-3 -translate-y-1/2 rounded-lg px-3 py-2 text-xs font-semibold text-muted transition-colors hover:bg-surface-secondary hover:text-foreground"
+                className="absolute top-1/2 right-3 min-h-10 -translate-y-1/2 rounded-xl px-3.5 text-xs font-semibold text-muted transition-colors hover:bg-surface-secondary hover:text-foreground"
               >
                 Clear
               </button>
@@ -284,49 +290,52 @@ export function PlayerSearch() {
         </div>
       </div>
 
-      <aside className="h-fit rounded-2xl border border-border bg-surface-secondary p-6 lg:sticky lg:top-24">
-        <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
+      <aside className="h-fit rounded-3xl border border-border bg-surface-secondary p-5 sm:p-6 lg:sticky lg:top-24">
+        <p className="text-xs font-semibold tracking-[0.16em] text-brand uppercase">
           Search result data
         </p>
 
-        <h2 className="mt-4 text-xl font-bold tracking-[-0.025em]">
-          More than a player name
+        <h2 className="mt-3 text-xl font-bold tracking-[-0.025em]">
+          Scouting context at a glance
         </h2>
 
         <p className="mt-3 text-sm leading-6 text-muted">
-          Every result includes a stable
-          player identity and enough role
-          context to choose the correct
-          tournament profile.
+          Search results surface the key context
+          needed before opening the full player
+          profile.
         </p>
 
-        <dl className="mt-6 space-y-4 text-sm">
-          <div>
-            <dt className="font-semibold">
-              Role context
+        <dl className="mt-6 space-y-3">
+          <div className="rounded-2xl border border-border/80 bg-surface p-4">
+            <dt className="text-sm font-semibold">
+              Role profile
             </dt>
-            <dd className="mt-1 text-muted">
-              Final role and statistical
-              archetype
+
+            <dd className="mt-1.5 text-xs leading-5 text-muted">
+              Final tactical role and statistical
+              archetype.
             </dd>
           </div>
 
-          <div>
-            <dt className="font-semibold">
+          <div className="rounded-2xl border border-border/80 bg-surface p-4">
+            <dt className="text-sm font-semibold">
               Market context
             </dt>
-            <dd className="mt-1 text-muted">
-              Age and estimated market value
+
+            <dd className="mt-1.5 text-xs leading-5 text-muted">
+              Player age and estimated market
+              value.
             </dd>
           </div>
 
-          <div>
-            <dt className="font-semibold">
-              Stable navigation
+          <div className="rounded-2xl border border-border/80 bg-surface p-4">
+            <dt className="text-sm font-semibold">
+              Profile access
             </dt>
-            <dd className="mt-1 text-muted">
-              Profiles open through a
-              persistent player ID
+
+            <dd className="mt-1.5 text-xs leading-5 text-muted">
+              Every result opens its persistent
+              scouting profile.
             </dd>
           </div>
         </dl>

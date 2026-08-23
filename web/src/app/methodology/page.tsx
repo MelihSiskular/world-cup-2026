@@ -8,14 +8,10 @@ import {
 import {
   PageIntro,
 } from "@/components/layout/page-intro";
-import {
-  DatasetReleaseIdentity,
-} from "@/components/methodology/dataset-release-identity";
-
 export const metadata: Metadata = {
   title: "Methodology",
   description:
-    "How WC26 Transfer Intelligence filters, evaluates and ranks replacement candidates.",
+    "How WC26 Transfer Intelligence interprets player evidence and ranks replacement candidates.",
 };
 
 const pipelineSteps = [
@@ -48,6 +44,69 @@ const pipelineSteps = [
     title: "Score and explain",
     description:
       "Eligible candidates receive a scenario-specific score, rank, recommendation type and human-readable evidence.",
+  },
+] as const;
+
+const evidenceReadingCards = [
+  {
+    label: "Output",
+    title: "Raw and per-90 values",
+    description:
+      "The reported output is the player's measured tournament value. Per-90 values normalize volume for playing time; they are not percentile scores.",
+  },
+  {
+    label: "Position context",
+    title: "Same-position percentile",
+    description:
+      "Percentiles compare the player with eligible peers in the same position group. A higher percentile means stronger expression of that metric.",
+  },
+  {
+    label: "Peer sample",
+    title: "What n represents",
+    description:
+      "The n value is the number of eligible same-position peers. Peer cohorts require at least 180 tournament minutes and 10 usable players.",
+  },
+  {
+    label: "Evidence state",
+    title: "Missing is not zero",
+    description:
+      "Unavailable evidence remains missing. A measured zero is preserved as a real value and is never replaced with a neutral or invented result.",
+  },
+] as const;
+
+const roleModelCards = [
+  {
+    title: "Statistical archetype",
+    description:
+      "Describes how the player's tournament actions and performance metrics cluster statistically.",
+  },
+  {
+    title: "Spatial role",
+    description:
+      "Describes where the player operated using average location, lane occupation, vertical zone and spatial spread.",
+  },
+  {
+    title: "Final role",
+    description:
+      "Combines the statistical archetype with the measured spatial profile to produce the tactical role used by the recommendation engine.",
+  },
+] as const;
+
+const comparisonEvidenceCards = [
+  {
+    title: "Measured heatmap",
+    description:
+      "The pitch shows observed tournament occupation. Heatmap density and average position are independent evidence sources displayed on the same coordinate system.",
+  },
+  {
+    title: "Heatmap comparison",
+    description:
+      "Cosine similarity, occupation overlap, lateral and vertical structure, peak zones and entropy describe different aspects of spatial resemblance.",
+  },
+  {
+    title: "Radar comparison",
+    description:
+      "Radar dimensions use position-relative percentiles. Same-position players can share one scale; cross-position players retain separate positional contexts.",
   },
 ] as const;
 
@@ -531,6 +590,106 @@ export default function MethodologyPage() {
       </section>
 
       <section
+        aria-labelledby="evidence-reading-heading"
+        className="mt-16"
+      >
+        <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
+          Evidence interpretation
+        </p>
+
+        <h2
+          id="evidence-reading-heading"
+          className="mt-3 text-3xl font-bold tracking-[-0.04em]"
+        >
+          How to read player evidence
+        </h2>
+
+        <p className="mt-4 max-w-3xl text-sm leading-7 text-muted">
+          Player values, percentiles and sample sizes answer different
+          questions. They should be read together without treating missing
+          evidence as measured performance.
+        </p>
+
+        <div className="mt-7 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {evidenceReadingCards.map((item) => (
+            <article
+              key={item.title}
+              className="rounded-2xl border border-border bg-surface p-5 shadow-sm"
+            >
+              <p className="text-xs font-semibold tracking-[0.12em] text-brand uppercase">
+                {item.label}
+              </p>
+
+              <h3 className="mt-3 text-lg font-bold tracking-[-0.025em]">
+                {item.title}
+              </h3>
+
+              <p className="mt-3 text-sm leading-6 text-muted">
+                {item.description}
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section
+        aria-labelledby="role-model-heading"
+        className="mt-16 overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
+      >
+        <div className="p-6 sm:p-8">
+          <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
+            Role model
+          </p>
+
+          <h2
+            id="role-model-heading"
+            className="mt-3 text-3xl font-bold tracking-[-0.04em]"
+          >
+            From performance profile to tactical role
+          </h2>
+
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-muted">
+            The platform keeps statistical style, measured occupation and the
+            final tactical interpretation distinct so each layer can be
+            inspected independently.
+          </p>
+
+          <div className="mt-7 grid gap-4 lg:grid-cols-3">
+            {roleModelCards.map((item, index) => (
+              <article
+                key={item.title}
+                className="rounded-2xl border border-border bg-page p-5"
+              >
+                <span className="text-xs font-bold text-brand">
+                  0{index + 1}
+                </span>
+
+                <h3 className="mt-4 text-lg font-bold tracking-[-0.025em]">
+                  {item.title}
+                </h3>
+
+                <p className="mt-3 text-sm leading-6 text-muted">
+                  {item.description}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-t border-border bg-surface-secondary px-6 py-5 sm:px-8">
+          <p className="text-sm leading-6 text-muted">
+            <strong className="font-semibold text-brand-dark">
+              Supporting role evidence:
+            </strong>{" "}
+            lateral profile, vertical profile and mobility profile describe how
+            the player occupied and moved through the pitch. Role confidence
+            expresses how strongly the available evidence supports the assigned
+            role.
+          </p>
+        </div>
+      </section>
+
+      <section
         aria-labelledby="signals-heading"
         className="mt-16"
       >
@@ -569,6 +728,45 @@ export default function MethodologyPage() {
             ),
           )}
         </div>
+      </section>
+
+      <section
+        aria-labelledby="comparison-evidence-heading"
+        className="mt-16"
+      >
+        <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
+          Spatial and comparison evidence
+        </p>
+
+        <h2
+          id="comparison-evidence-heading"
+          className="mt-3 text-3xl font-bold tracking-[-0.04em]"
+        >
+          Different views answer different questions
+        </h2>
+
+        <div className="mt-7 grid gap-4 lg:grid-cols-3">
+          {comparisonEvidenceCards.map((item) => (
+            <article
+              key={item.title}
+              className="rounded-2xl border border-border bg-surface p-6 shadow-sm"
+            >
+              <h3 className="text-xl font-bold tracking-[-0.025em]">
+                {item.title}
+              </h3>
+
+              <p className="mt-3 text-sm leading-7 text-muted">
+                {item.description}
+              </p>
+            </article>
+          ))}
+        </div>
+
+        <p className="mt-4 rounded-2xl border border-brand/20 bg-surface-secondary px-5 py-4 text-sm leading-6 text-brand-dark">
+          Statistical similarity, spatial similarity and heatmap similarity are
+          complementary signals. None of them replaces the others or proves
+          that one player is superior.
+        </p>
       </section>
 
       <section
@@ -828,25 +1026,6 @@ export default function MethodologyPage() {
         </div>
       </section>
 
-      <div className="mt-16">
-        <DatasetReleaseIdentity />
-      </div>
-
-      <aside className="mt-8 rounded-2xl border border-brand/20 bg-surface-secondary p-6">
-        <h2 className="font-bold text-brand-dark">
-          Analytics ownership boundary
-        </h2>
-
-        <p className="mt-2 max-w-4xl text-sm leading-6 text-muted">
-          Recommendation filtering, scoring,
-          classification and ranking are
-          calculated by the FastAPI analytics
-          service. The web application
-          presents the returned evidence and
-          does not recreate or modify the
-          model logic.
-        </p>
-      </aside>
     </PageContainer>
   );
 }

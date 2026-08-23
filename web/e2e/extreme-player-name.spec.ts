@@ -5,17 +5,22 @@ import {
   type Page,
 } from "@playwright/test";
 
+import type {
+  PlayerProfileResponse,
+} from "@/lib/api/types";
+
 const TARGET_NAME =
   "AlexandreMaximilianoDeLaFuenteSantosVanDerWesthuizenConstantinopoulos";
 
 const CANDIDATE_NAME =
   "ChristopherBartholomewMontgomeryAlexanderFernandezDeAlbuquerque";
 
-const targetPlayer = {
+const targetPlayer: PlayerProfileResponse = {
   player_id: 990001,
   player_name: TARGET_NAME,
   national_team_name: "Synthetic Nation",
   country_name: "Synthetic Nation",
+  country_alpha3: null,
   position: "M",
   age: 24,
   height_cm: 184,
@@ -238,6 +243,16 @@ const analysisResponse = {
   },
 };
 
+async function waitForApplicationReady(
+  page: Page,
+): Promise<void> {
+  await page.waitForFunction(
+    () =>
+      document.documentElement.dataset
+        .wc26Hydrated === "true",
+  );
+}
+
 async function expectNoHorizontalPageOverflow(
   page: Page,
 ): Promise<void> {
@@ -365,12 +380,16 @@ test.describe(
 
         await page.goto("/players");
 
+        await waitForApplicationReady(
+          page,
+        );
+
         const search =
           page.getByRole(
             "searchbox",
             {
               name:
-                "Search player catalogue",
+                "Search players",
             },
           );
 
@@ -469,7 +488,7 @@ test.describe(
         await page
           .getByRole("button", {
             name:
-              "Continue to results",
+              "Find transfer alternatives",
           })
           .click();
 

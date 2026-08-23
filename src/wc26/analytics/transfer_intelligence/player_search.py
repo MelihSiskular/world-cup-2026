@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 import unicodedata
 from collections.abc import Mapping
+from dataclasses import replace
 from typing import Any, Final, cast
 
 import numpy as np
@@ -37,6 +38,11 @@ PLAYER_SEARCH_COLUMNS: Final[tuple[str, ...]] = (
     "age",
     "market_value",
     "market_value_currency",
+)
+
+PLAYER_SEARCH_OPTIONAL_COLUMNS: Final[tuple[str, ...]] = (
+    "country_alpha3",
+    "spatial_role",
 )
 
 
@@ -187,6 +193,80 @@ def _match_rank(
     return 3
 
 
+def enrich_player_search_country_codes(
+    result: PlayerSearchResult,
+    player_tournament_summary: pd.DataFrame | None,
+) -> PlayerSearchResult:
+    """Attach ISO alpha-3 country codes without changing search ranking."""
+
+    if (
+        player_tournament_summary is None
+        or player_tournament_summary.empty
+        or "player_id" not in player_tournament_summary.columns
+        or "country_alpha3" not in player_tournament_summary.columns
+    ):
+        return result
+
+    identity_frame = player_tournament_summary[
+        [
+            "player_id",
+            "country_alpha3",
+        ]
+    ].copy()
+
+    identity_frame["player_id"] = pd.to_numeric(
+        identity_frame["player_id"],
+        errors="coerce",
+    )
+
+    identity_frame = identity_frame.dropna(subset=["player_id"]).drop_duplicates(
+        subset=["player_id"],
+        keep="first",
+    )
+
+    country_codes: dict[int, str] = {}
+
+    for row in identity_frame.itertuples(
+        index=False,
+    ):
+        code = _optional_text(
+            row.country_alpha3,
+        )
+
+        if code is None:
+            continue
+
+        normalized = code.strip().upper()
+
+        if len(normalized) != 3 or not normalized.isascii() or not normalized.isalpha():
+            continue
+
+        try:
+            player_id = _required_player_id(
+                row.player_id,
+            )
+        except InvalidDatasetError:
+            continue
+
+        country_codes[player_id] = normalized
+
+    if not country_codes:
+        return result
+
+    return replace(
+        result,
+        players=tuple(
+            replace(
+                player,
+                country_alpha3=country_codes.get(
+                    player.player_id,
+                ),
+            )
+            for player in result.players
+        ),
+    )
+
+
 def _record_to_item(
     record: Mapping[str, object],
 ) -> PlayerSearchItem:
@@ -196,9 +276,15 @@ def _record_to_item(
         player_id=_required_player_id(record["player_id"]),
         player_name=_required_player_name(record["player_name"]),
         national_team_name=_optional_text(record["national_team_name"]),
+        country_alpha3=_optional_text(
+            record.get("country_alpha3"),
+        ),
         position=_optional_text(record["position"]),
         final_role=_optional_text(record["final_role"]),
         archetype=_optional_text(record["archetype"]),
+        spatial_role=_optional_text(
+            record.get("spatial_role"),
+        ),
         age=_optional_float(record["age"]),
         market_value=_optional_float(record["market_value"]),
         market_value_currency=_optional_text(record["market_value_currency"]),
@@ -221,7 +307,13 @@ def _search_players_in_dataframe(
             "Missing player search columns: " + ", ".join(sorted(missing_columns))
         )
 
-    search_frame = dataframe[list(PLAYER_SEARCH_COLUMNS)].copy()
+    result_columns = list(PLAYER_SEARCH_COLUMNS)
+
+    result_columns.extend(
+        column for column in PLAYER_SEARCH_OPTIONAL_COLUMNS if column in dataframe.columns
+    )
+
+    search_frame = dataframe[result_columns].copy()
 
     search_frame = search_frame.dropna(
         subset=[
@@ -267,7 +359,7 @@ def _search_players_in_dataframe(
 
     records = cast(
         list[dict[str, Any]],
-        matches[list(PLAYER_SEARCH_COLUMNS)].to_dict(orient="records"),
+        matches[result_columns].to_dict(orient="records"),
     )
 
     players = tuple(_record_to_item(record) for record in records)

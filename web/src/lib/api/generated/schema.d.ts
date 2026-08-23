@@ -84,6 +84,26 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/api/v1/transfer-intelligence/heatmap/{player_id}": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /**
+         * Get measured player heatmap
+         * @description Return measured tournament heatmap evidence for one player.
+         */
+        readonly get: operations["get_player_heatmap_api_v1_transfer_intelligence_heatmap__player_id__get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/api/v1/transfer-intelligence/radar-comparison/{target_player_id}/{candidate_player_id}": {
         readonly parameters: {
             readonly query?: never;
@@ -689,6 +709,8 @@ export interface components {
             readonly appearances: number | null;
             /** Archetype */
             readonly archetype: string | null;
+            /** Country Alpha3 */
+            readonly country_alpha3: string | null;
             /** Country Name */
             readonly country_name: string | null;
             /** Data Reliability Score */
@@ -755,6 +777,8 @@ export interface components {
             readonly age: number | null;
             /** Archetype */
             readonly archetype: string | null;
+            /** Country Alpha3 */
+            readonly country_alpha3: string | null;
             /** Final Role */
             readonly final_role: string | null;
             /** Market Value */
@@ -769,6 +793,8 @@ export interface components {
             readonly player_name: string;
             /** Position */
             readonly position: string | null;
+            /** Spatial Role */
+            readonly spatial_role: string | null;
         };
         /**
          * PlayerSearchResponse
@@ -1695,6 +1721,73 @@ export interface operations {
                 };
             };
             /** @description Heatmap comparison failed unexpectedly. */
+            readonly 500: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description Required heatmap analytics data is unavailable. */
+            readonly 503: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+        };
+    };
+    readonly get_player_heatmap_api_v1_transfer_intelligence_heatmap__player_id__get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path: {
+                readonly player_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HeatmapPlayerResponse"];
+                };
+            };
+            /** @description The heatmap player identifier is invalid. */
+            readonly 400: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description The requested player was not found. */
+            readonly 404: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Player heatmap retrieval failed unexpectedly. */
             readonly 500: {
                 headers: {
                     readonly [name: string]: unknown;

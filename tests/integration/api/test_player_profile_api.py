@@ -42,6 +42,7 @@ def test_player_profile_api_uses_real_dataset(
     assert payload["player_name"] == "Michael Olise"
     assert payload["national_team_name"] == "France"
     assert payload["country_name"] == "France"
+    assert payload["country_alpha3"] == "FRA"
     assert payload["position"] == "M"
 
     assert payload["final_role"]

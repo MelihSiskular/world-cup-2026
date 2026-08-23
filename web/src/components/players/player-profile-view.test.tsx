@@ -10,6 +10,7 @@ const basePlayer: PlayerProfileResponse = {
   player_name: "Michael Olise",
   national_team_name: "France",
   country_name: "France",
+  country_alpha3: "FRA",
   position: "M",
   age: 24,
   height_cm: 184,
@@ -81,34 +82,41 @@ function expectDetailValue(label: string, value: string): void {
 }
 
 describe("PlayerProfileView", () => {
-  it("renders enriched tournament and sample context", () => {
+  it("renders compact role and tournament participation context", () => {
     render(<PlayerProfileView player={basePlayer} />);
 
     expectDetailValue("Matches", "8");
 
     expectDetailValue("Starts", "8");
 
-    expectDetailValue("Substitute appearances", "0");
-
-    expectDetailValue("Captain appearances", "0");
-
     expectDetailValue("Minutes", "650");
 
     expectDetailValue("Primary formation", "4-2-3-1");
 
-    expectDetailValue("Lineup position", "M");
-
-    expectDetailValue("Formations used", "1");
+    expect(
+      screen.queryByText("Substitute appearances"),
+    ).not.toBeInTheDocument();
 
     expect(
-      screen.getByText("Target sample meets the 180-minute peer benchmark."),
-    ).toBeInTheDocument();
+      screen.queryByText("Captain appearances"),
+    ).not.toBeInTheDocument();
 
     expect(
-      screen.getByText(
-        /Comparison peers require at least 180 tournament minutes/,
-      ),
-    ).toBeInTheDocument();
+      screen.queryByText("Lineup position"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Formations used"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Analysis boundary"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Sample quality"),
+    ).not.toBeInTheDocument();
+
   });
 
   it("renders the deterministic player photo in the profile identity", () => {
@@ -122,6 +130,36 @@ describe("PlayerProfileView", () => {
       new URL(playerImage.getAttribute("src") ?? "", "http://localhost")
         .pathname,
     ).toBe("/player-images/978838.png");
+  });
+
+  it("renders the player country flag and compact identity context", () => {
+    const { container } = render(
+      <PlayerProfileView player={basePlayer} />,
+    );
+
+    expect(
+      screen.getByText("France", {
+        exact: true,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Midfielder", {
+        exact: true,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      container.querySelector(
+        '[data-country-code="FRA"]',
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(
+        `ID ${basePlayer.player_id}`,
+      ),
+    ).not.toBeInTheDocument();
   });
 
   it("includes the position-aware scouting insights section", () => {
@@ -162,6 +200,7 @@ describe("PlayerProfileView", () => {
         player={createPlayer({
           national_team_name: null,
           country_name: null,
+          country_alpha3: null,
           position: null,
           age: null,
           height_cm: null,
@@ -190,7 +229,7 @@ describe("PlayerProfileView", () => {
 
     expect(screen.getByText("Position unavailable")).toBeInTheDocument();
 
-    expect(screen.getByText("National team unavailable")).toBeInTheDocument();
+    expect(screen.getByText("Country unavailable")).toBeInTheDocument();
 
     expect(screen.getByText(/Archetype unavailable/)).toBeInTheDocument();
 
@@ -200,17 +239,9 @@ describe("PlayerProfileView", () => {
 
     expectDetailValue("Starts", "Not reported");
 
-    expectDetailValue("Substitute appearances", "Not reported");
-
-    expectDetailValue("Captain appearances", "Not reported");
-
     expectDetailValue("Minutes", "Not reported");
 
     expectDetailValue("Primary formation", "Not reported");
-
-    expectDetailValue("Lineup position", "Not reported");
-
-    expectDetailValue("Formations used", "Not reported");
 
     expectDetailValue("Lateral profile", "Not reported");
 
@@ -220,27 +251,7 @@ describe("PlayerProfileView", () => {
 
     expectDetailValue("Spatial reliability", "Not reported");
 
-    expect(
-      screen.getByText("Tournament-minute sample context is not available."),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText(
-        "Enriched sample evidence was not reported for this player.",
-      ),
-    ).toBeInTheDocument();
-
-    const marketValueLabel = screen.getByText("Estimated market value");
-
-    const marketValueSection = marketValueLabel.closest("aside");
-
-    if (!marketValueSection) {
-      throw new Error("Market value section not found");
-    }
-
-    expect(
-      within(marketValueSection).getAllByText("Not reported").length,
-    ).toBeGreaterThan(0);
+    expectDetailValue("Market value", "Not reported");
   });
 
   it("keeps reported zero values distinct from missing data", () => {
@@ -286,47 +297,13 @@ describe("PlayerProfileView", () => {
 
     expectDetailValue("Starts", "0");
 
-    expectDetailValue("Substitute appearances", "0");
-
-    expectDetailValue("Captain appearances", "0");
-
     expectDetailValue("Minutes", "0");
-
-    expectDetailValue("Formations used", "0");
 
     expectDetailValue("Primary formation", "Not reported");
 
-    expectDetailValue("Lineup position", "Not reported");
-
     expectDetailValue("Spatial reliability", "0%");
 
-    expect(
-      screen.getByText(
-        "Target sample is below the 180-minute peer benchmark; percentile comparisons should be read with added caution.",
-      ),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText(
-        /Comparison peers require at least 180 tournament minutes/,
-      ),
-    ).toBeInTheDocument();
-
-    const marketValueLabel = screen.getByText("Estimated market value");
-
-    const marketValueSection = marketValueLabel.closest("aside");
-
-    if (!marketValueSection) {
-      throw new Error("Market value section not found");
-    }
-
-    expect(
-      within(marketValueSection).queryByText("Not reported", {
-        exact: true,
-      }),
-    ).not.toBeInTheDocument();
-
-    expect(marketValueSection.textContent).toMatch(/0/);
+    expectDetailValue("Market value", "€0");
   });
 
   it("keeps long player identity content available without truncating the data", () => {
@@ -360,7 +337,7 @@ describe("PlayerProfileView", () => {
     }
   });
 
-  it("shows caution for a low-minute target while preserving enriched tournament values", () => {
+  it("preserves reported values for a low-minute tournament sample", () => {
     render(
       <PlayerProfileView
         player={createPlayer({
@@ -393,23 +370,10 @@ describe("PlayerProfileView", () => {
 
     expectDetailValue("Starts", "1");
 
-    expectDetailValue("Substitute appearances", "1");
-
-    expectDetailValue("Captain appearances", "0");
-
     expectDetailValue("Minutes", "95");
-
-    expectDetailValue("Formations used", "2");
 
     expectDetailValue("Primary formation", "4-3-3");
 
-    expectDetailValue("Lineup position", "M");
-
-    expect(
-      screen.getByText(
-        "Target sample is below the 180-minute peer benchmark; percentile comparisons should be read with added caution.",
-      ),
-    ).toBeInTheDocument();
   });
 
   it("keeps role assignment evidence available behind a collapsed disclosure", () => {

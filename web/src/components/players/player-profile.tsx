@@ -12,6 +12,9 @@ import {
   PlayerProfileSkeleton,
 } from "@/components/players/player-profile-skeleton";
 import {
+  PlayerSpatialProfile,
+} from "@/components/players/player-spatial-profile";
+import {
   PlayerProfileView,
 } from "@/components/players/player-profile-view";
 import {
@@ -20,6 +23,9 @@ import {
 import {
   fetchPlayerProfile,
 } from "@/lib/api/browser-players";
+import {
+  fetchPlayerHeatmap,
+} from "@/lib/api/browser-transfer-intelligence";
 
 type PlayerProfileProps =
   Readonly<{
@@ -43,6 +49,37 @@ export function PlayerProfile({
           playerId,
           signal,
         ),
+      staleTime: 5 * 60 * 1000,
+      retry: (
+        failureCount,
+        error,
+      ) => {
+        if (
+          isBrowserApiError(error) &&
+          error.status === 404
+        ) {
+          return false;
+        }
+
+        return failureCount < 1;
+      },
+    });
+
+  const playerHeatmap =
+    useQuery({
+      queryKey: [
+        "transfer-intelligence",
+        "heatmap",
+        playerId,
+      ],
+      queryFn: ({
+        signal,
+      }) =>
+        fetchPlayerHeatmap(
+          playerId,
+          signal,
+        ),
+      enabled: playerProfile.isSuccess,
       staleTime: 5 * 60 * 1000,
       retry: (
         failureCount,
@@ -137,6 +174,25 @@ export function PlayerProfile({
   return (
     <PlayerProfileView
       player={playerProfile.data}
+      spatialProfile={
+        <PlayerSpatialProfile
+          playerName={
+            playerProfile.data.player_name
+          }
+          heatmap={
+            playerHeatmap.data ?? null
+          }
+          isPending={
+            playerHeatmap.isPending
+          }
+          isError={
+            playerHeatmap.isError
+          }
+          onRetry={() => {
+            void playerHeatmap.refetch();
+          }}
+        />
+      }
     />
   );
 }

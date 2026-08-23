@@ -14,7 +14,7 @@ import {
 export function SiteHeader() {
   return (
     <header className="relative z-50 border-b border-border bg-surface">
-      <PageContainer className="flex min-h-18 items-center justify-between gap-6">
+      <PageContainer className="flex min-h-18 items-center justify-between gap-3 sm:gap-6">
         <Link
           href="/"
           className="flex min-w-0 items-center gap-3 rounded-lg"
@@ -42,13 +42,13 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-4">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
           <SiteNavigation />
 
           <Link
             href="/status"
             className="hidden rounded-full lg:block"
-            aria-label="Open API status page"
+            aria-label="Open system status page"
           >
             <ApiStatusBadge />
           </Link>

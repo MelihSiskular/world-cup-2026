@@ -25,11 +25,6 @@ export const primaryNavigationItems =
       href: "/methodology",
       activePrefixes: ["/methodology"],
     },
-    {
-      label: "API Status",
-      href: "/status",
-      activePrefixes: ["/status"],
-    },
   ] as const satisfies readonly PrimaryNavigationItem[];
 
 export function isNavigationItemActive(

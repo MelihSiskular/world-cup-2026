@@ -13,9 +13,11 @@ class PlayerSearchItemResponse(BaseModel):
     player_id: int
     player_name: str
     national_team_name: str | None
+    country_alpha3: str | None
     position: str | None
     final_role: str | None
     archetype: str | None
+    spatial_role: str | None
     age: float | None
     market_value: float | None
     market_value_currency: str | None
@@ -124,6 +126,7 @@ class PlayerProfileResponse(BaseModel):
     player_name: str
     national_team_name: str | None
     country_name: str | None
+    country_alpha3: str | None
     position: str | None
     age: float | None
     height_cm: float | None
