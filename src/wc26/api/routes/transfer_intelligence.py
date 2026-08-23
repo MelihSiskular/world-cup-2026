@@ -90,9 +90,7 @@ def get_player_heatmap(
 
     result = heatmap_runner(request)
 
-    return HeatmapPlayerResponse.model_validate(
-        result.to_dict()
-    )
+    return HeatmapPlayerResponse.model_validate(result.to_dict())
 
 
 @router.get(

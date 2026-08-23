@@ -306,9 +306,7 @@ def get_heatmap_player_from_catalog(
     """Return measured tournament heatmap evidence for one player."""
 
     if request.player_id <= 0:
-        raise InvalidTransferAnalysisRequestError(
-            "Heatmap player ID must be a positive integer."
-        )
+        raise InvalidTransferAnalysisRequestError("Heatmap player ID must be a positive integer.")
 
     player = resolve_player_by_id(
         catalog.players,

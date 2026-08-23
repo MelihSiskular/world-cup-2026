@@ -272,11 +272,7 @@ def test_catalog_heatmap_player_runner_uses_entire_catalog(
         fake_get_heatmap_player_from_catalog,
     )
 
-    runner = (
-        dependencies.create_catalog_heatmap_player_runner(
-            catalog
-        )
-    )
+    runner = dependencies.create_catalog_heatmap_player_runner(catalog)
 
     result = runner(request)
 

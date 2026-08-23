@@ -229,13 +229,9 @@ def get_heatmap_player_runner(
     catalog = _get_runtime_catalog(request)
 
     if catalog is None:
-        raise InvalidDatasetError(
-            "Runtime transfer data catalog is unavailable."
-        )
+        raise InvalidDatasetError("Runtime transfer data catalog is unavailable.")
 
-    return create_catalog_heatmap_player_runner(
-        catalog
-    )
+    return create_catalog_heatmap_player_runner(catalog)
 
 
 def get_heatmap_comparison_runner(

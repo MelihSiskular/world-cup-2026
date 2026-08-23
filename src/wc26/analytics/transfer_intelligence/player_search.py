@@ -241,7 +241,14 @@ def enrich_player_search_country_codes(
         if len(normalized) != 3 or not normalized.isascii() or not normalized.isalpha():
             continue
 
-        country_codes[int(row.player_id)] = normalized
+        try:
+            player_id = _required_player_id(
+                row.player_id,
+            )
+        except InvalidDatasetError:
+            continue
+
+        country_codes[player_id] = normalized
 
     if not country_codes:
         return result

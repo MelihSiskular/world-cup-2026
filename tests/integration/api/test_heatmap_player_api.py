@@ -17,10 +17,7 @@ pytestmark = [
     pytest.mark.integration,
     pytest.mark.skipif(
         os.getenv("WC26_RUN_INTEGRATION") != "1",
-        reason=(
-            "Set WC26_RUN_INTEGRATION=1 "
-            "to run real-data integration tests."
-        ),
+        reason=("Set WC26_RUN_INTEGRATION=1 to run real-data integration tests."),
     ),
 ]
 
@@ -37,9 +34,7 @@ def test_heatmap_player_api_uses_real_dataset(
     )
 
     with TestClient(application) as client:
-        response = client.get(
-            "/api/v1/transfer-intelligence/heatmap/978838"
-        )
+        response = client.get("/api/v1/transfer-intelligence/heatmap/978838")
 
     assert response.status_code == 200, response.text
 

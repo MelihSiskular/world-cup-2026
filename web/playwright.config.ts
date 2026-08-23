@@ -36,7 +36,7 @@ export default defineConfig({
     ? [
         {
           command:
-            "cd .. && .venv/bin/wc26-api",
+            "cd .. && wc26-api",
           url:
             "http://127.0.0.1:8000/ready",
           reuseExistingServer: false,

@@ -122,9 +122,7 @@ def _country_alpha3_from_tournament_summary(
         errors="coerce",
     )
 
-    matches = dataframe.loc[
-        player_ids.eq(player_id)
-    ]
+    matches = dataframe.loc[player_ids.eq(player_id)]
 
     if matches.empty:
         return None
@@ -134,23 +132,15 @@ def _country_alpha3_from_tournament_summary(
             "Player tournament summary returned multiple rows for one player ID."
         )
 
-    value = _optional_text(
-        matches.iloc[0]["country_alpha3"]
-    )
+    value = _optional_text(matches.iloc[0]["country_alpha3"])
 
     if value is None:
         return None
 
     normalized = value.upper()
 
-    if (
-        len(normalized) != 3
-        or not normalized.isascii()
-        or not normalized.isalpha()
-    ):
-        raise InvalidDatasetError(
-            "Player tournament summary contains an invalid country_alpha3."
-        )
+    if len(normalized) != 3 or not normalized.isascii() or not normalized.isalpha():
+        raise InvalidDatasetError("Player tournament summary contains an invalid country_alpha3.")
 
     return normalized
 

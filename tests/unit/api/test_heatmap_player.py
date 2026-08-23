@@ -39,9 +39,7 @@ def _build_heatmap() -> HeatmapPlayerResult:
 def test_heatmap_player_route_is_in_openapi_schema() -> None:
     application = create_app()
 
-    operation = application.openapi()["paths"][
-        "/api/v1/transfer-intelligence/heatmap/{player_id}"
-    ]
+    operation = application.openapi()["paths"]["/api/v1/transfer-intelligence/heatmap/{player_id}"]
 
     assert "get" in operation
 
@@ -60,14 +58,10 @@ def test_heatmap_player_endpoint_delegates_to_service() -> None:
     def override_runner() -> HeatmapPlayerRunner:
         return fake_runner
 
-    application.dependency_overrides[
-        get_heatmap_player_runner
-    ] = override_runner
+    application.dependency_overrides[get_heatmap_player_runner] = override_runner
 
     with TestClient(application) as client:
-        response = client.get(
-            "/api/v1/transfer-intelligence/heatmap/978838"
-        )
+        response = client.get("/api/v1/transfer-intelligence/heatmap/978838")
 
     assert response.status_code == 200
 
