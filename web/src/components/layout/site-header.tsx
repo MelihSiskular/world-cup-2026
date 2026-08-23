@@ -48,7 +48,7 @@ export function SiteHeader() {
           <Link
             href="/status"
             className="hidden rounded-full lg:block"
-            aria-label="Open API status page"
+            aria-label="Open system status page"
           >
             <ApiStatusBadge />
           </Link>

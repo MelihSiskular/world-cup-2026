@@ -18,8 +18,8 @@ export function SiteFooter() {
 
           <p className="mt-1 max-w-xl text-sm leading-6 text-muted">
             Football scouting and replacement analysis
-
-            powered by World Cup 2026 tournament data.
+              <br />
+              powered by World Cup 2026 tournament data.
           </p>
         </div>
 
@@ -39,7 +39,7 @@ export function SiteFooter() {
               href="/status"
               className="transition-colors hover:text-brand"
             >
-              API Status
+              System Status
             </Link>
           </nav>
 
