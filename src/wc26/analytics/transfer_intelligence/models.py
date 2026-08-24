@@ -78,16 +78,30 @@ class TransferAnalysisResult:
 
 @dataclass(frozen=True, slots=True)
 class PlayerSearchRequest:
-    """Input parameters required to search for players."""
+    """Input parameters required to discover and filter players."""
 
-    query: str
+    query: str | None
     features: Path
     limit: int
+    offset: int = 0
+    positions: tuple[str, ...] = ()
+    final_roles: tuple[str, ...] = ()
+    archetypes: tuple[str, ...] = ()
+    countries: tuple[str, ...] = ()
+    minimum_age: float | None = None
+    maximum_age: float | None = None
+    minimum_market_value: float | None = None
+    maximum_market_value: float | None = None
+    minimum_minutes: float | None = None
+    minimum_role_confidence: float | None = None
+    minimum_data_reliability: float | None = None
+    sort_by: str | None = None
+    sort_direction: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class PlayerSearchItem:
-    """One lightweight player-search result."""
+    """One lightweight player-discovery result."""
 
     player_id: int
     player_name: str
@@ -98,8 +112,13 @@ class PlayerSearchItem:
     age: float | None
     market_value: float | None
     market_value_currency: str | None
+    country_name: str | None = None
     country_alpha3: str | None = None
     spatial_role: str | None = None
+    minutes: float | None = None
+    role_confidence_pct: float | None = None
+    data_reliability_score: float | None = None
+    player_quality_score: float | None = None
 
     def to_dict(self) -> JsonObject:
         """Return a JSON-compatible player representation."""
@@ -108,6 +127,7 @@ class PlayerSearchItem:
             "player_id": self.player_id,
             "player_name": self.player_name,
             "national_team_name": self.national_team_name,
+            "country_name": self.country_name,
             "country_alpha3": self.country_alpha3,
             "position": self.position,
             "final_role": self.final_role,
@@ -116,31 +136,141 @@ class PlayerSearchItem:
             "age": self.age,
             "market_value": self.market_value,
             "market_value_currency": self.market_value_currency,
+            "minutes": self.minutes,
+            "role_confidence_pct": self.role_confidence_pct,
+            "data_reliability_score": self.data_reliability_score,
+            "player_quality_score": self.player_quality_score,
         }
 
 
 @dataclass(frozen=True, slots=True)
 class PlayerSearchResult:
-    """Structured result returned by a player search."""
+    """Structured and paginated player-discovery result."""
 
-    query: str
+    query: str | None
     players: tuple[PlayerSearchItem, ...]
+    total: int | None = None
+    offset: int = 0
+    limit: int = 10
+    sort_by: str = "relevance"
+    sort_direction: str = "asc"
 
     @property
     def count(self) -> int:
-        """Return the number of players included in the result."""
+        """Return the number of players in the current page."""
 
         return len(self.players)
 
+    @property
+    def resolved_total(self) -> int:
+        """Return the complete filtered result count."""
+
+        return self.count if self.total is None else self.total
+
+    @property
+    def has_more(self) -> bool:
+        """Return whether another result page is available."""
+
+        return self.offset + self.count < self.resolved_total
+
     def to_dict(self) -> JsonObject:
-        """Return a JSON-compatible search result."""
+        """Return a JSON-compatible discovery result."""
 
         player_values: list[JsonValue] = [player.to_dict() for player in self.players]
 
         return {
             "query": self.query,
             "count": self.count,
+            "total": self.resolved_total,
+            "offset": self.offset,
+            "limit": self.limit,
+            "has_more": self.has_more,
+            "sort_by": self.sort_by,
+            "sort_direction": self.sort_direction,
             "players": player_values,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerSearchFiltersRequest:
+    """Dataset paths required to build discovery filter metadata."""
+
+    features: Path
+    player_tournament_summary: Path | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerSearchFilterOption:
+    """One dataset-backed categorical filter option."""
+
+    value: str
+    label: str
+    count: int
+    country_alpha3: str | None = None
+
+    def to_dict(self) -> JsonObject:
+        """Return a JSON-compatible filter option."""
+
+        return {
+            "value": self.value,
+            "label": self.label,
+            "count": self.count,
+            "country_alpha3": self.country_alpha3,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerSearchFilterRange:
+    """Observed numeric range for one discovery filter."""
+
+    minimum: float | None
+    maximum: float | None
+
+    def to_dict(self) -> JsonObject:
+        """Return a JSON-compatible numeric range."""
+
+        return {
+            "minimum": self.minimum,
+            "maximum": self.maximum,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerSearchFiltersResult:
+    """Dataset-backed metadata for the advanced-filter UI."""
+
+    player_count: int
+    positions: tuple[PlayerSearchFilterOption, ...]
+    final_roles: tuple[PlayerSearchFilterOption, ...]
+    archetypes: tuple[PlayerSearchFilterOption, ...]
+    countries: tuple[PlayerSearchFilterOption, ...]
+    age: PlayerSearchFilterRange
+    market_value: PlayerSearchFilterRange
+    minutes: PlayerSearchFilterRange
+    role_confidence: PlayerSearchFilterRange
+    data_reliability: PlayerSearchFilterRange
+    market_value_currency: str | None
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible discovery filter metadata."""
+
+        position_values: list[JsonValue] = [option.to_dict() for option in self.positions]
+        final_role_values: list[JsonValue] = [option.to_dict() for option in self.final_roles]
+        archetype_values: list[JsonValue] = [option.to_dict() for option in self.archetypes]
+        country_values: list[JsonValue] = [option.to_dict() for option in self.countries]
+
+        return {
+            "player_count": self.player_count,
+            "positions": position_values,
+            "final_roles": final_role_values,
+            "archetypes": archetype_values,
+            "countries": country_values,
+            "age": self.age.to_dict(),
+            "market_value": self.market_value.to_dict(),
+            "minutes": self.minutes.to_dict(),
+            "role_confidence": self.role_confidence.to_dict(),
+            "data_reliability": self.data_reliability.to_dict(),
+            "market_value_currency": self.market_value_currency,
         }
 
 
@@ -604,6 +734,10 @@ __all__ = [
     "PlayerTournamentSummaryResult",
     "PlayerProfileRequest",
     "PlayerProfileResult",
+    "PlayerSearchFilterOption",
+    "PlayerSearchFilterRange",
+    "PlayerSearchFiltersRequest",
+    "PlayerSearchFiltersResult",
     "PlayerSearchItem",
     "PlayerSearchRequest",
     "PlayerSearchResult",

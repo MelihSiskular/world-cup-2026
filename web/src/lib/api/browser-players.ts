@@ -3,32 +3,42 @@ import {
 } from "@/lib/api/browser-client";
 import type {
   PlayerProfileResponse,
+  PlayerSearchFiltersResponse,
   PlayerSearchResponse,
 } from "@/lib/api/types";
 import {
-  DEFAULT_PLAYER_SEARCH_LIMIT,
-} from "@/lib/players/search-config";
+  createPlayerSearchUrlParameters,
+} from "@/lib/players/search-parameters";
+import type {
+  PlayerSearchParameters,
+} from "@/lib/players/search-parameters";
 
 export function searchPlayers(
-  query: string,
+  parameters: PlayerSearchParameters,
   options: Readonly<{
-    limit?: number;
     signal?: AbortSignal;
   }> = {},
 ): Promise<PlayerSearchResponse> {
   const searchParameters =
-    new URLSearchParams({
-      q: query,
-      limit: String(
-        options.limit ??
-        DEFAULT_PLAYER_SEARCH_LIMIT,
-      ),
-    });
+    createPlayerSearchUrlParameters(
+      parameters,
+    );
 
   return requestBrowserJson<PlayerSearchResponse>(
     `/api/players/search?${searchParameters.toString()}`,
     {
       signal: options.signal,
+    },
+  );
+}
+
+export function fetchPlayerSearchFilters(
+  signal?: AbortSignal,
+): Promise<PlayerSearchFiltersResponse> {
+  return requestBrowserJson<PlayerSearchFiltersResponse>(
+    "/api/players/search/filters",
+    {
+      signal,
     },
   );
 }

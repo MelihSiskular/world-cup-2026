@@ -301,7 +301,95 @@ async function installSyntheticApi(
   page: Page,
 ): Promise<void> {
   await page.route(
-    "**/api/players/search**",
+    "**/api/players/search/filters",
+    async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType:
+          "application/json",
+        body: JSON.stringify({
+          player_count: 1,
+          positions: [
+            {
+              value: "M",
+              label: "M",
+              count: 1,
+              country_alpha3:
+                null,
+            },
+          ],
+          final_roles: [
+            {
+              value:
+                targetPlayer.final_role,
+              label:
+                targetPlayer.final_role,
+              count: 1,
+              country_alpha3:
+                null,
+            },
+          ],
+          archetypes: [
+            {
+              value:
+                targetPlayer.archetype,
+              label:
+                targetPlayer.archetype,
+              count: 1,
+              country_alpha3:
+                null,
+            },
+          ],
+          countries: [
+            {
+              value:
+                targetPlayer.country_name,
+              label:
+                targetPlayer.country_name,
+              count: 1,
+              country_alpha3:
+                null,
+            },
+          ],
+          age: {
+            minimum:
+              targetPlayer.age,
+            maximum:
+              targetPlayer.age,
+          },
+          market_value: {
+            minimum:
+              targetPlayer.market_value,
+            maximum:
+              targetPlayer.market_value,
+          },
+          market_value_currency:
+            "EUR",
+          minutes: {
+            minimum:
+              targetPlayer.minutes,
+            maximum:
+              targetPlayer.minutes,
+          },
+          role_confidence: {
+            minimum:
+              targetPlayer
+                .role_confidence_pct,
+            maximum:
+              targetPlayer
+                .role_confidence_pct,
+          },
+          data_reliability: {
+            minimum: 80,
+            maximum: 80,
+          },
+        }),
+      });
+    },
+  );
+
+  await page.route(
+    /\/api\/players\/search(?:\?.*)?$/,
     async (route) => {
       await route.fulfill({
         status: 200,
@@ -310,6 +398,14 @@ async function installSyntheticApi(
         body: JSON.stringify({
           query: "Alexandre",
           count: 1,
+          total: 1,
+          offset: 0,
+          limit: 12,
+          has_more: false,
+          sort_by:
+            "relevance",
+          sort_direction:
+            "asc",
           players: [
             {
               player_id:
@@ -319,17 +415,36 @@ async function installSyntheticApi(
               national_team_name:
                 targetPlayer
                   .national_team_name,
+              country_name:
+                targetPlayer.country_name,
+              country_alpha3:
+                targetPlayer
+                  .country_alpha3,
               position:
                 targetPlayer.position,
               final_role:
                 targetPlayer.final_role,
               archetype:
                 targetPlayer.archetype,
+              spatial_role:
+                targetPlayer.spatial_role,
+              age:
+                targetPlayer.age,
               market_value:
                 targetPlayer.market_value,
               market_value_currency:
                 targetPlayer
                   .market_value_currency,
+              minutes:
+                targetPlayer.minutes,
+              role_confidence_pct:
+                targetPlayer
+                  .role_confidence_pct,
+              data_reliability_score:
+                80,
+              player_quality_score:
+                targetPlayer
+                  .player_quality_score,
             },
           ],
         }),

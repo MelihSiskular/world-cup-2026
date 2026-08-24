@@ -23,6 +23,8 @@ from wc26.analytics.transfer_intelligence.models import (
     HeatmapPlayerResult,
     PlayerProfileRequest,
     PlayerProfileResult,
+    PlayerSearchFiltersRequest,
+    PlayerSearchFiltersResult,
     PlayerSearchRequest,
     PlayerSearchResult,
     RadarComparisonRequest,
@@ -36,6 +38,8 @@ from wc26.analytics.transfer_intelligence.player_profile import (
 )
 from wc26.analytics.transfer_intelligence.player_search import (
     enrich_player_search_country_codes,
+    get_player_search_filters,
+    get_player_search_filters_from_dataframe,
     search_players,
     search_players_from_dataframe,
 )
@@ -77,6 +81,11 @@ type PlayerSearchRunner = Callable[
     PlayerSearchResult,
 ]
 
+type PlayerSearchFiltersRunner = Callable[
+    [PlayerSearchFiltersRequest],
+    PlayerSearchFiltersResult,
+]
+
 type PlayerProfileRunner = Callable[
     [PlayerProfileRequest],
     PlayerProfileResult,
@@ -98,6 +107,24 @@ def create_catalog_player_search_runner(
 
         return enrich_player_search_country_codes(
             result,
+            catalog.player_tournament_summary,
+        )
+
+    return runner
+
+
+def create_catalog_player_search_filters_runner(
+    catalog: TransferDataCatalog,
+) -> PlayerSearchFiltersRunner:
+    """Create a filter-metadata runner backed by a loaded catalog."""
+
+    def runner(
+        request: PlayerSearchFiltersRequest,
+    ) -> PlayerSearchFiltersResult:
+        del request
+
+        return get_player_search_filters_from_dataframe(
+            catalog.players,
             catalog.player_tournament_summary,
         )
 
@@ -195,6 +222,19 @@ def _get_runtime_catalog(
     return runtime.transfer_data_catalog
 
 
+def get_player_search_filters_runner(
+    request: Request,
+) -> PlayerSearchFiltersRunner:
+    """Return the configured filter-metadata service."""
+
+    catalog = _get_runtime_catalog(request)
+
+    if catalog is None:
+        return get_player_search_filters
+
+    return create_catalog_player_search_filters_runner(catalog)
+
+
 def get_player_profile_runner(
     request: Request,
 ) -> PlayerProfileRunner:
@@ -288,6 +328,7 @@ __all__ = [
     "HeatmapPlayerRunner",
     "RadarComparisonRunner",
     "PlayerProfileRunner",
+    "PlayerSearchFiltersRunner",
     "PlayerSearchRunner",
     "TransferAnalysisRunner",
     "TransferDatasetPaths",
@@ -295,12 +336,14 @@ __all__ = [
     "create_catalog_heatmap_player_runner",
     "create_catalog_radar_comparison_runner",
     "create_catalog_player_profile_runner",
+    "create_catalog_player_search_filters_runner",
     "create_catalog_player_search_runner",
     "create_catalog_transfer_analysis_runner",
     "get_heatmap_comparison_runner",
     "get_heatmap_player_runner",
     "get_radar_comparison_runner",
     "get_player_profile_runner",
+    "get_player_search_filters_runner",
     "get_player_search_runner",
     "get_transfer_analysis_runner",
     "get_transfer_dataset_paths",

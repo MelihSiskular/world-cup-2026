@@ -32,10 +32,30 @@ export interface paths {
             readonly cookie?: never;
         };
         /**
-         * Search the player catalogue
-         * @description Return lightweight players matching the supplied name query.
+         * Discover and filter the player catalogue
+         * @description Return players matching the supplied discovery criteria.
          */
         readonly get: operations["search_player_catalogue_api_v1_players_search_get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
+    readonly "/api/v1/players/search/filters": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /**
+         * Get player-discovery filter metadata
+         * @description Return dataset-backed advanced-filter metadata.
+         */
+        readonly get: operations["get_player_search_filters_metadata_api_v1_players_search_filters_get"];
         readonly put?: never;
         readonly post?: never;
         readonly delete?: never;
@@ -769,8 +789,55 @@ export interface components {
             readonly target_minutes: number | null;
         };
         /**
+         * PlayerSearchFilterOptionResponse
+         * @description One categorical player-discovery filter option.
+         */
+        readonly PlayerSearchFilterOptionResponse: {
+            /** Count */
+            readonly count: number;
+            /** Country Alpha3 */
+            readonly country_alpha3: string | null;
+            /** Label */
+            readonly label: string;
+            /** Value */
+            readonly value: string;
+        };
+        /**
+         * PlayerSearchFilterRangeResponse
+         * @description Observed numeric range for one discovery filter.
+         */
+        readonly PlayerSearchFilterRangeResponse: {
+            /** Maximum */
+            readonly maximum: number | null;
+            /** Minimum */
+            readonly minimum: number | null;
+        };
+        /**
+         * PlayerSearchFiltersResponse
+         * @description Dataset-backed advanced-filter metadata.
+         */
+        readonly PlayerSearchFiltersResponse: {
+            readonly age: components["schemas"]["PlayerSearchFilterRangeResponse"];
+            /** Archetypes */
+            readonly archetypes: readonly components["schemas"]["PlayerSearchFilterOptionResponse"][];
+            /** Countries */
+            readonly countries: readonly components["schemas"]["PlayerSearchFilterOptionResponse"][];
+            readonly data_reliability: components["schemas"]["PlayerSearchFilterRangeResponse"];
+            /** Final Roles */
+            readonly final_roles: readonly components["schemas"]["PlayerSearchFilterOptionResponse"][];
+            readonly market_value: components["schemas"]["PlayerSearchFilterRangeResponse"];
+            /** Market Value Currency */
+            readonly market_value_currency: string | null;
+            readonly minutes: components["schemas"]["PlayerSearchFilterRangeResponse"];
+            /** Player Count */
+            readonly player_count: number;
+            /** Positions */
+            readonly positions: readonly components["schemas"]["PlayerSearchFilterOptionResponse"][];
+            readonly role_confidence: components["schemas"]["PlayerSearchFilterRangeResponse"];
+        };
+        /**
          * PlayerSearchItemResponse
-         * @description Lightweight player information returned by search.
+         * @description Lightweight player information returned by discovery.
          */
         readonly PlayerSearchItemResponse: {
             /** Age */
@@ -779,34 +846,56 @@ export interface components {
             readonly archetype: string | null;
             /** Country Alpha3 */
             readonly country_alpha3: string | null;
+            /** Country Name */
+            readonly country_name: string | null;
+            /** Data Reliability Score */
+            readonly data_reliability_score: number | null;
             /** Final Role */
             readonly final_role: string | null;
             /** Market Value */
             readonly market_value: number | null;
             /** Market Value Currency */
             readonly market_value_currency: string | null;
+            /** Minutes */
+            readonly minutes: number | null;
             /** National Team Name */
             readonly national_team_name: string | null;
             /** Player Id */
             readonly player_id: number;
             /** Player Name */
             readonly player_name: string;
+            /** Player Quality Score */
+            readonly player_quality_score: number | null;
             /** Position */
             readonly position: string | null;
+            /** Role Confidence Pct */
+            readonly role_confidence_pct: number | null;
             /** Spatial Role */
             readonly spatial_role: string | null;
         };
         /**
          * PlayerSearchResponse
-         * @description Structured response returned by player search.
+         * @description Structured and paginated player-discovery response.
          */
         readonly PlayerSearchResponse: {
             /** Count */
             readonly count: number;
+            /** Has More */
+            readonly has_more: boolean;
+            /** Limit */
+            readonly limit: number;
+            /** Offset */
+            readonly offset: number;
             /** Players */
             readonly players: readonly components["schemas"]["PlayerSearchItemResponse"][];
             /** Query */
-            readonly query: string;
+            readonly query: string | null;
+            /** Sort By */
+            readonly sort_by: string;
+            /** Sort Direction */
+            readonly sort_direction: string;
+            /** Total */
+            readonly total: number;
         };
         /**
          * PlayerTournamentSummaryResponse
@@ -1535,11 +1624,39 @@ export interface operations {
     };
     readonly search_player_catalogue_api_v1_players_search_get: {
         readonly parameters: {
-            readonly query: {
-                /** @description Maximum number of matching players. */
+            readonly query?: {
+                /** @description Archetype values. Repeat the parameter to select multiple archetypes. */
+                readonly archetype?: readonly string[] | null;
+                /** @description Nationality values. Repeat the parameter to select multiple countries. */
+                readonly country?: readonly string[] | null;
+                /** @description Final-role values. Repeat the parameter to select multiple roles. */
+                readonly final_role?: readonly string[] | null;
+                /** @description Maximum number of players in the current page. */
                 readonly limit?: number;
-                /** @description Case- and diacritic-insensitive player-name query. */
-                readonly q: string;
+                /** @description Inclusive maximum player age. */
+                readonly max_age?: number | null;
+                /** @description Inclusive maximum market value in the reported currency. */
+                readonly max_market_value?: number | null;
+                /** @description Inclusive minimum player age. */
+                readonly min_age?: number | null;
+                /** @description Inclusive minimum data-reliability score. */
+                readonly min_data_reliability?: number | null;
+                /** @description Inclusive minimum market value in the reported currency. */
+                readonly min_market_value?: number | null;
+                /** @description Inclusive minimum tournament minutes. */
+                readonly min_minutes?: number | null;
+                /** @description Inclusive minimum role-confidence percentage. */
+                readonly min_role_confidence?: number | null;
+                /** @description Number of filtered players to skip. */
+                readonly offset?: number;
+                /** @description Position values. Repeat the parameter to select multiple positions. */
+                readonly position?: readonly string[] | null;
+                /** @description Optional case- and diacritic-insensitive player-name query. */
+                readonly q?: string | null;
+                /** @description Optional sorting field. Supported values are relevance, player_name, age, market_value, minutes, role_confidence, data_reliability, and player_quality. */
+                readonly sort_by?: string | null;
+                /** @description Optional sorting direction: asc or desc. */
+                readonly sort_direction?: string | null;
             };
             readonly header?: never;
             readonly path?: never;
@@ -1556,7 +1673,7 @@ export interface operations {
                     readonly "application/json": components["schemas"]["PlayerSearchResponse"];
                 };
             };
-            /** @description The player-search parameters are invalid. */
+            /** @description The player-discovery parameters are invalid. */
             readonly 400: {
                 headers: {
                     readonly [name: string]: unknown;
@@ -1574,7 +1691,7 @@ export interface operations {
                     readonly "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
-            /** @description Player search failed unexpectedly. */
+            /** @description Player discovery failed unexpectedly. */
             readonly 500: {
                 headers: {
                     readonly [name: string]: unknown;
@@ -1584,6 +1701,44 @@ export interface operations {
                 };
             };
             /** @description The player profile datasets are missing or invalid. */
+            readonly 503: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+        };
+    };
+    readonly get_player_search_filters_metadata_api_v1_players_search_filters_get: {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["PlayerSearchFiltersResponse"];
+                };
+            };
+            /** @description Player filter metadata failed unexpectedly. */
+            readonly 500: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description The player datasets are missing or invalid. */
             readonly 503: {
                 headers: {
                     readonly [name: string]: unknown;

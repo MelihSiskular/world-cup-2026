@@ -87,25 +87,300 @@
         "tags": [
           "players"
         ],
-        "summary": "Search the player catalogue",
-        "description": "Return lightweight players matching the supplied name query.",
+        "summary": "Discover and filter the player catalogue",
+        "description": "Return players matching the supplied discovery criteria.",
         "operationId": "search_player_catalogue_api_v1_players_search_get",
         "parameters": [
           {
             "name": "q",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "string",
-              "minLength": 2,
-              "maxLength": 100,
-              "description": "Case- and diacritic-insensitive player-name query.",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional case- and diacritic-insensitive player-name query.",
               "examples": [
                 "olise"
               ],
               "title": "Q"
             },
-            "description": "Case- and diacritic-insensitive player-name query."
+            "description": "Optional case- and diacritic-insensitive player-name query."
+          },
+          {
+            "name": "position",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Position values. Repeat the parameter to select multiple positions.",
+              "title": "Position"
+            },
+            "description": "Position values. Repeat the parameter to select multiple positions."
+          },
+          {
+            "name": "final_role",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Final-role values. Repeat the parameter to select multiple roles.",
+              "title": "Final Role"
+            },
+            "description": "Final-role values. Repeat the parameter to select multiple roles."
+          },
+          {
+            "name": "archetype",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Archetype values. Repeat the parameter to select multiple archetypes.",
+              "title": "Archetype"
+            },
+            "description": "Archetype values. Repeat the parameter to select multiple archetypes."
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Nationality values. Repeat the parameter to select multiple countries.",
+              "title": "Country"
+            },
+            "description": "Nationality values. Repeat the parameter to select multiple countries."
+          },
+          {
+            "name": "min_age",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive minimum player age.",
+              "title": "Min Age"
+            },
+            "description": "Inclusive minimum player age."
+          },
+          {
+            "name": "max_age",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive maximum player age.",
+              "title": "Max Age"
+            },
+            "description": "Inclusive maximum player age."
+          },
+          {
+            "name": "min_market_value",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive minimum market value in the reported currency.",
+              "title": "Min Market Value"
+            },
+            "description": "Inclusive minimum market value in the reported currency."
+          },
+          {
+            "name": "max_market_value",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive maximum market value in the reported currency.",
+              "title": "Max Market Value"
+            },
+            "description": "Inclusive maximum market value in the reported currency."
+          },
+          {
+            "name": "min_minutes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive minimum tournament minutes.",
+              "title": "Min Minutes"
+            },
+            "description": "Inclusive minimum tournament minutes."
+          },
+          {
+            "name": "min_role_confidence",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 100,
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive minimum role-confidence percentage.",
+              "title": "Min Role Confidence"
+            },
+            "description": "Inclusive minimum role-confidence percentage."
+          },
+          {
+            "name": "min_data_reliability",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 100,
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive minimum data-reliability score.",
+              "title": "Min Data Reliability"
+            },
+            "description": "Inclusive minimum data-reliability score."
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional sorting field. Supported values are relevance, player_name, age, market_value, minutes, role_confidence, data_reliability, and player_quality.",
+              "title": "Sort By"
+            },
+            "description": "Optional sorting field. Supported values are relevance, player_name, age, market_value, minutes, role_confidence, data_reliability, and player_quality."
+          },
+          {
+            "name": "sort_direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional sorting direction: asc or desc.",
+              "title": "Sort Direction"
+            },
+            "description": "Optional sorting direction: asc or desc."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of filtered players to skip.",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Number of filtered players to skip."
           },
           {
             "name": "limit",
@@ -115,11 +390,11 @@
               "type": "integer",
               "maximum": 25,
               "minimum": 1,
-              "description": "Maximum number of matching players.",
+              "description": "Maximum number of players in the current page.",
               "default": 10,
               "title": "Limit"
             },
-            "description": "Maximum number of matching players."
+            "description": "Maximum number of players in the current page."
           }
         ],
         "responses": {
@@ -134,7 +409,7 @@
             }
           },
           "400": {
-            "description": "The player-search parameters are invalid.",
+            "description": "The player-discovery parameters are invalid.",
             "content": {
               "application/json": {
                 "schema": {
@@ -154,7 +429,7 @@
             }
           },
           "500": {
-            "description": "Player search failed unexpectedly.",
+            "description": "Player discovery failed unexpectedly.",
             "content": {
               "application/json": {
                 "schema": {
@@ -169,6 +444,48 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/players/search/filters": {
+      "get": {
+        "tags": [
+          "players"
+        ],
+        "summary": "Get player-discovery filter metadata",
+        "description": "Return dataset-backed advanced-filter metadata.",
+        "operationId": "get_player_search_filters_metadata_api_v1_players_search_filters_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerSearchFiltersResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The player datasets are missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Player filter metadata failed unexpectedly.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
                 }
               }
             }
@@ -3108,6 +3425,158 @@
         "title": "PlayerSampleContextResponse",
         "description": "Sample-size context for percentile interpretation."
       },
+      "PlayerSearchFilterOptionResponse": {
+        "properties": {
+          "value": {
+            "type": "string",
+            "title": "Value"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Count"
+          },
+          "country_alpha3": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country Alpha3"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "value",
+          "label",
+          "count",
+          "country_alpha3"
+        ],
+        "title": "PlayerSearchFilterOptionResponse",
+        "description": "One categorical player-discovery filter option."
+      },
+      "PlayerSearchFilterRangeResponse": {
+        "properties": {
+          "minimum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum"
+          },
+          "maximum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maximum"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "minimum",
+          "maximum"
+        ],
+        "title": "PlayerSearchFilterRangeResponse",
+        "description": "Observed numeric range for one discovery filter."
+      },
+      "PlayerSearchFiltersResponse": {
+        "properties": {
+          "player_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Player Count"
+          },
+          "positions": {
+            "items": {
+              "$ref": "#/components/schemas/PlayerSearchFilterOptionResponse"
+            },
+            "type": "array",
+            "title": "Positions"
+          },
+          "final_roles": {
+            "items": {
+              "$ref": "#/components/schemas/PlayerSearchFilterOptionResponse"
+            },
+            "type": "array",
+            "title": "Final Roles"
+          },
+          "archetypes": {
+            "items": {
+              "$ref": "#/components/schemas/PlayerSearchFilterOptionResponse"
+            },
+            "type": "array",
+            "title": "Archetypes"
+          },
+          "countries": {
+            "items": {
+              "$ref": "#/components/schemas/PlayerSearchFilterOptionResponse"
+            },
+            "type": "array",
+            "title": "Countries"
+          },
+          "age": {
+            "$ref": "#/components/schemas/PlayerSearchFilterRangeResponse"
+          },
+          "market_value": {
+            "$ref": "#/components/schemas/PlayerSearchFilterRangeResponse"
+          },
+          "minutes": {
+            "$ref": "#/components/schemas/PlayerSearchFilterRangeResponse"
+          },
+          "role_confidence": {
+            "$ref": "#/components/schemas/PlayerSearchFilterRangeResponse"
+          },
+          "data_reliability": {
+            "$ref": "#/components/schemas/PlayerSearchFilterRangeResponse"
+          },
+          "market_value_currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Market Value Currency"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "player_count",
+          "positions",
+          "final_roles",
+          "archetypes",
+          "countries",
+          "age",
+          "market_value",
+          "minutes",
+          "role_confidence",
+          "data_reliability",
+          "market_value_currency"
+        ],
+        "title": "PlayerSearchFiltersResponse",
+        "description": "Dataset-backed advanced-filter metadata."
+      },
       "PlayerSearchItemResponse": {
         "properties": {
           "player_id": {
@@ -3128,6 +3597,17 @@
               }
             ],
             "title": "National Team Name"
+          },
+          "country_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country Name"
           },
           "country_alpha3": {
             "anyOf": [
@@ -3216,6 +3696,50 @@
               }
             ],
             "title": "Market Value Currency"
+          },
+          "minutes": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minutes"
+          },
+          "role_confidence_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role Confidence Pct"
+          },
+          "data_reliability_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Reliability Score"
+          },
+          "player_quality_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Player Quality Score"
           }
         },
         "additionalProperties": false,
@@ -3224,6 +3748,7 @@
           "player_id",
           "player_name",
           "national_team_name",
+          "country_name",
           "country_alpha3",
           "position",
           "final_role",
@@ -3231,21 +3756,60 @@
           "spatial_role",
           "age",
           "market_value",
-          "market_value_currency"
+          "market_value_currency",
+          "minutes",
+          "role_confidence_pct",
+          "data_reliability_score",
+          "player_quality_score"
         ],
         "title": "PlayerSearchItemResponse",
-        "description": "Lightweight player information returned by search."
+        "description": "Lightweight player information returned by discovery."
       },
       "PlayerSearchResponse": {
         "properties": {
           "query": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Query"
           },
           "count": {
             "type": "integer",
             "minimum": 0.0,
             "title": "Count"
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Total"
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Offset"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 25.0,
+            "minimum": 1.0,
+            "title": "Limit"
+          },
+          "has_more": {
+            "type": "boolean",
+            "title": "Has More"
+          },
+          "sort_by": {
+            "type": "string",
+            "title": "Sort By"
+          },
+          "sort_direction": {
+            "type": "string",
+            "title": "Sort Direction"
           },
           "players": {
             "items": {
@@ -3260,10 +3824,16 @@
         "required": [
           "query",
           "count",
+          "total",
+          "offset",
+          "limit",
+          "has_more",
+          "sort_by",
+          "sort_direction",
           "players"
         ],
         "title": "PlayerSearchResponse",
-        "description": "Structured response returned by player search."
+        "description": "Structured and paginated player-discovery response."
       },
       "PlayerTournamentSummaryResponse": {
         "properties": {
