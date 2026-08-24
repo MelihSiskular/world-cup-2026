@@ -33,6 +33,16 @@ export type PlayerSearchItemResponse =
 export type PlayerSearchResponse =
   components["schemas"]["PlayerSearchResponse"];
 
+export type PlayerSearchFilterOptionResponse =
+  components["schemas"]["PlayerSearchFilterOptionResponse"];
+
+export type PlayerSearchFilterRangeResponse =
+  components["schemas"]["PlayerSearchFilterRangeResponse"];
+
+export type PlayerSearchFiltersResponse =
+  components["schemas"]["PlayerSearchFiltersResponse"];
+
+
 export type PlayerProfileResponse =
   components["schemas"]["PlayerProfileResponse"];
 

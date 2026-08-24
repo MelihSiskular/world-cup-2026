@@ -1,4 +1,4 @@
-"""Tests for the player-search application service."""
+"""Tests for the player-discovery application service."""
 
 from __future__ import annotations
 
@@ -23,23 +23,35 @@ def _player(
     player_id: int,
     player_name: str,
     national_team_name: str = "Test Nation",
+    country_name: str = "Test Country",
     position: str = "M",
     final_role: str = "Test Role",
     archetype: str = "Test Archetype",
+    spatial_role: str = "Test Spatial Role",
     age: float = 25.0,
     market_value: float = 10_000_000.0,
     market_value_currency: str = "EUR",
+    minutes: float = 300.0,
+    role_confidence_pct: float = 75.0,
+    data_reliability_score: float = 70.0,
+    player_quality_score: float = 60.0,
 ) -> dict[str, object]:
     return {
         "player_id": player_id,
         "player_name": player_name,
         "national_team_name": national_team_name,
+        "country_name": country_name,
         "position": position,
         "final_role": final_role,
         "archetype": archetype,
+        "spatial_role": spatial_role,
         "age": age,
         "market_value": market_value,
         "market_value_currency": market_value_currency,
+        "minutes": minutes,
+        "role_confidence_pct": role_confidence_pct,
+        "data_reliability_score": data_reliability_score,
+        "player_quality_score": player_quality_score,
     }
 
 
@@ -99,7 +111,7 @@ def test_search_players_matches_case_and_diacritics(
     assert [player.player_name for player in guler_result.players] == ["Arda Güler"]
 
 
-def test_search_players_ranks_exact_match_first(
+def test_search_players_preserves_name_relevance_order(
     tmp_path: Path,
 ) -> None:
     features = _write_features(
@@ -132,8 +144,6 @@ def test_search_players_ranks_exact_match_first(
         )
     )
 
-    assert result.players[0].player_name == "Alex"
-
     assert [player.player_name for player in result.players] == [
         "Alex",
         "Alexander Isak",
@@ -141,8 +151,207 @@ def test_search_players_ranks_exact_match_first(
         "John Alex Smith",
     ]
 
+    assert result.sort_by == "relevance"
+    assert result.sort_direction == "asc"
 
-def test_search_players_applies_limit_and_removes_duplicate_ids(
+
+def test_search_players_filters_categories_with_and_or_semantics(
+    tmp_path: Path,
+) -> None:
+    features = _write_features(
+        tmp_path,
+        [
+            _player(
+                player_id=1,
+                player_name="Alpha Defender",
+                country_name="France",
+                position="D",
+                archetype="Ball-Carrying Defender",
+                final_role="Left Wide Centre-Back",
+            ),
+            _player(
+                player_id=2,
+                player_name="Beta Defender",
+                country_name="Spain",
+                position="D",
+                archetype="Safe-Possession Defender",
+                final_role="Safe Ball-Playing Centre-Back",
+            ),
+            _player(
+                player_id=3,
+                player_name="Gamma Forward",
+                country_name="France",
+                position="F",
+                archetype="Poacher",
+                final_role="Poacher",
+            ),
+        ],
+    )
+
+    result = search_players(
+        PlayerSearchRequest(
+            query=None,
+            features=features,
+            limit=10,
+            positions=(
+                "D",
+                "F",
+            ),
+            countries=("France",),
+            archetypes=(
+                "Ball-Carrying Defender",
+                "Safe-Possession Defender",
+            ),
+        )
+    )
+
+    assert [player.player_name for player in result.players] == ["Alpha Defender"]
+
+
+def test_search_players_applies_inclusive_numeric_bounds(
+    tmp_path: Path,
+) -> None:
+    features = _write_features(
+        tmp_path,
+        [
+            _player(
+                player_id=1,
+                player_name="Boundary Player",
+                age=24.0,
+                market_value=30_000_000.0,
+                minutes=300.0,
+                role_confidence_pct=70.0,
+                data_reliability_score=60.0,
+            ),
+            _player(
+                player_id=2,
+                player_name="Outside Player",
+                age=25.0,
+                market_value=31_000_000.0,
+                minutes=299.0,
+                role_confidence_pct=69.0,
+                data_reliability_score=59.0,
+            ),
+        ],
+    )
+
+    result = search_players(
+        PlayerSearchRequest(
+            query=None,
+            features=features,
+            limit=10,
+            minimum_age=24.0,
+            maximum_age=24.0,
+            minimum_market_value=30_000_000.0,
+            maximum_market_value=30_000_000.0,
+            minimum_minutes=300.0,
+            minimum_role_confidence=70.0,
+            minimum_data_reliability=60.0,
+        )
+    )
+
+    assert [player.player_name for player in result.players] == ["Boundary Player"]
+
+
+def test_search_players_filters_before_paginating_and_sorts_deterministically(
+    tmp_path: Path,
+) -> None:
+    features = _write_features(
+        tmp_path,
+        [
+            _player(
+                player_id=1,
+                player_name="Lowest Quality",
+                position="D",
+                player_quality_score=60.0,
+                data_reliability_score=90.0,
+                minutes=500.0,
+            ),
+            _player(
+                player_id=2,
+                player_name="Highest Quality",
+                position="D",
+                player_quality_score=90.0,
+                data_reliability_score=70.0,
+                minutes=300.0,
+            ),
+            _player(
+                player_id=3,
+                player_name="Middle Quality",
+                position="D",
+                player_quality_score=75.0,
+                data_reliability_score=80.0,
+                minutes=400.0,
+            ),
+            _player(
+                player_id=4,
+                player_name="Excluded Forward",
+                position="F",
+                player_quality_score=99.0,
+            ),
+        ],
+    )
+
+    result = search_players(
+        PlayerSearchRequest(
+            query=None,
+            features=features,
+            limit=1,
+            offset=1,
+            positions=("D",),
+        )
+    )
+
+    assert result.total == 3
+    assert result.count == 1
+    assert result.offset == 1
+    assert result.limit == 1
+    assert result.has_more is True
+    assert result.sort_by == "player_quality"
+    assert result.sort_direction == "desc"
+
+    assert [player.player_name for player in result.players] == ["Middle Quality"]
+
+
+def test_search_players_applies_explicit_sorting(
+    tmp_path: Path,
+) -> None:
+    features = _write_features(
+        tmp_path,
+        [
+            _player(
+                player_id=1,
+                player_name="Older Player",
+                position="D",
+                age=31.0,
+            ),
+            _player(
+                player_id=2,
+                player_name="Younger Player",
+                position="D",
+                age=21.0,
+            ),
+        ],
+    )
+
+    result = search_players(
+        PlayerSearchRequest(
+            query=None,
+            features=features,
+            limit=10,
+            positions=("D",),
+            sort_by="age",
+            sort_direction="asc",
+        )
+    )
+
+    assert [player.player_name for player in result.players] == [
+        "Younger Player",
+        "Older Player",
+    ]
+
+
+def test_search_players_removes_duplicate_ids_before_pagination(
     tmp_path: Path,
 ) -> None:
     features = _write_features(
@@ -160,10 +369,6 @@ def test_search_players_applies_limit_and_removes_duplicate_ids(
                 player_id=2,
                 player_name="Olivier Giroud",
             ),
-            _player(
-                player_id=3,
-                player_name="Oliver Burke",
-            ),
         ],
     )
 
@@ -171,16 +376,16 @@ def test_search_players_applies_limit_and_removes_duplicate_ids(
         PlayerSearchRequest(
             query="oli",
             features=features,
-            limit=2,
+            limit=1,
         )
     )
 
-    assert result.count == 2
+    assert result.total == 2
+    assert result.count == 1
+    assert result.has_more is True
 
-    assert len({player.player_id for player in result.players}) == 2
 
-
-def test_search_players_returns_empty_result(
+def test_search_players_returns_empty_paginated_result(
     tmp_path: Path,
 ) -> None:
     features = _write_features(
@@ -201,49 +406,100 @@ def test_search_players_returns_empty_result(
         )
     )
 
-    assert result.query == "unknown"
-    assert result.count == 0
-    assert result.players == ()
     assert result.to_dict() == {
         "query": "unknown",
         "count": 0,
+        "total": 0,
+        "offset": 0,
+        "limit": 10,
+        "has_more": False,
+        "sort_by": "relevance",
+        "sort_direction": "asc",
         "players": [],
     }
 
 
 @pytest.mark.parametrize(
-    ("query", "limit"),
+    "search_request",
     [
-        ("a", 10),
-        ("   ", 10),
-        ("olise", 0),
-        ("olise", 26),
+        PlayerSearchRequest(
+            query="a",
+            features=Path("unused.csv"),
+            limit=10,
+        ),
+        PlayerSearchRequest(
+            query="   ",
+            features=Path("unused.csv"),
+            limit=10,
+        ),
+        PlayerSearchRequest(
+            query=None,
+            features=Path("unused.csv"),
+            limit=10,
+        ),
+        PlayerSearchRequest(
+            query="olise",
+            features=Path("unused.csv"),
+            limit=0,
+        ),
+        PlayerSearchRequest(
+            query="olise",
+            features=Path("unused.csv"),
+            limit=26,
+        ),
+        PlayerSearchRequest(
+            query="olise",
+            features=Path("unused.csv"),
+            limit=10,
+            offset=-1,
+        ),
+        PlayerSearchRequest(
+            query=None,
+            features=Path("unused.csv"),
+            limit=10,
+            positions=("D",),
+            minimum_age=30.0,
+            maximum_age=20.0,
+        ),
+        PlayerSearchRequest(
+            query=None,
+            features=Path("unused.csv"),
+            limit=10,
+            positions=("D",),
+            minimum_market_value=50.0,
+            maximum_market_value=10.0,
+        ),
+        PlayerSearchRequest(
+            query=None,
+            features=Path("unused.csv"),
+            limit=10,
+            positions=("D",),
+            minimum_role_confidence=101.0,
+        ),
+        PlayerSearchRequest(
+            query=None,
+            features=Path("unused.csv"),
+            limit=10,
+            positions=("D",),
+            sort_by="unsupported",
+        ),
+        PlayerSearchRequest(
+            query=None,
+            features=Path("unused.csv"),
+            limit=10,
+            positions=("D",),
+            sort_by="relevance",
+        ),
     ],
 )
 def test_search_players_rejects_invalid_parameters(
-    tmp_path: Path,
-    query: str,
-    limit: int,
+    search_request: PlayerSearchRequest,
 ) -> None:
-    features = _write_features(
-        tmp_path,
-        [
-            _player(
-                player_id=1,
-                player_name="Michael Olise",
-            ),
-        ],
-    )
-
     with pytest.raises(
         InvalidPlayerSearchError,
     ):
         search_players(
-            PlayerSearchRequest(
-                query=query,
-                features=features,
-                limit=limit,
-            )
+            search_request,
         )
 
 

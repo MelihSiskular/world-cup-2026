@@ -6,13 +6,14 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class PlayerSearchItemResponse(BaseModel):
-    """Lightweight player information returned by search."""
+    """Lightweight player information returned by discovery."""
 
     model_config = ConfigDict(extra="forbid")
 
     player_id: int
     player_name: str
     national_team_name: str | None
+    country_name: str | None
     country_alpha3: str | None
     position: str | None
     final_role: str | None
@@ -21,16 +22,64 @@ class PlayerSearchItemResponse(BaseModel):
     age: float | None
     market_value: float | None
     market_value_currency: str | None
+    minutes: float | None
+    role_confidence_pct: float | None
+    data_reliability_score: float | None
+    player_quality_score: float | None
 
 
 class PlayerSearchResponse(BaseModel):
-    """Structured response returned by player search."""
+    """Structured and paginated player-discovery response."""
 
     model_config = ConfigDict(extra="forbid")
 
-    query: str
+    query: str | None
     count: int = Field(ge=0)
+    total: int = Field(ge=0)
+    offset: int = Field(ge=0)
+    limit: int = Field(ge=1, le=25)
+    has_more: bool
+    sort_by: str
+    sort_direction: str
     players: list[PlayerSearchItemResponse]
+
+
+class PlayerSearchFilterOptionResponse(BaseModel):
+    """One categorical player-discovery filter option."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    value: str
+    label: str
+    count: int = Field(ge=0)
+    country_alpha3: str | None
+
+
+class PlayerSearchFilterRangeResponse(BaseModel):
+    """Observed numeric range for one discovery filter."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    minimum: float | None
+    maximum: float | None
+
+
+class PlayerSearchFiltersResponse(BaseModel):
+    """Dataset-backed advanced-filter metadata."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    player_count: int = Field(ge=0)
+    positions: list[PlayerSearchFilterOptionResponse]
+    final_roles: list[PlayerSearchFilterOptionResponse]
+    archetypes: list[PlayerSearchFilterOptionResponse]
+    countries: list[PlayerSearchFilterOptionResponse]
+    age: PlayerSearchFilterRangeResponse
+    market_value: PlayerSearchFilterRangeResponse
+    minutes: PlayerSearchFilterRangeResponse
+    role_confidence: PlayerSearchFilterRangeResponse
+    data_reliability: PlayerSearchFilterRangeResponse
+    market_value_currency: str | None
 
 
 class PlayerTournamentSummaryResponse(BaseModel):
@@ -159,6 +208,9 @@ __all__ = [
     "PlayerSampleContextResponse",
     "PlayerTournamentSummaryResponse",
     "PlayerProfileResponse",
+    "PlayerSearchFilterOptionResponse",
+    "PlayerSearchFilterRangeResponse",
+    "PlayerSearchFiltersResponse",
     "PlayerSearchItemResponse",
     "PlayerSearchResponse",
 ]

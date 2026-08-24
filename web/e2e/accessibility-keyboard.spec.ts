@@ -349,6 +349,105 @@ test.describe(
       },
     );
     test(
+      "operates advanced player filters with standard keyboard controls",
+      async ({ page }) => {
+        await page.goto(
+          "/players",
+        );
+
+        await waitForApplicationReady(
+          page,
+        );
+
+        const filterToggle =
+          page.getByRole(
+            "button",
+            {
+              name:
+                /^Advanced filters/,
+            },
+          );
+
+        if (
+          await filterToggle.isVisible()
+        ) {
+          await filterToggle.focus();
+
+          await expect(
+            filterToggle,
+          ).toBeFocused();
+
+          await page.keyboard.press(
+            "Enter",
+          );
+
+          await expect(
+            filterToggle,
+          ).toHaveAttribute(
+            "aria-expanded",
+            "true",
+          );
+        }
+
+        const defender =
+          page.getByRole(
+            "checkbox",
+            {
+              name:
+                /^Defender, \d+ players$/,
+            },
+          );
+
+        await expect(
+          defender,
+        ).toBeVisible({
+          timeout: 30_000,
+        });
+
+        await defender.focus();
+
+        await expect(
+          defender,
+        ).toBeFocused();
+
+        await page.keyboard.press(
+          "Space",
+        );
+
+        await expect(
+          defender,
+        ).toBeChecked();
+
+        const removeFilter =
+          page.getByRole(
+            "button",
+            {
+              name:
+                "Remove Position: Defender filter",
+            },
+          );
+
+        await expect(
+          removeFilter,
+        ).toBeVisible();
+
+        await removeFilter.focus();
+
+        await expect(
+          removeFilter,
+        ).toBeFocused();
+
+        await page.keyboard.press(
+          "Enter",
+        );
+
+        await expect(
+          defender,
+        ).not.toBeChecked();
+      },
+    );
+
+    test(
       "honors the reduced-motion preference",
       async ({ page }) => {
         await page.emulateMedia({

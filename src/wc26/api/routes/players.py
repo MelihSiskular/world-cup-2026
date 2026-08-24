@@ -21,13 +21,16 @@ from wc26.analytics.transfer_intelligence.errors import (
 )
 from wc26.analytics.transfer_intelligence.models import (
     PlayerProfileRequest,
+    PlayerSearchFiltersRequest,
     PlayerSearchRequest,
 )
 from wc26.api.dependencies import (
     PlayerProfileRunner,
+    PlayerSearchFiltersRunner,
     PlayerSearchRunner,
     TransferDatasetPaths,
     get_player_profile_runner,
+    get_player_search_filters_runner,
     get_player_search_runner,
     get_transfer_dataset_paths,
 )
@@ -38,6 +41,7 @@ from wc26.api.errors import (
 from wc26.api.schemas.errors import ApiErrorResponse
 from wc26.api.schemas.players import (
     PlayerProfileResponse,
+    PlayerSearchFiltersResponse,
     PlayerSearchResponse,
 )
 
@@ -51,11 +55,11 @@ router = APIRouter(
     "/search",
     response_model=PlayerSearchResponse,
     status_code=status.HTTP_200_OK,
-    summary="Search the player catalogue",
+    summary="Discover and filter the player catalogue",
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "model": ApiErrorResponse,
-            "description": ("The player-search parameters are invalid."),
+            "description": ("The player-discovery parameters are invalid."),
         },
         status.HTTP_503_SERVICE_UNAVAILABLE: {
             "model": ApiErrorResponse,
@@ -63,20 +67,11 @@ router = APIRouter(
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
             "model": ApiErrorResponse,
-            "description": ("Player search failed unexpectedly."),
+            "description": ("Player discovery failed unexpectedly."),
         },
     },
 )
 def search_player_catalogue(
-    q: Annotated[
-        str,
-        Query(
-            min_length=2,
-            max_length=100,
-            description=("Case- and diacritic-insensitive player-name query."),
-            examples=["olise"],
-        ),
-    ],
     dataset_paths: Annotated[
         TransferDatasetPaths,
         Depends(get_transfer_dataset_paths),
@@ -85,21 +80,143 @@ def search_player_catalogue(
         PlayerSearchRunner,
         Depends(get_player_search_runner),
     ],
+    q: Annotated[
+        str | None,
+        Query(
+            min_length=2,
+            max_length=100,
+            description=("Optional case- and diacritic-insensitive player-name query."),
+            examples=["olise"],
+        ),
+    ] = None,
+    position: Annotated[
+        list[str] | None,
+        Query(
+            description=("Position values. Repeat the parameter to select multiple positions."),
+        ),
+    ] = None,
+    final_role: Annotated[
+        list[str] | None,
+        Query(
+            description=("Final-role values. Repeat the parameter to select multiple roles."),
+        ),
+    ] = None,
+    archetype: Annotated[
+        list[str] | None,
+        Query(
+            description=("Archetype values. Repeat the parameter to select multiple archetypes."),
+        ),
+    ] = None,
+    country: Annotated[
+        list[str] | None,
+        Query(
+            description=("Nationality values. Repeat the parameter to select multiple countries."),
+        ),
+    ] = None,
+    min_age: Annotated[
+        float | None,
+        Query(
+            ge=0,
+            description="Inclusive minimum player age.",
+        ),
+    ] = None,
+    max_age: Annotated[
+        float | None,
+        Query(
+            ge=0,
+            description="Inclusive maximum player age.",
+        ),
+    ] = None,
+    min_market_value: Annotated[
+        float | None,
+        Query(
+            ge=0,
+            description=("Inclusive minimum market value in the reported currency."),
+        ),
+    ] = None,
+    max_market_value: Annotated[
+        float | None,
+        Query(
+            ge=0,
+            description=("Inclusive maximum market value in the reported currency."),
+        ),
+    ] = None,
+    min_minutes: Annotated[
+        float | None,
+        Query(
+            ge=0,
+            description=("Inclusive minimum tournament minutes."),
+        ),
+    ] = None,
+    min_role_confidence: Annotated[
+        float | None,
+        Query(
+            ge=0,
+            le=100,
+            description=("Inclusive minimum role-confidence percentage."),
+        ),
+    ] = None,
+    min_data_reliability: Annotated[
+        float | None,
+        Query(
+            ge=0,
+            le=100,
+            description=("Inclusive minimum data-reliability score."),
+        ),
+    ] = None,
+    sort_by: Annotated[
+        str | None,
+        Query(
+            description=(
+                "Optional sorting field. Supported values are "
+                "relevance, player_name, age, market_value, "
+                "minutes, role_confidence, data_reliability, "
+                "and player_quality."
+            ),
+        ),
+    ] = None,
+    sort_direction: Annotated[
+        str | None,
+        Query(
+            description=("Optional sorting direction: asc or desc."),
+        ),
+    ] = None,
+    offset: Annotated[
+        int,
+        Query(
+            ge=0,
+            description=("Number of filtered players to skip."),
+        ),
+    ] = 0,
     limit: Annotated[
         int,
         Query(
             ge=1,
             le=25,
-            description=("Maximum number of matching players."),
+            description=("Maximum number of players in the current page."),
         ),
     ] = 10,
 ) -> PlayerSearchResponse:
-    """Return lightweight players matching the supplied name query."""
+    """Return players matching the supplied discovery criteria."""
 
     request = PlayerSearchRequest(
         query=q,
         features=dataset_paths.features,
         limit=limit,
+        offset=offset,
+        positions=tuple(position or ()),
+        final_roles=tuple(final_role or ()),
+        archetypes=tuple(archetype or ()),
+        countries=tuple(country or ()),
+        minimum_age=min_age,
+        maximum_age=max_age,
+        minimum_market_value=min_market_value,
+        maximum_market_value=max_market_value,
+        minimum_minutes=min_minutes,
+        minimum_role_confidence=min_role_confidence,
+        minimum_data_reliability=min_data_reliability,
+        sort_by=sort_by,
+        sort_direction=sort_direction,
     )
 
     try:
@@ -114,6 +231,54 @@ def search_player_catalogue(
         raise
     except Exception as exception:
         raise PlayerSearchExecutionError("Player search execution failed.") from exception
+
+
+@router.get(
+    "/search/filters",
+    response_model=PlayerSearchFiltersResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get player-discovery filter metadata",
+    responses={
+        status.HTTP_503_SERVICE_UNAVAILABLE: {
+            "model": ApiErrorResponse,
+            "description": ("The player datasets are missing or invalid."),
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ApiErrorResponse,
+            "description": ("Player filter metadata failed unexpectedly."),
+        },
+    },
+)
+def get_player_search_filters_metadata(
+    dataset_paths: Annotated[
+        TransferDatasetPaths,
+        Depends(get_transfer_dataset_paths),
+    ],
+    player_search_filters_runner: Annotated[
+        PlayerSearchFiltersRunner,
+        Depends(get_player_search_filters_runner),
+    ],
+) -> PlayerSearchFiltersResponse:
+    """Return dataset-backed advanced-filter metadata."""
+
+    request = PlayerSearchFiltersRequest(
+        features=dataset_paths.features,
+        player_tournament_summary=(dataset_paths.player_tournament_summary),
+    )
+
+    try:
+        result = player_search_filters_runner(request)
+
+        return PlayerSearchFiltersResponse.model_validate(result.to_dict())
+    except (
+        DatasetNotFoundError,
+        InvalidDatasetError,
+    ):
+        raise
+    except Exception as exception:
+        raise PlayerSearchExecutionError(
+            "Player search filter metadata execution failed."
+        ) from exception
 
 
 @router.get(

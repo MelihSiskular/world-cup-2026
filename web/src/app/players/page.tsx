@@ -11,6 +11,9 @@ import {
 import {
   PlayerSearch,
 } from "@/components/players/player-search";
+import {
+  readPlayerSearchUrlParameters,
+} from "@/lib/players/search-parameters";
 
 export const metadata: Metadata = {
   title: "Players",
@@ -18,7 +21,72 @@ export const metadata: Metadata = {
     "Search the World Cup 2026 player catalogue and open scouting profiles.",
 };
 
-export default function PlayersPage() {
+type PlayersPageProps =
+  Readonly<{
+    searchParams: Promise<
+      Readonly<
+        Record<
+          string,
+          string |
+            readonly string[] |
+            undefined
+        >
+      >
+    >;
+  }>;
+
+function createUrlSearchParameters(
+  values: Readonly<
+    Record<
+      string,
+      string |
+        readonly string[] |
+        undefined
+    >
+  >,
+): URLSearchParams {
+  const searchParameters =
+    new URLSearchParams();
+
+  for (
+    const [
+      name,
+      value,
+    ] of Object.entries(values)
+  ) {
+    if (
+      typeof value === "string"
+    ) {
+      searchParameters.append(
+        name,
+        value,
+      );
+      continue;
+    }
+
+    for (
+      const item of value ?? []
+    ) {
+      searchParameters.append(
+        name,
+        item,
+      );
+    }
+  }
+
+  return searchParameters;
+}
+
+export default async function PlayersPage({
+  searchParams,
+}: PlayersPageProps) {
+  const initialParameters =
+    readPlayerSearchUrlParameters(
+      createUrlSearchParameters(
+        await searchParams,
+      ),
+    );
+
   return (
     <PageContainer className="py-14 sm:py-20">
       <PageIntro
@@ -28,7 +96,11 @@ export default function PlayersPage() {
       />
 
       <div className="mt-12">
-        <PlayerSearch />
+        <PlayerSearch
+          initialParameters={
+            initialParameters
+          }
+        />
       </div>
     </PageContainer>
   );
