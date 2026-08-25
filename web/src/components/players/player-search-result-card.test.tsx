@@ -153,6 +153,61 @@ describe(
     );
 
     it(
+      "exposes shortlist controls outside the profile link",
+      async () => {
+        renderWithQueryClient(
+          <ul>
+            <PlayerSearchResultCard
+              player={player}
+            />
+          </ul>,
+        );
+
+        const shortlistButton =
+          await screen.findByRole(
+            "button",
+            {
+              name:
+                "Add to shortlist",
+            },
+          );
+
+        await waitFor(() => {
+          expect(
+            shortlistButton,
+          ).toBeEnabled();
+        });
+
+        fireEvent.click(
+          shortlistButton,
+        );
+
+        expect(
+          screen.getByRole(
+            "region",
+            {
+              name:
+                "Shortlist options for Michael Olise",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByRole(
+            "link",
+            {
+              name:
+                "Open Michael Olise scouting profile",
+            },
+          ),
+        ).toHaveAttribute(
+          "href",
+          "/players/978838",
+        );
+      },
+    );
+
+    it(
       "does not refetch an already fresh prefetched profile",
       async () => {
         renderWithQueryClient(

@@ -1,9 +1,31 @@
 import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import {
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import type { PlayerProfileResponse } from "@/lib/api/types";
 
 import { PlayerProfileView } from "./player-profile-view";
+
+vi.mock(
+  "@/components/shortlists/shortlist-action",
+  () => ({
+    ShortlistAction: ({
+      player,
+    }: Readonly<{
+      player: {
+        playerName: string;
+      };
+    }>) => (
+      <button type="button">
+        Add {player.playerName} to shortlist
+      </button>
+    ),
+  }),
+);
 
 const basePlayer: PlayerProfileResponse = {
   player_id: 978838,
@@ -117,6 +139,21 @@ describe("PlayerProfileView", () => {
       screen.queryByText("Sample quality"),
     ).not.toBeInTheDocument();
 
+  });
+
+  it("exposes the player through the shortlist action", () => {
+    render(
+      <PlayerProfileView
+        player={basePlayer}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", {
+        name:
+          "Add Michael Olise to shortlist",
+      }),
+    ).toBeInTheDocument();
   });
 
   it("renders the deterministic player photo in the profile identity", () => {

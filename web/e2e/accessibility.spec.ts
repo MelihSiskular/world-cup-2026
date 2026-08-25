@@ -15,6 +15,10 @@ const publicRoutes = [
     path: "/players",
   },
   {
+    name: "shortlist workspace",
+    path: "/shortlists",
+  },
+  {
     name: "methodology",
     path: "/methodology",
   },

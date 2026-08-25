@@ -17,6 +17,7 @@ describe("primaryNavigationItems", () => {
     ).toEqual([
       "Home",
       "Players",
+      "Shortlists",
       "Methodology",
     ]);
   });

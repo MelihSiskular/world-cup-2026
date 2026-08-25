@@ -21,6 +21,13 @@ export const primaryNavigationItems =
       ],
     },
     {
+      label: "Shortlists",
+      href: "/shortlists",
+      activePrefixes: [
+        "/shortlists",
+      ],
+    },
+    {
       label: "Methodology",
       href: "/methodology",
       activePrefixes: ["/methodology"],
