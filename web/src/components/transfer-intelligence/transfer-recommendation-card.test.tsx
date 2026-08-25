@@ -7,6 +7,7 @@ import {
   describe,
   expect,
   it,
+  vi,
 } from "vitest";
 
 import {
@@ -18,6 +19,26 @@ import type {
 import {
   DEFAULT_TRANSFER_ANALYSIS_VALUES,
 } from "@/lib/transfer-intelligence/analysis-form";
+
+vi.mock(
+  "@/components/shortlists/shortlist-action",
+  () => ({
+    ShortlistAction: ({
+      player,
+      variant,
+    }: Readonly<{
+      player: {
+        playerName: string;
+      };
+      variant?: string;
+    }>) => (
+      <button type="button">
+        Save {player.playerName} (
+        {variant ?? "default"})
+      </button>
+    ),
+  }),
+);
 
 function createRecommendation():
   TransferRecommendationResponse {
@@ -127,6 +148,61 @@ function createRecommendation():
 describe(
   "TransferRecommendationCard",
   () => {
+    it(
+      "exposes shortlist controls in featured and compact variants",
+      () => {
+        const recommendation =
+          createRecommendation();
+
+        const rendered = render(
+          <TransferRecommendationCard
+            targetPlayerId={978838}
+            mode="immediate"
+            analysisValues={{
+              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+            }}
+            recommendation={
+              recommendation
+            }
+          />,
+        );
+
+        expect(
+          screen.getByRole(
+            "button",
+            {
+              name:
+                "Save Test Candidate (default)",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        rendered.rerender(
+          <TransferRecommendationCard
+            targetPlayerId={978838}
+            mode="immediate"
+            analysisValues={{
+              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+            }}
+            recommendation={
+              recommendation
+            }
+            variant="compact"
+          />,
+        );
+
+        expect(
+          screen.getByRole(
+            "button",
+            {
+              name:
+                "Save Test Candidate (compact)",
+            },
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
     it(
       "keeps decision fallback separate from measured spatial evidence",
       () => {

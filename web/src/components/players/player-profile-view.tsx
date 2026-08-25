@@ -7,8 +7,14 @@ import { PlayerFeaturedMetrics } from "@/components/players/player-featured-metr
 import { PlayerImage } from "@/components/players/player-image";
 import { PlayerScoutingInsights } from "@/components/players/player-scouting-insights";
 import { PlayerPerformanceProfile } from "@/components/players/player-performance-profile";
+import {
+  ShortlistAction,
+} from "@/components/shortlists/shortlist-action";
 
 import type { PlayerProfileResponse } from "@/lib/api/types";
+import {
+  createShortlistSnapshotFromProfile,
+} from "@/lib/shortlists/snapshot";
 import {
   formatMarketValue,
   formatPlayerPosition,
@@ -150,6 +156,11 @@ export function PlayerProfileView({
   const tournamentMinutes =
     tournament === null ? player.minutes : tournament.minutes;
 
+  const shortlistPlayer =
+    createShortlistSnapshotFromProfile(
+      player,
+    );
+
   return (
     <div className="space-y-6">
       <section className="rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-8">
@@ -245,6 +256,10 @@ export function PlayerProfileView({
               >
                 Run transfer analysis
               </Link>
+
+              <ShortlistAction
+                player={shortlistPlayer}
+              />
 
               <Link
                 href="/players"

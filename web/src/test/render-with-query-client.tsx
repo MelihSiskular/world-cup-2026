@@ -10,6 +10,24 @@ import type {
   ReactNode,
 } from "react";
 
+import {
+  ShortlistProvider,
+} from "@/components/providers/shortlist-provider";
+import type {
+  ShortlistStorageAdapter,
+} from "@/lib/shortlists/storage";
+
+const testShortlistStorage:
+  ShortlistStorageAdapter = {
+    getItem() {
+      return null;
+    },
+    setItem() {
+      // Persistence behavior is covered
+      // by shortlist provider tests.
+    },
+  };
+
 function TestQueryProvider({
   children,
 }: Readonly<{
@@ -32,7 +50,13 @@ function TestQueryProvider({
     <QueryClientProvider
       client={queryClient}
     >
-      {children}
+      <ShortlistProvider
+        storage={
+          testShortlistStorage
+        }
+      >
+        {children}
+      </ShortlistProvider>
     </QueryClientProvider>
   );
 }

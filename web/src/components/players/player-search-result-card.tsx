@@ -12,11 +12,17 @@ import {
   PlayerImage,
 } from "@/components/players/player-image";
 import {
+  ShortlistAction,
+} from "@/components/shortlists/shortlist-action";
+import {
   fetchPlayerProfile,
 } from "@/lib/api/browser-players";
 import type {
   PlayerSearchItemResponse,
 } from "@/lib/api/types";
+import {
+  createShortlistSnapshotFromSearchPlayer,
+} from "@/lib/shortlists/snapshot";
 
 const positionLabels:
   Record<string, string> = {
@@ -111,18 +117,31 @@ export function PlayerSearchResultCard({
       });
     };
 
+  const shortlistPlayer =
+    createShortlistSnapshotFromSearchPlayer(
+      player,
+    );
+
   return (
-    <li>
+    <li className="group relative rounded-2xl border border-border bg-surface shadow-sm transition hover:-translate-y-0.5 hover:border-brand/35 hover:shadow-md">
       <Link
         href={`/players/${player.player_id}`}
+        aria-label={`Open ${player.player_name} scouting profile`}
         onMouseEnter={
           prefetchPlayerProfile
         }
         onFocus={
           prefetchPlayerProfile
         }
-        className="group block rounded-2xl border border-border bg-surface p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand/35 hover:shadow-md"
+        className="absolute inset-0 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
       >
+        <span className="sr-only">
+          Open {player.player_name} scouting
+          profile
+        </span>
+      </Link>
+
+      <div className="pointer-events-none p-5">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex min-w-0 items-start gap-4">
             <PlayerImage
@@ -224,19 +243,26 @@ export function PlayerSearchResultCard({
           </dl>
         </div>
 
-        <div className="mt-5 flex items-center justify-between border-t border-border pt-4 text-sm">
-          <span className="text-muted">
+        <div className="mt-5 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <span className="flex items-center gap-2 text-sm text-muted">
             Open scouting profile
+
+            <span
+              aria-hidden="true"
+              className="font-semibold text-brand transition-transform group-hover:translate-x-1"
+            >
+              →
+            </span>
           </span>
 
-          <span
-            aria-hidden="true"
-            className="font-semibold text-brand transition-transform group-hover:translate-x-1"
-          >
-            →
-          </span>
+          <div className="pointer-events-auto relative z-10">
+            <ShortlistAction
+              player={shortlistPlayer}
+              variant="compact"
+            />
+          </div>
         </div>
-      </Link>
+      </div>
     </li>
   );
 }

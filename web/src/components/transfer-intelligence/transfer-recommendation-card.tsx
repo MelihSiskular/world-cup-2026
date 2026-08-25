@@ -4,6 +4,9 @@ import {
   PlayerImage,
 } from "@/components/players/player-image";
 import {
+  ShortlistAction,
+} from "@/components/shortlists/shortlist-action";
+import {
   RecommendationExplainability,
 } from "@/components/transfer-intelligence/recommendation-explainability";
 import type {
@@ -16,6 +19,9 @@ import {
 import type {
   TransferAnalysisFormValues,
 } from "@/lib/transfer-intelligence/analysis-form";
+import {
+  createShortlistSnapshotFromRecommendation,
+} from "@/lib/shortlists/snapshot";
 import {
   formatMarketValue,
   formatPlayerPosition,
@@ -86,6 +92,11 @@ export function TransferRecommendationCard({
   const comparisonHref =
     `/compare/${targetPlayerId}/${recommendation.player_id}` +
     `?${comparisonParameters.toString()}`;
+
+  const shortlistPlayer =
+    createShortlistSnapshotFromRecommendation(
+      recommendation,
+    );
 
   const metrics = [
     {
@@ -276,7 +287,7 @@ export function TransferRecommendationCard({
             </span>
           </div>
 
-          <div className="flex w-full gap-2 sm:w-auto">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
             <Link
               href={comparisonHref}
               className="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl bg-brand px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-dark sm:flex-none"
@@ -290,6 +301,11 @@ export function TransferRecommendationCard({
             >
               Profile
             </Link>
+
+            <ShortlistAction
+              player={shortlistPlayer}
+              variant="compact"
+            />
           </div>
         </div>
       </article>
@@ -396,6 +412,10 @@ export function TransferRecommendationCard({
             >
               Open player profile
             </Link>
+
+            <ShortlistAction
+              player={shortlistPlayer}
+            />
           </div>
         </div>
 

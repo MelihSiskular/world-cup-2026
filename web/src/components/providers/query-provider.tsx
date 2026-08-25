@@ -12,6 +12,10 @@ import type {
   ReactNode,
 } from "react";
 
+import {
+  ShortlistProvider,
+} from "@/components/providers/shortlist-provider";
+
 type QueryProviderProps =
   Readonly<{
     children: ReactNode;
@@ -49,7 +53,9 @@ export function QueryProvider({
     <QueryClientProvider
       client={queryClient}
     >
-      {children}
+      <ShortlistProvider>
+        {children}
+      </ShortlistProvider>
     </QueryClientProvider>
   );
 }
