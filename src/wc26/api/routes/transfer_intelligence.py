@@ -7,6 +7,7 @@ from typing import Annotated
 from fastapi import (
     APIRouter,
     Depends,
+    Query,
     status,
 )
 
@@ -14,23 +15,27 @@ from wc26.analytics.transfer_intelligence.errors import (
     AmbiguousPlayerError,
     DatasetNotFoundError,
     InvalidDatasetError,
+    InvalidMultiPlayerComparisonRequestError,
     InvalidTransferAnalysisRequestError,
     PlayerNotFoundError,
 )
 from wc26.analytics.transfer_intelligence.models import (
     HeatmapComparisonRequest,
     HeatmapPlayerRequest,
+    MultiPlayerComparisonRequest,
     RadarComparisonRequest,
     TransferAnalysisRequest,
 )
 from wc26.api.dependencies import (
     HeatmapComparisonRunner,
     HeatmapPlayerRunner,
+    MultiPlayerComparisonRunner,
     RadarComparisonRunner,
     TransferAnalysisRunner,
     TransferDatasetPaths,
     get_heatmap_comparison_runner,
     get_heatmap_player_runner,
+    get_multi_player_comparison_runner,
     get_radar_comparison_runner,
     get_transfer_analysis_runner,
     get_transfer_dataset_paths,
@@ -40,6 +45,7 @@ from wc26.api.schemas.errors import ApiErrorResponse
 from wc26.api.schemas.transfer_intelligence import (
     HeatmapComparisonResponse,
     HeatmapPlayerResponse,
+    MultiPlayerComparisonResponse,
     RadarComparisonResponse,
     TransferAnalysisPayload,
     TransferAnalysisResponse,
@@ -49,6 +55,77 @@ router = APIRouter(
     prefix="/api/v1/transfer-intelligence",
     tags=["transfer-intelligence"],
 )
+
+
+@router.get(
+    "/multi-comparison/{target_player_id}",
+    response_model=MultiPlayerComparisonResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Compare multiple same-position players",
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "model": ApiErrorResponse,
+            "description": ("The multi-player comparison request is invalid."),
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "model": ApiErrorResponse,
+            "description": ("One of the requested players was not found."),
+        },
+        status.HTTP_503_SERVICE_UNAVAILABLE: {
+            "model": ApiErrorResponse,
+            "description": ("Required comparison analytics data is unavailable."),
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ApiErrorResponse,
+            "description": ("Multi-player comparison failed unexpectedly."),
+        },
+    },
+)
+def compare_multiple_players(
+    target_player_id: int,
+    candidate_player_ids: Annotated[
+        list[int],
+        Query(
+            min_length=1,
+            max_length=3,
+            description=(
+                "Ordered candidate player IDs. Repeat the query parameter for each candidate."
+            ),
+        ),
+    ],
+    dataset_paths: Annotated[
+        TransferDatasetPaths,
+        Depends(get_transfer_dataset_paths),
+    ],
+    comparison_runner: Annotated[
+        MultiPlayerComparisonRunner,
+        Depends(get_multi_player_comparison_runner),
+    ],
+) -> MultiPlayerComparisonResponse:
+    """Return generic evidence for one target and ordered candidates."""
+
+    request = MultiPlayerComparisonRequest(
+        target_player_id=target_player_id,
+        candidate_player_ids=tuple(candidate_player_ids),
+        features=dataset_paths.features,
+        similarity=dataset_paths.similarity,
+        heatmap_similarity=(dataset_paths.heatmap_similarity),
+        heatmap_profiles=(dataset_paths.heatmap_profiles),
+    )
+
+    try:
+        result = comparison_runner(
+            request,
+        )
+
+        return MultiPlayerComparisonResponse.model_validate(result.to_dict())
+    except (
+        PlayerNotFoundError,
+        DatasetNotFoundError,
+        InvalidDatasetError,
+        InvalidMultiPlayerComparisonRequestError,
+    ):
+        raise
 
 
 @router.get(

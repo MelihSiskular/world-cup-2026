@@ -55,6 +55,18 @@ export type HeatmapSimilarityResponse =
 export type HeatmapComparisonResponse =
   components["schemas"]["HeatmapComparisonResponse"];
 
+export type MultiPlayerComparisonPlayerResponse =
+  components["schemas"]["MultiPlayerComparisonPlayerResponse"];
+
+export type MultiPlayerComparisonEvidenceResponse =
+  components["schemas"]["MultiPlayerComparisonEvidenceResponse"];
+
+export type MultiPlayerComparisonCandidateResponse =
+  components["schemas"]["MultiPlayerComparisonCandidateResponse"];
+
+export type MultiPlayerComparisonResponse =
+  components["schemas"]["MultiPlayerComparisonResponse"];
+
 export type RadarDimensionResponse =
   components["schemas"]["RadarDimensionResponse"];
 
@@ -121,6 +133,16 @@ export type PlayerSearchQuery =
 export type PlayerProfilePath =
   paths["/api/v1/players/{player_id}"]["get"]["parameters"]["path"];
 
+
+export type MultiPlayerComparisonPath =
+  paths[
+    "/api/v1/transfer-intelligence/multi-comparison/{target_player_id}"
+  ]["get"]["parameters"]["path"];
+
+export type MultiPlayerComparisonQuery =
+  paths[
+    "/api/v1/transfer-intelligence/multi-comparison/{target_player_id}"
+  ]["get"]["parameters"]["query"];
 
 export type HeatmapComparisonPath =
   paths[

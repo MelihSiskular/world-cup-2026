@@ -124,6 +124,26 @@ export interface paths {
         readonly patch?: never;
         readonly trace?: never;
     };
+    readonly "/api/v1/transfer-intelligence/multi-comparison/{target_player_id}": {
+        readonly parameters: {
+            readonly query?: never;
+            readonly header?: never;
+            readonly path?: never;
+            readonly cookie?: never;
+        };
+        /**
+         * Compare multiple same-position players
+         * @description Return generic evidence for one target and ordered candidates.
+         */
+        readonly get: operations["compare_multiple_players_api_v1_transfer_intelligence_multi_comparison__target_player_id__get"];
+        readonly put?: never;
+        readonly post?: never;
+        readonly delete?: never;
+        readonly options?: never;
+        readonly head?: never;
+        readonly patch?: never;
+        readonly trace?: never;
+    };
     readonly "/api/v1/transfer-intelligence/radar-comparison/{target_player_id}/{candidate_player_id}": {
         readonly parameters: {
             readonly query?: never;
@@ -647,6 +667,77 @@ export interface components {
             readonly [key: string]: components["schemas"]["JsonValue"];
         };
         readonly JsonValue: unknown;
+        /**
+         * MultiPlayerComparisonCandidateResponse
+         * @description One ordered candidate and their comparison evidence.
+         */
+        readonly MultiPlayerComparisonCandidateResponse: {
+            readonly evidence: components["schemas"]["MultiPlayerComparisonEvidenceResponse"];
+            readonly player: components["schemas"]["MultiPlayerComparisonPlayerResponse"];
+        };
+        /**
+         * MultiPlayerComparisonEvidenceResponse
+         * @description Nullable target-relative evidence for one candidate.
+         */
+        readonly MultiPlayerComparisonEvidenceResponse: {
+            /** Heatmap Similarity Score Pct */
+            readonly heatmap_similarity_score_pct?: number | null;
+            /** Market Value Advantage Pct */
+            readonly market_value_advantage_pct?: number | null;
+            /** Role Fit Pct */
+            readonly role_fit_pct?: number | null;
+            /** Spatial Similarity Pct */
+            readonly spatial_similarity_pct?: number | null;
+            /** Statistical Similarity Pct */
+            readonly statistical_similarity_pct?: number | null;
+        };
+        /**
+         * MultiPlayerComparisonPlayerResponse
+         * @description Stable identity and context for one comparison player.
+         */
+        readonly MultiPlayerComparisonPlayerResponse: {
+            /** Age */
+            readonly age?: number | null;
+            /** Archetype */
+            readonly archetype?: string | null;
+            /** Country Alpha3 */
+            readonly country_alpha3?: string | null;
+            /** Country Name */
+            readonly country_name?: string | null;
+            /** Data Reliability Score */
+            readonly data_reliability_score?: number | null;
+            /** Final Role */
+            readonly final_role?: string | null;
+            /** Market Value */
+            readonly market_value?: number | null;
+            /** Market Value Currency */
+            readonly market_value_currency?: string | null;
+            /** Minutes */
+            readonly minutes?: number | null;
+            /** National Team Name */
+            readonly national_team_name?: string | null;
+            /** Player Id */
+            readonly player_id: number;
+            /** Player Name */
+            readonly player_name: string;
+            /** Player Quality Score */
+            readonly player_quality_score?: number | null;
+            /** Position */
+            readonly position?: string | null;
+            /** Role Confidence Pct */
+            readonly role_confidence_pct?: number | null;
+            /** Spatial Role */
+            readonly spatial_role?: string | null;
+        };
+        /**
+         * MultiPlayerComparisonResponse
+         * @description One target compared with between one and three candidates.
+         */
+        readonly MultiPlayerComparisonResponse: {
+            /** Candidates */
+            readonly candidates: readonly components["schemas"]["MultiPlayerComparisonCandidateResponse"][];
+            readonly target: components["schemas"]["MultiPlayerComparisonPlayerResponse"];
+        };
         /**
          * PlayerInsightResponse
          * @description Explainable strength or watch-out.
@@ -1952,6 +2043,76 @@ export interface operations {
                 };
             };
             /** @description Required heatmap analytics data is unavailable. */
+            readonly 503: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+        };
+    };
+    readonly compare_multiple_players_api_v1_transfer_intelligence_multi_comparison__target_player_id__get: {
+        readonly parameters: {
+            readonly query: {
+                /** @description Ordered candidate player IDs. Repeat the query parameter for each candidate. */
+                readonly candidate_player_ids: readonly number[];
+            };
+            readonly header?: never;
+            readonly path: {
+                readonly target_player_id: number;
+            };
+            readonly cookie?: never;
+        };
+        readonly requestBody?: never;
+        readonly responses: {
+            /** @description Successful Response */
+            readonly 200: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["MultiPlayerComparisonResponse"];
+                };
+            };
+            /** @description The multi-player comparison request is invalid. */
+            readonly 400: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description One of the requested players was not found. */
+            readonly 404: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            readonly 422: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Multi-player comparison failed unexpectedly. */
+            readonly 500: {
+                headers: {
+                    readonly [name: string]: unknown;
+                };
+                content: {
+                    readonly "application/json": components["schemas"]["ApiErrorResponse"];
+                };
+            };
+            /** @description Required comparison analytics data is unavailable. */
             readonly 503: {
                 headers: {
                     readonly [name: string]: unknown;

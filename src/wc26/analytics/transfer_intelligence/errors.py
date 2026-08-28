@@ -31,10 +31,17 @@ class InvalidTransferAnalysisRequestError(ValueError):
     """Raised when transfer-analysis target parameters are invalid."""
 
 
+class InvalidMultiPlayerComparisonRequestError(
+    InvalidTransferAnalysisRequestError,
+):
+    """Raised when multi-player comparison identifiers are invalid."""
+
+
 __all__ = [
     "AmbiguousPlayerError",
     "DatasetNotFoundError",
     "InvalidDatasetError",
+    "InvalidMultiPlayerComparisonRequestError",
     "InvalidPlayerProfileError",
     "InvalidPlayerSearchError",
     "InvalidTransferAnalysisRequestError",

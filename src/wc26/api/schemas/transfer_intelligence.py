@@ -324,6 +324,104 @@ class RadarComparisonResponse(BaseModel):
         return self
 
 
+class MultiPlayerComparisonPlayerResponse(BaseModel):
+    """Stable identity and context for one comparison player."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    player_id: int = Field(gt=0)
+    player_name: str = Field(min_length=1)
+
+    national_team_name: str | None = None
+    country_name: str | None = None
+    country_alpha3: str | None = None
+    position: str | None = None
+    final_role: str | None = None
+    archetype: str | None = None
+    spatial_role: str | None = None
+
+    age: float | None = Field(
+        default=None,
+        ge=0.0,
+    )
+    market_value: float | None = Field(
+        default=None,
+        ge=0.0,
+    )
+    market_value_currency: str | None = None
+    minutes: float | None = Field(
+        default=None,
+        ge=0.0,
+    )
+    role_confidence_pct: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+    data_reliability_score: float | None = Field(
+        default=None,
+        ge=0.0,
+    )
+    player_quality_score: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+
+
+class MultiPlayerComparisonEvidenceResponse(BaseModel):
+    """Nullable target-relative evidence for one candidate."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    statistical_similarity_pct: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+    spatial_similarity_pct: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+    heatmap_similarity_score_pct: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+    role_fit_pct: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+    market_value_advantage_pct: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+    )
+
+
+class MultiPlayerComparisonCandidateResponse(BaseModel):
+    """One ordered candidate and their comparison evidence."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    player: MultiPlayerComparisonPlayerResponse
+    evidence: MultiPlayerComparisonEvidenceResponse
+
+
+class MultiPlayerComparisonResponse(BaseModel):
+    """One target compared with between one and three candidates."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    target: MultiPlayerComparisonPlayerResponse
+    candidates: list[MultiPlayerComparisonCandidateResponse] = Field(
+        min_length=1,
+        max_length=3,
+    )
+
+
 class TransferAnalysisPayload(BaseModel):
     """Client-provided parameters for transfer analysis."""
 
@@ -683,6 +781,10 @@ __all__ = [
     "HeatmapComparisonResponse",
     "HeatmapPlayerResponse",
     "HeatmapSimilarityResponse",
+    "MultiPlayerComparisonCandidateResponse",
+    "MultiPlayerComparisonEvidenceResponse",
+    "MultiPlayerComparisonPlayerResponse",
+    "MultiPlayerComparisonResponse",
     "TransferExplainabilityBonusResponse",
     "TransferExplainabilityReasonResponse",
     "TransferExplainabilityScoreResponse",

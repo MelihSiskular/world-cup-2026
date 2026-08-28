@@ -510,6 +510,77 @@ class PlayerProfileResult:
 
 
 @dataclass(frozen=True, slots=True)
+class MultiPlayerComparisonRequest:
+    """Input required to compare one target with up to three players."""
+
+    target_player_id: int
+    candidate_player_ids: tuple[int, ...]
+    features: Path
+    similarity: Path
+    heatmap_similarity: Path
+    heatmap_profiles: Path
+
+
+@dataclass(frozen=True, slots=True)
+class MultiPlayerComparisonEvidenceResult:
+    """Nullable comparison evidence for one selected candidate."""
+
+    statistical_similarity_pct: float | None
+    spatial_similarity_pct: float | None
+    heatmap_similarity_score_pct: float | None
+    role_fit_pct: float | None
+    market_value_advantage_pct: float | None
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible comparison evidence."""
+
+        return {
+            "statistical_similarity_pct": self.statistical_similarity_pct,
+            "spatial_similarity_pct": self.spatial_similarity_pct,
+            "heatmap_similarity_score_pct": (self.heatmap_similarity_score_pct),
+            "role_fit_pct": self.role_fit_pct,
+            "market_value_advantage_pct": (self.market_value_advantage_pct),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class MultiPlayerComparisonCandidateResult:
+    """One selected comparison player and their target-relative evidence."""
+
+    player: PlayerSearchItem
+    evidence: MultiPlayerComparisonEvidenceResult
+
+    def to_dict(self) -> JsonObject:
+        """Return a JSON-compatible candidate comparison."""
+
+        return {
+            "player": self.player.to_dict(),
+            "evidence": self.evidence.to_dict(),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class MultiPlayerComparisonResult:
+    """Structured comparison of one target and ordered candidates."""
+
+    target: PlayerSearchItem
+    candidates: tuple[
+        MultiPlayerComparisonCandidateResult,
+        ...,
+    ]
+
+    def to_dict(self) -> JsonObject:
+        """Return a JSON-compatible multi-player comparison."""
+
+        candidate_values: list[JsonValue] = [candidate.to_dict() for candidate in self.candidates]
+
+        return {
+            "target": self.target.to_dict(),
+            "candidates": candidate_values,
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class HeatmapPlayerRequest:
     """Stable player identifier for one measured heatmap."""
 
@@ -726,6 +797,10 @@ __all__ = [
     "JsonObject",
     "JsonScalar",
     "JsonValue",
+    "MultiPlayerComparisonCandidateResult",
+    "MultiPlayerComparisonEvidenceResult",
+    "MultiPlayerComparisonRequest",
+    "MultiPlayerComparisonResult",
     "PlayerInsightResult",
     "PlayerIntelligenceResult",
     "PlayerPerformanceMetricGroupResult",

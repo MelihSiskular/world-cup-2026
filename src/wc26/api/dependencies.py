@@ -21,6 +21,8 @@ from wc26.analytics.transfer_intelligence.models import (
     HeatmapComparisonResult,
     HeatmapPlayerRequest,
     HeatmapPlayerResult,
+    MultiPlayerComparisonRequest,
+    MultiPlayerComparisonResult,
     PlayerProfileRequest,
     PlayerProfileResult,
     PlayerSearchFiltersRequest,
@@ -31,6 +33,10 @@ from wc26.analytics.transfer_intelligence.models import (
     RadarComparisonResult,
     TransferAnalysisRequest,
     TransferAnalysisResult,
+)
+from wc26.analytics.transfer_intelligence.multi_comparison import (
+    run_multi_player_comparison,
+    run_multi_player_comparison_from_catalog,
 )
 from wc26.analytics.transfer_intelligence.player_profile import (
     get_player_profile,
@@ -56,6 +62,12 @@ from wc26.api.settings import TransferDatasetPaths
 type TransferAnalysisRunner = Callable[
     [TransferAnalysisRequest],
     TransferAnalysisResult,
+]
+
+
+type MultiPlayerComparisonRunner = Callable[
+    [MultiPlayerComparisonRequest],
+    MultiPlayerComparisonResult,
 ]
 
 
@@ -90,6 +102,22 @@ type PlayerProfileRunner = Callable[
     [PlayerProfileRequest],
     PlayerProfileResult,
 ]
+
+
+def create_catalog_multi_player_comparison_runner(
+    catalog: TransferDataCatalog,
+) -> MultiPlayerComparisonRunner:
+    """Create a multi-player comparison runner backed by a loaded catalog."""
+
+    def runner(
+        request: MultiPlayerComparisonRequest,
+    ) -> MultiPlayerComparisonResult:
+        return run_multi_player_comparison_from_catalog(
+            request,
+            catalog,
+        )
+
+    return runner
 
 
 def create_catalog_player_search_runner(
@@ -222,6 +250,21 @@ def _get_runtime_catalog(
     return runtime.transfer_data_catalog
 
 
+def get_multi_player_comparison_runner(
+    request: Request,
+) -> MultiPlayerComparisonRunner:
+    """Return the configured multi-player comparison service."""
+
+    catalog = _get_runtime_catalog(request)
+
+    if catalog is None:
+        return run_multi_player_comparison
+
+    return create_catalog_multi_player_comparison_runner(
+        catalog,
+    )
+
+
 def get_player_search_filters_runner(
     request: Request,
 ) -> PlayerSearchFiltersRunner:
@@ -326,6 +369,7 @@ def get_transfer_analysis_runner(
 __all__ = [
     "HeatmapComparisonRunner",
     "HeatmapPlayerRunner",
+    "MultiPlayerComparisonRunner",
     "RadarComparisonRunner",
     "PlayerProfileRunner",
     "PlayerSearchFiltersRunner",
@@ -334,6 +378,7 @@ __all__ = [
     "TransferDatasetPaths",
     "create_catalog_heatmap_comparison_runner",
     "create_catalog_heatmap_player_runner",
+    "create_catalog_multi_player_comparison_runner",
     "create_catalog_radar_comparison_runner",
     "create_catalog_player_profile_runner",
     "create_catalog_player_search_filters_runner",
@@ -341,6 +386,7 @@ __all__ = [
     "create_catalog_transfer_analysis_runner",
     "get_heatmap_comparison_runner",
     "get_heatmap_player_runner",
+    "get_multi_player_comparison_runner",
     "get_radar_comparison_runner",
     "get_player_profile_runner",
     "get_player_search_filters_runner",
