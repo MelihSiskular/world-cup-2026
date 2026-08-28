@@ -736,7 +736,45 @@ export interface components {
         readonly MultiPlayerComparisonResponse: {
             /** Candidates */
             readonly candidates: readonly components["schemas"]["MultiPlayerComparisonCandidateResponse"][];
+            /** Role Metrics */
+            readonly role_metrics?: readonly components["schemas"]["MultiPlayerComparisonRoleMetricGroupResponse"][];
             readonly target: components["schemas"]["MultiPlayerComparisonPlayerResponse"];
+        };
+        /**
+         * MultiPlayerComparisonRoleMetricGroupResponse
+         * @description One target-role football duty and its ordered metrics.
+         */
+        readonly MultiPlayerComparisonRoleMetricGroupResponse: {
+            /** Key */
+            readonly key: string;
+            /** Label */
+            readonly label: string;
+            /** Metrics */
+            readonly metrics: readonly components["schemas"]["MultiPlayerComparisonRoleMetricResponse"][];
+        };
+        /**
+         * MultiPlayerComparisonRoleMetricResponse
+         * @description One role-defining metric compared in canonical player order.
+         */
+        readonly MultiPlayerComparisonRoleMetricResponse: {
+            /** Key */
+            readonly key: string;
+            /** Label */
+            readonly label: string;
+            /** Values */
+            readonly values: readonly components["schemas"]["MultiPlayerComparisonRoleMetricValueResponse"][];
+        };
+        /**
+         * MultiPlayerComparisonRoleMetricValueResponse
+         * @description One player's nullable tournament total and per-90 metric value.
+         */
+        readonly MultiPlayerComparisonRoleMetricValueResponse: {
+            /** Per90 */
+            readonly per90?: number | null;
+            /** Player Id */
+            readonly player_id: number;
+            /** Total */
+            readonly total?: number | null;
         };
         /**
          * PlayerInsightResponse

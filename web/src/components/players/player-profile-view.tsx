@@ -249,7 +249,26 @@ export function PlayerProfileView({
               </div>
             </dl>
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center lg:flex-nowrap">
+              <Link
+                href="/players"
+                aria-label="Back to player search"
+                className="inline-flex min-h-12 w-full shrink-0 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-3 text-center text-sm font-semibold transition-colors hover:bg-surface-secondary sm:w-auto"
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  className="size-4 shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M19 12H5m7-7-7 7 7 7" />
+                </svg>
+
+                <span>Back</span>
+              </Link>
+
               <Link
                 href={`/analysis/${player.player_id}`}
                 className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-5 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-dark sm:w-auto"
@@ -260,13 +279,6 @@ export function PlayerProfileView({
               <ShortlistAction
                 player={shortlistPlayer}
               />
-
-              <Link
-                href="/players"
-                className="inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-border bg-surface px-5 py-3 text-center text-sm font-semibold transition-colors hover:bg-surface-secondary sm:w-auto"
-              >
-                Back to player search
-              </Link>
             </div>
           </div>
         </div>

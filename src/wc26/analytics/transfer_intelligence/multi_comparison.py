@@ -25,7 +25,13 @@ from wc26.analytics.transfer_intelligence.models import (
     MultiPlayerComparisonEvidenceResult,
     MultiPlayerComparisonRequest,
     MultiPlayerComparisonResult,
+    MultiPlayerComparisonRoleMetricGroupResult,
+    MultiPlayerComparisonRoleMetricResult,
+    MultiPlayerComparisonRoleMetricValueResult,
     PlayerSearchItem,
+)
+from wc26.analytics.transfer_intelligence.role_metrics import (
+    resolve_role_metric_groups,
 )
 from wc26.analytics.transfer_intelligence.scoring import (
     calculate_market_value_advantage,
@@ -410,6 +416,112 @@ def _build_candidate_result(
     )
 
 
+def _build_role_metric_groups(
+    *,
+    target: pd.Series[Any],
+    player_ids: tuple[int, ...],
+    tournament_summary: pd.DataFrame,
+) -> tuple[MultiPlayerComparisonRoleMetricGroupResult, ...]:
+    """Compare selected players using duties defined by the target's role."""
+
+    definitions = resolve_role_metric_groups(
+        final_role=_optional_text(
+            target.get("final_role"),
+        ),
+        archetype=_optional_text(
+            target.get("archetype"),
+        ),
+    )
+
+    if not definitions or tournament_summary.empty:
+        return ()
+
+    required_columns = {
+        "player_id",
+        *(
+            column
+            for group in definitions
+            for metric in group.metrics
+            for column in (
+                metric.total_column,
+                metric.per90_column,
+            )
+        ),
+    }
+
+    missing_columns = required_columns.difference(
+        tournament_summary.columns,
+    )
+
+    if missing_columns:
+        raise InvalidDatasetError(
+            "Missing role comparison columns: "
+            + ", ".join(
+                sorted(missing_columns),
+            )
+        )
+
+    records = cast(
+        "list[dict[str, Any]]",
+        tournament_summary[list(required_columns)].to_dict(
+            orient="records",
+        ),
+    )
+
+    records_by_player_id: dict[
+        int,
+        dict[str, Any],
+    ] = {}
+
+    for record in records:
+        numeric_player_id = _optional_float(
+            record.get("player_id"),
+        )
+
+        if numeric_player_id is None or not numeric_player_id.is_integer():
+            raise InvalidDatasetError("Player tournament summary contains an invalid player ID.")
+
+        player_id = int(numeric_player_id)
+
+        if player_id in records_by_player_id:
+            raise InvalidDatasetError("Player tournament summary contains duplicate player IDs.")
+
+        records_by_player_id[player_id] = record
+
+    return tuple(
+        MultiPlayerComparisonRoleMetricGroupResult(
+            key=group.key,
+            label=group.label,
+            metrics=tuple(
+                MultiPlayerComparisonRoleMetricResult(
+                    key=metric.key,
+                    label=metric.label,
+                    values=tuple(
+                        MultiPlayerComparisonRoleMetricValueResult(
+                            player_id=player_id,
+                            total=_optional_float(
+                                records_by_player_id.get(
+                                    player_id,
+                                    {},
+                                ).get(metric.total_column),
+                            ),
+                            per90=_optional_float(
+                                records_by_player_id.get(
+                                    player_id,
+                                    {},
+                                ).get(metric.per90_column),
+                            ),
+                        )
+                        for player_id in player_ids
+                    ),
+                )
+                for metric in group.metrics
+            ),
+        )
+        for group in definitions
+    )
+
+
 def run_multi_player_comparison_from_catalog(
     request: MultiPlayerComparisonRequest,
     catalog: TransferDataCatalog,
@@ -487,11 +599,21 @@ def run_multi_player_comparison_from_catalog(
         for candidate_player_id in request.candidate_player_ids
     )
 
+    role_metrics = _build_role_metric_groups(
+        target=target,
+        player_ids=(
+            request.target_player_id,
+            *request.candidate_player_ids,
+        ),
+        tournament_summary=(catalog.player_tournament_summary),
+    )
+
     return MultiPlayerComparisonResult(
         target=_build_player_result(
             target,
         ),
         candidates=candidates,
+        role_metrics=role_metrics,
     )
 
 
@@ -505,6 +627,7 @@ def run_multi_player_comparison(
         similarity=request.similarity,
         heatmap_similarity=(request.heatmap_similarity),
         heatmap_profiles=(request.heatmap_profiles),
+        player_tournament_summary=(request.player_tournament_summary),
     )
 
     return run_multi_player_comparison_from_catalog(

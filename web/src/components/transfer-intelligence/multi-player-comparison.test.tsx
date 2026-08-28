@@ -139,6 +139,36 @@ const response: MultiPlayerComparisonResponse =
         },
       },
     ],
+    role_metrics: [
+      {
+        key: "chance-creation",
+        label:
+          "Chance creation",
+        metrics: [
+          {
+            key: "goals",
+            label: "Goals",
+            values: [
+              {
+                player_id: 978838,
+                total: 5,
+                per90: 0.83,
+              },
+              {
+                player_id: 789071,
+                total: 3,
+                per90: 0.56,
+              },
+              {
+                player_id: 805078,
+                total: null,
+                per90: null,
+              },
+            ],
+          },
+        ],
+      },
+    ],
   };
 
 const identifiers = {
@@ -181,6 +211,37 @@ describe(
                 "Target-relative comparison overview",
             },
           );
+
+        const roleMetricTable =
+          await screen.findByRole(
+            "table",
+            {
+              name:
+                "Target final-role metric comparison",
+            },
+          );
+
+        expect(
+          within(
+            roleMetricTable,
+          ).getByRole(
+            "cell",
+            {
+              name:
+                "5 total, 0.83 per 90",
+            },
+          ),
+        ).toHaveTextContent(
+          "5 (0.83/90)",
+        );
+
+        expect(
+          within(
+            roleMetricTable,
+          ).getByText(
+            "Unavailable",
+          ),
+        ).toBeInTheDocument();
 
         const headers =
           within(table)

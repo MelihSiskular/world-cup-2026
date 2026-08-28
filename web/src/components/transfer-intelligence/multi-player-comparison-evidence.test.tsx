@@ -1,6 +1,7 @@
 import {
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
@@ -263,6 +264,72 @@ describe(
           ),
         ).toBeInTheDocument();
 
+        const radarSelector =
+          screen.getByRole(
+            "group",
+            {
+              name:
+                "Radar comparison candidate",
+            },
+          );
+
+        const heatmapSelector =
+          screen.getByRole(
+            "group",
+            {
+              name:
+                "Heatmap comparison candidate",
+            },
+          );
+
+        expect(
+          within(
+            radarSelector,
+          ).getByRole(
+            "button",
+            {
+              name:
+                "Dani Olmo",
+            },
+          ),
+        ).toHaveAttribute(
+          "aria-pressed",
+          "true",
+        );
+
+        expect(
+          within(
+            heatmapSelector,
+          ).getByRole(
+            "button",
+            {
+              name:
+                "Dani Olmo",
+            },
+          ),
+        ).toHaveAttribute(
+          "aria-pressed",
+          "true",
+        );
+
+        expect(
+          screen.queryByText(
+            "Inspect one candidate pair",
+          ),
+        ).not.toBeInTheDocument();
+
+        expect(
+          screen.queryByText(
+            "Shared position overlay",
+          ),
+        ).not.toBeInTheDocument();
+
+        expect(
+          screen.queryByText(
+            "Measured pair evidence",
+          ),
+        ).not.toBeInTheDocument();
+
         expect(
           fetchRadarComparisonMock
             .mock.calls[0]
@@ -336,14 +403,64 @@ describe(
           },
         );
 
-        await user.click(
+        const radarSelector =
           screen.getByRole(
+            "group",
+            {
+              name:
+                "Radar comparison candidate",
+            },
+          );
+
+        const heatmapSelector =
+          screen.getByRole(
+            "group",
+            {
+              name:
+                "Heatmap comparison candidate",
+            },
+          );
+
+        await user.click(
+          within(
+            radarSelector,
+          ).getByRole(
             "button",
             {
               name:
                 "Candidate Without Pair Evidence",
             },
           ),
+        );
+
+        expect(
+          within(
+            radarSelector,
+          ).getByRole(
+            "button",
+            {
+              name:
+                "Candidate Without Pair Evidence",
+            },
+          ),
+        ).toHaveAttribute(
+          "aria-pressed",
+          "true",
+        );
+
+        expect(
+          within(
+            heatmapSelector,
+          ).getByRole(
+            "button",
+            {
+              name:
+                "Candidate Without Pair Evidence",
+            },
+          ),
+        ).toHaveAttribute(
+          "aria-pressed",
+          "true",
         );
 
         expect(
@@ -433,11 +550,19 @@ describe(
           />,
         );
 
+        await screen.findByRole(
+          "img",
+          {
+            name:
+              "Tournament heatmap for Dani Olmo",
+          },
+        );
+
         expect(
-          await screen.findByText(
+          screen.queryByText(
             "Pair evidence unavailable",
           ),
-        ).toBeInTheDocument();
+        ).not.toBeInTheDocument();
 
         const metrics =
           screen.getByLabelText(

@@ -519,6 +519,7 @@ class MultiPlayerComparisonRequest:
     similarity: Path
     heatmap_similarity: Path
     heatmap_profiles: Path
+    player_tournament_summary: Path | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -560,6 +561,70 @@ class MultiPlayerComparisonCandidateResult:
 
 
 @dataclass(frozen=True, slots=True)
+class MultiPlayerComparisonRoleMetricValueResult:
+    """One player's tournament total and per-90 value for a role metric."""
+
+    player_id: int
+    total: float | None
+    per90: float | None
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible role-metric values."""
+
+        return {
+            "player_id": self.player_id,
+            "total": self.total,
+            "per90": self.per90,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class MultiPlayerComparisonRoleMetricResult:
+    """One target-role metric compared across every selected player."""
+
+    key: str
+    label: str
+    values: tuple[
+        MultiPlayerComparisonRoleMetricValueResult,
+        ...,
+    ]
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible ordered metric values."""
+
+        value_items: list[JsonValue] = [value.to_dict() for value in self.values]
+
+        return {
+            "key": self.key,
+            "label": self.label,
+            "values": value_items,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class MultiPlayerComparisonRoleMetricGroupResult:
+    """One football-duty group selected by the target's final role."""
+
+    key: str
+    label: str
+    metrics: tuple[
+        MultiPlayerComparisonRoleMetricResult,
+        ...,
+    ]
+
+    def to_dict(self) -> JsonObject:
+        """Return JSON-compatible role metric group."""
+
+        metric_items: list[JsonValue] = [metric.to_dict() for metric in self.metrics]
+
+        return {
+            "key": self.key,
+            "label": self.label,
+            "metrics": metric_items,
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class MultiPlayerComparisonResult:
     """Structured comparison of one target and ordered candidates."""
 
@@ -568,15 +633,21 @@ class MultiPlayerComparisonResult:
         MultiPlayerComparisonCandidateResult,
         ...,
     ]
+    role_metrics: tuple[
+        MultiPlayerComparisonRoleMetricGroupResult,
+        ...,
+    ] = ()
 
     def to_dict(self) -> JsonObject:
         """Return a JSON-compatible multi-player comparison."""
 
         candidate_values: list[JsonValue] = [candidate.to_dict() for candidate in self.candidates]
+        role_metric_values: list[JsonValue] = [group.to_dict() for group in self.role_metrics]
 
         return {
             "target": self.target.to_dict(),
             "candidates": candidate_values,
+            "role_metrics": role_metric_values,
         }
 
 
@@ -801,6 +872,9 @@ __all__ = [
     "MultiPlayerComparisonEvidenceResult",
     "MultiPlayerComparisonRequest",
     "MultiPlayerComparisonResult",
+    "MultiPlayerComparisonRoleMetricGroupResult",
+    "MultiPlayerComparisonRoleMetricResult",
+    "MultiPlayerComparisonRoleMetricValueResult",
     "PlayerInsightResult",
     "PlayerIntelligenceResult",
     "PlayerPerformanceMetricGroupResult",

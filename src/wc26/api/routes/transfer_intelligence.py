@@ -111,6 +111,7 @@ def compare_multiple_players(
         similarity=dataset_paths.similarity,
         heatmap_similarity=(dataset_paths.heatmap_similarity),
         heatmap_profiles=(dataset_paths.heatmap_profiles),
+        player_tournament_summary=(dataset_paths.player_tournament_summary),
     )
 
     try:
