@@ -18,6 +18,9 @@ import {
 import {
   useShortlists,
 } from "@/components/providers/shortlist-provider";
+import {
+  ShortlistComparisonBuilder,
+} from "@/components/shortlists/shortlist-comparison-builder";
 import type {
   Shortlist,
   ShortlistPlayerSnapshot,
@@ -719,6 +722,15 @@ export function ShortlistManager() {
                       </button>
                     </div>
                   </div>
+                ) : null}
+
+                {shortlist.entries
+                  .length > 0 ? (
+                  <ShortlistComparisonBuilder
+                    shortlist={
+                      shortlist
+                    }
+                  />
                 ) : null}
 
                 {shortlist.entries

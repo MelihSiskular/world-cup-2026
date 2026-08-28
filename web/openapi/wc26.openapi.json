@@ -582,6 +582,105 @@
         }
       }
     },
+    "/api/v1/transfer-intelligence/multi-comparison/{target_player_id}": {
+      "get": {
+        "tags": [
+          "transfer-intelligence"
+        ],
+        "summary": "Compare multiple same-position players",
+        "description": "Return generic evidence for one target and ordered candidates.",
+        "operationId": "compare_multiple_players_api_v1_transfer_intelligence_multi_comparison__target_player_id__get",
+        "parameters": [
+          {
+            "name": "target_player_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Target Player Id"
+            }
+          },
+          {
+            "name": "candidate_player_ids",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 1,
+              "maxItems": 3,
+              "description": "Ordered candidate player IDs. Repeat the query parameter for each candidate.",
+              "title": "Candidate Player Ids"
+            },
+            "description": "Ordered candidate player IDs. Repeat the query parameter for each candidate."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MultiPlayerComparisonResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The multi-player comparison request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the requested players was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Required comparison analytics data is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Multi-player comparison failed unexpectedly.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/transfer-intelligence/heatmap/{player_id}": {
       "get": {
         "tags": [
@@ -2886,6 +2985,305 @@
         "description": "Recommendation ranked for immediate first-team impact."
       },
       "JsonValue": {},
+      "MultiPlayerComparisonCandidateResponse": {
+        "properties": {
+          "player": {
+            "$ref": "#/components/schemas/MultiPlayerComparisonPlayerResponse"
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/MultiPlayerComparisonEvidenceResponse"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "player",
+          "evidence"
+        ],
+        "title": "MultiPlayerComparisonCandidateResponse",
+        "description": "One ordered candidate and their comparison evidence."
+      },
+      "MultiPlayerComparisonEvidenceResponse": {
+        "properties": {
+          "statistical_similarity_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Statistical Similarity Pct"
+          },
+          "spatial_similarity_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spatial Similarity Pct"
+          },
+          "heatmap_similarity_score_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heatmap Similarity Score Pct"
+          },
+          "role_fit_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role Fit Pct"
+          },
+          "market_value_advantage_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Market Value Advantage Pct"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "MultiPlayerComparisonEvidenceResponse",
+        "description": "Nullable target-relative evidence for one candidate."
+      },
+      "MultiPlayerComparisonPlayerResponse": {
+        "properties": {
+          "player_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Player Id"
+          },
+          "player_name": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Player Name"
+          },
+          "national_team_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "National Team Name"
+          },
+          "country_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country Name"
+          },
+          "country_alpha3": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country Alpha3"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "final_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Final Role"
+          },
+          "archetype": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archetype"
+          },
+          "spatial_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spatial Role"
+          },
+          "age": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Age"
+          },
+          "market_value": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Market Value"
+          },
+          "market_value_currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Market Value Currency"
+          },
+          "minutes": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minutes"
+          },
+          "role_confidence_pct": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role Confidence Pct"
+          },
+          "data_reliability_score": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Reliability Score"
+          },
+          "player_quality_score": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Player Quality Score"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "player_id",
+          "player_name"
+        ],
+        "title": "MultiPlayerComparisonPlayerResponse",
+        "description": "Stable identity and context for one comparison player."
+      },
+      "MultiPlayerComparisonResponse": {
+        "properties": {
+          "target": {
+            "$ref": "#/components/schemas/MultiPlayerComparisonPlayerResponse"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/MultiPlayerComparisonCandidateResponse"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 1,
+            "title": "Candidates"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "target",
+          "candidates"
+        ],
+        "title": "MultiPlayerComparisonResponse",
+        "description": "One target compared with between one and three candidates."
+      },
       "PlayerInsightResponse": {
         "properties": {
           "kind": {

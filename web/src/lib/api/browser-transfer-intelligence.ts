@@ -1,9 +1,13 @@
 import {
   requestBrowserJson,
 } from "@/lib/api/browser-client";
+import {
+  parseMultiComparisonIdentifiers,
+} from "@/lib/transfer-intelligence/multi-comparison-selection";
 import type {
   HeatmapComparisonResponse,
   HeatmapPlayerResponse,
+  MultiPlayerComparisonResponse,
   RadarComparisonResponse,
   TransferAnalysisPayload,
   TransferAnalysisResponse,
@@ -18,6 +22,47 @@ export function runTransferAnalysis(
     {
       method: "POST",
       body: payload,
+      signal,
+    },
+  );
+}
+
+
+export function fetchMultiPlayerComparison(
+  targetPlayerId: number,
+  candidatePlayerIds:
+    readonly number[],
+  signal?: AbortSignal,
+): Promise<MultiPlayerComparisonResponse> {
+  const validation =
+    parseMultiComparisonIdentifiers(
+      targetPlayerId,
+      candidatePlayerIds.join(","),
+    );
+
+  if (!validation.success) {
+    return Promise.reject(
+      new TypeError(
+        validation.message,
+      ),
+    );
+  }
+
+  const parameters =
+    new URLSearchParams({
+      candidates:
+        validation.values
+          .candidatePlayerIds
+          .join(","),
+    });
+
+  return requestBrowserJson<MultiPlayerComparisonResponse>(
+    (
+      "/api/transfer-intelligence/"
+      + `multi-comparison/${validation.values.targetPlayerId}`
+      + `?${parameters.toString()}`
+    ),
+    {
       signal,
     },
   );

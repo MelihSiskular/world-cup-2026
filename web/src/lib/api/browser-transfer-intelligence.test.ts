@@ -8,6 +8,7 @@ import {
 
 import {
   fetchHeatmapComparison,
+  fetchMultiPlayerComparison,
   fetchPlayerHeatmap,
   fetchRadarComparison,
 } from "@/lib/api/browser-transfer-intelligence";
@@ -19,6 +20,162 @@ afterEach(() => {
   fetchMock.mockReset();
   vi.unstubAllGlobals();
 });
+
+describe(
+  "fetchMultiPlayerComparison",
+  () => {
+    it(
+      "requests the canonical multi-player comparison BFF route",
+      async () => {
+        fetchMock.mockResolvedValue(
+          new Response(
+            JSON.stringify({
+              target: {
+                player_id: 978838,
+                player_name:
+                  "Michael Olise",
+                position: "M",
+              },
+              candidates: [
+                {
+                  player: {
+                    player_id: 789071,
+                    player_name:
+                      "Dani Olmo",
+                    position: "M",
+                  },
+                  evidence: {
+                    statistical_similarity_pct:
+                      91,
+                    spatial_similarity_pct:
+                      84,
+                    heatmap_similarity_score_pct:
+                      88,
+                    role_fit_pct: 86,
+                    market_value_advantage_pct:
+                      60,
+                  },
+                },
+                {
+                  player: {
+                    player_id: 805078,
+                    player_name:
+                      "Candidate Without Pair Evidence",
+                    position: "M",
+                  },
+                  evidence: {
+                    statistical_similarity_pct:
+                      null,
+                    spatial_similarity_pct:
+                      72,
+                    heatmap_similarity_score_pct:
+                      null,
+                    role_fit_pct: 78,
+                    market_value_advantage_pct:
+                      70,
+                  },
+                },
+              ],
+            }),
+            {
+              status: 200,
+              headers: {
+                "content-type":
+                  "application/json",
+              },
+            },
+          ),
+        );
+
+        vi.stubGlobal(
+          "fetch",
+          fetchMock,
+        );
+
+        const result =
+          await fetchMultiPlayerComparison(
+            978838,
+            [
+              789071,
+              805078,
+            ],
+          );
+
+        expect(
+          fetchMock,
+        ).toHaveBeenCalledTimes(1);
+
+        const [
+          requestPath,
+          options,
+        ] =
+          fetchMock.mock.calls[0] ??
+          [];
+
+        expect(requestPath).toBe(
+          (
+            "/api/transfer-intelligence/"
+            + "multi-comparison/978838"
+            + "?candidates=789071%2C805078"
+          ),
+        );
+
+        expect(options).toMatchObject({
+          cache: "no-store",
+        });
+
+        expect(
+          result.candidates.map(
+            (candidate) =>
+              candidate.player
+                .player_id,
+          ),
+        ).toEqual([
+          789071,
+          805078,
+        ]);
+
+        expect(
+          result.candidates[1]
+            ?.evidence
+            .statistical_similarity_pct,
+        ).toBeNull();
+
+        expect(
+          result.candidates[1]
+            ?.evidence
+            .heatmap_similarity_score_pct,
+        ).toBeNull();
+      },
+    );
+
+    it(
+      "rejects invalid identifiers before making a request",
+      async () => {
+        vi.stubGlobal(
+          "fetch",
+          fetchMock,
+        );
+
+        await expect(
+          fetchMultiPlayerComparison(
+            978838,
+            [
+              978838,
+            ],
+          ),
+        ).rejects.toThrow(
+          "Target and candidate player IDs must be unique.",
+        );
+
+        expect(
+          fetchMock,
+        ).not.toHaveBeenCalled();
+      },
+    );
+  },
+);
+
 
 describe(
   "fetchPlayerHeatmap",
