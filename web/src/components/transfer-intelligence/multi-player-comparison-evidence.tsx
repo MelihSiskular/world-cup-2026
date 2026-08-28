@@ -117,6 +117,72 @@ function HeatmapEvidenceMetric({
   );
 }
 
+function FocusedCandidateSelector({
+  candidates,
+  focusedCandidateId,
+  onSelect,
+  label,
+}: Readonly<{
+  candidates:
+    readonly MultiPlayerComparisonCandidateResponse[];
+  focusedCandidateId:
+    | number
+    | null;
+  onSelect:
+    (
+      candidatePlayerId:
+        number,
+    ) => void;
+  label: string;
+}>) {
+  return (
+    <div
+      role="group"
+      aria-label={label}
+      className="flex max-w-full flex-wrap justify-end gap-2"
+    >
+      {candidates.map(
+        ({ player }) => {
+          const selected =
+            player.player_id ===
+            focusedCandidateId;
+
+          return (
+            <button
+              key={
+                player.player_id
+              }
+              type="button"
+              aria-pressed={
+                selected
+              }
+              onClick={() => {
+                onSelect(
+                  player.player_id,
+                );
+              }}
+              className={[
+                "min-h-11 max-w-56 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors",
+                selected
+                  ? "border-brand-dark bg-brand-dark text-white"
+                  : "border-border bg-surface hover:bg-surface-secondary",
+              ].join(
+                " ",
+              )}
+            >
+              <span className="block truncate">
+                {
+                  player.player_name
+                }
+              </span>
+            </button>
+          );
+        },
+      )}
+    </div>
+  );
+}
+
 export function MultiPlayerComparisonEvidence({
   target,
   candidates,
@@ -240,87 +306,21 @@ export function MultiPlayerComparisonEvidence({
 
   return (
     <section
-      aria-labelledby="focused-comparison-title"
+      aria-label="Detailed comparison evidence"
       className="space-y-6"
     >
-      <div className="rounded-3xl border border-border bg-surface p-5 shadow-sm sm:p-7">
-        <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-          Focused evidence
-        </p>
-
-        <h2
-          id="focused-comparison-title"
-          className="mt-2 text-2xl font-bold tracking-[-0.035em]"
-        >
-          Inspect one candidate pair
-        </h2>
-
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
-          Choose one candidate for
-          detailed radar and heatmap
-          evidence. The overview matrix
-          remains unchanged.
-        </p>
-
-        <div
-          role="group"
-          aria-label="Focused comparison candidate"
-          className="mt-5 flex flex-wrap gap-2"
-        >
-          {candidates.map(
-            ({ player }) => {
-              const selected =
-                player.player_id ===
-                focusedCandidateId;
-
-              return (
-                <button
-                  key={
-                    player.player_id
-                  }
-                  type="button"
-                  aria-pressed={
-                    selected
-                  }
-                  onClick={() => {
-                    setPreferredCandidateId(
-                      player.player_id,
-                    );
-                  }}
-                  className={[
-                    "min-h-11 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors",
-                    selected
-                      ? "border-brand bg-brand text-white"
-                      : "border-border bg-surface hover:bg-surface-secondary",
-                  ].join(
-                    " ",
-                  )}
-                >
-                  {player.player_name}
-                </button>
-              );
-            },
-          )}
-        </div>
-
-        <p
-          aria-live="polite"
-          className="mt-4 text-xs leading-5 text-muted"
-        >
-          Showing detailed evidence for{" "}
-          <span className="font-semibold text-foreground">
-            {target.player_name}
-          </span>{" "}
-          and{" "}
-          <span className="font-semibold text-foreground">
-            {
-              focusedCandidate
-                .player.player_name
-            }
-          </span>
-          .
-        </p>
-      </div>
+      <p
+        aria-live="polite"
+        className="sr-only"
+      >
+        Showing detailed evidence for{" "}
+        {target.player_name} and{" "}
+        {
+          focusedCandidate
+            .player.player_name
+        }
+        .
+      </p>
 
       <section
         aria-label="Focused playing style radar comparison"
@@ -346,25 +346,18 @@ export function MultiPlayerComparisonEvidence({
               </p>
             </div>
 
-            {radarComparison.data ? (
-              <span
-                className={
-                  radarComparison
-                    .data.comparison
-                    .overlay_available
-                    ? "rounded-full border border-success/20 bg-success/10 px-3 py-1.5 text-xs font-semibold text-success"
-                    : "rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-muted"
-                }
-              >
-                {
-                  radarComparison
-                    .data.comparison
-                    .overlay_available
-                    ? "Shared position overlay"
-                    : "Separate position profiles"
-                }
-              </span>
-            ) : null}
+            <FocusedCandidateSelector
+              candidates={
+                candidates
+              }
+              focusedCandidateId={
+                focusedCandidateId
+              }
+              onSelect={
+                setPreferredCandidateId
+              }
+              label="Radar comparison candidate"
+            />
           </div>
         </div>
 
@@ -509,25 +502,18 @@ export function MultiPlayerComparisonEvidence({
               </p>
             </div>
 
-            {heatmapComparison.data ? (
-              <span
-                className={
-                  heatmapComparison
-                    .data.similarity
-                    .available
-                    ? "rounded-full border border-success/20 bg-success/10 px-3 py-1.5 text-xs font-semibold text-success"
-                    : "rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-muted"
-                }
-              >
-                {
-                  heatmapComparison
-                    .data.similarity
-                    .available
-                    ? "Measured pair evidence"
-                    : "Pair evidence unavailable"
-                }
-              </span>
-            ) : null}
+            <FocusedCandidateSelector
+              candidates={
+                candidates
+              }
+              focusedCandidateId={
+                focusedCandidateId
+              }
+              onSelect={
+                setPreferredCandidateId
+              }
+              label="Heatmap comparison candidate"
+            />
           </div>
         </div>
 

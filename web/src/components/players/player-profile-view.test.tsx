@@ -141,6 +141,55 @@ describe("PlayerProfileView", () => {
 
   });
 
+  it("places player search navigation before the primary actions", () => {
+    render(
+      <PlayerProfileView
+        player={basePlayer}
+      />,
+    );
+
+    const backLink =
+      screen.getByRole("link", {
+        name:
+          "Back to player search",
+      });
+
+    const runLink =
+      screen.getByRole("link", {
+        name:
+          "Run transfer analysis",
+      });
+
+    const shortlistButton =
+      screen.getByRole("button", {
+        name:
+          "Add Michael Olise to shortlist",
+      });
+
+    expect(
+      Array.from(
+        backLink.parentElement
+          ?.children ?? [],
+      ),
+    ).toEqual([
+      backLink,
+      runLink,
+      shortlistButton,
+    ]);
+
+    expect(
+      backLink.querySelector(
+        'svg[aria-hidden="true"]',
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      backLink,
+    ).toHaveTextContent(
+      "Back",
+    );
+  });
+
   it("exposes the player through the shortlist action", () => {
     render(
       <PlayerProfileView

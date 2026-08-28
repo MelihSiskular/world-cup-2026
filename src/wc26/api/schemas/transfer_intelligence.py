@@ -410,6 +410,41 @@ class MultiPlayerComparisonCandidateResponse(BaseModel):
     evidence: MultiPlayerComparisonEvidenceResponse
 
 
+class MultiPlayerComparisonRoleMetricValueResponse(BaseModel):
+    """One player's nullable tournament total and per-90 metric value."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    player_id: int = Field(gt=0)
+    total: float | None = None
+    per90: float | None = None
+
+
+class MultiPlayerComparisonRoleMetricResponse(BaseModel):
+    """One role-defining metric compared in canonical player order."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    key: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    values: list[MultiPlayerComparisonRoleMetricValueResponse] = Field(
+        min_length=2,
+        max_length=4,
+    )
+
+
+class MultiPlayerComparisonRoleMetricGroupResponse(BaseModel):
+    """One target-role football duty and its ordered metrics."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    key: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    metrics: list[MultiPlayerComparisonRoleMetricResponse] = Field(
+        min_length=1,
+    )
+
+
 class MultiPlayerComparisonResponse(BaseModel):
     """One target compared with between one and three candidates."""
 
@@ -419,6 +454,9 @@ class MultiPlayerComparisonResponse(BaseModel):
     candidates: list[MultiPlayerComparisonCandidateResponse] = Field(
         min_length=1,
         max_length=3,
+    )
+    role_metrics: list[MultiPlayerComparisonRoleMetricGroupResponse] = Field(
+        default_factory=list,
     )
 
 
@@ -785,6 +823,9 @@ __all__ = [
     "MultiPlayerComparisonEvidenceResponse",
     "MultiPlayerComparisonPlayerResponse",
     "MultiPlayerComparisonResponse",
+    "MultiPlayerComparisonRoleMetricGroupResponse",
+    "MultiPlayerComparisonRoleMetricResponse",
+    "MultiPlayerComparisonRoleMetricValueResponse",
     "TransferExplainabilityBonusResponse",
     "TransferExplainabilityReasonResponse",
     "TransferExplainabilityScoreResponse",

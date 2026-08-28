@@ -14,6 +14,9 @@ from wc26.analytics.transfer_intelligence.models import (
     MultiPlayerComparisonEvidenceResult,
     MultiPlayerComparisonRequest,
     MultiPlayerComparisonResult,
+    MultiPlayerComparisonRoleMetricGroupResult,
+    MultiPlayerComparisonRoleMetricResult,
+    MultiPlayerComparisonRoleMetricValueResult,
     PlayerSearchItem,
 )
 from wc26.api import create_app
@@ -87,6 +90,35 @@ def _result() -> MultiPlayerComparisonResult:
                 ),
             ),
         ),
+        role_metrics=(
+            MultiPlayerComparisonRoleMetricGroupResult(
+                key="creativity",
+                label="Chance creation",
+                metrics=(
+                    MultiPlayerComparisonRoleMetricResult(
+                        key="goalAssist",
+                        label="Assists",
+                        values=(
+                            MultiPlayerComparisonRoleMetricValueResult(
+                                player_id=978838,
+                                total=5.0,
+                                per90=0.42,
+                            ),
+                            MultiPlayerComparisonRoleMetricValueResult(
+                                player_id=789071,
+                                total=3.0,
+                                per90=0.31,
+                            ),
+                            MultiPlayerComparisonRoleMetricValueResult(
+                                player_id=805078,
+                                total=None,
+                                per90=None,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
     )
 
 
@@ -124,6 +156,14 @@ def test_multi_player_comparison_route_is_in_openapi_schema() -> None:
 
     assert response_schema["properties"]["target"]["$ref"].endswith(
         "/MultiPlayerComparisonPlayerResponse"
+    )
+
+    role_metrics_schema = response_schema["properties"]["role_metrics"]
+
+    assert role_metrics_schema["type"] == "array"
+
+    assert role_metrics_schema["items"]["$ref"].endswith(
+        "/MultiPlayerComparisonRoleMetricGroupResponse"
     )
 
 
@@ -181,6 +221,7 @@ def test_endpoint_preserves_candidate_order_and_null_evidence() -> None:
             similarity=dataset_paths.similarity,
             heatmap_similarity=(dataset_paths.heatmap_similarity),
             heatmap_profiles=(dataset_paths.heatmap_profiles),
+            player_tournament_summary=(dataset_paths.player_tournament_summary),
         )
     ]
 
@@ -194,6 +235,27 @@ def test_endpoint_preserves_candidate_order_and_null_evidence() -> None:
     assert payload["candidates"][1]["evidence"]["statistical_similarity_pct"] is None
 
     assert payload["candidates"][1]["evidence"]["heatmap_similarity_score_pct"] is None
+
+    assists = payload["role_metrics"][0]["metrics"][0]
+
+    assert assists["key"] == "goalAssist"
+    assert assists["values"] == [
+        {
+            "player_id": 978838,
+            "total": 5.0,
+            "per90": 0.42,
+        },
+        {
+            "player_id": 789071,
+            "total": 3.0,
+            "per90": 0.31,
+        },
+        {
+            "player_id": 805078,
+            "total": None,
+            "per90": None,
+        },
+    ]
 
 
 def test_endpoint_requires_between_one_and_three_candidates() -> None:

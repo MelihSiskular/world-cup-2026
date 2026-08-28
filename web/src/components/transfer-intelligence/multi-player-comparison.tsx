@@ -12,6 +12,9 @@ import {
   MultiPlayerComparisonEvidence,
 } from "@/components/transfer-intelligence/multi-player-comparison-evidence";
 import {
+  MultiPlayerRoleMetrics,
+} from "@/components/transfer-intelligence/multi-player-role-metrics";
+import {
   fetchMultiPlayerComparison,
 } from "@/lib/api/browser-transfer-intelligence";
 import type {
@@ -511,6 +514,8 @@ export function MultiPlayerComparison({
   const {
     target,
     candidates,
+    role_metrics:
+      roleMetrics = [],
   } = comparison.data;
 
   if (candidates.length === 0) {
@@ -549,7 +554,7 @@ export function MultiPlayerComparison({
     );
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       <section
       aria-labelledby="multi-comparison-overview-title"
       className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
@@ -725,6 +730,12 @@ export function MultiPlayerComparison({
         </p>
       </div>
       </section>
+
+      <MultiPlayerRoleMetrics
+        target={target}
+        candidates={candidates}
+        groups={roleMetrics}
+      />
 
       <MultiPlayerComparisonEvidence
         target={target}

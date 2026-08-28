@@ -52,28 +52,59 @@ async function waitForApplicationReady(
 async function expectNoHorizontalPageOverflow(
   page: Page,
 ): Promise<void> {
-  const dimensions =
-    await page.evaluate(
-      () => ({
-        scrollWidth:
-          document.documentElement
-            .scrollWidth,
+  const result =
+    await page.evaluate(() => {
+      const root =
+        document.documentElement;
+
+      const originalX =
+        window.scrollX;
+
+      const originalY =
+        window.scrollY;
+
+      const originalBehavior =
+        root.style
+          .scrollBehavior;
+
+      root.style.scrollBehavior =
+        "auto";
+
+      window.scrollTo(
+        root.scrollWidth,
+        originalY,
+      );
+
+      const maximumPageScrollX =
+        window.scrollX;
+
+      window.scrollTo(
+        originalX,
+        originalY,
+      );
+
+      root.style.scrollBehavior =
+        originalBehavior;
+
+      return {
+        maximumPageScrollX,
+        reportedScrollWidth:
+          root.scrollWidth,
         clientWidth:
-          document.documentElement
-            .clientWidth,
-      }),
-    );
+          root.clientWidth,
+      };
+    });
 
   expect(
-    dimensions.scrollWidth,
+    result.maximumPageScrollX,
     (
-      "Expected no horizontal page overflow: "
-      + `scrollWidth=${dimensions.scrollWidth}, `
-      + `clientWidth=${dimensions.clientWidth}`
+      "Expected the document itself "
+      + "to remain horizontally fixed: "
+      + `maximumPageScrollX=${result.maximumPageScrollX}, `
+      + `reportedScrollWidth=${result.reportedScrollWidth}, `
+      + `clientWidth=${result.clientWidth}`
     ),
-  ).toBeLessThanOrEqual(
-    dimensions.clientWidth,
-  );
+  ).toBeLessThanOrEqual(1);
 }
 
 function resolveCandidate(
@@ -307,6 +338,46 @@ async function installSyntheticApi(
                 market_value_advantage_pct:
                   40,
               },
+            },
+          ],
+          role_metrics: [
+            {
+              key:
+                "chance-creation",
+              label:
+                "Chance creation",
+              metrics: [
+                {
+                  key: "goals",
+                  label: "Goals",
+                  values: [
+                    {
+                      player_id:
+                        TARGET_PLAYER_ID,
+                      total: 5,
+                      per90: 0.83,
+                    },
+                    {
+                      player_id:
+                        789071,
+                      total: 3,
+                      per90: 0.56,
+                    },
+                    {
+                      player_id:
+                        805078,
+                      total: null,
+                      per90: null,
+                    },
+                    {
+                      player_id:
+                        123456,
+                      total: 4,
+                      per90: 0.71,
+                    },
+                  ],
+                },
+              ],
             },
           ],
         }),
@@ -553,8 +624,67 @@ test.describe(
           "Unavailable",
         );
 
-        const initialCandidate =
+        const roleMetricTable =
           page.getByRole(
+            "table",
+            {
+              name:
+                "Target final-role metric comparison",
+            },
+          );
+
+        await expect(
+          roleMetricTable,
+        ).toBeVisible();
+
+        const goalsRow =
+          roleMetricTable.getByRole(
+            "row",
+            {
+              name: /Goals/i,
+            },
+          );
+
+        await expect(
+          goalsRow,
+        ).toContainText(
+          "5 (0.83/90)",
+        );
+
+        await expect(
+          goalsRow,
+        ).toContainText(
+          "Unavailable",
+        );
+
+        const radarSelector =
+          page.getByRole(
+            "group",
+            {
+              name:
+                "Radar comparison candidate",
+            },
+          );
+
+        const heatmapSelector =
+          page.getByRole(
+            "group",
+            {
+              name:
+                "Heatmap comparison candidate",
+            },
+          );
+
+        const initialRadarCandidate =
+          radarSelector.getByRole(
+            "button",
+            {
+              name: "Dani Olmo",
+            },
+          );
+
+        const initialHeatmapCandidate =
+          heatmapSelector.getByRole(
             "button",
             {
               name: "Dani Olmo",
@@ -562,7 +692,14 @@ test.describe(
           );
 
         await expect(
-          initialCandidate,
+          initialRadarCandidate,
+        ).toHaveAttribute(
+          "aria-pressed",
+          "true",
+        );
+
+        await expect(
+          initialHeatmapCandidate,
         ).toHaveAttribute(
           "aria-pressed",
           "true",
@@ -578,8 +715,8 @@ test.describe(
           ),
         ).toBeVisible();
 
-        const missingEvidenceCandidate =
-          page.getByRole(
+        const missingEvidenceRadarCandidate =
+          radarSelector.getByRole(
             "button",
             {
               name:
@@ -587,11 +724,27 @@ test.describe(
             },
           );
 
-        await missingEvidenceCandidate
+        const missingEvidenceHeatmapCandidate =
+          heatmapSelector.getByRole(
+            "button",
+            {
+              name:
+                "Candidate Without Pair Evidence",
+            },
+          );
+
+        await missingEvidenceRadarCandidate
           .click();
 
         await expect(
-          missingEvidenceCandidate,
+          missingEvidenceRadarCandidate,
+        ).toHaveAttribute(
+          "aria-pressed",
+          "true",
+        );
+
+        await expect(
+          missingEvidenceHeatmapCandidate,
         ).toHaveAttribute(
           "aria-pressed",
           "true",
@@ -607,6 +760,21 @@ test.describe(
           ),
         ).toBeVisible();
 
+        const heatmapEvidence =
+          page.getByRole(
+            "region",
+            {
+              name:
+                "Focused heatmap profile comparison",
+            },
+          );
+
+        await expect(
+          heatmapEvidence.getByText(
+            "Unavailable",
+          ),
+        ).toHaveCount(6);
+
         await expect(
           page.getByText(
             "Pair evidence unavailable",
@@ -614,7 +782,7 @@ test.describe(
               exact: true,
             },
           ),
-        ).toBeVisible();
+        ).toHaveCount(0);
 
         const parameters =
           new URL(
@@ -648,8 +816,26 @@ test.describe(
           page,
         );
 
-        const candidate =
+        const radarSelector =
           page.getByRole(
+            "group",
+            {
+              name:
+                "Radar comparison candidate",
+            },
+          );
+
+        const heatmapSelector =
+          page.getByRole(
+            "group",
+            {
+              name:
+                "Heatmap comparison candidate",
+            },
+          );
+
+        const candidate =
+          radarSelector.getByRole(
             "button",
             {
               name:
@@ -669,6 +855,19 @@ test.describe(
 
         await expect(
           candidate,
+        ).toHaveAttribute(
+          "aria-pressed",
+          "true",
+        );
+
+        await expect(
+          heatmapSelector.getByRole(
+            "button",
+            {
+              name:
+                "Florian Wirtz",
+            },
+          ),
         ).toHaveAttribute(
           "aria-pressed",
           "true",

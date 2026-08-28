@@ -3273,6 +3273,13 @@
             "maxItems": 3,
             "minItems": 1,
             "title": "Candidates"
+          },
+          "role_metrics": {
+            "items": {
+              "$ref": "#/components/schemas/MultiPlayerComparisonRoleMetricGroupResponse"
+            },
+            "type": "array",
+            "title": "Role Metrics"
           }
         },
         "additionalProperties": false,
@@ -3283,6 +3290,107 @@
         ],
         "title": "MultiPlayerComparisonResponse",
         "description": "One target compared with between one and three candidates."
+      },
+      "MultiPlayerComparisonRoleMetricGroupResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Label"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/MultiPlayerComparisonRoleMetricResponse"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Metrics"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "metrics"
+        ],
+        "title": "MultiPlayerComparisonRoleMetricGroupResponse",
+        "description": "One target-role football duty and its ordered metrics."
+      },
+      "MultiPlayerComparisonRoleMetricResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Label"
+          },
+          "values": {
+            "items": {
+              "$ref": "#/components/schemas/MultiPlayerComparisonRoleMetricValueResponse"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 2,
+            "title": "Values"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "values"
+        ],
+        "title": "MultiPlayerComparisonRoleMetricResponse",
+        "description": "One role-defining metric compared in canonical player order."
+      },
+      "MultiPlayerComparisonRoleMetricValueResponse": {
+        "properties": {
+          "player_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Player Id"
+          },
+          "total": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total"
+          },
+          "per90": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Per90"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "player_id"
+        ],
+        "title": "MultiPlayerComparisonRoleMetricValueResponse",
+        "description": "One player's nullable tournament total and per-90 metric value."
       },
       "PlayerInsightResponse": {
         "properties": {

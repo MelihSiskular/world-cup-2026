@@ -42,8 +42,8 @@ def _player(
         "country_name": f"Country {player_id}",
         "country_alpha3": f"C{player_id:02d}",
         "position": position,
-        "final_role": "Advanced Playmaker",
-        "archetype": "Creator",
+        "final_role": "Central Half-Space Creator",
+        "archetype": "Wide Creator",
         "spatial_role": "Right Half-Space",
         "lateral_profile": "Right",
         "vertical_profile": "Advanced",
@@ -163,11 +163,40 @@ def _catalog() -> TransferDataCatalog:
         ]
     )
 
+    tournament_summary = pd.DataFrame(
+        [
+            {
+                "player_id": player_id,
+                "stat_goalAssist": float(player_id + 4),
+                "stat_goalAssist_per90": round(
+                    (player_id + 4) / 12,
+                    2,
+                ),
+                "stat_expectedAssists": float(player_id) + 0.5,
+                "stat_expectedAssists_per90": float(player_id) / 10,
+                "stat_keyPass": float(player_id * 3),
+                "stat_keyPass_per90": float(player_id) / 2,
+                "stat_bigChanceCreated": float(player_id + 1),
+                "stat_bigChanceCreated_per90": float(player_id) / 5,
+                "stat_totalProgression": float(player_id * 20),
+                "stat_totalProgression_per90": float(player_id * 2),
+                "stat_progressiveBallCarriesCount": float(player_id * 4),
+                "stat_progressiveBallCarriesCount_per90": float(player_id) / 2,
+                "stat_ballCarriesCount": float(player_id * 10),
+                "stat_ballCarriesCount_per90": float(player_id),
+                "stat_totalBallCarriesDistance": float(player_id * 100),
+                "stat_totalBallCarriesDistance_per90": float(player_id * 10),
+            }
+            for player_id in range(1, 7)
+        ]
+    )
+
     return TransferDataCatalog(
         players=players,
         similarity=similarity,
         heatmap_similarity=(heatmap_similarity),
         heatmap_profiles=pd.DataFrame(),
+        player_tournament_summary=(tournament_summary),
     )
 
 
@@ -214,6 +243,79 @@ def test_preserves_requested_candidate_order_and_pair_evidence() -> None:
     assert result.candidates[1].evidence.statistical_similarity_pct == 91.0
 
     assert result.candidates[1].evidence.heatmap_similarity_score_pct == 88.0
+
+
+def test_compares_every_player_using_the_target_final_role_metrics() -> None:
+    result = run_multi_player_comparison_from_catalog(
+        _request(
+            candidate_player_ids=(
+                3,
+                2,
+            ),
+        ),
+        _catalog(),
+    )
+
+    assert [group.key for group in result.role_metrics] == [
+        "creativity",
+        "progression",
+    ]
+
+    assists = result.role_metrics[0].metrics[0]
+
+    assert assists.key == "goalAssist"
+    assert [value.player_id for value in assists.values] == [
+        1,
+        3,
+        2,
+    ]
+    assert [value.total for value in assists.values] == [
+        5.0,
+        7.0,
+        6.0,
+    ]
+    assert [value.per90 for value in assists.values] == [
+        0.42,
+        0.58,
+        0.5,
+    ]
+
+
+def test_preserves_zero_and_reports_missing_role_metric_values() -> None:
+    catalog = _catalog()
+
+    catalog.player_tournament_summary.loc[
+        catalog.player_tournament_summary["player_id"].eq(2),
+        [
+            "stat_goalAssist",
+            "stat_goalAssist_per90",
+        ],
+    ] = pd.NA
+
+    catalog.player_tournament_summary.loc[
+        catalog.player_tournament_summary["player_id"].eq(4),
+        [
+            "stat_goalAssist",
+            "stat_goalAssist_per90",
+        ],
+    ] = 0
+
+    result = run_multi_player_comparison_from_catalog(
+        _request(
+            candidate_player_ids=(
+                2,
+                4,
+            ),
+        ),
+        catalog,
+    )
+
+    values = result.role_metrics[0].metrics[0].values
+
+    assert values[1].total is None
+    assert values[1].per90 is None
+    assert values[2].total == 0.0
+    assert values[2].per90 == 0.0
 
 
 def test_keeps_selected_player_when_pair_evidence_is_missing() -> None:
