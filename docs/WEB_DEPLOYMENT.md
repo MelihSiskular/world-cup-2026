@@ -1,44 +1,28 @@
 # Web Deployment Guide
 
-This guide is the source of truth for deploying, validating and operating the WC26 Transfer Intelligence web application.
+This document is the source of truth for deploying and operating the WC26 Next.js application on Vercel.
 
-## Production Architecture
+## Production Topology
 
 ```text
 Browser
-    ↓ same-origin requests
-Vercel Next.js application
-    ↓
-Next.js BFF route handlers
-    ↓ server-only WC26_API_BASE_URL
-Railway FastAPI service
-    ↓
-Validated transfer-intelligence catalog
+  → Vercel Next.js application
+  → same-origin BFF routes
+  → server-only WC26_API_BASE_URL
+  → Railway FastAPI service
 ```
 
-The browser never requires the Railway base URL.
+The Railway URL is never required by browser code. Backend CORS does not need a Vercel origin for this request path.
 
-Frontend requests use same-origin routes under:
+## Environment
 
-```text
-/api/players/*
-/api/status/*
-/api/transfer-intelligence/*
-```
-
-The Next.js server forwards those requests to the configured FastAPI service.
-
-Because browser clients do not directly access Railway, the backend does not require a Vercel origin in `WC26_CORS_ORIGINS`.
-
-## Runtime Environment
-
-The web application requires:
+Required variable:
 
 ```text
 WC26_API_BASE_URL
 ```
 
-Local development:
+Local:
 
 ```env
 WC26_API_BASE_URL=http://127.0.0.1:8000
@@ -50,262 +34,97 @@ Vercel Production:
 WC26_API_BASE_URL=https://world-cup-2026-production.up.railway.app
 ```
 
-Release-validation Preview deployments should use a branch-specific override that points to the matching isolated Railway validation environment instead of changing canonical Production.
+The variable is server-only and must not use `NEXT_PUBLIC_`. Preview and Production require HTTPS, no credentials, and no path, query or fragment.
 
-The variable must remain server-only and must not use the `NEXT_PUBLIC_` prefix.
+## Vercel Configuration
 
-The build runs:
+| Setting | Value |
+|---|---|
+| Repository | `MelihSiskular/world-cup-2026` |
+| Production branch | `main` |
+| Framework | Next.js |
+| Root directory | `web` |
+| Install command | Vercel default (`npm ci`) |
+| Build command | `npm run build` |
+| Output directory | Next.js default |
 
-```bash
-npm run env:check
-```
+Use a branch-specific Preview environment override when the frontend candidate must target an isolated Railway candidate. Do not repoint canonical Production for branch validation.
 
-Validation requires:
-
-- a configured URL;
-- an HTTP or HTTPS protocol;
-- no embedded credentials;
-- no path, query string or fragment;
-- HTTPS in CI, Vercel Preview and Vercel Production.
-
-## Local Development
-
-Start the production-style FastAPI application from the repository root:
-
-```bash
-source .venv/bin/activate
-
-python -m uvicorn \
-  wc26.api.main:create_production_app \
-  --factory \
-  --host 127.0.0.1 \
-  --port 8000
-```
-
-In another terminal:
+## Local Release Gate
 
 ```bash
 cd web
-nvm use 24
-npm ci
-cp .env.example .env.local
-npm run dev
-```
-
-Open:
-
-```text
-http://localhost:3000
-```
-
-## Local Web Quality Gate
-
-Run from `web/`:
-
-```bash
 npm run env:check
 npm run api:types:check
-npm test
 npm run lint
 npm run typecheck
+npm test
 npm run build
 npm audit --omit=dev
 ```
 
-The Phase 5F.3 baseline includes Vitest and React Testing Library coverage for API errors, form and payload validation, player search, transfer results, player comparison, application errors and not-found recovery.
+Run browser validation with locally managed servers:
 
-## GitHub Actions
-
-### Web Quality
-
-```text
-.github/workflows/web-quality.yml
+```bash
+WC26_E2E_LOCAL_SERVER=1 npm run test:e2e
 ```
 
-Runs on every branch push, pull request to `main` and manual dispatch.
-
-It validates:
-
-- Node.js 24;
-- deterministic dependency installation with `npm ci`;
-- frontend environment configuration;
-- generated OpenAPI types;
-- unit and component tests;
-- ESLint;
-- TypeScript;
-- the production Next.js build;
-- production dependency vulnerabilities.
-
-### Browser Validation
-
-```text
-.github/workflows/browser-validation.yml
-```
-
-Runs the Playwright browser suite across desktop and mobile Chromium and WebKit. This workflow validates a built frontend independently from the deployed Vercel Preview release-acceptance step.
-
-### Production Verification
-
-```text
-.github/workflows/production-verification.yml
-```
-
-The Railway production verification workflow waits for:
-
-```text
-Python Quality
-Docker Validation
-Web Quality
-```
-
-before validating the deployed FastAPI application.
-
-## Vercel Project Configuration
-
-Create one Vercel project for the web application.
-
-| Setting | Value |
-|---|---|
-| Git repository | `MelihSiskular/world-cup-2026` |
-| Production branch | `main` |
-| Framework preset | Next.js |
-| Root Directory | `web` |
-| Package manager | npm |
-| Install command | Vercel default |
-| Build command | `npm run build` |
-| Output directory | Next.js default |
-
-Do not configure a second frontend backend URL through a `NEXT_PUBLIC_*` variable.
-
-## Vercel Environment Variables
-
-Canonical Production uses the canonical Railway production service:
-
-```text
-Environment: Production
-Name:        WC26_API_BASE_URL
-Value:       https://world-cup-2026-production.up.railway.app
-```
-
-For isolated release validation, create a branch-specific Preview override so the candidate frontend talks to the matching Railway candidate without changing Production. The Phase 6 validation setup is:
-
-```text
-Environment: Preview
-Branch:      test/phase-6-production-validation
-Name:        WC26_API_BASE_URL
-Value:       https://world-cup-2026-phase-6-validation.up.railway.app
-```
-
-Branch-specific Preview values override the shared Preview value for that branch. Environment-variable changes affect only new deployments, so redeploy the Preview after changing a value.
+The release matrix covers desktop and mobile Chromium and WebKit.
 
 ## Deployment Flow
 
 ```text
 Feature branch
-    ↓
-Python Quality
-Docker Validation
-Web Quality
-Browser Validation
-    ↓
-Vercel preview deployment
-    ↓
-Pull request review
-    ↓
-Merge to main
-    ↓
-Railway backend deployment
-Vercel frontend deployment
-    ↓
-Production verification
-    ↓
-Frontend production smoke test
+  → Python, Docker, Web and Browser quality gates
+  → Vercel Preview review
+  → merge to main
+  → Railway and Vercel production deployments
+  → backend production verification
+  → frontend smoke and browser acceptance
 ```
 
-Vercel Preview deployments should be used to inspect branch changes before merging.
+Environment changes affect only new Vercel deployments; redeploy after changing a value.
 
-The production deployment must originate from `main`.
+## Protected Preview Testing
 
-### Protected Preview Browser Validation
-
-When Vercel Deployment Protection is enabled, deployed Playwright tests use an automation bypass secret through the optional `VERCEL_AUTOMATION_BYPASS_SECRET` environment variable. The secret value must never be committed.
+If Vercel Deployment Protection is enabled, provide its automation bypass secret only through the environment:
 
 ```bash
-read -s "VERCEL_AUTOMATION_BYPASS_SECRET?Vercel bypass secret: "
-echo
-export VERCEL_AUTOMATION_BYPASS_SECRET
-
-WC26_E2E_BASE_URL="https://your-preview-domain.vercel.app" \
-  npm run test:e2e
+export VERCEL_AUTOMATION_BYPASS_SECRET="<secret>"
+WC26_E2E_BASE_URL="https://preview.example.vercel.app" npm run test:e2e
 ```
 
-The Playwright configuration sends the protection-bypass header only when the secret is present. Without the variable, local and public-production browser validation behaves normally.
+Never commit the secret.
 
 ## Production Acceptance
 
-Set the deployed frontend URL:
-
 ```bash
 export WC26_WEB_URL="https://your-vercel-domain.vercel.app"
+
+./scripts/web_production_smoke_test.sh "${WC26_WEB_URL}"
 ```
 
-Run:
+Acceptance verifies:
+
+- landing, player discovery, profile, shortlist, methodology and status routes;
+- health, readiness and deployment identity through the BFF;
+- discovery filters and player search;
+- transfer analysis and recommendation modes;
+- canonical multi-player comparison requests;
+- expected backend commit and runtime dataset identity;
+- desktop and mobile Chromium/WebKit journeys.
+
+Inspect backend identity through the frontend:
 
 ```bash
-./scripts/web_production_smoke_test.sh \
-  "${WC26_WEB_URL}"
-```
-
-The smoke test verifies:
-
-- landing page availability;
-- player-search page availability;
-- methodology page availability;
-- status page availability;
-- FastAPI readiness through the Next.js BFF;
-- health and deployment identity;
-- player search;
-- player profile;
-- transfer analysis;
-- all four recommendation modes.
-
-Inspect the backend identity through the frontend:
-
-```bash
-curl \
-  --fail \
-  --silent \
-  --show-error \
+curl --fail --silent \
   "${WC26_WEB_URL}/api/status/deployment" \
   | python -m json.tool
 ```
 
-Compare the deployed dataset bundle with the committed manifest:
+## Security Headers
 
-```bash
-python - <<'PY'
-import json
-from pathlib import Path
-
-manifest = json.loads(
-    Path(
-        "config/runtime_dataset_manifest.json"
-    ).read_text(
-        encoding="utf-8",
-    )
-)
-
-print(
-    manifest["bundle_sha256"]
-)
-PY
-```
-
-The backend response and committed manifest must report the same bundle SHA-256.
-
-## Production Security Headers
-
-The Next.js application applies:
+Production responses apply:
 
 ```text
 X-Content-Type-Options: nosniff
@@ -314,95 +133,37 @@ Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```
 
-Check the deployed response:
-
 ```bash
-curl \
-  --silent \
-  --show-error \
-  --head \
-  "${WC26_WEB_URL}/status"
+curl --silent --show-error --head "${WC26_WEB_URL}/status"
 ```
 
 ## Release Verification
 
-After deployment, verify:
-
-1. The Vercel deployment originates from the expected `main` commit.
-2. `/api/status/ready` reports `ready`.
-3. `/api/status/deployment` reports the expected Railway commit.
+1. Vercel originates from the expected `main` commit.
+2. `/api/status/ready` reports ready.
+3. `/api/status/deployment` reports backend version `0.4.0` and the expected commit.
 4. The dataset bundle matches `config/runtime_dataset_manifest.json`.
-5. Player search returns Michael Olise.
-6. Player profile `978838` opens.
-7. Transfer analysis completes.
-8. Recommendation and comparison pages work.
-9. `/methodology` shows the active dataset identity.
-10. The production smoke script passes.
-11. The deployed Playwright journey passes on Chromium and WebKit.
-12. The deployed Playwright journey passes on mobile Chromium and mobile WebKit.
+5. Player discovery, profile, shortlist and transfer analysis work.
+6. One-target/multiple-candidate comparison loads and keeps radar/heatmap selection synchronized.
+7. Role metrics show total and per-90 values without replacing missing data.
+8. Production smoke and browser acceptance pass.
 
-## Frontend Rollback
+## Rollback
 
-To roll back the frontend:
+Frontend rollback:
 
-1. Open the Vercel project.
-2. Open its deployment history.
-3. Select a previously healthy production deployment.
-4. Promote or restore that deployment.
-5. Run the production frontend smoke test again.
+1. Restore a previously healthy Vercel production deployment.
+2. Re-run the frontend smoke test.
+3. Confirm it still targets the intended Railway release.
 
-A frontend rollback does not automatically roll back Railway or the runtime dataset bundle.
+Backend and dataset rollback remain independent and are documented in `docs/DEPLOYMENT.md`.
 
-## Backend Rollback
+## Common Failures
 
-The Railway application and dataset release procedures remain documented in:
-
-```text
-docs/DEPLOYMENT.md
-```
-
-Always verify all three release identities after recovery:
-
-```text
-Vercel frontend deployment
-Railway backend commit
-Runtime dataset bundle SHA-256
-```
-
-## Failure Recovery
-
-### Build reports that WC26_API_BASE_URL is missing
-
-Add the variable to the relevant Vercel environment and redeploy.
-
-### Build rejects an HTTP URL
-
-Preview and Production require an HTTPS backend origin.
-
-### BFF routes return upstream_unavailable
-
-Check Railway readiness:
-
-```bash
-curl \
-  --fail \
-  --silent \
-  https://world-cup-2026-production.up.railway.app/ready \
-  | python -m json.tool
-```
-
-Then inspect the request ID returned by the frontend error response.
-
-### Frontend displays an older backend release
-
-Railway may still be building or completing its health check. Inspect:
-
-```bash
-curl \
-  --fail \
-  --silent \
-  https://world-cup-2026-production.up.railway.app/deployment \
-  | python -m json.tool
-```
-
-Wait until the reported commit and dataset bundle match the intended release.
+| Symptom | Action |
+|---|---|
+| Missing `WC26_API_BASE_URL` | Add it to the correct Vercel environment and redeploy |
+| HTTP backend rejected | Use HTTPS for Preview and Production |
+| `upstream_unavailable` | Check Railway `/ready` and correlate the request ID |
+| Older backend release shown | Wait for Railway health checks, then inspect `/deployment` |
+| Preview tests blocked | Supply the automation bypass secret through the environment |
