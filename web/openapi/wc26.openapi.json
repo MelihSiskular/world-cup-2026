@@ -3,7 +3,7 @@
   "info": {
     "title": "WC26 Transfer Intelligence API",
     "summary": "Football recruitment intelligence powered by World Cup data.",
-    "version": "0.2.0"
+    "version": "0.4.0"
   },
   "paths": {
     "/health": {
