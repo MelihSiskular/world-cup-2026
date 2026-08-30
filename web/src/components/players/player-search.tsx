@@ -4,6 +4,9 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import {
+  useTranslations,
+} from "next-intl";
+import {
   useEffect,
   useId,
   useState,
@@ -86,6 +89,11 @@ export function PlayerSearch({
       DEFAULT_PLAYER_SEARCH_LIMIT,
   },
 }: PlayerSearchProps) {
+  const translations =
+    useTranslations(
+      "PlayerDiscovery",
+    );
+
   const inputId = useId();
   const descriptionId = useId();
   const mobileFiltersId = useId();
@@ -319,15 +327,18 @@ export function PlayerSearch({
           htmlFor={inputId}
           className="text-lg font-bold tracking-[-0.025em]"
         >
-          Search players
+          {translations(
+            "searchHeading",
+          )}
         </label>
 
         <p
           id={descriptionId}
           className="mt-2 text-sm leading-6 text-muted"
         >
-          Search by player name or combine advanced
-          recruitment filters.
+          {translations(
+            "searchDescription",
+          )}
         </p>
 
         <div className="relative mt-6">
@@ -361,7 +372,11 @@ export function PlayerSearch({
                 }),
               );
             }}
-            placeholder="Search Michael Olise, Alex Baena…"
+            placeholder={
+              translations(
+                "searchPlaceholder",
+              )
+            }
             autoComplete="off"
             spellCheck={false}
             enterKeyHint="search"
@@ -387,7 +402,9 @@ export function PlayerSearch({
               }}
               className="absolute top-1/2 right-3 min-h-10 -translate-y-1/2 rounded-xl px-3.5 text-xs font-semibold text-muted transition-colors hover:bg-surface-secondary hover:text-foreground"
             >
-              Clear
+              {translations(
+                "clearSearch",
+              )}
             </button>
           ) : null}
         </div>
@@ -407,7 +424,9 @@ export function PlayerSearch({
           className="flex min-h-12 w-full items-center justify-between rounded-2xl border border-border bg-surface px-4 py-3 text-sm font-semibold shadow-sm lg:hidden"
         >
           <span>
-            Advanced filters
+            {translations(
+              "advancedFilters",
+            )}
           </span>
 
           <span className="flex items-center gap-2">
@@ -444,7 +463,11 @@ export function PlayerSearch({
             <div
               className="min-h-80 animate-pulse rounded-3xl border border-border bg-surface-secondary"
               role="status"
-              aria-label="Loading advanced filters"
+              aria-label={
+                translations(
+                  "loadingAdvancedFilters",
+                )
+              }
             />
           ) : filterMetadata.isError ? (
             <div
@@ -452,12 +475,15 @@ export function PlayerSearch({
               role="alert"
             >
               <p className="font-semibold text-error">
-                Filters unavailable
+                {translations(
+                  "filtersUnavailable",
+                )}
               </p>
 
               <p className="mt-2 text-sm leading-6 text-muted">
-                The player catalogue can still be searched
-                by name.
+                {translations(
+                  "filtersUnavailableDescription",
+                )}
               </p>
 
               <button
@@ -467,7 +493,9 @@ export function PlayerSearch({
                 }}
                 className="mt-4 min-h-11 rounded-xl border border-error/30 bg-surface px-4 py-2 text-sm font-semibold text-error"
               >
-                Retry filters
+                {translations(
+                  "retryFilters",
+                )}
               </button>
             </div>
           ) : filterMetadata.data ? (
@@ -512,12 +540,15 @@ export function PlayerSearch({
         !hasFilters ? (
           <div className="rounded-2xl border border-dashed border-border bg-surface/60 p-8 text-center">
             <p className="font-semibold">
-              Start with a player name
+              {translations(
+                "initialTitle",
+              )}
             </p>
 
             <p className="mt-2 text-sm leading-6 text-muted">
-              Search directly or use advanced filters to
-              explore the full analytical catalogue.
+              {translations(
+                "initialDescription",
+              )}
             </p>
           </div>
         ) : hasPartialQuery ? (
@@ -526,14 +557,19 @@ export function PlayerSearch({
             role="status"
           >
             <p className="font-semibold text-warning">
-              Keep typing
+              {translations(
+                "partialTitle",
+              )}
             </p>
 
             <p className="mt-2 text-sm text-muted">
-              Player-name searches require at least{" "}
-              {MINIMUM_PLAYER_SEARCH_LENGTH} characters.
-              Clear the partial name to search only with
-              filters.
+              {translations(
+                "partialDescription",
+                {
+                  minimum:
+                    MINIMUM_PLAYER_SEARCH_LENGTH,
+                },
+              )}
             </p>
           </div>
         ) : showLoading ? (
@@ -544,14 +580,15 @@ export function PlayerSearch({
             role="alert"
           >
             <p className="font-semibold text-error">
-              Player search unavailable
+              {translations(
+                "searchUnavailable",
+              )}
             </p>
 
             <p className="mt-2 text-sm leading-6 text-muted">
-              {playerSearch.error
-                instanceof Error
-                ? playerSearch.error.message
-                : "The player catalogue could not be searched."}
+              {translations(
+                "searchUnavailableDescription",
+              )}
             </p>
 
             <ApiErrorReference
@@ -567,20 +604,24 @@ export function PlayerSearch({
               }}
               className="mt-5 min-h-11 rounded-lg border border-error/30 bg-surface px-4 py-2 text-sm font-semibold text-error"
             >
-              Retry search
+              {translations(
+                "retrySearch",
+              )}
             </button>
           </div>
         ) : playerSearch.data &&
           playerSearch.data.total === 0 ? (
           <div className="rounded-2xl border border-border bg-surface p-8 text-center shadow-sm">
             <p className="font-semibold">
-              No players found
+              {translations(
+                "noResultsTitle",
+              )}
             </p>
 
             <p className="mt-2 text-sm leading-6 text-muted">
-              No catalogue entries matched the current
-              discovery criteria. Broaden the filters or
-              try another player name.
+              {translations(
+                "noResultsDescription",
+              )}
             </p>
           </div>
         ) : playerSearch.data ? (
@@ -592,31 +633,47 @@ export function PlayerSearch({
                   role="status"
                   aria-live="polite"
                 >
-                  <strong className="text-foreground">
-                    {playerSearch.data.total}
-                  </strong>{" "}
-                  {playerSearch.data.total === 1
-                    ? "player"
-                    : "players"}{" "}
-                  found
                   {playerSearch.data.query
-                    ? ` for “${playerSearch.data.query}”`
-                    : ""}
+                    ? translations(
+                        "resultsFoundFor",
+                        {
+                          count:
+                            playerSearch.data.total,
+                          query:
+                            playerSearch.data.query,
+                        },
+                      )
+                    : translations(
+                        "resultsFound",
+                        {
+                          count:
+                            playerSearch.data.total,
+                        },
+                      )}
                 </p>
 
                 <p className="mt-1 text-xs text-muted">
-                  Showing{" "}
-                  {playerSearch.data.offset + 1}–
-                  {playerSearch.data.offset +
-                    playerSearch.data.count}{" "}
-                  of{" "}
-                  {playerSearch.data.total}
+                  {translations(
+                    "showingRange",
+                    {
+                      start:
+                        playerSearch.data.offset +
+                        1,
+                      end:
+                        playerSearch.data.offset +
+                        playerSearch.data.count,
+                      total:
+                        playerSearch.data.total,
+                    },
+                  )}
                 </p>
               </div>
 
               {playerSearch.isFetching ? (
                 <span className="text-xs font-medium text-brand">
-                  Updating…
+                  {translations(
+                    "updating",
+                  )}
                 </span>
               ) : null}
             </div>
@@ -637,7 +694,11 @@ export function PlayerSearch({
             {playerSearch.data.offset > 0 ||
             playerSearch.data.has_more ? (
               <nav
-                aria-label="Player search pagination"
+                aria-label={
+                  translations(
+                    "paginationLabel",
+                  )
+                }
                 className="mt-6 flex items-center justify-between gap-4 rounded-2xl border border-border bg-surface px-4 py-3 shadow-sm"
               >
                 <button
@@ -653,15 +714,22 @@ export function PlayerSearch({
                   }}
                   className="min-h-11 rounded-xl border border-border px-4 py-2 text-sm font-semibold transition enabled:hover:bg-surface-secondary disabled:cursor-not-allowed disabled:opacity-45"
                 >
-                  Previous
+                  {translations(
+                    "previousPage",
+                  )}
                 </button>
 
                 <span className="text-xs font-medium text-muted">
-                  Page{" "}
-                  {Math.floor(
-                    playerSearch.data.offset /
-                      playerSearch.data.limit,
-                  ) + 1}
+                  {translations(
+                    "pageNumber",
+                    {
+                      page:
+                        Math.floor(
+                          playerSearch.data.offset /
+                            playerSearch.data.limit,
+                        ) + 1,
+                    },
+                  )}
                 </span>
 
                 <button
@@ -677,7 +745,9 @@ export function PlayerSearch({
                   }}
                   className="min-h-11 rounded-xl border border-border px-4 py-2 text-sm font-semibold transition enabled:hover:bg-surface-secondary disabled:cursor-not-allowed disabled:opacity-45"
                 >
-                  Next
+                  {translations(
+                    "nextPage",
+                  )}
                 </button>
               </nav>
             ) : null}

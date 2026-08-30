@@ -1,6 +1,9 @@
 "use client";
 
 import {
+  useTranslations,
+} from "next-intl";
+import {
   useId,
   useState,
 } from "react";
@@ -11,6 +14,14 @@ import type {
 import {
   useShortlists,
 } from "@/components/providers/shortlist-provider";
+import type {
+  ShortlistProviderIssue,
+} from "@/components/providers/shortlist-provider";
+import {
+  MAX_PLAYERS_PER_SHORTLIST,
+  MAX_SHORTLIST_NAME_LENGTH,
+  MAX_SHORTLISTS,
+} from "@/lib/shortlists/types";
 import type {
   ShortlistPlayerSnapshot,
 } from "@/lib/shortlists/types";
@@ -25,20 +36,104 @@ type ShortlistActionProps =
     variant?: ShortlistActionVariant;
   }>;
 
-function formatPlayerCount(
-  count: number,
-): string {
-  return `${count} ${
-    count === 1
-      ? "player"
-      : "players"
-  }`;
-}
-
 export function ShortlistAction({
   player,
   variant = "default",
 }: ShortlistActionProps) {
+  const translations =
+    useTranslations(
+      "ShortlistAction",
+    );
+
+  const issueMessages:
+    Readonly<
+      Record<
+        ShortlistProviderIssue["code"],
+        string
+      >
+    > = {
+      not_hydrated:
+        translations(
+          "issues.notHydrated",
+        ),
+      storage_unavailable:
+        translations(
+          "issues.storageUnavailable",
+        ),
+      read_failed:
+        translations(
+          "issues.readFailed",
+        ),
+      invalid_json:
+        translations(
+          "issues.invalidJson",
+        ),
+      unsupported_version:
+        translations(
+          "issues.unsupportedVersion",
+        ),
+      invalid_data:
+        translations(
+          "issues.invalidData",
+        ),
+      invalid_state:
+        translations(
+          "issues.invalidState",
+        ),
+      write_failed:
+        translations(
+          "issues.writeFailed",
+        ),
+      invalid_shortlist_id:
+        translations(
+          "issues.invalidShortlistId",
+        ),
+      invalid_shortlist_name:
+        translations(
+          "issues.invalidShortlistName",
+          {
+            maximum:
+              MAX_SHORTLIST_NAME_LENGTH,
+          },
+        ),
+      invalid_timestamp:
+        translations(
+          "issues.invalidTimestamp",
+        ),
+      duplicate_shortlist_id:
+        translations(
+          "issues.duplicateShortlistId",
+        ),
+      duplicate_shortlist_name:
+        translations(
+          "issues.duplicateShortlistName",
+        ),
+      shortlist_limit_reached:
+        translations(
+          "issues.shortlistLimitReached",
+          {
+            maximum:
+              MAX_SHORTLISTS,
+          },
+        ),
+      shortlist_not_found:
+        translations(
+          "issues.shortlistNotFound",
+        ),
+      invalid_player:
+        translations(
+          "issues.invalidPlayer",
+        ),
+      player_limit_reached:
+        translations(
+          "issues.playerLimitReached",
+          {
+            maximum:
+              MAX_PLAYERS_PER_SHORTLIST,
+          },
+        ),
+    };
+
   const {
     lists,
     isHydrated,
@@ -119,8 +214,24 @@ export function ShortlistAction({
 
       setAnnouncement(
         checked
-          ? `${player.playerName} added to ${shortlistName}.`
-          : `${player.playerName} removed from ${shortlistName}.`,
+          ? translations(
+              "playerAdded",
+              {
+                player:
+                  player.playerName,
+                shortlist:
+                  shortlistName,
+              },
+            )
+          : translations(
+              "playerRemoved",
+              {
+                player:
+                  player.playerName,
+                shortlist:
+                  shortlistName,
+              },
+            ),
       );
     };
 
@@ -149,7 +260,15 @@ export function ShortlistAction({
     setNewListName("");
 
     setAnnouncement(
-      `${normalizedName} created and ${player.playerName} added.`,
+      translations(
+        "createdAndAdded",
+        {
+          shortlist:
+            normalizedName,
+          player:
+            player.playerName,
+        },
+      ),
     );
   };
 
@@ -169,26 +288,50 @@ export function ShortlistAction({
         className={buttonClassName}
       >
         {!isHydrated
-          ? "Loading shortlists"
+          ? translations(
+              "loading",
+            )
           : savedCount > 0
-            ? `Shortlisted (${savedCount})`
-            : "Add to shortlist"}
+            ? translations(
+                "shortlistedCount",
+                {
+                  count:
+                    savedCount,
+                },
+              )
+            : translations(
+                "add",
+              )}
       </button>
 
       {isOpen ? (
         <section
           id={panelId}
-          aria-label={`Shortlist options for ${player.playerName}`}
+          aria-label={
+            translations(
+              "optionsLabel",
+              {
+                player:
+                  player.playerName,
+              },
+            )
+          }
           className="mt-2 w-full rounded-2xl border border-border bg-surface p-4 shadow-lg sm:min-w-80"
         >
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold tracking-[0.12em] text-brand uppercase">
-                Shortlists
+                {translations("eyebrow")}
               </p>
 
               <p className="mt-1 text-sm font-semibold">
-                Save {player.playerName}
+                {translations(
+                  "savePlayer",
+                  {
+                    player:
+                      player.playerName,
+                  },
+                )}
               </p>
             </div>
 
@@ -199,14 +342,14 @@ export function ShortlistAction({
               }}
               className="inline-flex min-h-9 items-center justify-center rounded-lg border border-border px-3 text-xs font-semibold hover:bg-surface-secondary"
             >
-              Done
+              {translations("done")}
             </button>
           </div>
 
           {lists.length > 0 ? (
             <fieldset className="mt-4 space-y-2">
               <legend className="sr-only">
-                Select shortlists
+                {translations("select")}
               </legend>
 
               {lists.map(
@@ -248,10 +391,14 @@ export function ShortlistAction({
                         </span>
 
                         <span className="mt-0.5 block text-xs text-muted">
-                          {formatPlayerCount(
-                            shortlist
-                              .entries
-                              .length,
+                          {translations(
+                            "playerCount",
+                            {
+                              count:
+                                shortlist
+                                  .entries
+                                  .length,
+                            },
                           )}
                         </span>
                       </span>
@@ -262,8 +409,7 @@ export function ShortlistAction({
             </fieldset>
           ) : (
             <p className="mt-4 rounded-xl border border-border bg-surface-secondary px-3 py-3 text-xs leading-5 text-muted">
-              No shortlists yet. Create
-              the first list below.
+              {translations("empty")}
             </p>
           )}
 
@@ -277,7 +423,7 @@ export function ShortlistAction({
               htmlFor={`${panelId}-name`}
               className="text-xs font-semibold text-foreground"
             >
-              New shortlist
+              {translations("newShortlist")}
             </label>
 
             <div className="mt-2 flex flex-col gap-2 sm:flex-row">
@@ -294,7 +440,11 @@ export function ShortlistAction({
                       .value,
                   );
                 }}
-                placeholder="Summer 2027 — LCB"
+                placeholder={
+                  translations(
+                    "namePlaceholder",
+                  )
+                }
                 autoComplete="off"
                 className="min-h-11 min-w-0 flex-1 rounded-xl border border-border bg-page px-3 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/15"
               />
@@ -308,7 +458,7 @@ export function ShortlistAction({
                 }
                 className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand px-4 text-xs font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Create and add
+                {translations("createAndAdd")}
               </button>
             </div>
           </form>
@@ -318,7 +468,9 @@ export function ShortlistAction({
               role="alert"
               className="mt-3 rounded-xl border border-warning/25 bg-warning/10 px-3 py-2 text-xs leading-5 text-warning"
             >
-              {issue.message}
+              {issueMessages[
+                issue.code
+              ]}
             </p>
           ) : announcement ? (
             <p

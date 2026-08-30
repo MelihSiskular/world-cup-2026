@@ -1,8 +1,14 @@
-import Link from "next/link";
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
 
 import {
   PlayerImage,
 } from "@/components/players/player-image";
+import {
+  Link,
+} from "@/i18n/navigation";
 import {
   ShortlistAction,
 } from "@/components/shortlists/shortlist-action";
@@ -28,10 +34,12 @@ import {
   formatProfileNumber,
   formatProfilePercentage,
 } from "@/lib/players/profile-format";
+import type {
+  ProfileFormatContext,
+} from "@/lib/players/profile-format";
 import {
   getRecommendationRank,
   getRecommendationScore,
-  TRANSFER_MODE_DETAILS,
 } from "@/lib/transfer-intelligence/result-config";
 
 type TransferRecommendationCardVariant =
@@ -49,14 +57,6 @@ type TransferRecommendationCardProps =
     variant?: TransferRecommendationCardVariant;
   }>;
 
-function formatMetricPercentage(
-  value: number | null | undefined,
-): string {
-  return formatProfilePercentage(
-    value,
-  );
-}
-
 export function TransferRecommendationCard({
   targetPlayerId,
   mode,
@@ -64,6 +64,95 @@ export function TransferRecommendationCard({
   recommendation,
   variant = "featured",
 }: TransferRecommendationCardProps) {
+  const locale = useLocale();
+
+  const translations =
+    useTranslations(
+      "TransferRecommendationCard",
+    );
+
+  const formatContext:
+    ProfileFormatContext = {
+      locale,
+      missingValue:
+        translations(
+          "notReported",
+        ),
+    };
+
+  const positionOptions = {
+    labels: {
+      G: translations(
+        "positionLabels.G",
+      ),
+      D: translations(
+        "positionLabels.D",
+      ),
+      M: translations(
+        "positionLabels.M",
+      ),
+      F: translations(
+        "positionLabels.F",
+      ),
+    },
+    unavailable:
+      translations(
+        "positionUnavailable",
+      ),
+  };
+
+  const scoreLabels = {
+    immediate: translations(
+      "scoreLabels.immediate",
+    ),
+    development: translations(
+      "scoreLabels.development",
+    ),
+    value: translations(
+      "scoreLabels.value",
+    ),
+    short_term: translations(
+      "scoreLabels.shortTerm",
+    ),
+  } as const;
+
+  const formatMetricPercentage = (
+    value: number | null | undefined,
+  ): string =>
+    formatProfilePercentage(
+      value,
+      formatContext,
+    );
+
+  const formatNumber = (
+    value: number | null | undefined,
+    options:
+      Intl.NumberFormatOptions = {},
+  ): string =>
+    formatProfileNumber(
+      value,
+      options,
+      formatContext,
+    );
+
+  const formatMarket = (
+    value: number | null | undefined,
+    currency: string | null | undefined,
+  ): string =>
+    formatMarketValue(
+      value,
+      currency,
+      formatContext,
+    );
+
+  const formatPosition = (
+    value: string | null | undefined,
+  ): string =>
+    formatPlayerPosition(
+      value,
+      positionOptions,
+    );
+
   const score =
     getRecommendationScore(
       mode,
@@ -75,9 +164,6 @@ export function TransferRecommendationCard({
       mode,
       recommendation,
     );
-
-  const modeDetails =
-    TRANSFER_MODE_DETAILS[mode];
 
   const comparisonParameters =
     createAnalysisSearchParameters(
@@ -100,27 +186,35 @@ export function TransferRecommendationCard({
 
   const metrics = [
     {
-      label: "Statistical similarity",
+      label: translations(
+        "statisticalSimilarity",
+      ),
       value: formatMetricPercentage(
         recommendation
           .statistical_similarity_pct,
       ),
     },
     {
-      label: "Spatial similarity",
+      label: translations(
+        "spatialSimilarity",
+      ),
       value: formatMetricPercentage(
         recommendation
           .spatial_similarity_pct,
       ),
     },
     {
-      label: "Role fit",
+      label: translations(
+        "roleFit",
+      ),
       value: formatMetricPercentage(
         recommendation.role_fit_pct,
       ),
     },
     {
-      label: "Market advantage",
+      label: translations(
+        "marketAdvantage",
+      ),
       value: formatMetricPercentage(
         recommendation
           .market_value_advantage_pct,
@@ -153,7 +247,7 @@ export function TransferRecommendationCard({
                 </span>
 
                 <span className="rounded-full bg-surface-secondary px-2.5 py-1 text-xs font-semibold text-brand-dark">
-                  {formatPlayerPosition(
+                  {formatPosition(
                     recommendation.position,
                   )}
                 </span>
@@ -178,7 +272,7 @@ export function TransferRecommendationCard({
                   .national_team_name ??
                   recommendation
                     .country_name ??
-                  "National team unavailable"}
+                  translations("nationalTeamUnavailable")}
               </p>
 
               <p className="mt-1.5 break-words text-sm font-semibold text-brand">
@@ -186,7 +280,7 @@ export function TransferRecommendationCard({
                   .final_role ??
                   recommendation
                     .archetype ??
-                  "Role unavailable"}
+                  translations("roleUnavailable")}
               </p>
             </div>
           </div>
@@ -194,13 +288,13 @@ export function TransferRecommendationCard({
           <dl className="grid gap-2 sm:grid-cols-2 xl:w-[30rem] xl:grid-cols-4">
             <div className="rounded-xl border border-border bg-page px-3 py-2.5">
               <dt className="text-[11px] leading-4 text-muted">
-                {modeDetails.scoreLabel}
+                {scoreLabels[mode]}
               </dt>
 
               <dd className="mt-1 font-bold text-brand-dark">
                 {score === null
                   ? "—"
-                  : formatProfileNumber(
+                  : formatNumber(
                       score,
                       {
                         maximumFractionDigits: 1,
@@ -211,7 +305,9 @@ export function TransferRecommendationCard({
 
             <div className="rounded-xl border border-border bg-page px-3 py-2.5">
               <dt className="text-[11px] leading-4 text-muted">
-                Statistical
+                {translations(
+                  "statistical",
+                )}
               </dt>
 
               <dd className="mt-1 font-bold">
@@ -224,7 +320,9 @@ export function TransferRecommendationCard({
 
             <div className="rounded-xl border border-border bg-page px-3 py-2.5">
               <dt className="text-[11px] leading-4 text-muted">
-                Spatial
+                {translations(
+                  "spatial",
+                )}
               </dt>
 
               <dd className="mt-1 font-bold">
@@ -237,7 +335,9 @@ export function TransferRecommendationCard({
 
             <div className="rounded-xl border border-border bg-page px-3 py-2.5">
               <dt className="text-[11px] leading-4 text-muted">
-                Role fit
+                {translations(
+                  "roleFit",
+                )}
               </dt>
 
               <dd className="mt-1 font-bold">
@@ -253,9 +353,11 @@ export function TransferRecommendationCard({
         <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-4">
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted">
             <span>
-              Market{" "}
+              {translations(
+                "market",
+              )}{" "}
               <strong className="font-semibold text-foreground">
-                {formatMarketValue(
+                {formatMarket(
                   recommendation.market_value,
                   recommendation
                     .market_value_currency,
@@ -264,23 +366,36 @@ export function TransferRecommendationCard({
             </span>
 
             <span>
-              Age{" "}
+              {translations(
+                "age",
+              )}{" "}
               <strong className="font-semibold text-foreground">
-                {recommendation.age === null
-                  ? "Not reported"
-                  : `${formatProfileNumber(
-                      recommendation.age,
+                {typeof recommendation.age !==
+                "number"
+                  ? translations(
+                      "notReported",
+                    )
+                  : translations(
+                      "ageYears",
                       {
-                        maximumFractionDigits: 1,
+                        age:
+                          formatNumber(
+                            recommendation.age,
+                            {
+                              maximumFractionDigits: 1,
+                            },
+                          ),
                       },
-                    )} years`}
+                    )}
               </strong>
             </span>
 
             <span>
-              Minutes{" "}
+              {translations(
+                "minutes",
+              )}{" "}
               <strong className="font-semibold text-foreground">
-                {formatProfileNumber(
+                {formatNumber(
                   recommendation.minutes,
                 )}
               </strong>
@@ -292,14 +407,18 @@ export function TransferRecommendationCard({
               href={comparisonHref}
               className="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl bg-brand px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-dark sm:flex-none"
             >
-              Compare
+              {translations(
+                "compare",
+              )}
             </Link>
 
             <Link
               href={`/players/${recommendation.player_id}`}
               className="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl border border-border px-4 py-2 text-xs font-semibold transition-colors hover:bg-surface-secondary sm:flex-none"
             >
-              Profile
+              {translations(
+                "profile",
+              )}
             </Link>
 
             <ShortlistAction
@@ -335,7 +454,7 @@ export function TransferRecommendationCard({
                 </span>
 
                 <span className="rounded-full bg-surface-secondary px-3 py-1.5 text-xs font-semibold text-brand-dark">
-                  {formatPlayerPosition(
+                  {formatPosition(
                     recommendation.position,
                   )}
                 </span>
@@ -361,7 +480,7 @@ export function TransferRecommendationCard({
                     .national_team_name ??
                     recommendation
                       .country_name ??
-                    "National team unavailable"}
+                    translations("nationalTeamUnavailable")}
                 </p>
 
                 <p className="mt-2 break-words font-semibold text-brand">
@@ -369,7 +488,7 @@ export function TransferRecommendationCard({
                     .final_role ??
                     recommendation
                       .archetype ??
-                    "Role unavailable"}
+                    translations("roleUnavailable")}
                 </p>
               </div>
             </div>
@@ -403,14 +522,18 @@ export function TransferRecommendationCard({
               href={comparisonHref}
               className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-dark sm:w-auto"
             >
-              Compare with target
+              {translations(
+                "compareWithTarget",
+              )}
             </Link>
 
             <Link
               href={`/players/${recommendation.player_id}`}
               className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-border px-4 py-2.5 text-center text-sm font-semibold transition-colors hover:bg-surface-secondary sm:w-auto"
             >
-              Open player profile
+              {translations(
+                "openPlayerProfile",
+              )}
             </Link>
 
             <ShortlistAction
@@ -421,13 +544,13 @@ export function TransferRecommendationCard({
 
         <aside className="border-t border-border bg-surface-secondary p-5 lg:border-t-0 lg:border-l">
           <p className="text-xs font-semibold text-muted">
-            {modeDetails.scoreLabel}
+            {scoreLabels[mode]}
           </p>
 
           <p className="mt-2 text-3xl font-bold tracking-[-0.04em] text-brand-dark">
             {score === null
               ? "—"
-              : formatProfileNumber(
+              : formatNumber(
                   score,
                   {
                     maximumFractionDigits: 1,
@@ -438,10 +561,12 @@ export function TransferRecommendationCard({
           <dl className="mt-6 space-y-4 text-sm">
             <div>
               <dt className="text-muted">
-                Market value
+                {translations(
+                  "marketValue",
+                )}
               </dt>
               <dd className="mt-1 font-semibold">
-                {formatMarketValue(
+                {formatMarket(
                   recommendation.market_value,
                   recommendation
                     .market_value_currency,
@@ -451,26 +576,39 @@ export function TransferRecommendationCard({
 
             <div>
               <dt className="text-muted">
-                Age
+                {translations(
+                  "age",
+                )}
               </dt>
               <dd className="mt-1 font-semibold">
-                {recommendation.age === null
-                  ? "Not reported"
-                  : `${formatProfileNumber(
-                      recommendation.age,
+                {typeof recommendation.age !==
+                "number"
+                  ? translations(
+                      "notReported",
+                    )
+                  : translations(
+                      "ageYears",
                       {
-                        maximumFractionDigits: 1,
+                        age:
+                          formatNumber(
+                            recommendation.age,
+                            {
+                              maximumFractionDigits: 1,
+                            },
+                          ),
                       },
-                    )} years`}
+                    )}
               </dd>
             </div>
 
             <div>
               <dt className="text-muted">
-                Tournament minutes
+                {translations(
+                  "tournamentMinutes",
+                )}
               </dt>
               <dd className="mt-1 font-semibold">
-                {formatProfileNumber(
+                {formatNumber(
                   recommendation.minutes,
                 )}
               </dd>

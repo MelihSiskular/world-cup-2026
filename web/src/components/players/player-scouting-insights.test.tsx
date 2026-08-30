@@ -1,12 +1,21 @@
 import {
-  render,
+  render as renderTestingLibrary,
   screen,
 } from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+import type {
+  ReactElement,
+} from "react";
 import {
   describe,
   expect,
   it,
 } from "vitest";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 
 import type {
   PlayerProfileResponse,
@@ -15,6 +24,27 @@ import type {
 import {
   PlayerScoutingInsights,
 } from "./player-scouting-insights";
+
+type TestLocale =
+  "en" | "tr";
+
+function render(
+  element: ReactElement,
+  locale: TestLocale = "en",
+) {
+  return renderTestingLibrary(
+    <NextIntlClientProvider
+      locale={locale}
+      messages={
+        locale === "tr"
+          ? turkishMessages
+          : englishMessages
+      }
+    >
+      {element}
+    </NextIntlClientProvider>,
+  );
+}
 
 type PlayerIntelligence =
   NonNullable<
@@ -174,5 +204,104 @@ describe(
         ).toBeInTheDocument();
       },
     );
+
+    it(
+      "localizes scouting context while preserving backend evidence",
+      () => {
+        render(
+          <PlayerScoutingInsights
+            intelligence={
+              intelligence
+            }
+          />,
+          "tr",
+        );
+
+        expect(
+          screen.getByRole(
+            "heading",
+            {
+              name:
+                "Scouting içgörüleri",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Güçlü yönler",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Öne çıkan sinyaller",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Dikkat noktaları",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "İncelenecek alanlar",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getAllByText(
+            "1 sinyal",
+          ),
+        ).toHaveLength(2);
+
+        expect(
+          screen.getByRole(
+            "progressbar",
+            {
+              name:
+                "xA / 90 performans yüzdelik dilimi",
+            },
+          ),
+        ).toHaveAttribute(
+          "aria-valuenow",
+          "98.8",
+        );
+
+        expect(
+          screen.getByText(
+            /98.8 performance percentile among 216 same-position peers/,
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Chance creation",
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
+    it(
+      "localizes the unavailable scouting state in Turkish",
+      () => {
+        render(
+          <PlayerScoutingInsights
+            intelligence={null}
+          />,
+          "tr",
+        );
+
+        expect(
+          screen.getByText(
+            "Bu oyuncu için pozisyona özgü scouting içgörüleri bildirilmedi.",
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
+
   },
 );

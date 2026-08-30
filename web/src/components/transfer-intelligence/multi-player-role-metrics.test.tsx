@@ -1,5 +1,4 @@
 import {
-  render,
   screen,
   within,
 } from "@testing-library/react";
@@ -7,6 +6,7 @@ import {
   describe,
   expect,
   it,
+  vi,
 } from "vitest";
 
 import {
@@ -15,6 +15,16 @@ import {
 import type {
   MultiPlayerComparisonResponse,
 } from "@/lib/api/types";
+import {
+  renderWithQueryClient,
+} from "@/test/render-with-query-client";
+
+vi.mock(
+  "@/i18n/navigation",
+  () => ({
+    Link: "a",
+  }),
+);
 
 const response: MultiPlayerComparisonResponse =
   {
@@ -114,7 +124,7 @@ describe(
     it(
       "shows tournament totals and per-90 values in canonical player order",
       () => {
-        render(
+        renderWithQueryClient(
           <MultiPlayerRoleMetrics
             target={response.target}
             candidates={
@@ -201,7 +211,7 @@ describe(
     it(
       "preserves measured zero values",
       () => {
-        render(
+        renderWithQueryClient(
           <MultiPlayerRoleMetrics
             target={response.target}
             candidates={
@@ -237,5 +247,97 @@ describe(
         );
       },
     );
+    it(
+      "localizes role metrics and number formatting in Turkish",
+      () => {
+        renderWithQueryClient(
+          <MultiPlayerRoleMetrics
+            target={response.target}
+            candidates={
+              response.candidates
+            }
+            groups={
+              response.role_metrics ??
+              []
+            }
+          />,
+          "tr",
+        );
+
+        const table =
+          screen.getByRole(
+            "table",
+            {
+              name:
+                "Hedef nihai rol metrik karşılaştırması",
+            },
+          );
+
+        expect(
+          screen.getByRole(
+            "region",
+            {
+              name:
+                "Kaydırılabilir hedef nihai rol metrikleri",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          within(table).getByText(
+            "Metrik",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          within(table).getByText(
+            "Hedef",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          within(table).getByText(
+            "Aday 1",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          within(table).getByText(
+            "Skor üretimi",
+          ),
+        ).toBeInTheDocument();
+
+        const goalsRow =
+          within(table).getByRole(
+            "row",
+            {
+              name: /Goller/i,
+            },
+          );
+
+        expect(
+          within(
+            goalsRow,
+          ).getByRole(
+            "cell",
+            {
+              name:
+                "5 toplam, 0,42 90 dakika başına",
+            },
+          ),
+        ).toHaveTextContent(
+          "5 (0,42/90)",
+        );
+
+        expect(
+          within(
+            goalsRow,
+          ).getByText(
+            "Kullanılamıyor",
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
   },
 );

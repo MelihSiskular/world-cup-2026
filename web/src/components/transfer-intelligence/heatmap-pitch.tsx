@@ -1,3 +1,8 @@
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
+
 import type { HeatmapPlayerResponse } from "@/lib/api/types";
 
 type HeatmapPitchProps = Readonly<{
@@ -130,6 +135,10 @@ function AveragePositionMarker({
 }: Readonly<{
   player: HeatmapPlayerResponse;
 }>) {
+  const locale = useLocale();
+  const translations =
+    useTranslations("HeatmapPitch");
+
   if (!hasAveragePosition(player)) {
     return null;
   }
@@ -160,10 +169,27 @@ function AveragePositionMarker({
       />
 
       <title>
-        {player.player_name}: average
-        tournament position (
-        {player.weighted_mean_x.toFixed(1)},{" "}
-        {player.weighted_mean_y.toFixed(1)})
+        {translations(
+          "averagePositionTitle",
+          {
+            player:
+              player.player_name,
+            x: player.weighted_mean_x.toLocaleString(
+              locale,
+              {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+              },
+            ),
+            y: player.weighted_mean_y.toLocaleString(
+              locale,
+              {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+              },
+            ),
+          },
+        )}
       </title>
     </g>
   );
@@ -287,14 +313,21 @@ function PitchLines() {
 }
 
 export function HeatmapDensityLegend() {
+  const translations =
+    useTranslations("HeatmapPitch");
+
   const opacitySteps = [0.08, 0.2, 0.38, 0.6, MAX_HEATMAP_OPACITY];
 
   return (
     <div
-      aria-label="Relative occupation density legend"
+      aria-label={translations(
+        "densityLegendAriaLabel",
+      )}
       className="flex items-center gap-2"
     >
-      <span className="text-[11px] font-medium text-muted">Low</span>
+      <span className="text-[11px] font-medium text-muted">
+        {translations("low")}
+      </span>
 
       <div className="flex gap-1" aria-hidden="true">
         {opacitySteps.map((opacity) => (
@@ -308,25 +341,39 @@ export function HeatmapDensityLegend() {
         ))}
       </div>
 
-      <span className="text-[11px] font-medium text-muted">High</span>
+      <span className="text-[11px] font-medium text-muted">
+        {translations("high")}
+      </span>
     </div>
   );
 }
 
-function formatEvidenceNumber(value: number | null | undefined): string {
+function formatEvidenceNumber(
+  value: number | null | undefined,
+  locale: string,
+): string {
   if (typeof value !== "number" || !Number.isFinite(value)) {
     return "—";
   }
 
-  return value.toLocaleString("en-US");
+  return value.toLocaleString(locale);
 }
 
-function formatEntropy(value: number | null | undefined): string {
+function formatEntropy(
+  value: number | null | undefined,
+  locale: string,
+): string {
   if (typeof value !== "number" || !Number.isFinite(value)) {
     return "—";
   }
 
-  return value.toFixed(3);
+  return value.toLocaleString(
+    locale,
+    {
+      minimumFractionDigits: 3,
+      maximumFractionDigits: 3,
+    },
+  );
 }
 
 export function HeatmapPitch({
@@ -336,13 +383,23 @@ export function HeatmapPitch({
   showAveragePosition = false,
   showEvidenceSummary = true,
 }: HeatmapPitchProps) {
+  const locale = useLocale();
+  const translations =
+    useTranslations("HeatmapPitch");
+
   if (!hasRenderableGrid(player)) {
     return (
       <div
         data-testid="heatmap-unavailable"
         className="flex min-h-64 items-center justify-center rounded-2xl border border-dashed border-border bg-page px-6 text-center text-sm leading-6 text-muted"
       >
-        Tournament heatmap data are not available for {player.player_name}.
+        {translations(
+          "unavailable",
+          {
+            player:
+              player.player_name,
+          },
+        )}
       </div>
     );
   }
@@ -373,16 +430,26 @@ export function HeatmapPitch({
     <div className="mx-auto w-full min-w-0 max-w-3xl">
       <div className="overflow-hidden rounded-2xl border border-border bg-page p-3 sm:p-4">
         <div className="mb-3 flex items-center justify-between gap-4 px-1">
-          <span className="text-xs font-medium text-muted">Defensive</span>
+          <span className="text-xs font-medium text-muted">
+            {translations("defensive")}
+          </span>
 
           <span className="text-xs font-semibold text-brand">
-            Attacking direction →
+            {translations(
+              "attackingDirection",
+            )}
           </span>
         </div>
 
         <svg
           role="img"
-          aria-label={`Tournament heatmap for ${player.player_name}`}
+          aria-label={translations(
+            "ariaLabel",
+            {
+              player:
+                player.player_name,
+            },
+          )}
           viewBox="-2 0 109 68"
           className="block h-auto w-full"
         >
@@ -445,7 +512,9 @@ export function HeatmapPitch({
               aria-hidden="true"
               className="inline-flex size-3 shrink-0 rounded-full border-2 border-white bg-brand-dark shadow-sm"
             />
-            Average tournament position
+            {translations(
+              "averagePosition",
+            )}
           </div>
         ) : null}
 
@@ -453,12 +522,15 @@ export function HeatmapPitch({
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
             <div>
               <p className="text-xs font-semibold text-foreground">
-                Relative tournament occupation density
+                {translations(
+                  "densityTitle",
+                )}
               </p>
 
               <p className="mt-1 text-[11px] leading-5 text-muted">
-                Visual intensity reflects observed tournament heatmap
-                occupation, not positional probability.
+                {translations(
+                  "densityDescription",
+                )}
               </p>
             </div>
 
@@ -469,36 +541,45 @@ export function HeatmapPitch({
          <dl className="mt-3 grid grid-cols-3 divide-x divide-border border-t border-border pt-3 text-center">
            <div className="px-2">
              <dt className="text-[11px] text-muted">
-               Matches
+               {translations(
+                 "matches",
+               )}
              </dt>
 
              <dd className="mt-1 text-sm font-bold text-brand-dark">
                {formatEvidenceNumber(
                  player.matches_with_heatmap,
+                 locale,
                )}
              </dd>
            </div>
 
            <div className="px-2">
              <dt className="text-[11px] text-muted">
-               Points
+               {translations(
+                 "points",
+               )}
              </dt>
 
              <dd className="mt-1 text-sm font-bold text-brand-dark">
                {formatEvidenceNumber(
                  player.heatmap_point_count,
+                 locale,
                )}
              </dd>
            </div>
 
            <div className="px-2">
              <dt className="text-[11px] text-muted">
-               Entropy
+               {translations(
+                 "entropy",
+               )}
              </dt>
 
              <dd className="mt-1 text-sm font-bold text-brand-dark">
                {formatEntropy(
                  player.heatmap_entropy,
+                 locale,
                )}
              </dd>
            </div>

@@ -1,5 +1,14 @@
-import type { PlayerProfileResponse } from "@/lib/api/types";
-import { formatProfileNumber } from "@/lib/players/profile-format";
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
+
+import type {
+  PlayerProfileResponse,
+} from "@/lib/api/types";
+import {
+  formatProfileNumber,
+} from "@/lib/players/profile-format";
 
 type PlayerIntelligence = NonNullable<PlayerProfileResponse["intelligence"]>;
 
@@ -20,8 +29,33 @@ function clampPercentile(percentile: number): number {
   return Math.min(100, Math.max(0, percentile));
 }
 
-function InsightCard({ insight, tone }: InsightCardProps) {
-  const isStrength = tone === "strength";
+function InsightCard({
+  insight,
+  tone,
+}: InsightCardProps) {
+  const locale =
+    useLocale();
+
+  const translations =
+    useTranslations(
+      "PlayerScoutingInsights",
+    );
+
+  const commonTranslations =
+    useTranslations(
+      "Common",
+    );
+
+  const formatContext = {
+    locale,
+    missingValue:
+      commonTranslations(
+        "notReported",
+      ),
+  };
+
+  const isStrength =
+    tone === "strength";
 
   return (
     <article
@@ -50,20 +84,32 @@ function InsightCard({ insight, tone }: InsightCardProps) {
 
         <div className="shrink-0 text-right">
           <p className="text-2xl font-bold tracking-[-0.04em]">
-            {formatProfileNumber(insight.percentile, {
-              maximumFractionDigits: 1,
-            })}
+            {formatProfileNumber(
+              insight.percentile,
+              {
+                maximumFractionDigits: 1,
+              },
+              formatContext,
+            )}
           </p>
 
           <p className="text-[0.65rem] font-semibold tracking-[0.08em] text-muted uppercase">
-            percentile
+            {translations(
+              "percentile",
+            )}
           </p>
         </div>
       </div>
 
       <div
         role="progressbar"
-        aria-label={`${insight.metric_short_label} performance percentile`}
+        aria-label={translations(
+          "percentileAriaLabel",
+          {
+            metric:
+              insight.metric_short_label,
+          },
+        )}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={insight.percentile}
@@ -100,6 +146,11 @@ function EmptyInsightState({
 export function PlayerScoutingInsights({
   intelligence,
 }: PlayerScoutingInsightsProps) {
+  const translations =
+    useTranslations(
+      "PlayerScoutingInsights",
+    );
+
   if (!intelligence) {
     return (
       <section
@@ -107,19 +158,25 @@ export function PlayerScoutingInsights({
         className="rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-7"
       >
         <p className="text-sm font-semibold tracking-[0.15em] text-brand uppercase">
-          Scouting intelligence
+          {translations(
+            "eyebrow",
+          )}
         </p>
 
         <h2
           id="scouting-insights-title"
           className="mt-3 text-2xl font-bold tracking-[-0.03em]"
         >
-          Scouting insights
+          {translations(
+            "title",
+          )}
         </h2>
 
         <div className="mt-5">
           <EmptyInsightState>
-            Position-aware scouting insights were not reported for this player.
+            {translations(
+              "unavailable",
+            )}
           </EmptyInsightState>
         </div>
       </section>
@@ -137,19 +194,24 @@ export function PlayerScoutingInsights({
     >
       <div className="max-w-3xl">
         <p className="text-sm font-semibold tracking-[0.15em] text-brand uppercase">
-          Scouting intelligence
+          {translations(
+            "eyebrow",
+          )}
         </p>
 
         <h2
           id="scouting-insights-title"
           className="mt-3 text-2xl font-bold tracking-[-0.03em]"
         >
-          Scouting insights
+          {translations(
+            "title",
+          )}
         </h2>
 
         <p className="mt-3 text-sm leading-6 text-muted">
-          Position-aware performance signals derived from same-position
-          percentile comparisons across the tournament sample.
+          {translations(
+            "description",
+          )}
         </p>
       </div>
 
@@ -158,16 +220,26 @@ export function PlayerScoutingInsights({
           <div className="flex items-end justify-between gap-4">
             <div>
               <p className="text-xs font-semibold tracking-[0.12em] text-brand uppercase">
-                Strengths
+                {translations(
+                  "strengths",
+                )}
               </p>
 
               <h3 className="mt-2 text-xl font-bold tracking-[-0.025em]">
-                Standout signals
+                {translations(
+                  "standoutSignals",
+                )}
               </h3>
             </div>
 
             <span className="shrink-0 rounded-full bg-surface-secondary px-3 py-1 text-xs font-semibold text-muted">
-              {strengths.length} surfaced
+              {translations(
+                "surfacedCount",
+                {
+                  count:
+                    strengths.length,
+                },
+              )}
             </span>
           </div>
 
@@ -183,8 +255,9 @@ export function PlayerScoutingInsights({
             ) : (
               <div className="md:col-span-2">
                 <EmptyInsightState>
-                  No standout strengths were surfaced by the current
-                  position-aware profile.
+                  {translations(
+                    "noStrengths",
+                  )}
                 </EmptyInsightState>
               </div>
             )}
@@ -195,16 +268,26 @@ export function PlayerScoutingInsights({
           <div className="flex items-end justify-between gap-4">
             <div>
               <p className="text-xs font-semibold tracking-[0.12em] text-amber-700 uppercase">
-                Watch-outs
+                {translations(
+                  "watchOuts",
+                )}
               </p>
 
               <h3 className="mt-2 text-xl font-bold tracking-[-0.025em]">
-                Areas to review
+                {translations(
+                  "areasToReview",
+                )}
               </h3>
             </div>
 
             <span className="shrink-0 rounded-full bg-surface-secondary px-3 py-1 text-xs font-semibold text-muted">
-              {watchOuts.length} surfaced
+              {translations(
+                "surfacedCount",
+                {
+                  count:
+                    watchOuts.length,
+                },
+              )}
             </span>
           </div>
 
@@ -219,8 +302,9 @@ export function PlayerScoutingInsights({
               ))
             ) : (
               <EmptyInsightState>
-                No watch-out signals were surfaced by the current position-aware
-                profile.
+                {translations(
+                  "noWatchOuts",
+                )}
               </EmptyInsightState>
             )}
           </div>

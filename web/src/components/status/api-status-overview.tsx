@@ -1,6 +1,10 @@
 "use client";
 
 import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
+import {
   useEffect,
   useState,
 } from "react";
@@ -68,17 +72,20 @@ function isAbortError(
 
 function getStatusErrorMessage(
   error: unknown,
+  fallback: string,
 ): string {
   return error instanceof Error
     ? error.message
-    : "The system status could not be loaded.";
+    : fallback;
 }
 
 function formatTimestamp(
   value: string | null,
+  locale: string,
+  notReported: string,
 ): string {
   if (!value) {
-    return "Not reported";
+    return notReported;
   }
 
   const date = new Date(value);
@@ -88,7 +95,7 @@ function formatTimestamp(
   }
 
   return new Intl.DateTimeFormat(
-    "en",
+    locale,
     {
       dateStyle: "medium",
       timeStyle: "short",
@@ -143,6 +150,11 @@ function TechnicalDetail({
 }
 
 export function ApiStatusOverview() {
+  const locale = useLocale();
+  const t = useTranslations(
+    "ApiStatusOverview",
+  );
+
   const [
     state,
     setState,
@@ -171,7 +183,10 @@ export function ApiStatusOverview() {
         setState({
           status: "error",
           message:
-            getStatusErrorMessage(error),
+            getStatusErrorMessage(
+              error,
+              t("loadFailed"),
+            ),
         });
       },
     );
@@ -179,7 +194,7 @@ export function ApiStatusOverview() {
     return () => {
       controller.abort();
     };
-  }, []);
+  }, [t]);
 
   async function refreshStatus(): Promise<void> {
     setState({
@@ -197,8 +212,11 @@ export function ApiStatusOverview() {
     } catch (error) {
       setState({
         status: "error",
-        message:
-          getStatusErrorMessage(error),
+          message:
+            getStatusErrorMessage(
+              error,
+              t("loadFailed"),
+            ),
       });
     }
   }
@@ -210,7 +228,7 @@ export function ApiStatusOverview() {
         role="status"
         aria-live="polite"
       >
-        Checking system availability…
+        {t("checking")}
       </div>
     );
   }
@@ -222,7 +240,7 @@ export function ApiStatusOverview() {
         role="alert"
       >
         <p className="font-semibold text-error">
-          System status unavailable
+          {t("unavailable")}
         </p>
 
         <p className="mt-2 text-sm leading-6 text-muted">
@@ -236,7 +254,7 @@ export function ApiStatusOverview() {
             void refreshStatus();
           }}
         >
-          Retry
+          {t("retry")}
         </button>
       </div>
     );
@@ -277,7 +295,7 @@ export function ApiStatusOverview() {
 
           <div>
             <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
-              Current availability
+              {t("currentAvailability")}
             </p>
 
             <h2
@@ -285,14 +303,20 @@ export function ApiStatusOverview() {
               className="mt-2 text-xl font-bold tracking-[-0.025em]"
             >
               {allServicesReady
-                ? "All scouting services operational"
-                : "Player data requires attention"}
+                ? t("allOperational")
+                : t(
+                    "playerDataAttention",
+                  )}
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-muted">
               {allServicesReady
-                ? "Player search and transfer analysis are ready to use."
-                : "Core services are responding, but the player catalogue is not ready."}
+                ? t(
+                    "allOperationalDescription",
+                  )
+                : t(
+                    "playerDataAttentionDescription",
+                  )}
             </p>
           </div>
         </div>
@@ -300,32 +324,48 @@ export function ApiStatusOverview() {
 
       <div className="grid gap-5 md:grid-cols-2">
         <StatusCard
-          label="Scouting API"
-          value="Operational"
-          description="Core scouting requests are responding normally."
+          label={t("scoutingApi")}
+          value={t("operational")}
+          description={t(
+            "scoutingApiDescription",
+          )}
         />
 
         <StatusCard
-          label="Player data"
+          label={t("playerData")}
           value={
             readiness.status === "ready"
-              ? "Ready"
-              : "Not ready"
+              ? t("ready")
+              : t("notReady")
           }
           description={
             readiness.catalog_loaded_at
-              ? `Last loaded ${formatTimestamp(
-                  readiness.catalog_loaded_at,
-                )}`
-              : "Load time not reported."
+              ? t("lastLoaded", {
+                  timestamp:
+                    formatTimestamp(
+                      readiness
+                        .catalog_loaded_at,
+                      locale,
+                      t("notReported"),
+                    ),
+                })
+              : t(
+                  "loadTimeNotReported",
+                )
           }
         />
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-surface-secondary px-5 py-4 text-sm text-muted">
         <span>
-          Last checked{" "}
-          {formatTimestamp(checkedAt)}
+          {t("lastChecked", {
+            timestamp:
+              formatTimestamp(
+                checkedAt,
+                locale,
+                t("notReported"),
+              ),
+          })}
         </span>
 
         <button
@@ -335,13 +375,15 @@ export function ApiStatusOverview() {
             void refreshStatus();
           }}
         >
-          Refresh status
+          {t("refresh")}
         </button>
       </div>
 
       <details className="group overflow-hidden rounded-xl border border-border bg-surface">
         <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 px-5 py-3.5 font-semibold text-brand-dark transition-colors hover:bg-surface-secondary [&::-webkit-details-marker]:hidden">
-          <span>Technical details</span>
+          <span>
+            {t("technicalDetails")}
+          </span>
 
           <span
             aria-hidden="true"
@@ -353,44 +395,50 @@ export function ApiStatusOverview() {
 
         <dl className="grid gap-3 border-t border-border p-4 sm:grid-cols-2 lg:grid-cols-3">
           <TechnicalDetail
-            label="Environment"
+            label={t("environment")}
             value={health.environment}
           />
 
           <TechnicalDetail
-            label="Deployment"
+            label={t("deployment")}
             value={deployment.provider}
           />
 
           <TechnicalDetail
-            label="Version"
+            label={t("version")}
             value={deployment.version}
           />
 
           <TechnicalDetail
-            label="Branch"
+            label={t("branch")}
             value={
               deployment.branch ??
-              "Not reported"
+              t("notReported")
             }
           />
 
           <TechnicalDetail
-            label="Dataset fingerprint"
+            label={t(
+              "datasetFingerprint",
+            )}
             value={
               deployment.dataset_bundle_sha256
                 ? deployment.dataset_bundle_sha256.slice(
                     0,
                     12,
                   )
-                : "Not reported"
+                : t(
+                    "notReported",
+                  )
             }
           />
 
           <TechnicalDetail
-            label="API started"
+            label={t("apiStarted")}
             value={formatTimestamp(
               health.started_at,
+              locale,
+              t("notReported"),
             )}
           />
         </dl>

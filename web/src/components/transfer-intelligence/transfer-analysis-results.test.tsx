@@ -2,6 +2,9 @@ import {
   screen,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type {
+  ComponentProps,
+} from "react";
 import {
   beforeEach,
   describe,
@@ -28,6 +31,17 @@ import {
 import {
   renderWithQueryClient,
 } from "@/test/render-with-query-client";
+
+vi.mock(
+  "@/i18n/navigation",
+  () => ({
+    Link: (
+      props: ComponentProps<"a">,
+    ) => (
+      <a {...props} />
+    ),
+  }),
+);
 
 vi.mock(
   "@/lib/api/browser-transfer-intelligence",
@@ -169,6 +183,59 @@ describe(
         expect(
           screen.getByText(
             "No eligible candidates",
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
+    it(
+      "localizes scenario navigation and empty results in Turkish",
+      async () => {
+        runTransferAnalysisMock
+          .mockResolvedValue(
+            createAnalysisResponse(),
+          );
+
+        renderWithQueryClient(
+          <TransferAnalysisResults
+            playerId={978838}
+            values={{
+              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+            }}
+            initialMode="immediate"
+          />,
+          "tr",
+        );
+
+        expect(
+          await screen.findByRole(
+            "tab",
+            {
+              name:
+                /^Anlık/,
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByRole(
+            "tab",
+            {
+              name:
+                /^Gelişim/,
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Uygun aday bulunamadı",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Oyuncu alım ölçütlerini düzenle",
           ),
         ).toBeInTheDocument();
       },

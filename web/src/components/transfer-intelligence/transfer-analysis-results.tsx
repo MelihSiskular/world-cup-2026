@@ -3,7 +3,10 @@
 import {
   useQuery,
 } from "@tanstack/react-query";
-import Link from "next/link";
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
 import {
   type KeyboardEvent,
   useState,
@@ -12,6 +15,9 @@ import {
 import {
   ApiErrorReference,
 } from "@/components/feedback/api-error-reference";
+import {
+  Link,
+} from "@/i18n/navigation";
 import {
   PlayerImage,
 } from "@/components/players/player-image";
@@ -30,8 +36,6 @@ import type {
 } from "@/lib/api/types";
 import {
   formatMarketValue,
-  formatProfileNumber,
-  formatProfilePercentage,
 } from "@/lib/players/profile-format";
 import {
   createAnalysisSearchParameters,
@@ -43,7 +47,6 @@ import {
   createTransferAnalysisQueryOptions,
 } from "@/lib/transfer-intelligence/analysis-query";
 import {
-  TRANSFER_MODE_DETAILS,
   TRANSFER_MODE_ORDER,
 } from "@/lib/transfer-intelligence/result-config";
 
@@ -61,6 +64,68 @@ export function TransferAnalysisResults({
   values,
   initialMode,
 }: TransferAnalysisResultsProps) {
+  const locale = useLocale();
+
+  const translations =
+    useTranslations(
+      "TransferAnalysisResults",
+    );
+
+  const numberFormatter =
+    new Intl.NumberFormat(
+      locale,
+      {
+        maximumFractionDigits: 1,
+      },
+    );
+
+  const modeTranslations = {
+    immediate: {
+      label: translations(
+        "modes.immediate.label",
+      ),
+      shortLabel: translations(
+        "modes.immediate.shortLabel",
+      ),
+      description: translations(
+        "modes.immediate.description",
+      ),
+    },
+    development: {
+      label: translations(
+        "modes.development.label",
+      ),
+      shortLabel: translations(
+        "modes.development.shortLabel",
+      ),
+      description: translations(
+        "modes.development.description",
+      ),
+    },
+    value: {
+      label: translations(
+        "modes.value.label",
+      ),
+      shortLabel: translations(
+        "modes.value.shortLabel",
+      ),
+      description: translations(
+        "modes.value.description",
+      ),
+    },
+    short_term: {
+      label: translations(
+        "modes.shortTerm.label",
+      ),
+      shortLabel: translations(
+        "modes.shortTerm.shortLabel",
+      ),
+      description: translations(
+        "modes.shortTerm.description",
+      ),
+    },
+  } as const;
+
   const [
     activeMode,
     setActiveMode,
@@ -188,26 +253,36 @@ export function TransferAnalysisResults({
         className="rounded-2xl border border-error/25 bg-error/10 p-7"
       >
         <p className="text-sm font-semibold tracking-[0.14em] text-error uppercase">
-          Analysis unavailable
+          {translations(
+            "analysisUnavailable",
+          )}
         </p>
 
         <h2 className="mt-3 text-3xl font-bold tracking-[-0.035em]">
           {playerNotFound
-            ? "The target player could not be found"
+            ? translations(
+                "playerNotFound",
+              )
             : datasetUnavailable
-              ? "The analytics datasets are unavailable"
-              : "The transfer analysis could not be completed"}
+              ? translations(
+                  "datasetsUnavailable",
+                )
+              : translations(
+                  "analysisFailed",
+                )}
         </h2>
 
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          {analysis.error
-            instanceof Error
-            ? analysis.error.message
-            : "The transfer analysis request failed."}
+          {translations(
+            "requestFailed",
+          )}
         </p>
 
         <ApiErrorReference
           error={analysis.error}
+          label={translations(
+            "requestId",
+          )}
         />
 
         <div className="mt-7 flex flex-wrap gap-3">
@@ -219,7 +294,9 @@ export function TransferAnalysisResults({
               }}
               className="rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-white hover:bg-brand-dark"
             >
-              Retry analysis
+              {translations(
+                "retryAnalysis",
+              )}
             </button>
           ) : null}
 
@@ -227,7 +304,9 @@ export function TransferAnalysisResults({
             href={`/analysis/${playerId}`}
             className="rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold hover:bg-surface-secondary"
           >
-            Adjust parameters
+            {translations(
+              "adjustParameters",
+            )}
           </Link>
         </div>
       </section>
@@ -283,7 +362,9 @@ export function TransferAnalysisResults({
 
             <div className="min-w-0">
               <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-                Analysis target
+                {translations(
+                  "analysisTarget",
+                )}
               </p>
 
               <h2 className="mt-2 break-words text-2xl font-bold tracking-[-0.035em]">
@@ -293,23 +374,41 @@ export function TransferAnalysisResults({
               <p className="mt-1 break-words text-sm font-semibold text-brand">
                 {target.final_role ??
                   target.archetype ??
-                  "Role unavailable"}
+                  translations(
+                    "roleUnavailable",
+                  )}
               </p>
 
               <p className="mt-1 text-sm text-muted">
                 {target.national_team_name ??
                   target.country_name ??
-                  "National team unavailable"}
+                  translations(
+                    "nationalTeamUnavailable",
+                  )}
                 {" · "}
-                {formatProfileNumber(
-                  target.appearances,
-                )}{" "}
-                appearances
+                {typeof target.appearances !==
+                "number"
+                  ? translations(
+                      "notReported",
+                    )
+                  : numberFormatter.format(
+                      target.appearances,
+                    )}{" "}
+                {translations(
+                  "appearances",
+                )}
                 {" · "}
-                {formatProfileNumber(
-                  target.minutes,
-                )}{" "}
-                minutes
+                {typeof target.minutes !==
+                "number"
+                  ? translations(
+                      "notReported",
+                    )
+                  : numberFormatter.format(
+                      target.minutes,
+                    )}{" "}
+                {translations(
+                  "minutes",
+                )}
               </p>
             </div>
           </div>
@@ -317,7 +416,9 @@ export function TransferAnalysisResults({
           <div className="grid gap-2 sm:grid-cols-3 xl:min-w-[31rem]">
             <div className="rounded-xl border border-border bg-surface-secondary px-4 py-3">
               <p className="text-xs text-muted">
-                Market value
+                {translations(
+                  "marketValue",
+                )}
               </p>
 
               <p className="mt-1 text-lg font-bold tracking-[-0.02em]">
@@ -330,25 +431,39 @@ export function TransferAnalysisResults({
 
             <div className="rounded-xl border border-border bg-surface-secondary px-4 py-3">
               <p className="text-xs text-muted">
-                Player quality
+                {translations(
+                  "playerQuality",
+                )}
               </p>
 
               <p className="mt-1 text-lg font-bold tracking-[-0.02em]">
-                {formatProfilePercentage(
-                  target.player_quality_score,
-                )}
+                {typeof target.player_quality_score !==
+                "number"
+                  ? translations(
+                      "notReported",
+                    )
+                  : `${numberFormatter.format(
+                      target.player_quality_score,
+                    )}%`}
               </p>
             </div>
 
             <div className="rounded-xl border border-border bg-surface-secondary px-4 py-3">
               <p className="text-xs text-muted">
-                Role confidence
+                {translations(
+                  "roleConfidence",
+                )}
               </p>
 
               <p className="mt-1 text-lg font-bold tracking-[-0.02em]">
-                {formatProfilePercentage(
-                  target.role_confidence_pct,
-                )}
+                {typeof target.role_confidence_pct !==
+                "number"
+                  ? translations(
+                      "notReported",
+                    )
+                  : `${numberFormatter.format(
+                      target.role_confidence_pct,
+                    )}%`}
               </p>
             </div>
           </div>
@@ -359,7 +474,9 @@ export function TransferAnalysisResults({
             href={adjustParametersHref}
             className="inline-flex rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-surface-secondary"
           >
-            Adjust recruitment criteria
+            {translations(
+              "adjustCriteria",
+            )}
           </Link>
         </div>
       </section>
@@ -372,7 +489,9 @@ export function TransferAnalysisResults({
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-              Active scenario
+              {translations(
+                "activeScenario",
+              )}
             </p>
 
             <h2
@@ -380,7 +499,7 @@ export function TransferAnalysisResults({
               className="mt-2 text-3xl font-bold tracking-[-0.035em]"
             >
               {
-                TRANSFER_MODE_DETAILS[
+                modeTranslations[
                   activeMode
                 ].label
               }
@@ -388,7 +507,7 @@ export function TransferAnalysisResults({
 
             <p className="mt-2 text-sm leading-6 text-muted">
               {
-                TRANSFER_MODE_DETAILS[
+                modeTranslations[
                   activeMode
                 ].description
               }
@@ -397,18 +516,22 @@ export function TransferAnalysisResults({
 
           <div className="xl:text-right">
             <p className="mb-2 text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-              Recruitment strategy
+              {translations(
+                "recruitmentStrategy",
+              )}
             </p>
 
             <div
               role="tablist"
-              aria-label="Transfer recommendation modes"
+              aria-label={translations(
+                "modeTabsAriaLabel",
+              )}
               className="grid w-full max-w-2xl grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap xl:justify-end"
             >
             {TRANSFER_MODE_ORDER.map(
               (modeName) => {
                 const details =
-                  TRANSFER_MODE_DETAILS[
+                  modeTranslations[
                     modeName
                   ];
 
@@ -473,13 +596,15 @@ export function TransferAnalysisResults({
         {featuredRecommendation === null ? (
           <div className="rounded-2xl border border-dashed border-border bg-surface p-8 text-center">
             <p className="font-semibold">
-              No eligible candidates
+              {translations(
+                "noCandidates",
+              )}
             </p>
 
             <p className="mt-2 text-sm text-muted">
-              Adjust the recruitment
-              thresholds to expand the
-              candidate pool.
+              {translations(
+                "noCandidatesDescription",
+              )}
             </p>
           </div>
         ) : (
@@ -491,14 +616,18 @@ export function TransferAnalysisResults({
               <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-                    Leading recommendation
+                    {translations(
+                      "leadingRecommendation",
+                    )}
                   </p>
 
                   <h3
                     id="leading-recommendation-heading"
                     className="mt-1 text-xl font-bold tracking-[-0.025em]"
                   >
-                    Best-ranked candidate for this scenario
+                    {translations(
+                      "leadingRecommendationTitle",
+                    )}
                   </h3>
                 </div>
               </div>
@@ -525,23 +654,29 @@ export function TransferAnalysisResults({
                 <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
                   <div>
                     <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-                      Other candidates
+                      {translations(
+                        "otherCandidates",
+                      )}
                     </p>
 
                     <h3
                       id="other-candidates-heading"
                       className="mt-1 text-xl font-bold tracking-[-0.025em]"
                     >
-                      Alternative recruitment options
+                      {translations(
+                        "otherCandidatesTitle",
+                      )}
                     </h3>
                   </div>
 
                   <p className="text-sm text-muted">
-                    {remainingRecommendations.length}{" "}
-                    {remainingRecommendations.length ===
-                    1
-                      ? "alternative"
-                      : "alternatives"}
+                    {translations(
+                      "alternativeCount",
+                      {
+                        count:
+                          remainingRecommendations.length,
+                      },
+                    )}
                   </p>
                 </div>
 
@@ -580,8 +715,16 @@ export function TransferAnalysisResults({
                       className="rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold transition-colors hover:bg-surface-secondary"
                     >
                       {showAllRecommendations
-                        ? "Show top recommendations"
-                        : `Show all ${activeRecommendations.length} candidates`}
+                        ? translations(
+                            "showTopRecommendations",
+                          )
+                        : translations(
+                            "showAllCandidates",
+                            {
+                              count:
+                                activeRecommendations.length,
+                            },
+                          )}
                     </button>
                   </div>
                 ) : null}

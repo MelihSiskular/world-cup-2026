@@ -1,8 +1,18 @@
 import {
-  render,
+  render as renderTestingLibrary,
   screen,
   within,
 } from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+import type {
+  ComponentProps,
+  ReactElement,
+} from "react";
+
+import englishMessages from "../../../messages/en.json";
+
 import {
   QueryClient,
   QueryClientProvider,
@@ -26,6 +36,21 @@ import {
   createTransferAnalysisQueryKey,
 } from "@/lib/transfer-intelligence/analysis-query";
 import { renderWithQueryClient } from "@/test/render-with-query-client";
+
+vi.mock(
+  "@/i18n/navigation",
+  () => ({
+    Link: ({
+      href,
+      ...properties
+    }: ComponentProps<"a">) => (
+      <a
+        href={href}
+        {...properties}
+      />
+    ),
+  }),
+);
 
 vi.mock("@/lib/api/browser-transfer-intelligence", () => ({
   fetchHeatmapComparison: vi.fn(),
@@ -287,6 +312,19 @@ function createRadarResponse(
   };
 }
 
+
+function render(
+  element: ReactElement,
+) {
+  return renderTestingLibrary(
+    <NextIntlClientProvider
+      locale="en"
+      messages={englishMessages}
+    >
+      {element}
+    </NextIntlClientProvider>,
+  );
+}
 
 describe("PlayerComparison", () => {
   beforeEach(() => {
@@ -813,5 +851,159 @@ describe("PlayerComparison", () => {
       ),
     ).not.toBeInTheDocument();
   });
+  it(
+    "localizes the comparison core while preserving backend evidence",
+    async () => {
+      runTransferAnalysisMock.mockResolvedValue(
+        createResponse(true),
+      );
+
+      renderWithQueryClient(
+        <PlayerComparison
+          targetPlayerId={978838}
+          candidatePlayerId={12345}
+          mode="immediate"
+          values={{
+            ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+          }}
+        />,
+        "tr",
+      );
+
+      expect(
+        await screen.findByRole(
+          "heading",
+          {
+            name:
+              "Test Candidate",
+          },
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          "İstatistiksel benzerlik",
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          "Aday · Sıra 2",
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          "Neden Test Candidate?",
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          "Taktik ve konumsal uyum",
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getAllByText(
+          "Central Half-Space Creator",
+        ),
+      ).toHaveLength(2);
+    },
+  );
+
+  it(
+    "localizes radar and heatmap comparison evidence",
+    async () => {
+      runTransferAnalysisMock.mockResolvedValue(
+        createResponse(true),
+      );
+
+      renderWithQueryClient(
+        <PlayerComparison
+          targetPlayerId={978838}
+          candidatePlayerId={12345}
+          mode="immediate"
+          values={{
+            ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+          }}
+        />,
+        "tr",
+      );
+
+      const radarRegion =
+        await screen.findByRole(
+          "region",
+          {
+            name:
+              "Oyun stili radar karşılaştırması",
+          },
+        );
+
+      expect(
+        await within(
+          radarRegion,
+        ).findByText(
+          "Paylaşılan pozisyon katmanı",
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        await within(
+          radarRegion,
+        ).findByRole(
+          "img",
+          {
+            name:
+              "Michael Olise ve Test Candidate için oyun stili radar karşılaştırması",
+          },
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        await within(
+          radarRegion,
+        ).findAllByText(
+          "Creativity",
+        ),
+      ).toHaveLength(2);
+
+      const heatmapRegion =
+        screen.getByRole(
+          "region",
+          {
+            name:
+              "Isı haritası profil karşılaştırması",
+          },
+        );
+
+      expect(
+        within(heatmapRegion).getByRole(
+          "heading",
+          {
+            name:
+              "Ölçülmüş turnuva alan kullanımı",
+          },
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        await within(
+          heatmapRegion,
+        ).findByText(
+          "Ölçülmüş çift kanıtı",
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        await within(
+          heatmapRegion,
+        ).findByText(
+          "Ölçülmüş benzerlik",
+        ),
+      ).toBeInTheDocument();
+    },
+  );
+
 
 });

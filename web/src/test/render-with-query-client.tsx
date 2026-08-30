@@ -5,10 +5,16 @@ import {
 import {
   render,
 } from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
 import type {
   ReactElement,
   ReactNode,
 } from "react";
+
+import englishMessages from "../../messages/en.json";
+import turkishMessages from "../../messages/tr.json";
 
 import {
   ShortlistProvider,
@@ -28,47 +34,67 @@ const testShortlistStorage:
     },
   };
 
-function TestQueryProvider({
-  children,
-}: Readonly<{
-  children: ReactNode;
-}>) {
-  const queryClient =
-    new QueryClient({
-      defaultOptions: {
-        queries: {
-          retry: false,
-          gcTime: Infinity,
-        },
-        mutations: {
-          retry: false,
-        },
-      },
-    });
+type TestLocale =
+  "en" | "tr";
 
-  return (
-    <QueryClientProvider
-      client={queryClient}
-    >
-      <ShortlistProvider
-        storage={
-          testShortlistStorage
-        }
+function createTestQueryProvider(
+  locale: TestLocale,
+) {
+  const messages =
+    locale === "tr"
+      ? turkishMessages
+      : englishMessages;
+
+  return function TestQueryProvider({
+    children,
+  }: Readonly<{
+    children: ReactNode;
+  }>) {
+    const queryClient =
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: false,
+            gcTime: Infinity,
+          },
+          mutations: {
+            retry: false,
+          },
+        },
+      });
+
+    return (
+      <NextIntlClientProvider
+        locale={locale}
+        messages={messages}
       >
-        {children}
-      </ShortlistProvider>
-    </QueryClientProvider>
-  );
+        <QueryClientProvider
+          client={queryClient}
+        >
+          <ShortlistProvider
+            storage={
+              testShortlistStorage
+            }
+          >
+            {children}
+          </ShortlistProvider>
+        </QueryClientProvider>
+      </NextIntlClientProvider>
+    );
+  };
 }
 
 export function renderWithQueryClient(
   element: ReactElement,
+  locale: TestLocale = "en",
 ) {
   return render(
     element,
     {
       wrapper:
-        TestQueryProvider,
+        createTestQueryProvider(
+          locale,
+        ),
     },
   );
 }

@@ -1,12 +1,46 @@
 import {
-  render,
+  render as renderTestingLibrary,
   screen,
 } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+import type {
+  ReactElement,
+} from "react";
+import {
+  describe,
+  expect,
+  it,
+} from "vitest";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 
 import type { PlayerProfileResponse } from "@/lib/api/types";
 
 import { PlayerFeaturedMetrics } from "./player-featured-metrics";
+
+type TestLocale =
+  "en" | "tr";
+
+function render(
+  element: ReactElement,
+  locale: TestLocale = "en",
+) {
+  return renderTestingLibrary(
+    <NextIntlClientProvider
+      locale={locale}
+      messages={
+        locale === "tr"
+          ? turkishMessages
+          : englishMessages
+      }
+    >
+      {element}
+    </NextIntlClientProvider>,
+  );
+}
 
 type Intelligence =
   NonNullable<PlayerProfileResponse["intelligence"]>;
@@ -123,4 +157,79 @@ describe("PlayerFeaturedMetrics", () => {
 
     expect(container).toBeEmptyDOMElement();
   });
+
+  it("localizes metric context in Turkish without changing metric data", () => {
+    render(
+      <PlayerFeaturedMetrics
+        intelligence={intelligence}
+      />,
+      "tr",
+    );
+
+    expect(
+      screen.getByRole(
+        "heading",
+        {
+          name:
+            "Pozisyona özgü metrikler",
+        },
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getAllByText(
+        "90 dakika başına",
+      ).length,
+    ).toBeGreaterThan(0);
+
+    expect(
+      screen.getByText(
+        "Yüzde",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getAllByText(
+        "Aynı pozisyon yüzdelik dilimi",
+      ).length,
+    ).toBeGreaterThan(0);
+
+    expect(
+      screen.getByRole(
+        "progressbar",
+        {
+          name:
+            "xA / 90 performans yüzdelik dilimi",
+        },
+      ),
+    ).toBeInTheDocument();
+
+    const peerCounts =
+      screen.getAllByText(
+        "216",
+      );
+
+    expect(
+      peerCounts.some(
+        (peerCount) =>
+          peerCount.parentElement
+            ?.textContent
+            ?.includes(
+              "216 uygun pozisyon eşiyle karşılaştırıldı.",
+            ) === true,
+      ),
+    ).toBe(true);
+
+    expect(
+      screen.getByRole(
+        "heading",
+        {
+          name:
+            "xA / 90",
+        },
+      ),
+    ).toBeInTheDocument();
+  });
+
+
 });

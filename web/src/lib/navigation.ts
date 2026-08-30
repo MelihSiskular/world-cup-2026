@@ -1,5 +1,11 @@
+export type PrimaryNavigationMessageKey =
+  | "home"
+  | "players"
+  | "shortlists"
+  | "methodology";
+
 export type PrimaryNavigationItem = Readonly<{
-  label: string;
+  messageKey: PrimaryNavigationMessageKey;
   href: string;
   activePrefixes: readonly string[];
 }>;
@@ -7,12 +13,12 @@ export type PrimaryNavigationItem = Readonly<{
 export const primaryNavigationItems =
   [
     {
-      label: "Home",
+      messageKey: "home",
       href: "/",
       activePrefixes: ["/"],
     },
     {
-      label: "Players",
+      messageKey: "players",
       href: "/players",
       activePrefixes: [
         "/players",
@@ -21,14 +27,14 @@ export const primaryNavigationItems =
       ],
     },
     {
-      label: "Shortlists",
+      messageKey: "shortlists",
       href: "/shortlists",
       activePrefixes: [
         "/shortlists",
       ],
     },
     {
-      label: "Methodology",
+      messageKey: "methodology",
       href: "/methodology",
       activePrefixes: ["/methodology"],
     },

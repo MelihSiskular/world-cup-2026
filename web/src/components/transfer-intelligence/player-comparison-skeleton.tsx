@@ -1,3 +1,7 @@
+import {
+  useTranslations,
+} from "next-intl";
+
 function SkeletonLine({
   className,
 }: Readonly<{
@@ -129,11 +133,15 @@ function SkeletonEvidencePanel() {
 }
 
 export function PlayerComparisonSkeleton() {
+  const t = useTranslations(
+    "PlayerComparison",
+  );
+
   return (
     <div
       role="status"
       aria-live="polite"
-      aria-label="Preparing player comparison"
+      aria-label={t("preparing")}
       className="animate-pulse space-y-8 motion-reduce:animate-none"
     >
       <section className="grid gap-4 lg:grid-cols-2">
@@ -159,7 +167,7 @@ export function PlayerComparisonSkeleton() {
       </div>
 
       <span className="sr-only">
-        Preparing player comparison…
+        {t("preparing")}
       </span>
     </div>
   );

@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
+
 import type {
   PlayerSearchFilterOptionResponse,
   PlayerSearchFiltersResponse,
@@ -10,14 +15,6 @@ import {
 import type {
   PlayerSearchParameters,
 } from "@/lib/players/search-parameters";
-
-const positionLabels:
-  Readonly<Record<string, string>> = {
-    G: "Goalkeeper",
-    D: "Defender",
-    M: "Midfielder",
-    F: "Forward",
-  };
 
 type PlayerSearchActiveFiltersProps =
   Readonly<{
@@ -52,9 +49,10 @@ function findOptionLabel(
 
 function formatNumber(
   value: number,
+  locale: string,
 ): string {
   return value.toLocaleString(
-    "en",
+    locale,
     {
       maximumFractionDigits: 1,
     },
@@ -63,6 +61,7 @@ function formatNumber(
 
 function formatMarketValue(
   value: number,
+  locale: string,
 ): string {
   if (
     Math.abs(value) >=
@@ -70,7 +69,7 @@ function formatMarketValue(
   ) {
     return `€${(
       value / 1_000_000
-    ).toLocaleString("en", {
+    ).toLocaleString(locale, {
       maximumFractionDigits: 1,
     })}M`;
   }
@@ -80,13 +79,13 @@ function formatMarketValue(
   ) {
     return `€${(
       value / 1_000
-    ).toLocaleString("en", {
+    ).toLocaleString(locale, {
       maximumFractionDigits: 0,
     })}K`;
   }
 
   return `€${value.toLocaleString(
-    "en",
+    locale,
   )}`;
 }
 
@@ -96,6 +95,29 @@ export function PlayerSearchActiveFilters({
   onChange,
   onClear,
 }: PlayerSearchActiveFiltersProps) {
+  const locale =
+    useLocale();
+  const translations =
+    useTranslations(
+      "PlayerDiscovery",
+    );
+
+  const positionLabels:
+    Readonly<Record<string, string>> = {
+      G: translations(
+        "positionLabels.goalkeeper",
+      ),
+      D: translations(
+        "positionLabels.defender",
+      ),
+      M: translations(
+        "positionLabels.midfielder",
+      ),
+      F: translations(
+        "positionLabels.forward",
+      ),
+    };
+
   const normalized =
     normalizePlayerSearchParameters(
       parameters,
@@ -110,13 +132,18 @@ export function PlayerSearchActiveFilters({
   ) {
     filters.push({
       key: `position:${value}`,
-      label: `Position: ${
-        positionLabels[value] ??
-        findOptionLabel(
-          metadata.positions,
-          value,
-        )
-      }`,
+      label:
+        translations(
+          "positionFilter",
+          {
+            value:
+              positionLabels[value] ??
+              findOptionLabel(
+                metadata.positions,
+                value,
+              ),
+          },
+        ),
       nextParameters: {
         ...normalized,
         positions:
@@ -136,10 +163,17 @@ export function PlayerSearchActiveFilters({
   ) {
     filters.push({
       key: `final-role:${value}`,
-      label: `Final role: ${findOptionLabel(
-        metadata.final_roles,
-        value,
-      )}`,
+      label:
+        translations(
+          "finalRoleFilter",
+          {
+            value:
+              findOptionLabel(
+                metadata.final_roles,
+                value,
+              ),
+          },
+        ),
       nextParameters: {
         ...normalized,
         finalRoles:
@@ -159,10 +193,17 @@ export function PlayerSearchActiveFilters({
   ) {
     filters.push({
       key: `archetype:${value}`,
-      label: `Archetype: ${findOptionLabel(
-        metadata.archetypes,
-        value,
-      )}`,
+      label:
+        translations(
+          "archetypeFilter",
+          {
+            value:
+              findOptionLabel(
+                metadata.archetypes,
+                value,
+              ),
+          },
+        ),
       nextParameters: {
         ...normalized,
         archetypes:
@@ -182,10 +223,17 @@ export function PlayerSearchActiveFilters({
   ) {
     filters.push({
       key: `country:${value}`,
-      label: `Nationality: ${findOptionLabel(
-        metadata.countries,
-        value,
-      )}`,
+      label:
+        translations(
+          "nationalityFilter",
+          {
+            value:
+              findOptionLabel(
+                metadata.countries,
+                value,
+              ),
+          },
+        ),
       nextParameters: {
         ...normalized,
         countries:
@@ -205,9 +253,17 @@ export function PlayerSearchActiveFilters({
   ) {
     filters.push({
       key: "minimum-age",
-      label: `Age ≥ ${formatNumber(
-        normalized.minimumAge,
-      )}`,
+      label:
+        translations(
+          "minimumAgeFilter",
+          {
+            value:
+              formatNumber(
+                normalized.minimumAge,
+                locale,
+              ),
+          },
+        ),
       nextParameters: {
         ...normalized,
         minimumAge: undefined,
@@ -222,9 +278,17 @@ export function PlayerSearchActiveFilters({
   ) {
     filters.push({
       key: "maximum-age",
-      label: `Age ≤ ${formatNumber(
-        normalized.maximumAge,
-      )}`,
+      label:
+        translations(
+          "maximumAgeFilter",
+          {
+            value:
+              formatNumber(
+                normalized.maximumAge,
+                locale,
+              ),
+          },
+        ),
       nextParameters: {
         ...normalized,
         maximumAge: undefined,
@@ -239,9 +303,17 @@ export function PlayerSearchActiveFilters({
   ) {
     filters.push({
       key: "minimum-market-value",
-      label: `Value ≥ ${formatMarketValue(
-        normalized.minimumMarketValue,
-      )}`,
+      label:
+        translations(
+          "minimumValueFilter",
+          {
+            value:
+              formatMarketValue(
+                normalized.minimumMarketValue,
+                locale,
+              ),
+          },
+        ),
       nextParameters: {
         ...normalized,
         minimumMarketValue:
@@ -257,9 +329,17 @@ export function PlayerSearchActiveFilters({
   ) {
     filters.push({
       key: "maximum-market-value",
-      label: `Value ≤ ${formatMarketValue(
-        normalized.maximumMarketValue,
-      )}`,
+      label:
+        translations(
+          "maximumValueFilter",
+          {
+            value:
+              formatMarketValue(
+                normalized.maximumMarketValue,
+                locale,
+              ),
+          },
+        ),
       nextParameters: {
         ...normalized,
         maximumMarketValue:
@@ -275,9 +355,17 @@ export function PlayerSearchActiveFilters({
   ) {
     filters.push({
       key: "minimum-minutes",
-      label: `Minutes ≥ ${formatNumber(
-        normalized.minimumMinutes,
-      )}`,
+      label:
+        translations(
+          "minimumMinutesFilter",
+          {
+            value:
+              formatNumber(
+                normalized.minimumMinutes,
+                locale,
+              ),
+          },
+        ),
       nextParameters: {
         ...normalized,
         minimumMinutes: undefined,
@@ -292,9 +380,17 @@ export function PlayerSearchActiveFilters({
   ) {
     filters.push({
       key: "minimum-role-confidence",
-      label: `Role confidence ≥ ${formatNumber(
-        normalized.minimumRoleConfidence,
-      )}%`,
+      label:
+        translations(
+          "minimumRoleConfidenceFilter",
+          {
+            value:
+              formatNumber(
+                normalized.minimumRoleConfidence,
+                locale,
+              ),
+          },
+        ),
       nextParameters: {
         ...normalized,
         minimumRoleConfidence:
@@ -310,9 +406,17 @@ export function PlayerSearchActiveFilters({
   ) {
     filters.push({
       key: "minimum-data-reliability",
-      label: `Data reliability ≥ ${formatNumber(
-        normalized.minimumDataReliability,
-      )}%`,
+      label:
+        translations(
+          "minimumDataReliabilityFilter",
+          {
+            value:
+              formatNumber(
+                normalized.minimumDataReliability,
+                locale,
+              ),
+          },
+        ),
       nextParameters: {
         ...normalized,
         minimumDataReliability:
@@ -336,7 +440,9 @@ export function PlayerSearchActiveFilters({
           id="active-player-filters-title"
           className="text-xs font-semibold tracking-[0.12em] text-muted uppercase"
         >
-          Active filters
+          {translations(
+            "activeFiltersTitle",
+          )}
         </h2>
 
         <button
@@ -344,7 +450,9 @@ export function PlayerSearchActiveFilters({
           onClick={onClear}
           className="min-h-10 rounded-xl px-3 py-2 text-xs font-semibold text-brand-dark transition-colors hover:bg-surface-secondary"
         >
-          Clear filters
+          {translations(
+            "clearFilters",
+          )}
         </button>
       </div>
 
@@ -354,7 +462,15 @@ export function PlayerSearchActiveFilters({
             <button
               key={filter.key}
               type="button"
-              aria-label={`Remove ${filter.label} filter`}
+              aria-label={
+                translations(
+                  "removeFilter",
+                  {
+                    label:
+                      filter.label,
+                  },
+                )
+              }
               onClick={() => {
                 onChange(
                   filter.nextParameters,

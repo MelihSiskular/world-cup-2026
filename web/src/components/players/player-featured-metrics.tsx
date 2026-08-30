@@ -1,5 +1,15 @@
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
+
 import type { PlayerProfileResponse } from "@/lib/api/types";
-import { formatProfileNumber } from "@/lib/players/profile-format";
+import {
+  formatProfileNumber,
+} from "@/lib/players/profile-format";
+import type {
+  ProfileFormatContext,
+} from "@/lib/players/profile-format";
 
 type PlayerIntelligence =
   NonNullable<PlayerProfileResponse["intelligence"]>;
@@ -57,12 +67,14 @@ function selectFeaturedMetrics(
 
 function formatMetricValue(
   metric: PerformanceMetric,
+  context: ProfileFormatContext,
 ): string {
   const value = formatProfileNumber(
     metric.value,
     {
       maximumFractionDigits: 2,
     },
+    context,
   );
 
   if (metric.unit === "percent") {
@@ -74,16 +86,21 @@ function formatMetricValue(
 
 function formatMetricUnit(
   metric: PerformanceMetric,
+  labels: Readonly<{
+    per90: string;
+    percent: string;
+    raw: string;
+  }>,
 ): string {
   switch (metric.unit) {
     case "per90":
-      return "Per 90";
+      return labels.per90;
 
     case "percent":
-      return "Percentage";
+      return labels.percent;
 
     case "raw":
-      return "Tournament total";
+      return labels.raw;
 
     default:
       return metric.unit;
@@ -104,6 +121,42 @@ function FeaturedMetricCard({
 }: Readonly<{
   metric: PerformanceMetric;
 }>) {
+  const locale =
+    useLocale();
+
+  const translations =
+    useTranslations(
+      "PlayerFeaturedMetrics",
+    );
+
+  const commonTranslations =
+    useTranslations(
+      "Common",
+    );
+
+  const formatContext = {
+    locale,
+    missingValue:
+      commonTranslations(
+        "notReported",
+      ),
+  };
+
+  const unitLabels = {
+    per90:
+      translations(
+        "unitPer90",
+      ),
+    percent:
+      translations(
+        "unitPercent",
+      ),
+    raw:
+      translations(
+        "unitRaw",
+      ),
+  };
+
   const percentile =
     metric.performance_percentile;
 
@@ -116,12 +169,18 @@ function FeaturedMetricCard({
           </h3>
 
           <p className="mt-1 text-xs text-muted">
-            {formatMetricUnit(metric)}
+            {formatMetricUnit(
+              metric,
+              unitLabels,
+            )}
           </p>
         </div>
 
         <p className="shrink-0 text-2xl font-bold tracking-[-0.04em] text-brand-dark">
-          {formatMetricValue(metric)}
+          {formatMetricValue(
+            metric,
+            formatContext,
+          )}
         </p>
       </div>
 
@@ -130,7 +189,9 @@ function FeaturedMetricCard({
         <div className="mt-5">
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs font-medium text-muted">
-              Same-position percentile
+              {translations(
+                "samePositionPercentile",
+              )}
             </p>
 
             <p className="text-sm font-bold">
@@ -139,13 +200,20 @@ function FeaturedMetricCard({
                 {
                   maximumFractionDigits: 1,
                 },
+                formatContext,
               )}
             </p>
           </div>
 
           <div
             role="progressbar"
-            aria-label={`${metric.short_label} performance percentile`}
+            aria-label={translations(
+              "percentileAriaLabel",
+              {
+                metric:
+                  metric.short_label,
+              },
+            )}
             aria-valuemin={0}
             aria-valuemax={100}
             aria-valuenow={percentile}
@@ -162,18 +230,30 @@ function FeaturedMetricCard({
           </div>
 
           <p className="mt-2 text-[0.7rem] leading-5 text-muted">
-            Compared with{" "}
-            <span className="font-semibold text-foreground">
-              {formatProfileNumber(
-                metric.peer_count,
-              )}
-            </span>{" "}
-            eligible peers.
+            {translations.rich(
+              "peerComparison",
+              {
+                count:
+                  formatProfileNumber(
+                    metric.peer_count,
+                    {},
+                    formatContext,
+                  ),
+                countValue:
+                  (chunks) => (
+                    <span className="font-semibold text-foreground">
+                      {chunks}
+                    </span>
+                  ),
+              },
+            )}
           </p>
         </div>
       ) : (
         <p className="mt-5 text-xs leading-5 text-muted">
-          Same-position percentile unavailable.
+          {translations(
+            "percentileUnavailable",
+          )}
         </p>
       )}
     </article>
@@ -183,6 +263,11 @@ function FeaturedMetricCard({
 export function PlayerFeaturedMetrics({
   intelligence,
 }: PlayerFeaturedMetricsProps) {
+  const translations =
+    useTranslations(
+      "PlayerFeaturedMetrics",
+    );
+
   if (!intelligence) {
     return null;
   }
@@ -203,19 +288,24 @@ export function PlayerFeaturedMetrics({
     >
       <div className="max-w-3xl">
         <p className="text-sm font-semibold tracking-[0.15em] text-brand uppercase">
-          Featured performance
+          {translations(
+            "eyebrow",
+          )}
         </p>
 
         <h2
           id="featured-performance-title"
           className="mt-3 text-2xl font-bold tracking-[-0.03em]"
         >
-          Position-relevant metrics
+          {translations(
+            "title",
+          )}
         </h2>
 
         <p className="mt-3 text-sm leading-6 text-muted">
-          A quick read of the player&apos;s tournament output for this
-          position. Full metric detail remains available below.
+          {translations(
+            "description",
+          )}
         </p>
       </div>
 

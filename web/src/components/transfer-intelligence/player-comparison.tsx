@@ -1,9 +1,15 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
 
 import { ApiErrorReference } from "@/components/feedback/api-error-reference";
+import {
+  Link,
+} from "@/i18n/navigation";
 import { PlayerImage } from "@/components/players/player-image";
 import {
   getHeatmapGridMaximum,
@@ -39,7 +45,6 @@ import {
 import {
   getRecommendationRank,
   getRecommendationScore,
-  TRANSFER_MODE_DETAILS,
 } from "@/lib/transfer-intelligence/result-config";
 
 type PlayerComparisonProps = Readonly<{
@@ -135,6 +140,17 @@ function PlayerIdentityCard({
   scoreLabel?: string;
   scenarioLabel?: string;
 }>) {
+  const locale = useLocale();
+  const t = useTranslations(
+    "PlayerComparison",
+  );
+
+  const formatContext = {
+    locale,
+    missingValue:
+      t("notReported"),
+  };
+
   const formattedScenarioScore =
     score === undefined
       ? null
@@ -145,6 +161,7 @@ function PlayerIdentityCard({
             {
               maximumFractionDigits: 1,
             },
+            formatContext,
           );
 
   return (
@@ -165,15 +182,15 @@ function PlayerIdentityCard({
             <span
               title={
                 scoreLabel ??
-                "Scenario score"
+                t("scenarioScore")
               }
               className="rounded-full bg-brand-dark px-2.5 py-1 text-[11px] font-bold text-white"
             >
               <span className="sr-only">
                 {scoreLabel ??
-                  "Scenario score"}{" "}
+                  t("scenarioScore")}{" "}
               </span>
-              Score{" "}
+              {t("score")}{" "}
               {formattedScenarioScore}
             </span>
           ) : null}
@@ -182,6 +199,26 @@ function PlayerIdentityCard({
         <span className="rounded-full bg-surface-secondary px-3 py-1.5 text-xs font-semibold text-brand-dark">
           {formatPlayerPosition(
             player.position,
+            {
+              labels: {
+                G: t(
+                  "positionLabels.G",
+                ),
+                D: t(
+                  "positionLabels.D",
+                ),
+                M: t(
+                  "positionLabels.M",
+                ),
+                F: t(
+                  "positionLabels.F",
+                ),
+              },
+              unavailable:
+                t(
+                  "positionUnavailable",
+                ),
+            },
           )}
         </span>
       </div>
@@ -206,13 +243,17 @@ function PlayerIdentityCard({
           <p className="mt-2 break-words text-sm font-medium text-muted">
             {player.national_team_name ??
               player.country_name ??
-              "National team unavailable"}
+              t(
+                "nationalTeamUnavailable",
+              )}
           </p>
 
           <p className="mt-3 break-words font-semibold text-brand">
             {player.final_role ??
               player.archetype ??
-              "Role unavailable"}
+              t(
+                "roleUnavailable",
+              )}
           </p>
         </div>
       </div>
@@ -220,49 +261,57 @@ function PlayerIdentityCard({
       <dl className="mt-7 grid grid-cols-2 gap-x-4 gap-y-5 rounded-2xl bg-surface-secondary p-5 text-sm sm:grid-cols-3">
         <div className="min-w-0">
           <dt className="text-muted">
-            Market value
+            {t("marketValue")}
           </dt>
 
           <dd className="mt-1 font-bold">
             {formatMarketValue(
               player.market_value,
               player.market_value_currency,
+              formatContext,
             )}
           </dd>
         </div>
 
         <div className="min-w-0">
           <dt className="text-muted">
-            Age
+            {t("age")}
           </dt>
 
           <dd className="mt-1 font-bold">
             {player.age === null
-              ? "Not reported"
-              : `${formatProfileNumber(
-                  player.age,
-                  {
-                    maximumFractionDigits: 0,
-                  },
-                )} years`}
+              ? t("notReported")
+              : t("ageYears", {
+                  value:
+                    formatProfileNumber(
+                      player.age,
+                      {
+                        maximumFractionDigits:
+                          0,
+                      },
+                      formatContext,
+                    ),
+                })}
           </dd>
         </div>
 
         <div className="min-w-0">
           <dt className="text-muted">
-            Tournament minutes
+            {t("tournamentMinutes")}
           </dt>
 
           <dd className="mt-1 font-bold">
             {formatProfileNumber(
               player.minutes,
+              {},
+              formatContext,
             )}
           </dd>
         </div>
 
         <div className="min-w-0 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
           <dt className="text-muted">
-            Weighted rating
+            {t("weightedRating")}
           </dt>
 
           <dd className="mt-1 font-bold">
@@ -272,30 +321,33 @@ function PlayerIdentityCard({
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               },
+              formatContext,
             )}
           </dd>
         </div>
 
         <div className="min-w-0 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
           <dt className="text-muted">
-            Role confidence
+            {t("roleConfidence")}
           </dt>
 
           <dd className="mt-1 font-bold">
             {formatProfilePercentage(
               player.role_confidence_pct,
+              formatContext,
             )}
           </dd>
         </div>
 
         <div className="min-w-0 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
           <dt className="text-muted">
-            Data reliability
+            {t("dataReliability")}
           </dt>
 
           <dd className="mt-1 font-bold">
             {formatProfilePercentage(
               player.data_reliability_score,
+              formatContext,
             )}
           </dd>
         </div>
@@ -310,6 +362,42 @@ export function PlayerComparison({
   mode,
   values,
 }: PlayerComparisonProps) {
+  const locale = useLocale();
+  const t = useTranslations(
+    "PlayerComparison",
+  );
+
+  const formatContext = {
+    locale,
+    missingValue:
+      t("notReported"),
+  };
+
+  const formatPercentage = (
+    value:
+      | number
+      | null
+      | undefined,
+  ) =>
+    formatProfilePercentage(
+      value,
+      formatContext,
+    );
+
+  const formatNumber = (
+    value:
+      | number
+      | null
+      | undefined,
+    options:
+      Intl.NumberFormatOptions = {},
+  ) =>
+    formatProfileNumber(
+      value,
+      options,
+      formatContext,
+    );
+
   const comparison =
     useQuery(
       createTransferAnalysisQueryOptions(
@@ -380,20 +468,23 @@ export function PlayerComparison({
         className="rounded-2xl border border-error/25 bg-error/10 p-7"
       >
         <p className="text-sm font-semibold tracking-[0.14em] text-error uppercase">
-          Comparison unavailable
+          {t("comparisonUnavailable")}
         </p>
 
         <h2 className="mt-3 text-3xl font-bold tracking-[-0.035em]">
-          The player comparison could not be prepared
+          {t("comparisonFailedTitle")}
         </h2>
 
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
           {comparison.error instanceof Error
             ? comparison.error.message
-            : "The transfer analysis request failed."}
+            : t("requestFailed")}
         </p>
 
-        <ApiErrorReference error={comparison.error} />
+        <ApiErrorReference
+          error={comparison.error}
+          label={t("requestId")}
+        />
 
         <button
           type="button"
@@ -402,7 +493,7 @@ export function PlayerComparison({
           }}
           className="mt-7 rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-white hover:bg-brand-dark"
         >
-          Retry comparison
+          {t("retryComparison")}
         </button>
       </section>
     );
@@ -428,23 +519,22 @@ export function PlayerComparison({
     return (
       <section className="rounded-2xl border border-warning/25 bg-warning/10 p-7">
         <p className="text-sm font-semibold tracking-[0.14em] text-warning uppercase">
-          Candidate unavailable
+          {t("candidateUnavailable")}
         </p>
 
         <h2 className="mt-3 text-3xl font-bold tracking-[-0.035em]">
-          This candidate is no longer eligible
+          {t("candidateIneligibleTitle")}
         </h2>
 
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          The player does not appear in the selected recruitment scenario with
-          the current analysis thresholds.
+          {t("candidateIneligibleDescription")}
         </p>
 
         <Link
           href={resultsHref}
           className="mt-7 inline-flex rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-white hover:bg-brand-dark"
         >
-          Return to recommendations
+          {t("returnToRecommendations")}
         </Link>
       </section>
     );
@@ -454,7 +544,25 @@ export function PlayerComparison({
 
   const candidateRank = getRecommendationRank(mode, candidate);
 
-  const modeDetails = TRANSFER_MODE_DETAILS[mode];
+  const modeKey =
+    mode === "short_term"
+      ? "shortTerm"
+      : mode;
+
+  const scenarioLabel =
+    t(
+      `modes.${modeKey}.label`,
+    );
+
+  const scenarioShortLabel =
+    t(
+      `modes.${modeKey}.shortLabel`,
+    );
+
+  const scenarioScoreLabel =
+    t(
+      `modes.${modeKey}.scoreLabel`,
+    );
 
   const sharedHeatmapMaximum = heatmapComparison.data
     ? Math.max(
@@ -465,46 +573,46 @@ export function PlayerComparison({
 
   const comparisonMetrics = [
     {
-      label: "Statistical similarity",
-      value: formatProfilePercentage(candidate.statistical_similarity_pct),
+      label: t("metrics.statisticalSimilarity"),
+      value: formatPercentage(candidate.statistical_similarity_pct),
       description:
-        "Similarity across the position-specific statistical feature set.",
+        t("metrics.statisticalSimilarityDescription"),
     },
     {
-      label: "Spatial similarity",
-      value: formatProfilePercentage(candidate.spatial_similarity_pct),
+      label: t("metrics.spatialSimilarity"),
+      value: formatPercentage(candidate.spatial_similarity_pct),
       description:
-        "Similarity in average position, spatial spread, thirds and lane occupation.",
+        t("metrics.spatialSimilarityDescription"),
     },
     {
-      label: "Heatmap similarity",
-      value: formatProfilePercentage(candidate.heatmap_similarity_score_pct),
+      label: t("metrics.heatmapSimilarity"),
+      value: formatPercentage(candidate.heatmap_similarity_score_pct),
       description:
-        "Direct measured similarity in occupied pitch zones and heatmap structure.",
+        t("metrics.heatmapSimilarityDescription"),
     },
     {
-      label: "Role fit",
-      value: formatProfilePercentage(candidate.role_fit_pct),
-      description: "Alignment with the target player's tactical role.",
+      label: t("metrics.roleFit"),
+      value: formatPercentage(candidate.role_fit_pct),
+      description: t("metrics.roleFitDescription"),
     },
     {
-      label: "Market advantage",
-      value: formatProfilePercentage(candidate.market_value_advantage_pct),
-      description: "Estimated financial advantage relative to the target.",
+      label: t("metrics.marketAdvantage"),
+      value: formatPercentage(candidate.market_value_advantage_pct),
+      description: t("metrics.marketAdvantageDescription"),
     },
   ] as const;
 
   const evidenceItems = [
     {
-      label: "Same final role",
+      label: t("sameFinalRole"),
       value: candidate.same_final_role,
     },
     {
-      label: "Same archetype",
+      label: t("sameArchetype"),
       value: candidate.same_archetype,
     },
     {
-      label: "Direct heatmap evidence",
+      label: t("directHeatmapEvidence"),
       value: candidate.has_heatmap_similarity,
     },
   ].filter(
@@ -525,25 +633,28 @@ export function PlayerComparison({
     <div className="space-y-8">
       <section className="grid gap-4 lg:grid-cols-2">
         <PlayerIdentityCard
-          label="Target player"
+          label={t("targetPlayer")}
           player={target}
         />
 
         <PlayerIdentityCard
-          label={`Candidate · Rank ${candidateRank ?? "—"}`}
+          label={t("candidateRank", {
+            rank:
+              candidateRank ?? "—",
+          })}
           player={candidate}
           scenarioLabel={
-            modeDetails.shortLabel
+            scenarioShortLabel
           }
           score={candidateScore}
           scoreLabel={
-            modeDetails.scoreLabel
+            scenarioScoreLabel
           }
         />
       </section>
 
       <section
-        aria-label="Comparison indicators"
+        aria-label={t("comparisonIndicators")}
         className="comparison-indicator-grid grid gap-3 py-5"
       >
         {comparisonMetrics.map(
@@ -562,25 +673,32 @@ export function PlayerComparison({
 
       <div className="py-1">
         <section
-          aria-label="Recommendation evidence"
+          aria-label={t("recommendationEvidence")}
           className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
         >
         <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border px-5 py-5 sm:px-7 sm:py-6">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-              Recommendation evidence
+              {t("recommendationEvidence")}
             </p>
 
             <h2 className="mt-2 text-2xl font-bold tracking-[-0.035em]">
-              Why {candidate.player_name}?
+              {t("whyCandidate", {
+                player:
+                  candidate.player_name,
+              })}
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-muted">
-              The main evidence behind this candidate&apos;s place in{" "}
-              <span className="font-semibold text-foreground">
-                {modeDetails.label.toLowerCase()}
-              </span>
-              .
+              {t(
+                "recommendationContext",
+                {
+                  scenario:
+                    scenarioLabel.toLocaleLowerCase(
+                      locale,
+                    ),
+                },
+              )}
             </p>
           </div>
 
@@ -590,7 +708,10 @@ export function PlayerComparison({
             </span>
 
             <span className="rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-muted">
-              Rank #{candidateRank ?? "—"}
+              {t("rankBadge", {
+                rank:
+                  candidateRank ?? "—",
+              })}
             </span>
           </div>
         </div>
@@ -598,7 +719,7 @@ export function PlayerComparison({
         <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)]">
           <div className="min-w-0">
             <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
-              Why recommended
+              {t("whyRecommended")}
             </p>
 
             {recommendationReasons.length > 0 ? (
@@ -623,14 +744,14 @@ export function PlayerComparison({
               </ul>
             ) : (
               <p className="mt-4 rounded-xl border border-border bg-surface-secondary px-4 py-4 text-sm leading-6 text-muted">
-                Recommendation explanation is not available.
+                {t("explanationUnavailable")}
               </p>
             )}
           </div>
 
           <div className="min-w-0">
             <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
-              Evidence checks
+              {t("evidenceChecks")}
             </p>
 
             {evidenceItems.length > 0 ? (
@@ -669,8 +790,8 @@ export function PlayerComparison({
                         />
 
                         {item.value
-                          ? "Yes"
-                          : "No"}
+                          ? t("yes")
+                          : t("no")}
                       </dd>
                     </div>
                   ),
@@ -678,7 +799,7 @@ export function PlayerComparison({
               </dl>
             ) : (
               <p className="mt-4 text-sm text-muted">
-                No additional evidence checks are available.
+                {t("noEvidenceChecks")}
               </p>
             )}
           </div>
@@ -686,8 +807,7 @@ export function PlayerComparison({
 
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border px-5 py-4 sm:px-7">
           <p className="max-w-2xl text-xs leading-5 text-muted">
-            Recruitment recommendations support scouting review; detailed
-            tactical, spatial and measured tournament evidence continues below.
+            {t("recommendationDisclaimer")}
           </p>
 
           <div className="flex flex-wrap gap-2">
@@ -695,14 +815,14 @@ export function PlayerComparison({
               href={`/players/${candidate.player_id}`}
               className="rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
             >
-              Candidate profile
+              {t("candidateProfile")}
             </Link>
 
             <Link
               href={`/players/${target.player_id}`}
               className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-page"
             >
-              Target profile
+              {t("targetProfile")}
             </Link>
           </div>
         </div>
@@ -714,19 +834,18 @@ export function PlayerComparison({
       >
         <div className="mb-6">
           <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-            Tactical & spatial fit
+            {t("tacticalSpatialEyebrow")}
           </p>
 
           <h2
             id="tactical-spatial-fit-heading"
             className="mt-2 text-2xl font-bold tracking-[-0.03em]"
           >
-            Role and position context
+            {t("tacticalSpatialTitle")}
           </h2>
 
           <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
-            Compare how the candidate matches the target&apos;s tactical
-            profile and observed tournament positioning.
+            {t("tacticalSpatialDescription")}
           </p>
         </div>
 
@@ -738,16 +857,15 @@ export function PlayerComparison({
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-                  Spatial profile
+                  {t("spatialProfile")}
                 </p>
 
                 <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
-                  Position and occupation context
+                  {t("spatialTitle")}
                 </h2>
 
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-                  Compare weighted tournament positions and positional
-                  dispersion on the same pitch.
+                  {t("spatialDescription")}
                 </p>
               </div>
 
@@ -776,20 +894,24 @@ export function PlayerComparison({
 
             <dl className="mt-5 grid gap-3 sm:grid-cols-2">
               <div className="rounded-xl border border-border bg-page p-4">
-                <dt className="text-xs text-muted">Lateral similarity</dt>
+                <dt className="text-xs text-muted">
+                  {t("lateralSimilarity")}
+                </dt>
 
                 <dd className="mt-2 text-lg font-bold">
-                  {formatProfilePercentage(
+                  {formatPercentage(
                     candidate.lateral_profile_similarity_pct,
                   )}
                 </dd>
               </div>
 
               <div className="rounded-xl border border-border bg-page p-4">
-                <dt className="text-xs text-muted">Vertical similarity</dt>
+                <dt className="text-xs text-muted">
+                  {t("verticalSimilarity")}
+                </dt>
 
                 <dd className="mt-2 text-lg font-bold">
-                  {formatProfilePercentage(
+                  {formatPercentage(
                     candidate.vertical_profile_similarity_pct,
                   )}
                 </dd>
@@ -797,11 +919,7 @@ export function PlayerComparison({
             </dl>
 
             <p className="mt-4 text-xs leading-5 text-muted">
-              Pitch markers represent weighted mean tournament position.
-              Ellipses represent positional dispersion on each axis. Overall
-              spatial similarity also considers pitch thirds and lane
-              occupation, so it is not simply the distance between the two
-              markers.
+              {t("spatialGuidance")}
             </p>
           </div>
         </article>
@@ -809,23 +927,22 @@ export function PlayerComparison({
       </section>
 
       <section
-        aria-label="Playing style radar comparison"
+        aria-label={t("radar.regionLabel")}
         className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm"
       >
         <div className="border-b border-border p-6 sm:p-7">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-                Playing style
+                {t("radar.eyebrow")}
               </p>
 
               <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
-                Position-relative radar profile
+                {t("radar.title")}
               </h2>
 
               <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
-                Compare how strongly each player expresses the statistical
-                playing-style dimensions associated with their position.
+                {t("radar.description")}
               </p>
             </div>
 
@@ -838,8 +955,12 @@ export function PlayerComparison({
                 }
               >
                 {radarComparison.data.comparison.overlay_available
-                  ? "Shared position overlay"
-                  : "Separate position profiles"}
+                  ? t(
+                      "radar.sharedOverlay",
+                    )
+                  : t(
+                      "radar.separateProfiles",
+                    )}
               </span>
             ) : null}
           </div>
@@ -849,7 +970,7 @@ export function PlayerComparison({
           {radarComparison.isPending ? (
             <div
               role="status"
-              aria-label="Loading radar comparison"
+              aria-label={t("radar.loading")}
               aria-busy="true"
               className="min-h-96 animate-pulse rounded-2xl bg-surface-secondary"
             />
@@ -859,15 +980,21 @@ export function PlayerComparison({
               className="rounded-2xl border border-warning/25 bg-warning/10 p-6"
             >
               <p className="text-sm font-semibold tracking-[0.12em] text-warning uppercase">
-                Radar comparison unavailable
+                {t("radar.unavailable")}
               </p>
 
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-                The main recruitment comparison remains available, but
-                position-relative playing-style profiles could not be loaded.
+                {t(
+                  "radar.unavailableDescription",
+                )}
               </p>
 
-              <ApiErrorReference error={radarComparison.error} />
+              <ApiErrorReference
+                error={
+                  radarComparison.error
+                }
+                label={t("requestId")}
+              />
 
               <button
                 type="button"
@@ -876,7 +1003,7 @@ export function PlayerComparison({
                 }}
                 className="mt-5 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-page"
               >
-                Retry radar
+                {t("radar.retry")}
               </button>
             </div>
           ) : radarComparison.data ? (
@@ -895,12 +1022,13 @@ export function PlayerComparison({
                 <aside className="min-w-0 rounded-2xl border border-border bg-surface-secondary p-4 sm:p-5">
                   <div className="border-b border-border pb-4">
                     <p className="text-xs font-semibold tracking-[0.12em] text-brand uppercase">
-                      Dimension percentiles
+                      {t("radar.percentilesTitle")}
                     </p>
 
                     <p className="mt-2 text-xs leading-5 text-muted">
-                      Position-relative percentile values used by the shared
-                      radar profile.
+                      {t(
+                        "radar.percentilesDescription",
+                      )}
                     </p>
                   </div>
 
@@ -953,13 +1081,13 @@ export function PlayerComparison({
                             </dt>
 
                             <dd className="text-center text-sm font-bold text-brand-dark">
-                              {formatProfilePercentage(
+                              {formatPercentage(
                                 dimension.percentile,
                               )}
                             </dd>
 
                             <dd className="text-center text-sm font-bold text-brand-navy">
-                              {formatProfilePercentage(
+                              {formatPercentage(
                                 candidateDimension?.percentile ??
                                   null,
                               )}
@@ -971,25 +1099,25 @@ export function PlayerComparison({
                   </dl>
 
                   <p className="mt-2 border-t border-border pt-4 text-[11px] leading-5 text-muted">
-                    Higher percentile values indicate stronger expression of
-                    that playing-style dimension relative to the player&apos;s
-                    positional peer group.
+                    {t(
+                      "radar.percentileGuidance",
+                    )}
                   </p>
                 </aside>
               </div>
             ) : (
               <>
                 <div className="mb-5 rounded-xl border border-border bg-surface-secondary px-4 py-3 text-xs leading-5 text-muted sm:px-5">
-                  These players do not share one compatible radar axis
-                  contract. Their profiles are shown separately rather than
-                  forcing unlike position dimensions onto one chart.
+                  {t(
+                    "radar.incompatibleDescription",
+                  )}
                 </div>
 
                 <div className="grid min-w-0 gap-5 lg:grid-cols-2">
                   <article className="min-w-0">
                     <div className="mb-3 px-1">
                       <p className="text-xs font-semibold tracking-[0.12em] text-brand uppercase">
-                        Target
+                        {t("target")}
                       </p>
 
                       <h3 className="mt-1 break-words text-lg font-bold">
@@ -1006,7 +1134,7 @@ export function PlayerComparison({
                   <article className="min-w-0">
                     <div className="mb-3 px-1">
                       <p className="text-xs font-semibold tracking-[0.12em] text-brand-navy uppercase">
-                        Candidate
+                        {t("candidate")}
                       </p>
 
                       <h3 className="mt-1 break-words text-lg font-bold">
@@ -1028,23 +1156,22 @@ export function PlayerComparison({
       </section>
 
       <section
-        aria-label="Heatmap profile comparison"
+        aria-label={t("heatmap.regionLabel")}
         className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm"
       >
         <div className="border-b border-border p-6 sm:p-7">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-                Heatmap profile
+                {t("heatmap.eyebrow")}
               </p>
 
               <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
-                Measured tournament occupation
+                {t("heatmap.title")}
               </h2>
 
               <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
-                Compare where both players actually occupied the pitch during
-                the tournament using measured heatmap evidence.
+                {t("heatmap.description")}
               </p>
             </div>
 
@@ -1057,8 +1184,12 @@ export function PlayerComparison({
                 }
               >
                 {heatmapComparison.data.similarity.available
-                  ? "Measured pair evidence"
-                  : "Pair evidence unavailable"}
+                  ? t(
+                      "heatmap.measuredEvidence",
+                    )
+                  : t(
+                      "heatmap.evidenceUnavailable",
+                    )}
               </span>
             ) : null}
           </div>
@@ -1068,7 +1199,7 @@ export function PlayerComparison({
           {heatmapComparison.isPending ? (
             <div
               role="status"
-              aria-label="Loading heatmap comparison"
+              aria-label={t("heatmap.loading")}
               aria-busy="true"
               className="grid gap-5 lg:grid-cols-2"
             >
@@ -1081,15 +1212,21 @@ export function PlayerComparison({
               className="rounded-2xl border border-warning/25 bg-warning/10 p-6"
             >
               <p className="text-sm font-semibold tracking-[0.12em] text-warning uppercase">
-                Heatmap comparison unavailable
+                {t("heatmap.unavailable")}
               </p>
 
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-                The main recruitment comparison remains available, but measured
-                heatmap evidence could not be loaded.
+                {t(
+                  "heatmap.unavailableDescription",
+                )}
               </p>
 
-              <ApiErrorReference error={heatmapComparison.error} />
+              <ApiErrorReference
+                error={
+                  heatmapComparison.error
+                }
+                label={t("requestId")}
+              />
 
               <button
                 type="button"
@@ -1098,7 +1235,7 @@ export function PlayerComparison({
                 }}
                 className="mt-5 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-page"
               >
-                Retry heatmap
+                {t("heatmap.retry")}
               </button>
             </div>
           ) : heatmapComparison.data ? (
@@ -1106,13 +1243,13 @@ export function PlayerComparison({
               <div className="mb-5 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-surface-secondary px-4 py-3 sm:px-5">
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-foreground">
-                    Relative tournament occupation density
+                    {t("heatmap.densityTitle")}
                   </p>
 
                   <p className="mt-1 max-w-3xl text-[11px] leading-5 text-muted">
-                    Both pitches use the same shared density scale. Visual
-                    intensity reflects observed tournament heatmap occupation,
-                    not positional probability.
+                    {t(
+                      "heatmap.densityDescription",
+                    )}
                   </p>
                 </div>
 
@@ -1126,7 +1263,7 @@ export function PlayerComparison({
                   <div className="mb-3 flex items-center justify-between gap-3 px-1">
                     <div>
                       <p className="text-xs font-semibold tracking-[0.12em] text-brand uppercase">
-                        Target
+                        {t("target")}
                       </p>
 
                       <h3 className="mt-1 break-words text-lg font-bold">
@@ -1146,7 +1283,7 @@ export function PlayerComparison({
                   <div className="mb-3 flex items-center justify-between gap-3 px-1">
                     <div>
                       <p className="text-xs font-semibold tracking-[0.12em] text-brand-navy uppercase">
-                        Candidate
+                        {t("candidate")}
                       </p>
 
                       <h3 className="mt-1 break-words text-lg font-bold">
@@ -1164,60 +1301,60 @@ export function PlayerComparison({
               </div>
 
               <dl
-                aria-label="Heatmap evidence metrics"
+                aria-label={t("heatmap.metricsLabel")}
                 className="heatmap-evidence-grid mt-6 grid gap-3"
               >
                 <HeatmapEvidenceMetric
-                  label="Measured similarity"
-                  value={formatProfilePercentage(
+                  label={t("heatmap.metrics.measuredSimilarity")}
+                  value={formatPercentage(
                     heatmapComparison.data.similarity
                       .heatmap_similarity_score_pct,
                   )}
-                  description="Overall measured similarity between the two tournament heatmap profiles."
+                  description={t("heatmap.metrics.measuredSimilarityDescription")}
                 />
 
                 <HeatmapEvidenceMetric
-                  label="Cosine similarity"
-                  value={formatProfilePercentage(
+                  label={t("heatmap.metrics.cosineSimilarity")}
+                  value={formatPercentage(
                     heatmapComparison.data.similarity
                       .heatmap_cosine_similarity_pct,
                   )}
-                  description="Similarity in the full distribution of occupation density across grid cells."
+                  description={t("heatmap.metrics.cosineSimilarityDescription")}
                 />
 
                 <HeatmapEvidenceMetric
-                  label="Occupation overlap"
-                  value={formatProfilePercentage(
+                  label={t("heatmap.metrics.occupationOverlap")}
+                  value={formatPercentage(
                     heatmapComparison.data.similarity.occupation_overlap_pct,
                   )}
-                  description="How strongly the two players occupy the same areas of the pitch."
+                  description={t("heatmap.metrics.occupationOverlapDescription")}
                 />
 
                 <HeatmapEvidenceMetric
-                  label="Peak-zone similarity"
-                  value={formatProfilePercentage(
+                  label={t("heatmap.metrics.peakZoneSimilarity")}
+                  value={formatPercentage(
                     heatmapComparison.data.similarity.peak_zone_similarity_pct,
                   )}
-                  description="Similarity between the players' strongest occupation zones."
+                  description={t("heatmap.metrics.peakZoneSimilarityDescription")}
                 />
 
                 <HeatmapEvidenceMetric
-                  label="Peak-zone distance"
-                  value={formatProfileNumber(
+                  label={t("heatmap.metrics.peakZoneDistance")}
+                  value={formatNumber(
                     heatmapComparison.data.similarity.peak_zone_distance,
                     {
                       maximumFractionDigits: 1,
                     },
                   )}
-                  description="Distance between the strongest-density locations on the normalized pitch."
+                  description={t("heatmap.metrics.peakZoneDistanceDescription")}
                 />
 
                 <HeatmapEvidenceMetric
-                  label="Entropy similarity"
-                  value={formatProfilePercentage(
+                  label={t("heatmap.metrics.entropySimilarity")}
+                  value={formatPercentage(
                     heatmapComparison.data.similarity.entropy_similarity_pct,
                   )}
-                  description="Similarity in how concentrated or dispersed the two occupation profiles are."
+                  description={t("heatmap.metrics.entropySimilarityDescription")}
                 />
               </dl>
 

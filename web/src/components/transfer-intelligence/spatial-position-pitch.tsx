@@ -1,3 +1,12 @@
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
+
+import {
+  formatProfileNumber,
+} from "@/lib/players/profile-format";
+
 type SpatialPitchPlayer = Readonly<{
   playerId: number;
   playerName: string;
@@ -71,6 +80,14 @@ function PlayerPosition({
   player: SpatialPitchPlayer;
   kind: "target" | "candidate";
 }>) {
+  const locale =
+    useLocale();
+
+  const translations =
+    useTranslations(
+      "SpatialPositionPitch",
+    );
+
   if (!hasPosition(player)) {
     return null;
   }
@@ -132,8 +149,35 @@ function PlayerPosition({
       </text>
 
       <title>
-        {player.playerName}: mean position ({player.meanX.toFixed(1)},{" "}
-        {player.meanY.toFixed(1)})
+        {translations(
+          "meanPositionTitle",
+          {
+            player:
+              player.playerName,
+            x:
+              formatProfileNumber(
+                player.meanX,
+                {
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1,
+                },
+                {
+                  locale,
+                },
+              ),
+            y:
+              formatProfileNumber(
+                player.meanY,
+                {
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1,
+                },
+                {
+                  locale,
+                },
+              ),
+          },
+        )}
       </title>
     </g>
   );
@@ -204,14 +248,22 @@ export function SpatialPositionPitch({
   target,
   candidate,
 }: SpatialPositionPitchProps) {
-  const hasTarget = hasPosition(target);
+  const translations =
+    useTranslations(
+      "SpatialPositionPitch",
+    );
+
+  const hasTarget =
+    hasPosition(target);
 
   const hasCandidate = hasPosition(candidate);
 
   if (!hasTarget && !hasCandidate) {
     return (
       <div className="flex min-h-64 items-center justify-center rounded-2xl border border-dashed border-border bg-page px-6 text-center text-sm leading-6 text-muted">
-        Positional coordinates are not available for either player.
+        {translations(
+          "coordinatesUnavailable",
+        )}
       </div>
     );
   }
@@ -220,16 +272,30 @@ export function SpatialPositionPitch({
     <div className="min-w-0">
       <div className="overflow-hidden rounded-2xl border border-border bg-page p-3 sm:p-4">
         <div className="mb-3 flex items-center justify-between gap-4 px-1">
-          <span className="text-xs font-medium text-muted">Defensive</span>
+          <span className="text-xs font-medium text-muted">
+            {translations(
+              "defensive",
+            )}
+          </span>
 
           <span className="text-xs font-semibold text-brand">
-            Attacking direction →
+            {translations(
+              "attackingDirection",
+            )}
           </span>
         </div>
 
         <svg
           role="img"
-          aria-label={`Spatial position comparison for ${target.playerName} and ${candidate.playerName}`}
+          aria-label={translations(
+            "comparisonAriaLabel",
+            {
+              target:
+                target.playerName,
+              candidate:
+                candidate.playerName,
+            },
+          )}
           viewBox={`0 0 ${PITCH_LENGTH} ${PITCH_WIDTH}`}
           className="block h-auto w-full"
         >
@@ -264,7 +330,9 @@ export function SpatialPositionPitch({
         </span>
 
         <span className="text-muted">
-          Ellipses show positional dispersion when available.
+          {translations(
+            "dispersionDescription",
+          )}
         </span>
       </div>
     </div>

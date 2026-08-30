@@ -68,13 +68,17 @@ function SkeletonContextCard() {
   );
 }
 
-export function PlayerProfileSkeleton() {
+export function PlayerProfileSkeleton({
+  label,
+}: Readonly<{
+  label: string;
+}>) {
   return (
     <div
       className="space-y-6"
       role="status"
       aria-live="polite"
-      aria-label="Loading player profile"
+      aria-label={label}
     >
       <section className="animate-pulse rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-8">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,26rem)] lg:items-start">
@@ -338,7 +342,7 @@ export function PlayerProfileSkeleton() {
       </section>
 
       <span className="sr-only">
-        Loading player scouting profile…
+        {label}
       </span>
     </div>
   );

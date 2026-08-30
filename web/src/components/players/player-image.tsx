@@ -2,6 +2,9 @@
 
 import Image from "next/image";
 import {
+  useTranslations,
+} from "next-intl";
+import {
   useState,
 } from "react";
 
@@ -96,6 +99,9 @@ export function PlayerImage({
   priority = false,
   className = "",
 }: PlayerImageProps) {
+  const translations =
+    useTranslations("PlayerImage");
+
   const source =
     getPlayerImageSrc(
       playerId,
@@ -128,9 +134,13 @@ export function PlayerImage({
     return (
       <div
         role="img"
-        aria-label={
-          `${playerName} player photo unavailable`
-        }
+        aria-label={translations(
+          "photoUnavailable",
+          {
+            player:
+              playerName,
+          },
+        )}
         className={[
           containerClassName,
           "flex items-center justify-center",
@@ -153,7 +163,13 @@ export function PlayerImage({
     >
       <Image
         src={source}
-        alt={`${playerName} player photo`}
+        alt={translations(
+          "photoAlt",
+          {
+            player:
+              playerName,
+          },
+        )}
         fill
         sizes={config.sizes}
         priority={priority}

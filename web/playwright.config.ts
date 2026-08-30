@@ -4,7 +4,7 @@ const PRODUCTION_BASE_URL =
   "https://wc26-transfer-intelligence.vercel.app";
 
 const LOCAL_BASE_URL =
-  "http://127.0.0.1:3000";
+  "http://localhost:3000";
 
 const LOCAL_API_BASE_URL =
   "http://127.0.0.1:8000";
@@ -49,12 +49,13 @@ export default defineConfig({
         },
         {
           command:
-            "npm run start -- --hostname 127.0.0.1 --port 3000",
+            "npm run start -- --hostname localhost --port 3000",
           env: {
             WC26_API_BASE_URL:
               LOCAL_API_BASE_URL,
           },
-          url: LOCAL_BASE_URL,
+          url:
+            `${LOCAL_BASE_URL}/tr`,
           reuseExistingServer: false,
           timeout: 120_000,
           stdout: "pipe",

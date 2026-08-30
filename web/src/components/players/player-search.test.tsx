@@ -1,3 +1,14 @@
+import type {
+  ComponentProps,
+  ReactNode,
+} from "react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
+
 import {
   fireEvent,
   screen,
@@ -28,6 +39,42 @@ import {
 import {
   renderWithQueryClient,
 } from "@/test/render-with-query-client";
+
+vi.mock(
+  "@/i18n/navigation",
+  async () => {
+    const {
+      useLocale,
+    } = await vi.importActual<
+      typeof import("next-intl")
+    >("next-intl");
+
+    return {
+      Link: ({
+        href,
+        ...properties
+      }: ComponentProps<"a"> &
+        Readonly<{
+          href: string;
+        }>) => {
+        const locale =
+          useLocale();
+
+        const localizedHref =
+          locale === "tr"
+            ? `/tr${href}`
+            : href;
+
+        return (
+          <a
+            href={localizedHref}
+            {...properties}
+          />
+        );
+      },
+    };
+  },
+);
 
 vi.mock(
   "@/hooks/use-debounced-value",
@@ -143,6 +190,28 @@ const successfulResponse = {
   ],
 } satisfies PlayerSearchResponse;
 
+type TestLocale =
+  "en" | "tr";
+
+function renderPlayerSearch(
+  children: ReactNode,
+  locale: TestLocale = "en",
+) {
+  const messages =
+    locale === "tr"
+      ? turkishMessages
+      : englishMessages;
+
+  return renderWithQueryClient(
+    <NextIntlClientProvider
+      locale={locale}
+      messages={messages}
+    >
+      {children}
+    </NextIntlClientProvider>,
+  );
+}
+
 describe(
   "PlayerSearch",
   () => {
@@ -166,7 +235,7 @@ describe(
     it(
       "shows the initial guidance",
       () => {
-        renderWithQueryClient(
+        renderPlayerSearch(
           <PlayerSearch />,
         );
 
@@ -200,7 +269,7 @@ describe(
             ),
           );
 
-        renderWithQueryClient(
+        renderPlayerSearch(
           <PlayerSearch
             initialParameters={
               initialParameters
@@ -254,7 +323,7 @@ describe(
             query: null,
           });
 
-        renderWithQueryClient(
+        renderPlayerSearch(
           <PlayerSearch />,
         );
 
@@ -319,7 +388,7 @@ describe(
             query: null,
           });
 
-        renderWithQueryClient(
+        renderPlayerSearch(
           <PlayerSearch />,
         );
 
@@ -370,7 +439,7 @@ describe(
             successfulResponse,
           );
 
-        renderWithQueryClient(
+        renderPlayerSearch(
           <PlayerSearch />,
         );
 
@@ -410,7 +479,7 @@ describe(
             query: null,
           });
 
-        renderWithQueryClient(
+        renderPlayerSearch(
           <PlayerSearch />,
         );
 
@@ -489,7 +558,7 @@ describe(
             nextSearch,
           );
 
-        renderWithQueryClient(
+        renderPlayerSearch(
           <PlayerSearch />,
         );
 
@@ -558,7 +627,7 @@ describe(
             players: [],
           });
 
-        renderWithQueryClient(
+        renderPlayerSearch(
           <PlayerSearch />,
         );
 
@@ -594,7 +663,7 @@ describe(
             successfulResponse,
           );
 
-        renderWithQueryClient(
+        renderPlayerSearch(
           <PlayerSearch />,
         );
 
@@ -657,7 +726,7 @@ describe(
             ],
           });
 
-        renderWithQueryClient(
+        renderPlayerSearch(
           <PlayerSearch />,
         );
 
@@ -703,5 +772,72 @@ describe(
         );
       },
     );
+    it(
+      "localizes the initial discovery state in Turkish",
+      () => {
+        renderPlayerSearch(
+          <PlayerSearch />,
+          "tr",
+        );
+
+        expect(
+          screen.getByRole(
+            "searchbox",
+            {
+              name: "Oyuncu ara",
+            },
+          ),
+        ).toHaveAttribute(
+          "placeholder",
+          "Michael Olise, Alex Baena ara…",
+        );
+
+        expect(
+          screen.getByText(
+            "Bir oyuncu adıyla başlayın",
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
+    it(
+      "localizes active filter summaries in Turkish",
+      async () => {
+        searchPlayersMock
+          .mockResolvedValue({
+            ...successfulResponse,
+            query: null,
+          });
+
+        renderPlayerSearch(
+          <PlayerSearch />,
+          "tr",
+        );
+
+        const defender =
+          await screen.findByRole(
+            "checkbox",
+            {
+              name:
+                "Defans, 193 oyuncu",
+            },
+          );
+
+        fireEvent.click(
+          defender,
+        );
+
+        expect(
+          await screen.findByRole(
+            "button",
+            {
+              name:
+                "Pozisyon: Defans filtresini kaldır",
+            },
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
   },
 );

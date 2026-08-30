@@ -1,7 +1,16 @@
 import {
-  render,
+  render as renderTestingLibrary,
   screen,
 } from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+import type {
+  ReactElement,
+} from "react";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 import {
   describe,
   expect,
@@ -14,6 +23,27 @@ import {
 import type {
   HeatmapPlayerResponse,
 } from "@/lib/api/types";
+
+type TestLocale =
+  "en" | "tr";
+
+function render(
+  element: ReactElement,
+  locale: TestLocale = "en",
+) {
+  return renderTestingLibrary(
+    <NextIntlClientProvider
+      locale={locale}
+      messages={
+        locale === "tr"
+          ? turkishMessages
+          : englishMessages
+      }
+    >
+      {element}
+    </NextIntlClientProvider>,
+  );
+}
 
 function buildPlayer(
   overrides: Partial<HeatmapPlayerResponse> = {},
@@ -94,6 +124,37 @@ describe(
             "Average tournament position",
           ),
         ).toBeInTheDocument();
+      },
+    );
+
+    it(
+      "localizes average position evidence in Turkish",
+      () => {
+        render(
+          <HeatmapPitch
+            player={buildPlayer()}
+            showAveragePosition
+          />,
+          "tr",
+        );
+
+        expect(
+          screen.getByText(
+            "Ortalama turnuva pozisyonu",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen
+            .getByTestId(
+              "heatmap-average-position",
+            )
+            .querySelector(
+              "title",
+            ),
+        ).toHaveTextContent(
+          "Michael Olise: ortalama turnuva pozisyonu (61,3, 41,2)",
+        );
       },
     );
 

@@ -1,6 +1,5 @@
 import {
   fireEvent,
-  render,
   screen,
   waitFor,
 } from "@testing-library/react";
@@ -20,6 +19,9 @@ import {
   fetchApiReadiness,
   fetchDeploymentIdentity,
 } from "@/lib/api/browser-status";
+import {
+  renderWithQueryClient,
+} from "@/test/render-with-query-client";
 
 vi.mock(
   "@/lib/api/browser-status",
@@ -83,7 +85,9 @@ describe("ApiStatusOverview", () => {
   });
 
   it("prioritizes user-facing service and player-data readiness", async () => {
-    render(<ApiStatusOverview />);
+    renderWithQueryClient(
+      <ApiStatusOverview />,
+    );
 
     expect(
       await screen.findByRole(
@@ -115,7 +119,9 @@ describe("ApiStatusOverview", () => {
   });
 
   it("keeps deployment information behind a collapsed disclosure", async () => {
-    render(<ApiStatusOverview />);
+    renderWithQueryClient(
+      <ApiStatusOverview />,
+    );
 
     const summary =
       await screen.findByText(
@@ -151,7 +157,9 @@ describe("ApiStatusOverview", () => {
   });
 
   it("refreshes all status sources together", async () => {
-    render(<ApiStatusOverview />);
+    renderWithQueryClient(
+      <ApiStatusOverview />,
+    );
 
     fireEvent.click(
       await screen.findByRole(
@@ -185,7 +193,9 @@ describe("ApiStatusOverview", () => {
       status: "not_ready",
     });
 
-    render(<ApiStatusOverview />);
+    renderWithQueryClient(
+      <ApiStatusOverview />,
+    );
 
     expect(
       await screen.findByRole(
@@ -207,4 +217,60 @@ describe("ApiStatusOverview", () => {
       ),
     ).not.toBeInTheDocument();
   });
+  it(
+    "localizes service readiness and timestamps in Turkish",
+    async () => {
+      renderWithQueryClient(
+        <ApiStatusOverview />,
+        "tr",
+      );
+
+      expect(
+        await screen.findByRole(
+          "heading",
+          {
+            name:
+              "Tüm scouting servisleri çalışıyor",
+          },
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          "Scouting API",
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          "Oyuncu verisi",
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          /Son yükleme 23 Ağu 2026/,
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          /Son kontrol/,
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          "Teknik ayrıntılar",
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          "Veri kümesi parmak izi",
+        ),
+      ).toBeInTheDocument();
+    },
+  );
+
 });

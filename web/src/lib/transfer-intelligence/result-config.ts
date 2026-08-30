@@ -9,14 +9,6 @@ export const TRANSFER_MODE_ORDER = [
   "short_term",
 ] as const satisfies readonly TransferModeName[];
 
-type TransferModeDetails =
-  Readonly<{
-    label: string;
-    shortLabel: string;
-    description: string;
-    scoreLabel: string;
-  }>;
-
 type RecommendationScoreRankFields =
   Readonly<{
     immediate_score?: number | null;
@@ -28,40 +20,6 @@ type RecommendationScoreRankFields =
     short_term_score?: number | null;
     short_term_rank?: number | null;
   }>;
-
-export const TRANSFER_MODE_DETAILS = {
-  immediate: {
-    label: "Immediate impact",
-    shortLabel: "Immediate",
-    description:
-      "Candidates ranked for first-team contribution now.",
-    scoreLabel: "Immediate score",
-  },
-  development: {
-    label: "Development investment",
-    shortLabel: "Development",
-    description:
-      "Younger or developing candidates ranked for future value.",
-    scoreLabel: "Development score",
-  },
-  value: {
-    label: "Market value opportunity",
-    shortLabel: "Value",
-    description:
-      "Candidates balancing suitability with financial efficiency.",
-    scoreLabel: "Value score",
-  },
-  short_term: {
-    label: "Short-term solution",
-    shortLabel: "Short term",
-    description:
-      "Experienced candidates suited to a shorter recruitment horizon.",
-    scoreLabel: "Short-term score",
-  },
-} satisfies Record<
-  TransferModeName,
-  TransferModeDetails
->;
 
 export function parseTransferMode(
   value:

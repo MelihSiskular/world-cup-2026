@@ -1,7 +1,16 @@
 import {
-  render,
+  render as renderTestingLibrary,
   screen,
 } from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+import type {
+  ReactElement,
+} from "react";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 import {
   describe,
   expect,
@@ -12,6 +21,29 @@ import {
   RadarProfile,
   type RadarProfileSeries,
 } from "@/components/transfer-intelligence/radar-profile";
+
+type TestLocale = "en" | "tr";
+
+const messagesByLocale = {
+  en: englishMessages,
+  tr: turkishMessages,
+} as const;
+
+function renderLocalized(
+  element: ReactElement,
+  locale: TestLocale = "en",
+) {
+  return renderTestingLibrary(
+    <NextIntlClientProvider
+      locale={locale}
+      messages={
+        messagesByLocale[locale]
+      }
+    >
+      {element}
+    </NextIntlClientProvider>,
+  );
+}
 
 function createSeries(
   overrides:
@@ -54,7 +86,7 @@ describe(
     it(
       "renders the radar grid, axes and one complete profile",
       () => {
-        render(
+        renderLocalized(
           <RadarProfile
             primary={
               createSeries()
@@ -107,7 +139,7 @@ describe(
     it(
       "renders two compatible profiles on the same radar",
       () => {
-        render(
+        renderLocalized(
           <RadarProfile
             primary={
               createSeries()
@@ -201,7 +233,7 @@ describe(
     it(
       "keeps a measured zero percentile distinct from missing evidence",
       () => {
-        render(
+        renderLocalized(
           <RadarProfile
             primary={
               createSeries({
@@ -275,7 +307,7 @@ describe(
     it(
       "does not invent a neutral value for missing percentile evidence",
       () => {
-        render(
+        renderLocalized(
           <RadarProfile
             primary={
               createSeries({
@@ -343,7 +375,7 @@ describe(
     it(
       "rejects an incompatible overlay dimension contract",
       () => {
-        render(
+        renderLocalized(
           <RadarProfile
             primary={
               createSeries()
@@ -412,7 +444,7 @@ describe(
     it(
       "can hide internal guidance in compact comparison layouts",
       () => {
-        render(
+        renderLocalized(
           <RadarProfile
             primary={createSeries()}
             showHeader={false}
@@ -446,7 +478,7 @@ describe(
     it(
       "renders an explicit unavailable state",
       () => {
-        render(
+        renderLocalized(
           <RadarProfile
             primary={
               createSeries({
@@ -474,5 +506,46 @@ describe(
         ).not.toBeInTheDocument();
       },
     );
+
+    it(
+      "localizes radar guidance while preserving backend axis labels",
+      () => {
+        renderLocalized(
+          <RadarProfile
+            primary={createSeries()}
+          />,
+          "tr",
+        );
+
+        expect(
+          screen.getByRole(
+            "img",
+            {
+              name:
+                "Michael Olise için oyun stili radarı",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Pozisyona göre oyun stili",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByLabelText(
+            "Radar seri göstergesi",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Creativity",
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
   },
 );

@@ -3,7 +3,10 @@
 import {
   useQueryClient,
 } from "@tanstack/react-query";
-import Link from "next/link";
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
 
 import {
   CountryFlag,
@@ -21,59 +24,28 @@ import type {
   PlayerSearchItemResponse,
 } from "@/lib/api/types";
 import {
+  Link,
+} from "@/i18n/navigation";
+import {
   createShortlistSnapshotFromSearchPlayer,
 } from "@/lib/shortlists/snapshot";
-
-const positionLabels:
-  Record<string, string> = {
-    G: "Goalkeeper",
-    D: "Defender",
-    M: "Midfielder",
-    F: "Forward",
-  };
-
-function formatPosition(
-  position: string | null,
-): string {
-  if (!position) {
-    return "Position unavailable";
-  }
-
-  return (
-    positionLabels[position] ??
-    position
-  );
-}
-
-function formatAge(
-  age: number | null,
-): string {
-  if (age === null) {
-    return "Age unavailable";
-  }
-
-  return `${new Intl.NumberFormat(
-    "en",
-    {
-      maximumFractionDigits: 0,
-    },
-  ).format(age)} years`;
-}
 
 function formatMarketValue(
   value: number | null,
   currency: string | null,
+  locale: string,
+  unavailable: string,
 ): string {
   if (
     value === null ||
     !currency
   ) {
-    return "Market value unavailable";
+    return unavailable;
   }
 
   try {
     return new Intl.NumberFormat(
-      "en",
+      locale,
       {
         style: "currency",
         currency,
@@ -82,7 +54,7 @@ function formatMarketValue(
       },
     ).format(value);
   } catch {
-    return `${value.toLocaleString("en")} ${currency}`;
+    return `${value.toLocaleString(locale)} ${currency}`;
   }
 }
 
@@ -94,6 +66,68 @@ type PlayerSearchResultCardProps =
 export function PlayerSearchResultCard({
   player,
 }: PlayerSearchResultCardProps) {
+  const locale =
+    useLocale();
+  const translations =
+    useTranslations(
+      "PlayerDiscovery",
+    );
+
+  const positionLabels:
+    Readonly<Record<string, string>> = {
+      G: translations(
+        "positionLabels.goalkeeper",
+      ),
+      D: translations(
+        "positionLabels.defender",
+      ),
+      M: translations(
+        "positionLabels.midfielder",
+      ),
+      F: translations(
+        "positionLabels.forward",
+      ),
+    };
+
+  const formattedPosition =
+    player.position
+      ? positionLabels[
+          player.position
+        ] ??
+        player.position
+      : translations(
+          "positionUnavailable",
+        );
+
+  const formattedAge =
+    player.age === null
+      ? translations(
+          "ageUnavailable",
+        )
+      : translations(
+          "ageYears",
+          {
+            value:
+              new Intl.NumberFormat(
+                locale,
+                {
+                  maximumFractionDigits: 0,
+                },
+              ).format(
+                player.age,
+              ),
+          },
+        );
+
+  const profileLinkLabel =
+    translations(
+      "openProfileLabel",
+      {
+        player:
+          player.player_name,
+      },
+    );
+
   const queryClient =
     useQueryClient();
 
@@ -126,7 +160,9 @@ export function PlayerSearchResultCard({
     <li className="group relative rounded-2xl border border-border bg-surface shadow-sm transition hover:-translate-y-0.5 hover:border-brand/35 hover:shadow-md">
       <Link
         href={`/players/${player.player_id}`}
-        aria-label={`Open ${player.player_name} scouting profile`}
+        aria-label={
+          profileLinkLabel
+        }
         onMouseEnter={
           prefetchPlayerProfile
         }
@@ -136,8 +172,7 @@ export function PlayerSearchResultCard({
         className="absolute inset-0 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
       >
         <span className="sr-only">
-          Open {player.player_name} scouting
-          profile
+          {profileLinkLabel}
         </span>
       </Link>
 
@@ -165,7 +200,9 @@ export function PlayerSearchResultCard({
 
                 <p className="min-w-0 break-words text-sm font-medium text-muted">
                   {player.national_team_name ??
-                    "National team unavailable"}
+                    translations(
+                      "nationalTeamUnavailable",
+                    )}
                 </p>
               </div>
 
@@ -173,7 +210,7 @@ export function PlayerSearchResultCard({
                 {player.final_role ? (
                   <p className="min-w-0 break-words text-base leading-6">
                     <span className="font-semibold text-brand">
-                      Final role:
+                      {translations("finalRoleLabel")}
                     </span>{" "}
                     <span className="font-semibold text-brand-dark">
                       {player.final_role}
@@ -184,7 +221,7 @@ export function PlayerSearchResultCard({
                 {player.archetype ? (
                   <p className="min-w-0 break-words">
                     <span className="font-semibold text-brand-navy">
-                      Archetype:
+                      {translations("archetypeLabel")}
                     </span>{" "}
                     <span className="font-medium text-foreground">
                       {player.archetype}
@@ -195,7 +232,7 @@ export function PlayerSearchResultCard({
                 {player.spatial_role ? (
                   <p className="min-w-0 break-words">
                     <span className="font-semibold text-warning">
-                      Spatial role:
+                      {translations("spatialRoleLabel")}
                     </span>{" "}
                     <span className="font-medium text-foreground">
                       {player.spatial_role}
@@ -209,35 +246,35 @@ export function PlayerSearchResultCard({
           <dl className="grid shrink-0 grid-cols-2 gap-x-8 gap-y-3 border-t border-border pt-4 text-sm sm:block sm:min-w-44 sm:border-t-0 sm:pt-0 sm:text-right">
             <div>
               <dt className="text-xs font-medium text-muted">
-                Age
+                {translations("ageLabel")}
               </dt>
               <dd className="mt-1 font-semibold">
-                {formatAge(
-                  player.age,
-                )}
+                {formattedAge}
               </dd>
             </div>
 
             <div className="sm:mt-4">
               <dt className="text-xs font-medium text-muted">
-                Market value
+                {translations("marketValueLabel")}
               </dt>
               <dd className="mt-1 font-semibold text-brand-dark">
                 {formatMarketValue(
                   player.market_value,
                   player.market_value_currency,
+                  locale,
+                  translations(
+                    "marketValueUnavailable",
+                  ),
                 )}
               </dd>
             </div>
 
             <div className="sm:mt-4">
               <dt className="text-xs font-medium text-muted">
-                Position
+                {translations("positionLabel")}
               </dt>
               <dd className="mt-1 font-semibold">
-                {formatPosition(
-                  player.position,
-                )}
+                {formattedPosition}
               </dd>
             </div>
           </dl>
@@ -245,7 +282,7 @@ export function PlayerSearchResultCard({
 
         <div className="mt-5 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
           <span className="flex items-center gap-2 text-sm text-muted">
-            Open scouting profile
+            {translations("openScoutingProfile")}
 
             <span
               aria-hidden="true"

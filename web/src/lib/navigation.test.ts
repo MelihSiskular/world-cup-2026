@@ -12,13 +12,14 @@ describe("primaryNavigationItems", () => {
   it("keeps operational status outside the primary product journey", () => {
     expect(
       primaryNavigationItems.map(
-        (item) => item.label,
+        (item) =>
+          item.messageKey,
       ),
     ).toEqual([
-      "Home",
-      "Players",
-      "Shortlists",
-      "Methodology",
+      "home",
+      "players",
+      "shortlists",
+      "methodology",
     ]);
   });
 });

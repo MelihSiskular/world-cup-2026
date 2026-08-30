@@ -1,7 +1,16 @@
 import {
-  render,
+  render as renderTestingLibrary,
   screen,
 } from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+import type {
+  ReactElement,
+} from "react";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 import {
   describe,
   expect,
@@ -15,6 +24,29 @@ import type {
   TransferRecommendationResponse,
   TransferTargetResponse,
 } from "@/lib/api/types";
+
+type TestLocale = "en" | "tr";
+
+const messagesByLocale = {
+  en: englishMessages,
+  tr: turkishMessages,
+} as const;
+
+function renderLocalized(
+  element: ReactElement,
+  locale: TestLocale = "en",
+) {
+  return renderTestingLibrary(
+    <NextIntlClientProvider
+      locale={locale}
+      messages={
+        messagesByLocale[locale]
+      }
+    >
+      {element}
+    </NextIntlClientProvider>,
+  );
+}
 
 const target = {
   player_id: 978838,
@@ -59,7 +91,7 @@ describe(
     it(
       "renders backend tactical profile and role confidence",
       () => {
-        render(
+        renderLocalized(
           <RoleCompatibilityPanel
             target={target}
             candidate={candidate}
@@ -125,7 +157,7 @@ describe(
     it(
       "does not duplicate equality evidence in the tactical profile",
       () => {
-        render(
+        renderLocalized(
           <RoleCompatibilityPanel
             target={target}
             candidate={{
@@ -165,7 +197,7 @@ describe(
     it(
       "keeps missing tactical evidence explicit",
       () => {
-        render(
+        renderLocalized(
           <RoleCompatibilityPanel
             target={{
               ...target,
@@ -198,5 +230,49 @@ describe(
         ).toBeInTheDocument();
       },
     );
+
+    it(
+      "localizes structural role evidence while preserving backend values",
+      () => {
+        renderLocalized(
+          <RoleCompatibilityPanel
+            target={target}
+            candidate={candidate}
+          />,
+          "tr",
+        );
+
+        expect(
+          screen.getByText(
+            "Rol uyumluluğu",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getAllByText(
+            "Hedef",
+          ),
+        ).toHaveLength(7);
+
+        expect(
+          screen.getAllByText(
+            "Aday",
+          ),
+        ).toHaveLength(7);
+
+        expect(
+          screen.getByText(
+            "Rol güveni",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getAllByText(
+            "Central Half-Space Creator",
+          ),
+        ).toHaveLength(2);
+      },
+    );
+
   },
 );

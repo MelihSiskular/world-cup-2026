@@ -1,4 +1,18 @@
-import { render, screen, within } from "@testing-library/react";
+import {
+  render as renderTestingLibrary,
+  screen,
+  within,
+} from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+import type {
+  ComponentProps,
+  ReactElement,
+} from "react";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 import {
   describe,
   expect,
@@ -26,6 +40,63 @@ vi.mock(
     ),
   }),
 );
+
+
+vi.mock(
+  "@/i18n/navigation",
+  async () => {
+    const {
+      useLocale,
+    } = await vi.importActual<
+      typeof import("next-intl")
+    >("next-intl");
+
+    return {
+      Link: ({
+        href,
+        ...properties
+      }: ComponentProps<"a"> &
+        Readonly<{
+          href: string;
+        }>) => {
+        const locale =
+          useLocale();
+
+        return (
+          <a
+            href={
+              locale === "tr"
+                ? `/tr${href}`
+                : href
+            }
+            {...properties}
+          />
+        );
+      },
+    };
+  },
+);
+
+type TestLocale =
+  "en" | "tr";
+
+function render(
+  element: ReactElement,
+  locale: TestLocale = "en",
+) {
+  return renderTestingLibrary(
+    <NextIntlClientProvider
+      locale={locale}
+      messages={
+        locale === "tr"
+          ? turkishMessages
+          : englishMessages
+      }
+    >
+      {element}
+    </NextIntlClientProvider>,
+  );
+}
 
 const basePlayer: PlayerProfileResponse = {
   player_id: 978838,
@@ -481,4 +552,174 @@ describe("PlayerProfileView", () => {
       screen.getByText("Strong right-side occupation"),
     ).toBeInTheDocument();
   });
+
+  it("localizes the profile identity and actions in Turkish", () => {
+    render(
+      <PlayerProfileView
+        player={basePlayer}
+      />,
+      "tr",
+    );
+
+    expect(
+      screen.getByText(
+        "Orta saha",
+        {
+          exact: true,
+        },
+      ),
+    ).toBeInTheDocument();
+
+    expectDetailValue(
+      "Yaş",
+      "24 yaş",
+    );
+
+    expectDetailValue(
+      "Boy",
+      "184 cm",
+    );
+
+    expect(
+      screen.getByText(
+        "Piyasa değeri",
+        {
+          selector: "dt",
+        },
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole(
+        "link",
+        {
+          name:
+            "Oyuncu aramasına dön",
+        },
+      ),
+    ).toHaveAttribute(
+      "href",
+      "/tr/players",
+    );
+
+    expect(
+      screen.getByRole(
+        "link",
+        {
+          name:
+            "Alternatif analizi başlat",
+        },
+      ),
+    ).toHaveAttribute(
+      "href",
+      "/tr/analysis/978838",
+    );
+
+    expect(
+      screen.getByText(
+        /Creative attacker/,
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        /Right half-space creator/,
+      ),
+    ).toBeInTheDocument();
+  });
+
+
+
+  it("localizes role, tournament and model context in Turkish", () => {
+    render(
+      <PlayerProfileView
+        player={basePlayer}
+      />,
+      "tr",
+    );
+
+    expect(
+      screen.getByRole(
+        "heading",
+        {
+          name:
+            "Oyuncunun saha içi işleyişi",
+        },
+      ),
+    ).toBeInTheDocument();
+
+    expectDetailValue(
+      "Yanal profil",
+      "Right",
+    );
+
+    expectDetailValue(
+      "Ana diziliş",
+      "4-2-3-1",
+    );
+
+    expect(
+      screen.getByText(
+        "Turnuva örneklemi",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole(
+        "heading",
+        {
+          name:
+            "Katılım bağlamı",
+        },
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "Rol atama kanıtını görüntüle",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "Strong right-side occupation",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole(
+        "heading",
+        {
+          name:
+            "Profilin arkasındaki güven",
+        },
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "Ağırlıklı puan",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "Oyuncu kalitesi",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "Veri güvenilirliği",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "Rol güveni",
+      ),
+    ).toBeInTheDocument();
+  });
+
+
 });

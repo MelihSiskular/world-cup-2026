@@ -1,3 +1,7 @@
+import {
+  useTranslations,
+} from "next-intl";
+
 function SkeletonLine({
   className,
 }: Readonly<{
@@ -138,11 +142,18 @@ function SkeletonCompactRecommendation() {
 }
 
 export function TransferAnalysisResultsSkeleton() {
+  const translations =
+    useTranslations(
+      "TransferAnalysisResults",
+    );
+
   return (
     <div
       role="status"
       aria-live="polite"
-      aria-label="Running transfer analysis"
+      aria-label={translations(
+        "runningAnalysis",
+      )}
       className="animate-pulse space-y-10 motion-reduce:animate-none"
     >
       <section className="rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-7">
@@ -222,7 +233,9 @@ export function TransferAnalysisResultsSkeleton() {
       </section>
 
       <span className="sr-only">
-        Running transfer analysis…
+        {translations(
+          "runningAnalysis",
+        )}
       </span>
     </div>
   );
