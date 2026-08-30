@@ -28,7 +28,7 @@ curl --fail --silent \
   | python -m json.tool
 ```
 
-Expected release version for Phase 8 is `0.4.0`. The response also reports the active commit and dataset bundle.
+Expected release version for Phase 8.5 is `0.5.0`. The response also reports the active commit and dataset bundle.
 
 ## Runtime Configuration
 
@@ -148,7 +148,7 @@ The smoke test covers readiness, deployment identity, player discovery and profi
 
 ## Release Checklist
 
-- Package and OpenAPI versions are `0.4.0`.
+- Package and OpenAPI versions are `0.5.0`.
 - Python, Docker, web and browser workflows pass.
 - Dataset manifest and integrity checks pass.
 - Railway serves the exact release commit.

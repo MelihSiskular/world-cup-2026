@@ -2,7 +2,7 @@
 
 ## Status
 
-- Product version: `0.4.0`
+- Product version: `0.5.0`
 - Architecture: implemented through Phase 8
 - Repository model: Python backend and Next.js frontend in one repository
 
@@ -169,4 +169,4 @@ Phase 8 browser coverage includes advanced discovery, persistent shortlists, can
 6. Browser-only persistence stays explicit and local.
 7. Complexity must be earned by a real requirement.
 
-Authentication, an application database, collaborative workspaces and frontend-owned analytical models remain out of scope for version `0.4.0`.
+Authentication, an application database, collaborative workspaces and frontend-owned analytical models remain out of scope for version `0.5.0`.
