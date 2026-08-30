@@ -8,8 +8,9 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import {
-  useRouter,
-} from "next/navigation";
+  useLocale,
+  useTranslations,
+} from "next-intl";
 import {
   useTransition,
 } from "react";
@@ -20,6 +21,9 @@ import {
 import {
   CountryFlag,
 } from "@/components/players/country-flag";
+import {
+  useRouter,
+} from "@/i18n/navigation";
 import {
   PlayerImage,
 } from "@/components/players/player-image";
@@ -90,6 +94,21 @@ export function TransferAnalysisForm({
   playerId,
   initialValues,
 }: TransferAnalysisFormProps) {
+  const locale = useLocale();
+
+  const translations =
+    useTranslations(
+      "TransferAnalysisForm",
+    );
+
+  const numberFormatter =
+    new Intl.NumberFormat(
+      locale,
+      {
+        maximumFractionDigits: 1,
+      },
+    );
+
   const router = useRouter();
 
   const queryClient =
@@ -173,21 +192,28 @@ export function TransferAnalysisForm({
       >
         <div>
           <p className="text-sm font-semibold tracking-[0.15em] text-brand uppercase">
-            Recruitment search
+            {translations(
+              "recruitmentSearch",
+            )}
           </p>
 
           <h2 className="mt-3 text-2xl font-bold tracking-[-0.03em]">
-            Candidate pool
+            {translations(
+              "candidatePool",
+            )}
           </h2>
 
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-            Set the minimum evidence and budget constraints used to identify
-            eligible replacement candidates.
+            {translations(
+              "description",
+            )}
           </p>
         </div>
 
         <section
-          aria-label="Analysis target"
+          aria-label={translations(
+            "analysisTargetAriaLabel",
+          )}
           className="mt-6 rounded-2xl border border-border bg-surface-secondary p-4 sm:p-5"
         >
           {playerProfile.isPending ? (
@@ -204,11 +230,15 @@ export function TransferAnalysisForm({
               role="alert"
             >
               <p className="font-semibold text-error">
-                Target unavailable
+                {translations(
+                  "targetUnavailable",
+                )}
               </p>
 
               <p className="mt-1 text-xs leading-5 text-muted">
-                Return to player search and select the target again.
+                {translations(
+                  "targetUnavailableDescription",
+                )}
               </p>
             </div>
           ) : (
@@ -222,7 +252,9 @@ export function TransferAnalysisForm({
 
                 <div className="min-w-0">
                   <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-                    Analysis target
+                    {translations(
+                      "analysisTarget",
+                    )}
                   </p>
 
                   <h3 className="mt-2 break-words text-xl font-bold tracking-[-0.03em]">
@@ -237,7 +269,9 @@ export function TransferAnalysisForm({
                     <span>
                       {playerProfile.data.country_name ??
                         playerProfile.data.national_team_name ??
-                        "Country unavailable"}
+                        translations(
+                          "countryUnavailable",
+                        )}
                     </span>
 
                     <span
@@ -248,7 +282,10 @@ export function TransferAnalysisForm({
                     </span>
 
                     <span>
-                      {playerProfile.data.final_role}
+                      {playerProfile.data.final_role ??
+                        translations(
+                          "roleUnavailable",
+                        )}
                     </span>
                   </div>
                 </div>
@@ -257,31 +294,58 @@ export function TransferAnalysisForm({
               <dl className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 <div className="rounded-xl border border-border bg-surface px-4 py-3">
                   <dt className="text-[11px] font-medium leading-4 text-muted">
-                    Tournament minutes
+                    {translations(
+                      "tournamentMinutes",
+                    )}
                   </dt>
 
                   <dd className="mt-1 text-lg font-bold tracking-[-0.02em]">
-                    {playerProfile.data.minutes}
+                    {playerProfile.data.minutes ===
+                    null
+                      ? translations(
+                          "metricUnavailable",
+                        )
+                      : numberFormatter.format(
+                          playerProfile.data.minutes,
+                        )}
                   </dd>
                 </div>
 
                 <div className="rounded-xl border border-border bg-surface px-4 py-3">
                   <dt className="text-[11px] font-medium leading-4 text-muted">
-                    Role confidence
+                    {translations(
+                      "roleConfidence",
+                    )}
                   </dt>
 
                   <dd className="mt-1 text-lg font-bold tracking-[-0.02em]">
-                    {playerProfile.data.role_confidence_pct}%
+                    {playerProfile.data.role_confidence_pct ===
+                    null
+                      ? translations(
+                          "metricUnavailable",
+                        )
+                      : `${numberFormatter.format(
+                          playerProfile.data.role_confidence_pct,
+                        )}%`}
                   </dd>
                 </div>
 
                 <div className="rounded-xl border border-border bg-surface px-4 py-3">
                   <dt className="text-[11px] font-medium leading-4 text-muted">
-                    Player quality
+                    {translations(
+                      "playerQuality",
+                    )}
                   </dt>
 
                   <dd className="mt-1 text-lg font-bold tracking-[-0.02em]">
-                    {playerProfile.data.player_quality_score}%
+                    {playerProfile.data.player_quality_score ===
+                    null
+                      ? translations(
+                          "metricUnavailable",
+                        )
+                      : `${numberFormatter.format(
+                          playerProfile.data.player_quality_score,
+                        )}%`}
                   </dd>
                 </div>
               </dl>
@@ -291,11 +355,18 @@ export function TransferAnalysisForm({
 
         <div className="mt-8 grid gap-x-6 gap-y-7 md:grid-cols-3">
           <AnalysisField
-            label="Tournament experience"
-            description="Minimum World Cup minutes"
+            label={translations(
+              "tournamentExperience",
+            )}
+            description={translations(
+              "minimumWorldCupMinutes",
+            )}
             error={
               errors.minimumMinutes
-                ?.message
+                ? translations(
+                    "validation.minimumMinutes",
+                  )
+                : undefined
             }
           >
             <div className="relative">
@@ -315,18 +386,27 @@ export function TransferAnalysisForm({
               />
 
               <span className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-sm text-muted">
-                min
+                {translations(
+                  "minutesUnit",
+                )}
               </span>
             </div>
           </AnalysisField>
 
           <AnalysisField
-            label="Role evidence"
-            description="Minimum tactical-role confidence"
+            label={translations(
+              "roleEvidence",
+            )}
+            description={translations(
+              "minimumRoleConfidence",
+            )}
             error={
               errors
                 .minimumRoleConfidence
-                ?.message
+                ? translations(
+                    "validation.roleConfidence",
+                  )
+                : undefined
             }
           >
             <div className="relative">
@@ -352,19 +432,28 @@ export function TransferAnalysisForm({
           </AnalysisField>
 
           <AnalysisField
-            label="Budget ceiling"
-            description="Maximum candidate market value"
+            label={translations(
+              "budgetCeiling",
+            )}
+            description={translations(
+              "maximumMarketValue",
+            )}
             error={
               errors
                 .maximumMarketValueMillions
-                ?.message
+                ? translations(
+                    "validation.marketValue",
+                  )
+                : undefined
             }
           >
             <div className="relative">
               <input
                 type="text"
                 inputMode="decimal"
-                placeholder="No limit"
+                placeholder={translations(
+                  "noLimit",
+                )}
                 {...register(
                   "maximumMarketValueMillions",
                   {
@@ -392,11 +481,15 @@ export function TransferAnalysisForm({
           <summary className="flex w-fit cursor-pointer list-none items-center gap-3 py-4 [&::-webkit-details-marker]:hidden">
             <div>
               <span className="block text-sm font-semibold">
-                Advanced settings
+                {translations(
+                  "advancedSettings",
+                )}
               </span>
 
               <span className="mt-0.5 block text-xs text-muted">
-                Technical fallback behavior
+                {translations(
+                  "technicalFallbackBehavior",
+                )}
               </span>
             </div>
 
@@ -410,12 +503,19 @@ export function TransferAnalysisForm({
 
           <div className="max-w-md pb-5">
             <AnalysisField
-              label="Missing heatmap fallback"
-              description="Used only when measured spatial evidence is unavailable"
+              label={translations(
+                "missingHeatmapFallback",
+              )}
+              description={translations(
+                "missingHeatmapDescription",
+              )}
               error={
                 errors
                   .neutralHeatmapScore
-                  ?.message
+                  ? translations(
+                      "validation.heatmapFallback",
+                    )
+                  : undefined
               }
             >
               <div className="relative">
@@ -441,36 +541,48 @@ export function TransferAnalysisForm({
             </AnalysisField>
 
             <p className="mt-3 text-xs leading-5 text-muted">
-              This fallback does not create spatial evidence. The configured
-              value is used only when measured heatmap coverage is missing.
+              {translations(
+                "fallbackExplanation",
+              )}
             </p>
           </div>
         </details>
 
         <p className="mt-7 text-sm leading-6 text-muted">
-          Candidates are ranked independently for{" "}
+          {translations(
+            "rankingPrefix",
+          )}{" "}
           <span className="font-medium text-foreground">
-            immediate impact
+            {translations(
+              "immediateImpact",
+            )}
           </span>
           {" · "}
           <span className="font-medium text-foreground">
-            development
+            {translations(
+              "development",
+            )}
           </span>
           {" · "}
           <span className="font-medium text-foreground">
-            value
+            {translations(
+              "value",
+            )}
           </span>
           {" · "}
           <span className="font-medium text-foreground">
-            short-term contribution
+            {translations(
+              "shortTermContribution",
+            )}
           </span>
           .
         </p>
 
         <div className="mt-7 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="max-w-md text-xs leading-5 text-muted">
-            Ranking combines tournament performance, tactical role, spatial
-            evidence and market context.
+            {translations(
+              "rankingDescription",
+            )}
           </p>
 
           <button
@@ -486,8 +598,12 @@ export function TransferAnalysisForm({
             className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-6 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             {submittingAnalysis
-              ? "Opening recommendations…"
-              : "Find transfer alternatives"}
+              ? translations(
+                  "openingRecommendations",
+                )
+              : translations(
+                  "findAlternatives",
+                )}
           </button>
         </div>
       </form>

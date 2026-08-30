@@ -3,7 +3,9 @@
 import {
   useQuery,
 } from "@tanstack/react-query";
-import Link from "next/link";
+import {
+  useTranslations,
+} from "next-intl";
 
 import {
   ApiErrorReference,
@@ -24,6 +26,9 @@ import {
   fetchPlayerProfile,
 } from "@/lib/api/browser-players";
 import {
+  Link,
+} from "@/i18n/navigation";
+import {
   fetchPlayerHeatmap,
 } from "@/lib/api/browser-transfer-intelligence";
 
@@ -35,6 +40,11 @@ type PlayerProfileProps =
 export function PlayerProfile({
   playerId,
 }: PlayerProfileProps) {
+  const translations =
+    useTranslations(
+      "PlayerProfile",
+    );
+
   const playerProfile =
     useQuery({
       queryKey: [
@@ -97,7 +107,13 @@ export function PlayerProfile({
     });
 
   if (playerProfile.isPending) {
-    return <PlayerProfileSkeleton />;
+    return (
+      <PlayerProfileSkeleton
+        label={translations(
+          "loadingProfile",
+        )}
+      />
+    );
   }
 
   if (playerProfile.isError) {
@@ -125,22 +141,27 @@ export function PlayerProfile({
               : "text-error",
           ].join(" ")}
         >
-          {playerNotFound
-            ? "Player not found"
-            : "Profile unavailable"}
+          {translations(
+            playerNotFound
+              ? "notFoundEyebrow"
+              : "unavailableEyebrow",
+          )}
         </p>
 
         <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em]">
-          {playerNotFound
-            ? "This player is not in the current catalogue"
-            : "The scouting profile could not be loaded"}
+          {translations(
+            playerNotFound
+              ? "notFoundTitle"
+              : "loadFailedTitle",
+          )}
         </h1>
 
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          {playerProfile.error
-            instanceof Error
-            ? playerProfile.error.message
-            : "The player profile request failed."}
+          {translations(
+            playerNotFound
+              ? "notFoundDescription"
+              : "loadFailedDescription",
+          )}
         </p>
 
         <ApiErrorReference
@@ -156,7 +177,9 @@ export function PlayerProfile({
               }}
               className="rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
             >
-              Retry profile
+              {translations(
+                "retryProfile",
+              )}
             </button>
           ) : null}
 
@@ -164,7 +187,9 @@ export function PlayerProfile({
             href="/players"
             className="rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold transition-colors hover:bg-surface-secondary"
           >
-            Return to player search
+            {translations(
+              "returnToSearch",
+            )}
           </Link>
         </div>
       </section>

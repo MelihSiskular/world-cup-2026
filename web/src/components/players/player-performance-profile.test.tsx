@@ -1,11 +1,51 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import {
+  render as renderTestingLibrary,
+  screen,
+} from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+import type {
+  ReactElement,
+} from "react";
+import {
+  describe,
+  expect,
+  it,
+} from "vitest";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 
 import type { PlayerProfileResponse } from "@/lib/api/types";
 
 import { PlayerPerformanceProfile } from "./player-performance-profile";
 
-type PlayerIntelligence = NonNullable<PlayerProfileResponse["intelligence"]>;
+type TestLocale =
+  "en" | "tr";
+
+function render(
+  element: ReactElement,
+  locale: TestLocale = "en",
+) {
+  return renderTestingLibrary(
+    <NextIntlClientProvider
+      locale={locale}
+      messages={
+        locale === "tr"
+          ? turkishMessages
+          : englishMessages
+      }
+    >
+      {element}
+    </NextIntlClientProvider>,
+  );
+}
+
+type PlayerIntelligence =
+  NonNullable<
+    PlayerProfileResponse["intelligence"]
+  >;
 
 const intelligence: PlayerIntelligence = {
   position_group: "midfielder",
@@ -300,4 +340,106 @@ describe("PlayerPerformanceProfile", () => {
 
     expect(screen.getByText(/216/)).toBeInTheDocument();
   });
+
+  it("localizes performance context and numbers in Turkish", () => {
+    render(
+      <PlayerPerformanceProfile
+        intelligence={intelligence}
+      />,
+      "tr",
+    );
+
+    expect(
+      screen.getByRole(
+        "heading",
+        {
+          name:
+            "Performans profili",
+        },
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole(
+        "heading",
+        {
+          name:
+            "Fırsat yaratma",
+        },
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole(
+        "heading",
+        {
+          name:
+            "Topa sahip olma",
+        },
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "0,45",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "86,62%",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole(
+        "progressbar",
+        {
+          name:
+            "xA / 90 performans yüzdelik dilimi",
+        },
+      ),
+    ).toHaveAttribute(
+      "aria-valuenow",
+      "98.8",
+    );
+
+    expect(
+      screen.getAllByText(
+        "n=216 eş",
+      ),
+    ).toHaveLength(3);
+
+    expect(
+      screen.getByText(
+        "Profil nasıl okunur?",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "xA / 90",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("localizes the empty performance state in Turkish", () => {
+    render(
+      <PlayerPerformanceProfile
+        intelligence={{
+          ...intelligence,
+          groups: [],
+        }}
+      />,
+      "tr",
+    );
+
+    expect(
+      screen.getByText(
+        "Bu oyuncu için pozisyona özgü performans metriği bulunamadı.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+
 });

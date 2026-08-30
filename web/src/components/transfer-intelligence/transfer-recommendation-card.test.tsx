@@ -1,8 +1,18 @@
 import {
-  render,
+  render as renderTestingLibrary,
   screen,
   within,
 } from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+import type {
+  ComponentProps,
+  ReactElement,
+  ReactNode,
+} from "react";
+
+import englishMessages from "../../../messages/en.json";
 import {
   describe,
   expect,
@@ -19,6 +29,44 @@ import type {
 import {
   DEFAULT_TRANSFER_ANALYSIS_VALUES,
 } from "@/lib/transfer-intelligence/analysis-form";
+
+function IntlTestProvider({
+  children,
+}: Readonly<{
+  children: ReactNode;
+}>) {
+  return (
+    <NextIntlClientProvider
+      locale="en"
+      messages={englishMessages}
+    >
+      {children}
+    </NextIntlClientProvider>
+  );
+}
+
+function render(
+  element: ReactElement,
+) {
+  return renderTestingLibrary(
+    element,
+    {
+      wrapper:
+        IntlTestProvider,
+    },
+  );
+}
+
+vi.mock(
+  "@/i18n/navigation",
+  () => ({
+    Link: (
+      props: ComponentProps<"a">,
+    ) => (
+      <a {...props} />
+    ),
+  }),
+);
 
 vi.mock(
   "@/components/shortlists/shortlist-action",

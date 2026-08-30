@@ -1,11 +1,16 @@
 "use client";
 
-import Link from "next/link";
+import {
+  useTranslations,
+} from "next-intl";
 import {
   useMemo,
   useState,
 } from "react";
 
+import {
+  Link,
+} from "@/i18n/navigation";
 import type {
   Shortlist,
   ShortlistPlayerSnapshot,
@@ -37,6 +42,27 @@ function hasCompatiblePosition(
 export function ShortlistComparisonBuilder({
   shortlist,
 }: ShortlistComparisonBuilderProps) {
+  const translations =
+    useTranslations(
+      "ShortlistComparison",
+    );
+
+  const positionLabels:
+    Readonly<Record<string, string>> = {
+      G: translations(
+        "positionLabels.goalkeeper",
+      ),
+      D: translations(
+        "positionLabels.defender",
+      ),
+      M: translations(
+        "positionLabels.midfielder",
+      ),
+      F: translations(
+        "positionLabels.forward",
+      ),
+    };
+
   const [
     preferredTargetPlayerId,
     setPreferredTargetPlayerId,
@@ -197,24 +223,35 @@ export function ShortlistComparisonBuilder({
 
   return (
     <section
-      aria-label={`Compare players in ${shortlist.name}`}
+      aria-label={
+        translations(
+          "sectionLabel",
+          {
+            shortlist:
+              shortlist.name,
+          },
+        )
+      }
       className="mt-5 rounded-2xl border border-border bg-page p-4 sm:p-5"
     >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-xs font-semibold tracking-[0.12em] text-brand uppercase">
-            Multi-player comparison
+            {translations("eyebrow")}
           </p>
 
           <h3 className="mt-1 text-lg font-bold tracking-[-0.025em]">
-            Compare shortlist players
+            {translations("title")}
           </h3>
 
           <p className="mt-1 max-w-2xl text-xs leading-5 text-muted">
-            Choose one target and up to{" "}
-            {MAX_MULTI_COMPARISON_CANDIDATES}{" "}
-            candidates from the same
-            position.
+            {translations(
+              "description",
+              {
+                maximum:
+                  MAX_MULTI_COMPARISON_CANDIDATES,
+              },
+            )}
           </p>
         </div>
 
@@ -222,22 +259,24 @@ export function ShortlistComparisonBuilder({
           aria-live="polite"
           className="text-xs font-semibold text-muted"
         >
-          {
-            selectedCandidateIds
-              .length
-          }{" "}
-          of{" "}
-          {
-            MAX_MULTI_COMPARISON_CANDIDATES
-          }{" "}
-          candidates selected
+          {translations(
+            "selectionCount",
+            {
+              selected:
+                selectedCandidateIds
+                  .length,
+              maximum:
+                MAX_MULTI_COMPARISON_CANDIDATES,
+            },
+          )}
         </p>
       </div>
 
       {shortlist.entries.length < 2 ? (
         <p className="mt-4 rounded-xl border border-dashed border-border bg-surface px-4 py-3 text-xs leading-5 text-muted">
-          Add at least one more player
-          before starting a comparison.
+          {translations(
+            "needMorePlayers",
+          )}
         </p>
       ) : (
         <>
@@ -246,7 +285,7 @@ export function ShortlistComparisonBuilder({
               htmlFor={`comparison-target-${shortlist.id}`}
               className="text-xs font-semibold"
             >
-              Target player
+              {translations("targetPlayer")}
             </label>
 
             <select
@@ -300,7 +339,7 @@ export function ShortlistComparisonBuilder({
 
           <fieldset className="mt-4">
             <legend className="text-xs font-semibold">
-              Candidate players
+              {translations("candidatePlayers")}
             </legend>
 
             <div className="mt-2 grid gap-2 sm:grid-cols-2">
@@ -362,7 +401,15 @@ export function ShortlistComparisonBuilder({
                       >
                         <input
                           type="checkbox"
-                          aria-label={`Select ${candidate.playerName} as candidate`}
+                          aria-label={
+                            translations(
+                              "selectCandidate",
+                              {
+                                player:
+                                  candidate.playerName,
+                              },
+                            )
+                          }
                           checked={
                             checked
                           }
@@ -393,11 +440,18 @@ export function ShortlistComparisonBuilder({
                           <span className="mt-0.5 block text-xs text-muted">
                             {eligible
                               ? (
-                                  candidate
-                                    .position ??
-                                  "Position unavailable"
+                                  candidate.position
+                                    ? positionLabels[
+                                        candidate.position
+                                      ] ??
+                                      candidate.position
+                                    : translations(
+                                        "positionUnavailable",
+                                      )
                                 )
-                              : "Different or unavailable position"}
+                              : translations(
+                                  "differentPosition",
+                                )}
                           </span>
                         </span>
                       </label>
@@ -409,9 +463,9 @@ export function ShortlistComparisonBuilder({
             {eligibleCandidates.length ===
             0 ? (
               <p className="mt-3 text-xs leading-5 text-warning">
-                This target has no
-                same-position candidates
-                in the shortlist.
+                {translations(
+                  "noCompatibleCandidates",
+                )}
               </p>
             ) : null}
           </fieldset>
@@ -423,7 +477,7 @@ export function ShortlistComparisonBuilder({
                 aria-disabled="true"
                 className="inline-flex min-h-11 w-full cursor-not-allowed items-center justify-center rounded-xl bg-brand px-4 text-sm font-semibold text-white opacity-45 sm:w-auto"
               >
-                Compare selected players
+                {translations("compareSelected")}
               </span>
             ) : (
               <Link
@@ -432,7 +486,7 @@ export function ShortlistComparisonBuilder({
                 }
                 className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-dark sm:w-auto"
               >
-                Compare selected players
+                {translations("compareSelected")}
               </Link>
             )}
           </div>

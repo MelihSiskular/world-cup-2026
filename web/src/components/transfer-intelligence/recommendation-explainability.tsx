@@ -1,9 +1,17 @@
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
+
 import type {
   TransferRecommendationResponse,
 } from "@/lib/api/types";
 import {
   formatProfileNumber,
   formatProfilePercentage,
+} from "@/lib/players/profile-format";
+import type {
+  ProfileFormatContext,
 } from "@/lib/players/profile-format";
 
 type RecommendationExplainabilityProps =
@@ -12,46 +20,52 @@ type RecommendationExplainabilityProps =
       TransferRecommendationResponse["explainability"];
   }>;
 
-function formatScore(
-  value: number,
-): string {
-  return formatProfileNumber(
-    value,
-    {
-      maximumFractionDigits: 2,
-    },
-  );
-}
-
-function formatWeight(
-  value: number,
-): string {
-  return formatProfilePercentage(
-    value * 100,
-  );
-}
-
-function getEvidenceLabel(
-  status:
-    | "available"
-    | "fallback"
-    | "missing",
-): string {
-  switch (status) {
-    case "available":
-      return "Direct evidence";
-
-    case "fallback":
-      return "Fallback input";
-
-    case "missing":
-      return "Missing input";
-  }
-}
-
 export function RecommendationExplainability({
   explainability,
 }: RecommendationExplainabilityProps) {
+  const locale = useLocale();
+
+  const translations =
+    useTranslations(
+      "RecommendationExplainability",
+    );
+
+  const formatContext:
+    ProfileFormatContext = {
+      locale,
+    };
+
+  const formatScore = (
+    value: number,
+  ): string =>
+    formatProfileNumber(
+      value,
+      {
+        maximumFractionDigits: 2,
+      },
+      formatContext,
+    );
+
+  const formatWeight = (
+    value: number,
+  ): string =>
+    formatProfilePercentage(
+      value * 100,
+      formatContext,
+    );
+
+  const evidenceLabels = {
+    available: translations(
+      "evidence.available",
+    ),
+    fallback: translations(
+      "evidence.fallback",
+    ),
+    missing: translations(
+      "evidence.missing",
+    ),
+  } as const;
+
   const {
     score,
     signals,
@@ -63,7 +77,9 @@ export function RecommendationExplainability({
     <section className="mt-6 overflow-hidden rounded-xl border border-brand/15 bg-surface-secondary">
       <div className="p-4">
         <p className="text-xs font-semibold tracking-[0.12em] text-brand uppercase">
-          Why this candidate
+          {translations(
+            "whyCandidate",
+          )}
         </p>
 
         <ul className="mt-3 grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
@@ -86,7 +102,9 @@ export function RecommendationExplainability({
 
         <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-border/70 pt-3 text-xs">
           <span className="text-muted">
-            Weighted signals{" "}
+            {translations(
+              "weightedSignals",
+            )}{" "}
             <strong className="text-brand-dark">
               {formatScore(
                 score.weighted_signal_total,
@@ -95,7 +113,9 @@ export function RecommendationExplainability({
           </span>
 
           <span className="text-muted">
-            Applied bonuses{" "}
+            {translations(
+              "appliedBonuses",
+            )}{" "}
             <strong className="text-brand-dark">
               +
               {formatScore(
@@ -109,7 +129,9 @@ export function RecommendationExplainability({
       <details className="group border-t border-border/70">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-sm font-semibold transition-colors hover:bg-surface sm:px-5">
           <span>
-            View score breakdown
+            {translations(
+              "viewBreakdown",
+            )}
           </span>
 
           <span
@@ -123,13 +145,17 @@ export function RecommendationExplainability({
         <div className="border-t border-border/70 bg-surface p-4 sm:p-5">
           <div>
             <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
-              Score composition
+              {translations(
+                "scoreComposition",
+              )}
             </p>
 
             <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2 xl:grid-cols-4">
               <div className="rounded-lg border border-border bg-page p-3">
                 <dt className="text-xs text-muted">
-                  Weighted signals
+                  {translations(
+                    "weightedSignals",
+                  )}
                 </dt>
 
                 <dd className="mt-1 font-bold">
@@ -141,7 +167,9 @@ export function RecommendationExplainability({
 
               <div className="rounded-lg border border-border bg-page p-3">
                 <dt className="text-xs text-muted">
-                  Bonuses
+                  {translations(
+                    "bonuses",
+                  )}
                 </dt>
 
                 <dd className="mt-1 font-bold">
@@ -154,7 +182,9 @@ export function RecommendationExplainability({
 
               <div className="rounded-lg border border-border bg-page p-3">
                 <dt className="text-xs text-muted">
-                  Pre-clip score
+                  {translations(
+                    "preClipScore",
+                  )}
                 </dt>
 
                 <dd className="mt-1 font-bold">
@@ -166,7 +196,9 @@ export function RecommendationExplainability({
 
               <div className="rounded-lg border border-border bg-page p-3">
                 <dt className="text-xs text-muted">
-                  Final score
+                  {translations(
+                    "finalScore",
+                  )}
                 </dt>
 
                 <dd className="mt-1 font-bold text-brand-dark">
@@ -179,16 +211,18 @@ export function RecommendationExplainability({
 
             {score.was_clipped ? (
               <p className="mt-2 text-xs leading-5 text-muted">
-                The pre-clip score was
-                constrained to the model&apos;s
-                0–100 output range.
+                {translations(
+                  "clippedDescription",
+                )}
               </p>
             ) : null}
           </div>
 
           <div className="mt-6">
             <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
-              Weighted signals
+              {translations(
+                "weightedSignals",
+              )}
             </p>
 
             <div className="mt-3 divide-y divide-border rounded-xl border border-border">
@@ -207,9 +241,9 @@ export function RecommendationExplainability({
                         {signal.evidence_status !==
                         "available" ? (
                           <span className="rounded-full border border-border px-2 py-0.5 text-[0.68rem] font-semibold text-muted">
-                            {getEvidenceLabel(
-                              signal.evidence_status,
-                            )}
+                            {evidenceLabels[
+                              signal.evidence_status
+                            ]}
                           </span>
                         ) : null}
                       </div>
@@ -230,19 +264,24 @@ export function RecommendationExplainability({
                     <dl className="grid grid-cols-3 gap-3 text-right text-xs sm:min-w-64">
                       <div>
                         <dt className="text-muted">
-                          Input
+                          {translations(
+                            "input",
+                          )}
                         </dt>
 
                         <dd className="mt-1 font-semibold">
                           {formatProfilePercentage(
                             signal.input_score,
+                            formatContext,
                           )}
                         </dd>
                       </div>
 
                       <div>
                         <dt className="text-muted">
-                          Weight
+                          {translations(
+                            "weight",
+                          )}
                         </dt>
 
                         <dd className="mt-1 font-semibold">
@@ -254,7 +293,9 @@ export function RecommendationExplainability({
 
                       <div>
                         <dt className="text-muted">
-                          Contribution
+                          {translations(
+                            "contribution",
+                          )}
                         </dt>
 
                         <dd className="mt-1 font-bold text-brand-dark">
@@ -273,7 +314,9 @@ export function RecommendationExplainability({
 
           <div className="mt-6">
             <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
-              Mode bonuses
+              {translations(
+                "modeBonuses",
+              )}
             </p>
 
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -289,8 +332,12 @@ export function RecommendationExplainability({
 
                     <p className="mt-1 text-xs text-muted">
                       {bonus.applied
-                        ? "Applied"
-                        : "Not applied"}
+                        ? translations(
+                            "applied",
+                          )
+                        : translations(
+                            "notApplied",
+                          )}
                     </p>
                   </div>
 
@@ -307,10 +354,9 @@ export function RecommendationExplainability({
           </div>
 
           <p className="mt-6 border-t border-border pt-4 text-xs leading-5 text-muted">
-            This score explains model fit
-            within the selected recruitment
-            scenario. It is not a probability
-            that a transfer will succeed.
+            {translations(
+              "disclaimer",
+            )}
           </p>
         </div>
       </details>

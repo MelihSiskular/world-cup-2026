@@ -4,6 +4,10 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
+import {
   useState,
 } from "react";
 
@@ -44,16 +48,15 @@ function formatEvidencePercentage(
     | number
     | null
     | undefined,
+  locale: string,
+  unavailable: string,
 ): string {
-  if (
-    value === null ||
-    value === undefined
-  ) {
-    return "Unavailable";
-  }
-
   return formatProfilePercentage(
     value,
+    {
+      locale,
+      missingValue: unavailable,
+    },
   );
 }
 
@@ -62,18 +65,17 @@ function formatEvidenceNumber(
     | number
     | null
     | undefined,
+  locale: string,
+  unavailable: string,
 ): string {
-  if (
-    value === null ||
-    value === undefined
-  ) {
-    return "Unavailable";
-  }
-
   return formatProfileNumber(
     value,
     {
       maximumFractionDigits: 1,
+    },
+    {
+      locale,
+      missingValue: unavailable,
     },
   );
 }
@@ -82,10 +84,12 @@ function HeatmapEvidenceMetric({
   label,
   value,
   description,
+  unavailable,
 }: Readonly<{
   label: string;
   value: string;
   description: string;
+  unavailable: string;
 }>) {
   return (
     <div
@@ -100,7 +104,7 @@ function HeatmapEvidenceMetric({
         className={[
           "mt-1.5 text-xl font-bold tracking-[-0.03em]",
           value ===
-          "Unavailable"
+          unavailable
             ? "text-muted"
             : "text-brand-dark",
         ].join(
@@ -187,6 +191,35 @@ export function MultiPlayerComparisonEvidence({
   target,
   candidates,
 }: MultiPlayerComparisonEvidenceProps) {
+  const locale = useLocale();
+  const t = useTranslations(
+    "MultiPlayerComparisonEvidence",
+  );
+
+  const formatPercentage = (
+    value:
+      | number
+      | null
+      | undefined,
+  ) =>
+    formatEvidencePercentage(
+      value,
+      locale,
+      t("unavailable"),
+    );
+
+  const formatNumber = (
+    value:
+      | number
+      | null
+      | undefined,
+  ) =>
+    formatEvidenceNumber(
+      value,
+      locale,
+      t("unavailable"),
+    );
+
   const [
     preferredCandidateId,
     setPreferredCandidateId,
@@ -306,43 +339,39 @@ export function MultiPlayerComparisonEvidence({
 
   return (
     <section
-      aria-label="Detailed comparison evidence"
+      aria-label={t("sectionLabel")}
       className="space-y-6"
     >
       <p
         aria-live="polite"
         className="sr-only"
       >
-        Showing detailed evidence for{" "}
-        {target.player_name} and{" "}
-        {
-          focusedCandidate
-            .player.player_name
-        }
-        .
+        {t("showingEvidence", {
+          target:
+            target.player_name,
+          candidate:
+            focusedCandidate
+              .player.player_name,
+        })}
       </p>
 
       <section
-        aria-label="Focused playing style radar comparison"
+        aria-label={t("radar.sectionLabel")}
         className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm"
       >
         <div className="border-b border-border p-6 sm:p-7">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-                Playing style
+                {t("radar.eyebrow")}
               </p>
 
               <h3 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
-                Position-relative radar
+                {t("radar.title")}
               </h3>
 
               <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
-                Compare the selected
-                pair using their
-                position-relative
-                playing-style
-                percentiles.
+                {t("radar.description")}
               </p>
             </div>
 
@@ -356,7 +385,9 @@ export function MultiPlayerComparisonEvidence({
               onSelect={
                 setPreferredCandidateId
               }
-              label="Radar comparison candidate"
+              label={t(
+                "radar.candidateSelector",
+              )}
             />
           </div>
         </div>
@@ -365,7 +396,7 @@ export function MultiPlayerComparisonEvidence({
           {radarComparison.isPending ? (
             <div
               role="status"
-              aria-label="Loading focused radar comparison"
+              aria-label={t("radar.loading")}
               aria-busy="true"
               className="min-h-96 animate-pulse rounded-2xl bg-surface-secondary motion-reduce:animate-none"
             />
@@ -375,15 +406,13 @@ export function MultiPlayerComparisonEvidence({
               className="rounded-2xl border border-warning/25 bg-warning/10 p-6"
             >
               <p className="text-sm font-semibold tracking-[0.12em] text-warning uppercase">
-                Radar comparison
-                unavailable
+                {t("radar.unavailable")}
               </p>
 
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-                The overview matrix
-                remains available, but
-                the focused radar could
-                not be loaded.
+                {t(
+                  "radar.unavailableDescription",
+                )}
               </p>
 
               <ApiErrorReference
@@ -400,7 +429,7 @@ export function MultiPlayerComparisonEvidence({
                 }}
                 className="mt-5 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-page"
               >
-                Retry radar
+                {t("radar.retry")}
               </button>
             </div>
           ) : radarComparison.data ? (
@@ -423,11 +452,9 @@ export function MultiPlayerComparisonEvidence({
             ) : (
               <>
                 <p className="mb-5 rounded-xl border border-border bg-surface-secondary px-4 py-3 text-xs leading-5 text-muted">
-                  These profiles cannot
-                  share one compatible
-                  radar axis contract.
-                  They are shown
-                  separately.
+                  {t(
+                    "radar.incompatible",
+                  )}
                 </p>
 
                 <div className="grid min-w-0 gap-5 lg:grid-cols-2">
@@ -478,27 +505,24 @@ export function MultiPlayerComparisonEvidence({
       </section>
 
       <section
-        aria-label="Focused heatmap profile comparison"
+        aria-label={t("heatmap.sectionLabel")}
         className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm"
       >
         <div className="border-b border-border p-6 sm:p-7">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-                Heatmap profile
+                {t("heatmap.eyebrow")}
               </p>
 
               <h3 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
-                Measured tournament
-                occupation
+                {t("heatmap.title")}
               </h3>
 
               <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
-                Compare where the
-                selected players
-                occupied the pitch
-                using measured
-                tournament evidence.
+                {t(
+                  "heatmap.description",
+                )}
               </p>
             </div>
 
@@ -512,7 +536,9 @@ export function MultiPlayerComparisonEvidence({
               onSelect={
                 setPreferredCandidateId
               }
-              label="Heatmap comparison candidate"
+              label={t(
+                "heatmap.candidateSelector",
+              )}
             />
           </div>
         </div>
@@ -521,7 +547,7 @@ export function MultiPlayerComparisonEvidence({
           {heatmapComparison.isPending ? (
             <div
               role="status"
-              aria-label="Loading focused heatmap comparison"
+              aria-label={t("heatmap.loading")}
               aria-busy="true"
               className="grid gap-5 md:grid-cols-2"
             >
@@ -534,16 +560,13 @@ export function MultiPlayerComparisonEvidence({
               className="rounded-2xl border border-warning/25 bg-warning/10 p-6"
             >
               <p className="text-sm font-semibold tracking-[0.12em] text-warning uppercase">
-                Heatmap comparison
-                unavailable
+                {t("heatmap.unavailable")}
               </p>
 
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-                The overview matrix
-                remains available, but
-                the focused heatmap
-                evidence could not be
-                loaded.
+                {t(
+                  "heatmap.unavailableDescription",
+                )}
               </p>
 
               <ApiErrorReference
@@ -561,7 +584,7 @@ export function MultiPlayerComparisonEvidence({
                 }}
                 className="mt-5 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-page"
               >
-                Retry heatmap
+                {t("heatmap.retry")}
               </button>
             </div>
           ) : heatmapComparison.data ? (
@@ -569,14 +592,15 @@ export function MultiPlayerComparisonEvidence({
               <div className="mb-5 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-surface-secondary px-4 py-3 sm:px-5">
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-foreground">
-                    Shared density scale
+                    {t(
+                      "heatmap.sharedScale",
+                    )}
                   </p>
 
                   <p className="mt-1 max-w-3xl text-[11px] leading-5 text-muted">
-                    Both pitches use the
-                    same relative
-                    occupation-density
-                    scale.
+                    {t(
+                      "heatmap.sharedScaleDescription",
+                    )}
                   </p>
                 </div>
 
@@ -632,79 +656,97 @@ export function MultiPlayerComparisonEvidence({
               </div>
 
               <dl
-                aria-label="Focused heatmap evidence metrics"
+                aria-label={t("heatmap.metricsLabel")}
                 className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
               >
                 <HeatmapEvidenceMetric
-                  label="Measured similarity"
+                  unavailable={t(
+                    "unavailable",
+                  )}
+                  label={t("heatmap.metrics.measuredSimilarity")}
                   value={
-                    formatEvidencePercentage(
+                    formatPercentage(
                       heatmapComparison
                         .data.similarity
                         .heatmap_similarity_score_pct,
                     )
                   }
-                  description="Overall measured similarity between the two tournament heatmap profiles."
+                  description={t("heatmap.metrics.measuredSimilarityDescription")}
                 />
 
                 <HeatmapEvidenceMetric
-                  label="Cosine similarity"
+                  unavailable={t(
+                    "unavailable",
+                  )}
+                  label={t("heatmap.metrics.cosineSimilarity")}
                   value={
-                    formatEvidencePercentage(
+                    formatPercentage(
                       heatmapComparison
                         .data.similarity
                         .heatmap_cosine_similarity_pct,
                     )
                   }
-                  description="Similarity across the complete occupation-density grid."
+                  description={t("heatmap.metrics.cosineSimilarityDescription")}
                 />
 
                 <HeatmapEvidenceMetric
-                  label="Occupation overlap"
+                  unavailable={t(
+                    "unavailable",
+                  )}
+                  label={t("heatmap.metrics.occupationOverlap")}
                   value={
-                    formatEvidencePercentage(
+                    formatPercentage(
                       heatmapComparison
                         .data.similarity
                         .occupation_overlap_pct,
                     )
                   }
-                  description="How strongly both players occupy the same pitch areas."
+                  description={t("heatmap.metrics.occupationOverlapDescription")}
                 />
 
                 <HeatmapEvidenceMetric
-                  label="Peak-zone similarity"
+                  unavailable={t(
+                    "unavailable",
+                  )}
+                  label={t("heatmap.metrics.peakZoneSimilarity")}
                   value={
-                    formatEvidencePercentage(
+                    formatPercentage(
                       heatmapComparison
                         .data.similarity
                         .peak_zone_similarity_pct,
                     )
                   }
-                  description="Similarity between the strongest occupation zones."
+                  description={t("heatmap.metrics.peakZoneSimilarityDescription")}
                 />
 
                 <HeatmapEvidenceMetric
-                  label="Peak-zone distance"
+                  unavailable={t(
+                    "unavailable",
+                  )}
+                  label={t("heatmap.metrics.peakZoneDistance")}
                   value={
-                    formatEvidenceNumber(
+                    formatNumber(
                       heatmapComparison
                         .data.similarity
                         .peak_zone_distance,
                     )
                   }
-                  description="Distance between the strongest-density locations."
+                  description={t("heatmap.metrics.peakZoneDistanceDescription")}
                 />
 
                 <HeatmapEvidenceMetric
-                  label="Entropy similarity"
+                  unavailable={t(
+                    "unavailable",
+                  )}
+                  label={t("heatmap.metrics.entropySimilarity")}
                   value={
-                    formatEvidencePercentage(
+                    formatPercentage(
                       heatmapComparison
                         .data.similarity
                         .entropy_similarity_pct,
                     )
                   }
-                  description="Similarity in occupation-profile concentration."
+                  description={t("heatmap.metrics.entropySimilarityDescription")}
                 />
               </dl>
             </>

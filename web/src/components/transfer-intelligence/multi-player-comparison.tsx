@@ -3,7 +3,14 @@
 import {
   useQuery,
 } from "@tanstack/react-query";
-import Link from "next/link";
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
+
+import {
+  Link,
+} from "@/i18n/navigation";
 
 import {
   ApiErrorReference,
@@ -47,27 +54,74 @@ type ComparisonMatrixRow =
       readonly string[];
   }>;
 
+type ComparisonMatrixRowCopy =
+  Readonly<{
+    label: string;
+    description: string;
+  }>;
+
+type ComparisonMatrixCopy =
+  Readonly<{
+    unavailable: string;
+    reference: string;
+    yearsSuffix: string;
+    positionLabels: Readonly<
+      Record<string, string>
+    >;
+    rows: Readonly<{
+      position:
+        ComparisonMatrixRowCopy;
+      role:
+        ComparisonMatrixRowCopy;
+      age:
+        ComparisonMatrixRowCopy;
+      marketValue:
+        ComparisonMatrixRowCopy;
+      minutes:
+        ComparisonMatrixRowCopy;
+      quality:
+        ComparisonMatrixRowCopy;
+      reliability:
+        ComparisonMatrixRowCopy;
+      statisticalSimilarity:
+        ComparisonMatrixRowCopy;
+      spatialSimilarity:
+        ComparisonMatrixRowCopy;
+      heatmapSimilarity:
+        ComparisonMatrixRowCopy;
+      roleFit:
+        ComparisonMatrixRowCopy;
+      marketAdvantage:
+        ComparisonMatrixRowCopy;
+    }>;
+  }>;
+
 function formatOptionalAge(
   value:
     | number
     | null
     | undefined,
+  locale: string,
+  copy: ComparisonMatrixCopy,
 ): string {
   if (
     value === null ||
     value === undefined
   ) {
-    return "Unavailable";
+    return copy.unavailable;
   }
 
-  return (
-    `${formatProfileNumber(
-      value,
-      {
-        maximumFractionDigits: 0,
-      },
-    )} years`
-  );
+  return `${formatProfileNumber(
+    value,
+    {
+      maximumFractionDigits: 0,
+    },
+    {
+      locale,
+      missingValue:
+        copy.unavailable,
+    },
+  )} ${copy.yearsSuffix}`;
 }
 
 function formatOptionalNumber(
@@ -75,16 +129,16 @@ function formatOptionalNumber(
     | number
     | null
     | undefined,
+  locale: string,
+  unavailable: string,
 ): string {
-  if (
-    value === null ||
-    value === undefined
-  ) {
-    return "Unavailable";
-  }
-
   return formatProfileNumber(
     value,
+    {},
+    {
+      locale,
+      missingValue: unavailable,
+    },
   );
 }
 
@@ -93,22 +147,26 @@ function formatOptionalScore(
     | number
     | null
     | undefined,
+  locale: string,
+  unavailable: string,
 ): string {
   if (
     value === null ||
     value === undefined
   ) {
-    return "Unavailable";
+    return unavailable;
   }
 
-  return (
-    `${formatProfileNumber(
-      value,
-      {
-        maximumFractionDigits: 1,
-      },
-    )} / 100`
-  );
+  return `${formatProfileNumber(
+    value,
+    {
+      maximumFractionDigits: 1,
+    },
+    {
+      locale,
+      missingValue: unavailable,
+    },
+  )} / 100`;
 }
 
 function formatOptionalPercentage(
@@ -116,66 +174,62 @@ function formatOptionalPercentage(
     | number
     | null
     | undefined,
+  locale: string,
+  unavailable: string,
 ): string {
-  if (
-    value === null ||
-    value === undefined
-  ) {
-    return "Unavailable";
-  }
-
   return formatProfilePercentage(
     value,
+    {
+      locale,
+      missingValue: unavailable,
+    },
   );
 }
 
 function formatOptionalMarketValue(
   player:
     MultiPlayerComparisonPlayerResponse,
+  locale: string,
+  unavailable: string,
 ): string {
-  if (
-    player.market_value ===
-      null ||
-    player.market_value ===
-      undefined
-  ) {
-    return "Unavailable";
-  }
-
   return formatMarketValue(
     player.market_value,
     player
       .market_value_currency ??
       null,
+    {
+      locale,
+      missingValue: unavailable,
+    },
   );
 }
 
 function formatRole(
   player:
     MultiPlayerComparisonPlayerResponse,
+  unavailable: string,
 ): string {
   return (
     player.final_role ??
     player.archetype ??
     player.spatial_role ??
-    "Unavailable"
+    unavailable
   );
 }
 
 function formatPosition(
   player:
     MultiPlayerComparisonPlayerResponse,
+  copy: ComparisonMatrixCopy,
 ): string {
-  if (
-    player.position === null ||
-    player.position ===
-      undefined
-  ) {
-    return "Unavailable";
-  }
-
   return formatPlayerPosition(
     player.position,
+    {
+      labels:
+        copy.positionLabels,
+      unavailable:
+        copy.unavailable,
+    },
   );
 }
 
@@ -184,96 +238,110 @@ function buildMatrixRows(
     MultiPlayerComparisonPlayerResponse,
   candidates:
     readonly MultiPlayerComparisonCandidateResponse[],
+  locale: string,
+  copy: ComparisonMatrixCopy,
 ): readonly ComparisonMatrixRow[] {
   return [
     {
       key: "position",
-      label: "Position",
-      description:
-        "Broad player position.",
+      ...copy.rows.position,
       targetValue:
-        formatPosition(target),
+        formatPosition(
+          target,
+          copy,
+        ),
       candidateValues:
         candidates.map(
           ({ player }) =>
             formatPosition(
               player,
+              copy,
             ),
         ),
     },
     {
       key: "role",
-      label: "Final role",
-      description:
-        "Primary analytical role label.",
+      ...copy.rows.role,
       targetValue:
-        formatRole(target),
+        formatRole(
+          target,
+          copy.unavailable,
+        ),
       candidateValues:
         candidates.map(
           ({ player }) =>
-            formatRole(player),
+            formatRole(
+              player,
+              copy.unavailable,
+            ),
         ),
     },
     {
       key: "age",
-      label: "Age",
-      description:
-        "Reported player age.",
+      ...copy.rows.age,
       targetValue:
         formatOptionalAge(
           target.age,
+          locale,
+          copy,
         ),
       candidateValues:
         candidates.map(
           ({ player }) =>
             formatOptionalAge(
               player.age,
+              locale,
+              copy,
             ),
         ),
     },
     {
       key: "market-value",
-      label: "Market value",
-      description:
-        "Reported market value and currency.",
+      ...copy.rows.marketValue,
       targetValue:
         formatOptionalMarketValue(
           target,
+          locale,
+          copy.unavailable,
         ),
       candidateValues:
         candidates.map(
           ({ player }) =>
             formatOptionalMarketValue(
               player,
+              locale,
+              copy.unavailable,
             ),
         ),
     },
     {
       key: "minutes",
-      label: "Tournament minutes",
-      description:
-        "Minutes recorded in the tournament dataset.",
+      ...copy.rows.minutes,
       targetValue:
         formatOptionalNumber(
           target.minutes,
+          locale,
+          copy.unavailable,
         ),
       candidateValues:
         candidates.map(
           ({ player }) =>
             formatOptionalNumber(
               player.minutes,
+              locale,
+              copy.unavailable,
             ),
         ),
     },
     {
       key: "quality",
-      label: "Player quality",
-      description:
-        "Combined player-quality score.",
+      ...copy.rows.quality,
       targetValue:
         formatOptionalScore(
           target
             .player_quality_score,
+          locale,
+          copy.unavailable,
         ),
       candidateValues:
         candidates.map(
@@ -281,18 +349,20 @@ function buildMatrixRows(
             formatOptionalScore(
               player
                 .player_quality_score,
+              locale,
+              copy.unavailable,
             ),
         ),
     },
     {
       key: "reliability",
-      label: "Data reliability",
-      description:
-        "Reliability of the available player evidence.",
+      ...copy.rows.reliability,
       targetValue:
         formatOptionalPercentage(
           target
             .data_reliability_score,
+          locale,
+          copy.unavailable,
         ),
       candidateValues:
         candidates.map(
@@ -300,106 +370,112 @@ function buildMatrixRows(
             formatOptionalPercentage(
               player
                 .data_reliability_score,
+              locale,
+              copy.unavailable,
             ),
         ),
     },
     {
       key:
         "statistical-similarity",
-      label:
-        "Statistical similarity",
-      description:
-        "Measured statistical similarity relative to the target.",
+      ...copy.rows
+        .statisticalSimilarity,
       targetValue:
-        "Reference",
+        copy.reference,
       candidateValues:
         candidates.map(
           ({ evidence }) =>
             formatOptionalPercentage(
               evidence
                 .statistical_similarity_pct,
+              locale,
+              copy.unavailable,
             ),
         ),
     },
     {
       key:
         "spatial-similarity",
-      label:
-        "Spatial similarity",
-      description:
-        "Same-position spatial similarity relative to the target.",
+      ...copy.rows
+        .spatialSimilarity,
       targetValue:
-        "Reference",
+        copy.reference,
       candidateValues:
         candidates.map(
           ({ evidence }) =>
             formatOptionalPercentage(
               evidence
                 .spatial_similarity_pct,
+              locale,
+              copy.unavailable,
             ),
         ),
     },
     {
       key:
         "heatmap-similarity",
-      label:
-        "Heatmap similarity",
-      description:
-        "Measured tournament heatmap similarity relative to the target.",
+      ...copy.rows
+        .heatmapSimilarity,
       targetValue:
-        "Reference",
+        copy.reference,
       candidateValues:
         candidates.map(
           ({ evidence }) =>
             formatOptionalPercentage(
               evidence
                 .heatmap_similarity_score_pct,
+              locale,
+              copy.unavailable,
             ),
         ),
     },
     {
       key: "role-fit",
-      label: "Role fit",
-      description:
-        "Role compatibility relative to the target.",
+      ...copy.rows.roleFit,
       targetValue:
-        "Reference",
+        copy.reference,
       candidateValues:
         candidates.map(
           ({ evidence }) =>
             formatOptionalPercentage(
               evidence
                 .role_fit_pct,
+              locale,
+              copy.unavailable,
             ),
         ),
     },
     {
       key:
         "market-advantage",
-      label:
-        "Market advantage",
-      description:
-        "Candidate market-value advantage relative to the target.",
+      ...copy.rows
+        .marketAdvantage,
       targetValue:
-        "Reference",
+        copy.reference,
       candidateValues:
         candidates.map(
           ({ evidence }) =>
             formatOptionalPercentage(
               evidence
                 .market_value_advantage_pct,
+              locale,
+              copy.unavailable,
             ),
         ),
     },
   ];
 }
 
-function MultiPlayerComparisonSkeleton() {
+function MultiPlayerComparisonSkeleton({
+  label,
+}: Readonly<{
+  label: string;
+}>) {
   return (
     <div
       role="status"
       aria-live="polite"
-      aria-label="Preparing multi-player comparison"
+      aria-label={label}
       className="animate-pulse space-y-5 motion-reduce:animate-none"
     >
       <div className="h-24 rounded-3xl border border-border bg-surface-secondary" />
@@ -425,8 +501,7 @@ function MultiPlayerComparisonSkeleton() {
       </div>
 
       <span className="sr-only">
-        Preparing multi-player
-        comparison…
+        {label}
       </span>
     </div>
   );
@@ -435,6 +510,153 @@ function MultiPlayerComparisonSkeleton() {
 export function MultiPlayerComparison({
   identifiers,
 }: MultiPlayerComparisonProps) {
+  const locale = useLocale();
+  const t = useTranslations(
+    "MultiPlayerComparison",
+  );
+
+  const matrixCopy:
+    ComparisonMatrixCopy = {
+      unavailable:
+        t("unavailable"),
+      reference:
+        t("reference"),
+      yearsSuffix:
+        t("yearsSuffix"),
+      positionLabels: {
+        G: t(
+          "positions.goalkeeper",
+        ),
+        D: t(
+          "positions.defender",
+        ),
+        M: t(
+          "positions.midfielder",
+        ),
+        F: t(
+          "positions.forward",
+        ),
+      },
+      rows: {
+        position: {
+          label:
+            t(
+              "rows.position.label",
+            ),
+          description:
+            t(
+              "rows.position.description",
+            ),
+        },
+        role: {
+          label:
+            t("rows.role.label"),
+          description:
+            t(
+              "rows.role.description",
+            ),
+        },
+        age: {
+          label:
+            t("rows.age.label"),
+          description:
+            t(
+              "rows.age.description",
+            ),
+        },
+        marketValue: {
+          label:
+            t(
+              "rows.marketValue.label",
+            ),
+          description:
+            t(
+              "rows.marketValue.description",
+            ),
+        },
+        minutes: {
+          label:
+            t(
+              "rows.minutes.label",
+            ),
+          description:
+            t(
+              "rows.minutes.description",
+            ),
+        },
+        quality: {
+          label:
+            t(
+              "rows.quality.label",
+            ),
+          description:
+            t(
+              "rows.quality.description",
+            ),
+        },
+        reliability: {
+          label:
+            t(
+              "rows.reliability.label",
+            ),
+          description:
+            t(
+              "rows.reliability.description",
+            ),
+        },
+        statisticalSimilarity: {
+          label:
+            t(
+              "rows.statisticalSimilarity.label",
+            ),
+          description:
+            t(
+              "rows.statisticalSimilarity.description",
+            ),
+        },
+        spatialSimilarity: {
+          label:
+            t(
+              "rows.spatialSimilarity.label",
+            ),
+          description:
+            t(
+              "rows.spatialSimilarity.description",
+            ),
+        },
+        heatmapSimilarity: {
+          label:
+            t(
+              "rows.heatmapSimilarity.label",
+            ),
+          description:
+            t(
+              "rows.heatmapSimilarity.description",
+            ),
+        },
+        roleFit: {
+          label:
+            t(
+              "rows.roleFit.label",
+            ),
+          description:
+            t(
+              "rows.roleFit.description",
+            ),
+        },
+        marketAdvantage: {
+          label:
+            t(
+              "rows.marketAdvantage.label",
+            ),
+          description:
+            t(
+              "rows.marketAdvantage.description",
+            ),
+        },
+      },
+    };
+
   const comparison =
     useQuery({
       queryKey: [
@@ -462,7 +684,9 @@ export function MultiPlayerComparison({
 
   if (comparison.isPending) {
     return (
-      <MultiPlayerComparisonSkeleton />
+      <MultiPlayerComparisonSkeleton
+        label={t("loading")}
+      />
     );
   }
 
@@ -473,13 +697,11 @@ export function MultiPlayerComparison({
         className="rounded-2xl border border-error/25 bg-error/10 p-7"
       >
         <p className="text-sm font-semibold tracking-[0.14em] text-error uppercase">
-          Comparison unavailable
+          {t("comparisonUnavailable")}
         </p>
 
         <h2 className="mt-3 text-3xl font-bold tracking-[-0.035em]">
-          The multi-player
-          comparison could not be
-          prepared
+          {t("comparisonFailedTitle")}
         </h2>
 
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
@@ -488,7 +710,7 @@ export function MultiPlayerComparison({
               instanceof Error
               ? comparison
                   .error.message
-              : "The comparison request failed."
+              : t("comparisonRequestFailed")
           }
         </p>
 
@@ -505,7 +727,7 @@ export function MultiPlayerComparison({
           }}
           className="mt-7 rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-white hover:bg-brand-dark"
         >
-          Retry comparison
+          {t("retryComparison")}
         </button>
       </section>
     );
@@ -522,26 +744,22 @@ export function MultiPlayerComparison({
     return (
       <section className="rounded-2xl border border-warning/25 bg-warning/10 p-7">
         <p className="text-sm font-semibold tracking-[0.14em] text-warning uppercase">
-          Candidates unavailable
+          {t("candidatesUnavailable")}
         </p>
 
         <h2 className="mt-3 text-3xl font-bold tracking-[-0.035em]">
-          No comparison candidates
-          were returned
+          {t("noCandidatesTitle")}
         </h2>
 
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          Return to the shortlist
-          workspace and choose at
-          least one same-position
-          candidate.
+          {t("noCandidatesDescription")}
         </p>
 
         <Link
           href="/shortlists"
           className="mt-7 inline-flex rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-white hover:bg-brand-dark"
         >
-          Return to shortlists
+          {t("returnToShortlists")}
         </Link>
       </section>
     );
@@ -551,6 +769,8 @@ export function MultiPlayerComparison({
     buildMatrixRows(
       target,
       candidates,
+      locale,
+      matrixCopy,
     );
 
   return (
@@ -561,44 +781,35 @@ export function MultiPlayerComparison({
     >
       <div className="border-b border-border px-5 py-6 sm:px-7">
         <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-          Overview matrix
+          {t("overviewEyebrow")}
         </p>
 
         <h2
           id="multi-comparison-overview-title"
           className="mt-2 text-2xl font-bold tracking-[-0.035em]"
         >
-          Target-relative comparison
+          {t("overviewTitle")}
         </h2>
 
         <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
-          {
-            candidates.length
-          }{" "}
-          {
-            candidates.length ===
-            1
-              ? "candidate"
-              : "candidates"
-          }{" "}
-          compared with{" "}
-          {target.player_name}.
-          Unavailable pair evidence
-          remains explicitly
-          unavailable.
+          {t("candidateSummary", {
+            count:
+              candidates.length,
+            target:
+              target.player_name,
+          })}
         </p>
       </div>
 
       <div
         role="region"
-        aria-label="Scrollable multi-player comparison matrix"
+        aria-label={t("scrollRegionLabel")}
         tabIndex={0}
         className="overflow-x-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/25"
       >
         <table className="w-full min-w-[54rem] border-collapse text-left text-sm">
           <caption className="sr-only">
-            Target-relative comparison
-            overview
+            {t("tableCaption")}
           </caption>
 
           <thead className="bg-surface-secondary">
@@ -607,7 +818,7 @@ export function MultiPlayerComparison({
                 scope="col"
                 className="sticky left-0 z-10 w-48 border-b border-r border-border bg-surface-secondary px-5 py-4 font-semibold"
               >
-                Metric
+                {t("metric")}
               </th>
 
               <th
@@ -615,7 +826,7 @@ export function MultiPlayerComparison({
                 className="min-w-48 border-b border-border px-5 py-4"
               >
                 <span className="block text-[11px] font-semibold tracking-[0.12em] text-brand uppercase">
-                  Target
+                  {t("target")}
                 </span>
 
                 <Link
@@ -641,8 +852,13 @@ export function MultiPlayerComparison({
                     className="min-w-48 border-b border-border px-5 py-4"
                   >
                     <span className="block text-[11px] font-semibold tracking-[0.12em] text-muted uppercase">
-                      Candidate{" "}
-                      {index + 1}
+                      {t(
+                        "candidateLabel",
+                        {
+                          index:
+                            index + 1,
+                        },
+                      )}
                     </span>
 
                     <Link
@@ -701,7 +917,8 @@ export function MultiPlayerComparison({
                         className={[
                           "px-5 py-4 font-medium",
                           value ===
-                          "Unavailable"
+                          matrixCopy
+                            .unavailable
                             ? "text-muted"
                             : "",
                         ].join(
@@ -721,12 +938,7 @@ export function MultiPlayerComparison({
 
       <div className="border-t border-border bg-page px-5 py-4 sm:px-7">
         <p className="text-xs leading-5 text-muted">
-          Reference cells identify
-          the target baseline.
-          Unavailable values mean the
-          requested pair has no
-          measured evidence in the
-          current dataset.
+          {t("referenceGuidance")}
         </p>
       </div>
       </section>

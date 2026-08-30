@@ -1,0 +1,1325 @@
+{
+  "Common": {
+    "brandName": "WC26 Transfer Intelligence",
+    "notReported": "Bildirilmedi",
+    "unavailable": "Kullanılamıyor",
+    "skipToContent": "İçeriğe geç"
+  },
+  "Navigation": {
+    "primaryLabel": "Ana navigasyon",
+    "mobileLabel": "Mobil navigasyon",
+    "open": "Navigasyonu aç",
+    "close": "Navigasyonu kapat",
+    "home": "Ana Sayfa",
+    "players": "Oyuncular",
+    "shortlists": "Kısa Listeler",
+    "methodology": "Metodoloji",
+    "systemStatus": "Sistem Durumu"
+  },
+  "Header": {
+    "homeLabel": "WC26 Transfer Intelligence ana sayfası",
+    "tagline": "Transfer karar desteği",
+    "statusLabel": "Sistem durumu sayfasını aç"
+  },
+  "Footer": {
+    "description": "2026 Dünya Kupası turnuva verileriyle desteklenen futbol scouting ve oyuncu alternatif analizi.",
+    "navigationLabel": "Alt bilgi navigasyonu",
+    "copyright": "© {year} WC26 Analytics"
+  },
+  "LocaleSwitcher": {
+    "label": "Dil",
+    "english": "İngilizce",
+    "turkish": "Türkçe",
+    "changeTo": "Dili {language} olarak değiştir"
+  },
+  "Metadata": {
+    "description": "2026 Dünya Kupası verileriyle desteklenen futbol scouting ve oyuncu alternatif analizi."
+  },
+  "Home": {
+    "heroTitle": "Doğru alternatifi bulun.",
+    "heroEmphasis": "Yalnızca en benzer oyuncuyu değil.",
+    "intro": "İstatistiksel benzerliği, saha içi rolü, güvenilirliği, piyasa bağlamını ve transfer stratejisini tek bir yapılandırılmış karar destek akışında birleştirin.",
+    "searchPlayers": "Oyuncu ara",
+    "viewMethodology": "Metodolojiyi incele",
+    "workflowEyebrow": "Ürün iş akışı",
+    "workflowTitle": "Oyuncu aramasından transfer kararına",
+    "step1Title": "Oyuncu bulun",
+    "step1Description": "2026 Dünya Kupası oyuncu kataloğunda arama yapın.",
+    "step2Title": "Profili inceleyin",
+    "step2Description": "Rolü, saha içi profili, güvenilirliği, kaliteyi ve piyasa bağlamını değerlendirin.",
+    "step3Title": "Alternatifleri analiz edin",
+    "step3Description": "Hazır, gelişim odaklı, değer ve kısa vadeli alternatifleri karşılaştırın."
+  },
+  "PlayerDiscovery": {
+    "metadataTitle": "Oyuncular",
+    "metadataDescription": "2026 Dünya Kupası oyuncu kataloğunda arama yapın ve scouting profillerini açın.",
+    "eyebrow": "Oyuncu kataloğu",
+    "title": "Turnuva oyuncularını arayın ve inceleyin",
+    "description": "Alternatif analizine başlamadan önce sabit katalog kimlikleri, rol bilgileri ve piyasa bağlamıyla doğru oyuncuyu bulun.",
+    "searchHeading": "Oyuncu ara",
+    "searchDescription": "Oyuncu adına göre arayın veya gelişmiş transfer filtrelerini birlikte kullanın.",
+    "searchPlaceholder": "Michael Olise, Alex Baena ara…",
+    "clearSearch": "Temizle",
+    "advancedFilters": "Gelişmiş filtreler",
+    "loadingAdvancedFilters": "Gelişmiş filtreler yükleniyor",
+    "filtersUnavailable": "Filtreler kullanılamıyor",
+    "filtersUnavailableDescription": "Oyuncu kataloğunda adla arama yapmaya devam edebilirsiniz.",
+    "retryFilters": "Filtreleri yeniden dene",
+    "initialTitle": "Bir oyuncu adıyla başlayın",
+    "initialDescription": "Doğrudan arayın veya analitik kataloğun tamamını keşfetmek için gelişmiş filtreleri kullanın.",
+    "partialTitle": "Yazmaya devam edin",
+    "partialDescription": "Oyuncu adı aramaları en az {minimum} karakter gerektirir. Yalnızca filtrelerle aramak için eksik adı temizleyin.",
+    "searchUnavailable": "Oyuncu araması kullanılamıyor",
+    "searchUnavailableDescription": "Oyuncu kataloğunda şu anda arama yapılamıyor.",
+    "retrySearch": "Aramayı yeniden denee",
+    "noResultsTitle": "Oyuncu bulunamadı",
+    "noResultsDescription": "Mevcut keşif ölçütleriyle eşleşen katalog kaydı bulunamadı. Filtreleri genişletin veya başka bir oyuncu adı deneyin.",
+    "resultsFound": "{count, plural, one {# oyuncu bulundu} other {# oyuncu bulundu}}",
+    "resultsFoundFor": "{count, plural, one {“{query}” için # oyuncu bulundu} other {“{query}” için # oyuncu bulundu}}",
+    "showingRange": "{total} oyuncudan {start}–{end} arası gösteriliyor",
+    "updating": "Güncelleniyor…",
+    "paginationLabel": "Oyuncu arama sayfaları",
+    "previousPage": "Önceki",
+    "pageNumber": "Sayfa {page}",
+    "nextPage": "Sonraki",
+    "searchingPlayers": "Oyuncular aranıyor",
+    "searchingCatalogue": "Oyuncu kataloğunda aranıyor…",
+    "filterEyebrow": "Oyuncu keşfi",
+    "catalogueSummary": "{count, number} oyunculuk analitik kataloğun tamamını keşfedin.",
+    "activeFilterCount": "{count} etkin",
+    "position": "Pozisyon",
+    "finalRole": "Nihai rol",
+    "archetype": "Arketip",
+    "nationality": "Millî takım",
+    "optionChecklistDescription": "Bir veya daha fazla seçenek belirleyin. Birden fazla seçim alternatif olarak birleştirilir.",
+    "filterOptionCount": "{label}, {count, plural, one {# oyuncu} other {# oyuncu}}",
+    "recruitmentCriteria": "Transfer ölçütleri",
+    "minimumAge": "Minimum yaş",
+    "maximumAge": "Maksimum yaş",
+    "minimumValue": "Minimum değer",
+    "maximumValue": "Maksimum değer",
+    "minimumPlaceholder": "Min",
+    "maximumPlaceholder": "Maks",
+    "ageRange": "Yaş aralığı: {range}",
+    "marketValueRangeLabel": "Piyasa değeri aralığı",
+    "valueRange": "Değer aralığı: {range} {currency}",
+    "minimumTournamentMinutes": "Minimum turnuva dakikası",
+    "minutesExample": "ör. 300",
+    "observedMinutesRange": "Gözlemlenen aralık: {range} dakika",
+    "minimumRoleConfidence": "Minimum rol güveni",
+    "roleConfidenceExample": "ör. 70",
+    "minimumDataReliability": "Minimum veri güvenilirliği",
+    "dataReliabilityExample": "ör. 60",
+    "sortResults": "Sonuçları sırala",
+    "sortRecommended": "Önerilen",
+    "sortPlayerName": "Oyuncu adı A–Z",
+    "sortYoungest": "Önce en genç",
+    "sortLowestValue": "Önce en düşük piyasa değeri",
+    "sortMostMinutes": "En fazla turnuva dakikası",
+    "sortHighestRoleConfidence": "En yüksek rol güveni",
+    "sortHighestDataReliability": "En yüksek veri güvenilirliği",
+    "sortHighestPlayerQuality": "En yüksek oyuncu kalitesi",
+    "clearAllFilters": "Tüm filtreleri temizle",
+    "clearAll": "Tümünü temizle",
+    "positionLabels": {
+      "goalkeeper": "Kaleci",
+      "defender": "Defans",
+      "midfielder": "Orta saha",
+      "forward": "Forvet"
+    },
+    "activeFiltersTitle": "Etkin filtreler",
+    "clearFilters": "Filtreleri temizle",
+    "removeFilter": "{label} filtresini kaldır",
+    "positionFilter": "Pozisyon: {value}",
+    "finalRoleFilter": "Nihai rol: {value}",
+    "archetypeFilter": "Arketip: {value}",
+    "nationalityFilter": "Millî takım: {value}",
+    "minimumAgeFilter": "Yaş ≥ {value}",
+    "maximumAgeFilter": "Yaş ≤ {value}",
+    "minimumValueFilter": "Değer ≥ {value}",
+    "maximumValueFilter": "Değer ≤ {value}",
+    "minimumMinutesFilter": "Dakika ≥ {value}",
+    "minimumRoleConfidenceFilter": "Rol güveni ≥ %{value}",
+    "minimumDataReliabilityFilter": "Veri güvenilirliği ≥ %{value}",
+    "openProfileLabel": "{player} scouting profilini aç",
+    "nationalTeamUnavailable": "Millî takım bilgisi yok",
+    "finalRoleLabel": "Nihai rol:",
+    "archetypeLabel": "Arketip:",
+    "spatialRoleLabel": "Saha içi rol:",
+    "ageLabel": "Yaş",
+    "marketValueLabel": "Piyasa değeri",
+    "positionLabel": "Pozisyon",
+    "ageUnavailable": "Yaş bilgisi yok",
+    "ageYears": "{value} yaş",
+    "marketValueUnavailable": "Piyasa değeri bilgisi yok",
+    "positionUnavailable": "Pozisyon bilgisi yok",
+    "openScoutingProfile": "Scouting profilini aç"
+  },
+  "Shortlists": {
+    "metadataTitle": "Kısa Listeler",
+    "metadataDescription": "Tarayıcıda saklanan 2026 Dünya Kupası transfer kısa listelerini oluşturun ve yönetin."
+  },
+  "ShortlistAction": {
+    "loading": "Kısa listeler yükleniyor",
+    "shortlistedCount": "Kısa listede ({count})",
+    "add": "Kısa listeye ekle",
+    "optionsLabel": "{player} için kısa liste seçenekleri",
+    "eyebrow": "Kısa listeler",
+    "savePlayer": "{player} oyuncusunu kaydet",
+    "done": "Tamam",
+    "select": "Kısa listeleri seç",
+    "playerCount": "{count, plural, one {# oyuncu} other {# oyuncu}}",
+    "empty": "Henüz kısa liste yok. İlk listeyi aşağıdan oluşturun.",
+    "newShortlist": "Yeni kısa liste",
+    "namePlaceholder": "2027 Yaz — Sol Stoper",
+    "createAndAdd": "Oluştur ve ekle",
+    "playerAdded": "{player}, {shortlist} listesine eklendi.",
+    "playerRemoved": "{player}, {shortlist} listesinden çıkarıldı.",
+    "createdAndAdded": "{shortlist} oluşturuldu ve {player} eklendi.",
+    "issues": {
+      "notHydrated": "Kısa listeler hâlâ yükleniyor.",
+      "storageUnavailable": "Kısa listeler tarayıcı depolamasına erişemiyor.",
+      "readFailed": "Kaydedilmiş kısa listeler okunamadı.",
+      "invalidJson": "Kaydedilmiş kısa liste verisi bozuk.",
+      "unsupportedVersion": "Kaydedilmiş kısa liste verisinin sürümü desteklenmiyor.",
+      "invalidData": "Kaydedilmiş kısa liste verisi beklenen yapıyla uyuşmuyor.",
+      "invalidState": "Güncellenen kısa liste durumu geçersiz.",
+      "writeFailed": "Kısa liste değişiklikleri kaydedilemedi.",
+      "invalidShortlistId": "Kısa liste kimliği boş olamaz.",
+      "invalidShortlistName": "Kısa liste adı 1 ile {maximum} karakter arasında olmalıdır.",
+      "invalidTimestamp": "Kısa liste işlemleri geçerli bir zaman bilgisi gerektirir.",
+      "duplicateShortlistId": "Kısa liste kimlikleri benzersiz olmalıdır.",
+      "duplicateShortlistName": "Kısa liste adları benzersiz olmalıdır.",
+      "shortlistLimitReached": "En fazla {maximum} kısa liste oluşturulabilir.",
+      "shortlistNotFound": "İstenen kısa liste bulunamadı.",
+      "invalidPlayer": "Oyuncu bilgisi geçersiz.",
+      "playerLimitReached": "Her kısa listede en fazla {maximum} oyuncu bulunabilir."
+    }
+  },
+  "ShortlistManager": {
+    "loading": "Kısa listeler yükleniyor",
+    "eyebrow": "Transfer çalışma alanı",
+    "title": "Kısa liste çalışma alanı",
+    "description": "Turnuva oyuncularını odaklı transfer listelerinde düzenleyin. Kaydedilen veriler bu tarayıcıda tutulur.",
+    "shortlistsStat": "Kısa listeler",
+    "uniquePlayersStat": "Benzersiz oyuncular",
+    "savedSelectionsStat": "Kaydedilen seçimler",
+    "createLabel": "Kısa liste oluştur",
+    "namePlaceholder": "2027 Yaz — Sol Stoper",
+    "createButton": "Kısa liste oluştur",
+    "dismiss": "Kapat",
+    "emptyWorkspaceTitle": "Henüz kısa liste yok",
+    "emptyWorkspaceDescription": "Burada adlandırılmış bir transfer listesi oluşturun veya keşif, profil ve öneri ekranlarından oyuncu kaydedin.",
+    "explorePlayers": "Oyuncuları keşfet",
+    "shortlistEyebrow": "Kısa liste",
+    "entryCount": "{count, plural, one {# oyuncu} other {# oyuncu}}",
+    "rename": "Yeniden adlandır",
+    "delete": "Sil",
+    "renameLabel": "{shortlist} listesini yeniden adlandır",
+    "saveName": "Adı kaydet",
+    "cancel": "İptal",
+    "deleteQuestion": "{shortlist} silinsin mi?",
+    "deleteDescription": "Bu işlem listeyi ve kayıtlı tüm oyuncu referanslarını bu tarayıcıdan kaldırır.",
+    "confirmDeleteLabel": "{shortlist} listesinin silinmesini onayla",
+    "confirmDelete": "Silmeyi onayla",
+    "emptyListTitle": "Bu kısa liste boş",
+    "emptyListDescription": "Keşif kataloğundan, profil sayfalarından veya önerilerden oyuncu ekleyin.",
+    "createdAnnouncement": "{shortlist} oluşturuldu.",
+    "renamedAnnouncement": "{shortlist}, {newName} olarak yeniden adlandırıldı.",
+    "deletedAnnouncement": "{shortlist} silindi.",
+    "playerRemovedAnnouncement": "{player}, {shortlist} listesinden çıkarıldı.",
+    "nationalTeamUnavailable": "Millî takım bilgisi yok",
+    "roleUnavailable": "Rol bilgisi yok",
+    "positionLabel": "Pozisyon",
+    "ageLabel": "Yaş",
+    "marketValueLabel": "Piyasa değeri",
+    "tournamentSampleLabel": "Turnuva örneklemi",
+    "positionUnavailable": "Pozisyon bilgisi yok",
+    "ageUnavailable": "Yaş bilgisi yok",
+    "ageValue": "{value} yaş",
+    "marketValueUnavailable": "Piyasa değeri bilgisi yok",
+    "minutesUnavailable": "Dakika bilgisi yok",
+    "minutesValue": "{value} dakika",
+    "openProfile": "Profili aç",
+    "remove": "Çıkar",
+    "removePlayerLabel": "{player} oyuncusunu {shortlist} listesinden çıkar",
+    "positionLabels": {
+      "goalkeeper": "Kaleci",
+      "defender": "Defans",
+      "midfielder": "Orta saha",
+      "forward": "Forvet"
+    }
+  },
+  "ShortlistComparison": {
+    "sectionLabel": "{shortlist} listesindeki oyuncuları karşılaştır",
+    "eyebrow": "Çoklu oyuncu karşılaştırması",
+    "title": "Kısa listedeki oyuncuları karşılaştır",
+    "description": "Aynı pozisyondan bir hedef ve en fazla {maximum} aday seçin.",
+    "selectionCount": "{maximum} adaydan {selected} tanesi seçildi",
+    "needMorePlayers": "Karşılaştırma başlatmadan önce en az bir oyuncu daha ekleyin.",
+    "targetPlayer": "Hedef oyuncu",
+    "candidatePlayers": "Aday oyuncular",
+    "selectCandidate": "{player} oyuncusunu aday olarak seç",
+    "positionUnavailable": "Pozisyon bilgisi yok",
+    "differentPosition": "Farklı pozisyon veya pozisyon bilgisi yok",
+    "noCompatibleCandidates": "Bu hedef için kısa listede aynı pozisyonda aday bulunmuyor.",
+    "compareSelected": "Seçilen oyuncuları karşılaştır",
+    "positionLabels": {
+      "goalkeeper": "Kaleci",
+      "defender": "Defans",
+      "midfielder": "Orta saha",
+      "forward": "Forvet"
+    }
+  },
+  "PlayerProfile": {
+    "metadataPlayerTitle": "Oyuncu {playerId}",
+    "metadataNotFoundTitle": "Oyuncu bulunamadı",
+    "metadataDescription": "2026 Dünya Kupası oyuncu scouting profili ve alternatif analizi başlangıç noktası.",
+    "loadingProfile": "Oyuncu scouting profili yükleniyor…",
+    "notFoundEyebrow": "Oyuncu bulunamadı",
+    "unavailableEyebrow": "Profil kullanılamıyor",
+    "notFoundTitle": "Bu oyuncu mevcut katalogda bulunmuyor",
+    "loadFailedTitle": "Scouting profili yüklenemedi",
+    "notFoundDescription": "İstenen oyuncu mevcut analitik katalogda yer almıyor.",
+    "loadFailedDescription": "Oyuncu profili isteği başarısız oldu. Profili yeniden yüklemeyi deneyin.",
+    "retryProfile": "Profili yeniden dene",
+    "returnToSearch": "Oyuncu aramasına dön",
+    "countryUnavailable": "Ülke bilgisi yok",
+    "positionUnavailable": "Pozisyon bilgisi yok",
+    "finalRoleUnavailable": "Nihai rol bilgisi yok",
+    "archetypeUnavailable": "Arketip bilgisi yok",
+    "spatialRoleUnavailable": "Saha içi rol bilgisi yok",
+    "ageLabel": "Yaş",
+    "heightLabel": "Boy",
+    "marketValueLabel": "Piyasa değeri",
+    "ageYears": "{value} yaş",
+    "heightCentimeters": "{value} cm",
+    "backToSearch": "Oyuncu aramasına dön",
+    "back": "Geri",
+    "runTransferAnalysis": "Alternatif analizi başlat",
+    "positionLabels": {
+      "goalkeeper": "Kaleci",
+      "defender": "Defans",
+      "midfielder": "Orta saha",
+      "forward": "Forvet"
+    },
+    "roleInterpretationEyebrow": "Rol yorumu",
+    "roleInterpretationTitle": "Oyuncunun saha içi işleyişi",
+    "lateralProfile": "Yanal profil",
+    "verticalProfile": "Dikey profil",
+    "mobilityProfile": "Hareketlilik profili",
+    "spatialReliability": "Konumsal güvenilirlik",
+    "tournamentSample": "Turnuva örneklemi",
+    "participationContext": "Katılım bağlamı",
+    "matches": "Maç",
+    "starts": "İlk 11",
+    "minutes": "Dakika",
+    "primaryFormation": "Ana diziliş",
+    "viewRoleEvidence": "Rol atama kanıtını görüntüle",
+    "roleEvidenceDescription": "Oyuncunun taktik ve konumsal rolünü yorumlamak için kullanılan destekleyici model kanıtları.",
+    "modelContextEyebrow": "Model bağlamı",
+    "modelConfidenceTitle": "Profilin arkasındaki güven",
+    "modelConfidenceDescription": "Turnuva profilini yorumlamak için kullanılan kalite ve güvenilirlik sinyalleri.",
+    "weightedRating": "Ağırlıklı puan",
+    "weightedRatingDescription": "Güvenilirliği dikkate alan turnuva performans puanı",
+    "playerQuality": "Oyuncu kalitesi",
+    "playerQualityDescription": "Birleşik performans ve kalite değerlendirmesi",
+    "dataReliability": "Veri güvenilirliği",
+    "dataReliabilityDescription": "Mevcut turnuva verilerinin desteklediği güven düzeyi",
+    "roleConfidence": "Rol güveni",
+    "roleConfidenceDescription": "Atanan taktik role duyulan güven"
+  },
+  "PlayerFeaturedMetrics": {
+    "eyebrow": "Öne çıkan performans",
+    "title": "Pozisyona özgü metrikler",
+    "description": "Oyuncunun bu pozisyondaki turnuva performansına hızlı bir bakış. Tüm metrik ayrıntılarına aşağıdan ulaşabilirsiniz.",
+    "unitPer90": "90 dakika başına",
+    "unitPercent": "Yüzde",
+    "unitRaw": "Turnuva toplamı",
+    "samePositionPercentile": "Aynı pozisyon yüzdelik dilimi",
+    "percentileAriaLabel": "{metric} performans yüzdelik dilimi",
+    "peerComparison": "<countValue>{count}</countValue> uygun pozisyon eşiyle karşılaştırıldı.",
+    "percentileUnavailable": "Aynı pozisyon yüzdelik dilimi mevcut değil."
+  },
+  "PlayerScoutingInsights": {
+    "eyebrow": "Scouting analitiği",
+    "title": "Scouting içgörüleri",
+    "description": "Turnuva örneklemindeki aynı pozisyon yüzdelik dilim karşılaştırmalarından elde edilen pozisyona özgü performans sinyalleri.",
+    "unavailable": "Bu oyuncu için pozisyona özgü scouting içgörüleri bildirilmedi.",
+    "strengths": "Güçlü yönler",
+    "standoutSignals": "Öne çıkan sinyaller",
+    "watchOuts": "Dikkat noktaları",
+    "areasToReview": "İncelenecek alanlar",
+    "surfacedCount": "{count} sinyal",
+    "noStrengths": "Mevcut pozisyona özgü profilde öne çıkan güçlü bir sinyal bulunmadı.",
+    "noWatchOuts": "Mevcut pozisyona özgü profilde dikkat gerektiren bir sinyal bulunmadı.",
+    "percentile": "yüzdelik",
+    "percentileAriaLabel": "{metric} performans yüzdelik dilimi"
+  },
+  "PlayerPerformanceProfile": {
+    "eyebrow": "Performans analitiği",
+    "title": "Performans profili",
+    "description": "Ham veya 90 dakika başına çıktılar ve aynı pozisyon yüzdelik dilimi bağlamıyla pozisyona özgü turnuva metrikleri.",
+    "unavailable": "Bu oyuncu için pozisyona özgü performans metrikleri bildirilmedi.",
+    "empty": "Bu oyuncu için pozisyona özgü performans metriği bulunamadı.",
+    "value": "Değer",
+    "rawValue": "Ham değer",
+    "percentile": "Yüzdelik",
+    "percentileUnavailable": "Yüzdelik dilim mevcut değil",
+    "percentileAriaLabel": "{metric} performans yüzdelik dilimi",
+    "peerSample": "n={count} eş",
+    "peerSampleCompact": "n={count}",
+    "reportedValueRetained": "Bildirilen değer korundu.",
+    "guideTitle": "Profil nasıl okunur?",
+    "exampleMetric": "Örnek metrik",
+    "illustrative": "Temsili",
+    "peerSamplePlaceholder": "n=XXX eş",
+    "guideDescription": "X.XX metrik çıktısını; 75,0 ve çubuk aynı pozisyon yüzdelik dilimini; n ise uygun eş örneklemini gösterir. Daha yüksek yüzdelik dilim daha olumlu kabul edilir.",
+    "groups": {
+      "creation": "Fırsat yaratma",
+      "progression": "Top ilerletme",
+      "possession": "Topa sahip olma",
+      "defending": "Savunma katkısı",
+      "scoring": "Gol tehdidi",
+      "physical": "Fiziksel çıktı",
+      "goalkeeping": "Kalecilik"
+    }
+  },
+  "PlayerSpatialProfile": {
+    "regionLabel": "Oyuncu konumsal profili",
+    "loading": "Oyuncu konumsal profili yükleniyor",
+    "profileUnavailable": "Konumsal profil kullanılamıyor",
+    "loadFailedDescription": "{player} için turnuva ısı haritası yüklenemedi.",
+    "retry": "Konumsal veriyi yeniden dene",
+    "dataUnavailable": "Konumsal veri mevcut değil",
+    "dataUnavailableDescription": "{player} için ölçülmüş bir turnuva ısı haritası bulunmuyor."
+  },
+  "SpatialPositionPitch": {
+    "coordinatesUnavailable": "Her iki oyuncu için de konumsal koordinatlar mevcut değil.",
+    "defensive": "Savunma",
+    "attackingDirection": "Hücum yönü →",
+    "comparisonAriaLabel": "{target} ve {candidate} için konumsal pozisyon karşılaştırması",
+    "meanPositionTitle": "{player}: ortalama pozisyon ({x}, {y})",
+    "dispersionDescription": "Elipsler mevcut olduğunda konumsal yayılımı gösterir."
+  },
+  "HeatmapPitch": {
+    "unavailable": "{player} için turnuva ısı haritası verisi mevcut değil.",
+    "defensive": "Savunma",
+    "attackingDirection": "Hücum yönü →",
+    "ariaLabel": "{player} için turnuva ısı haritası",
+    "averagePositionTitle": "{player}: ortalama turnuva pozisyonu ({x}, {y})",
+    "averagePosition": "Ortalama turnuva pozisyonu",
+    "densityTitle": "Göreli turnuva alan kullanım yoğunluğu",
+    "densityDescription": "Görsel yoğunluk, konumsal olasılığı değil gözlemlenen turnuva ısı haritası alan kullanımını yansıtır.",
+    "densityLegendAriaLabel": "Göreli alan kullanım yoğunluğu göstergesi",
+    "low": "Düşük",
+    "high": "Yüksek",
+    "matches": "Maç",
+    "points": "Nokta",
+    "entropy": "Entropi"
+  },
+  "PlayerImage": {
+    "photoAlt": "{player} oyuncu fotoğrafı",
+    "photoUnavailable": "{player} oyuncu fotoğrafı mevcut değil"
+  },
+  "TransferAnalysisPage": {
+    "eyebrow": "Transfer analitiği",
+    "title": "Alternatif oyuncu analizi",
+    "description": "Aday havuzunu tanımlayın ve transfer alternatiflerini dört farklı kadro planlama senaryosunda sıralayın.",
+    "backToProfile": "Oyuncu profiline dön"
+  },
+  "TransferAnalysisForm": {
+    "recruitmentSearch": "Oyuncu alım araştırması",
+    "candidatePool": "Aday havuzu",
+    "description": "Uygun alternatif oyuncuları belirlemek için kullanılacak minimum kanıt ve bütçe sınırlarını ayarlayın.",
+    "analysisTargetAriaLabel": "Analiz hedefi",
+    "targetUnavailable": "Hedef oyuncuya ulaşılamıyor",
+    "targetUnavailableDescription": "Oyuncu aramasına dönerek hedef oyuncuyu yeniden seçin.",
+    "analysisTarget": "Analiz hedefi",
+    "countryUnavailable": "Ülke bilgisi yok",
+    "roleUnavailable": "Rol bilgisi yok",
+    "metricUnavailable": "Mevcut değil",
+    "tournamentMinutes": "Turnuva dakikası",
+    "roleConfidence": "Rol güveni",
+    "playerQuality": "Oyuncu kalitesi",
+    "tournamentExperience": "Turnuva deneyimi",
+    "minimumWorldCupMinutes": "Minimum Dünya Kupası dakikası",
+    "minutesUnit": "dk",
+    "roleEvidence": "Rol kanıtı",
+    "minimumRoleConfidence": "Minimum taktiksel rol güveni",
+    "budgetCeiling": "Bütçe üst sınırı",
+    "maximumMarketValue": "Maksimum aday piyasa değeri",
+    "noLimit": "Sınır yok",
+    "advancedSettings": "Gelişmiş ayarlar",
+    "technicalFallbackBehavior": "Teknik yedek değer davranışı",
+    "missingHeatmapFallback": "Eksik ısı haritası yedek değeri",
+    "missingHeatmapDescription": "Yalnızca ölçülmüş konumsal kanıt mevcut olmadığında kullanılır",
+    "fallbackExplanation": "Bu yedek değer konumsal kanıt oluşturmaz. Ayarlanan değer yalnızca ölçülmüş ısı haritası kapsamı eksik olduğunda kullanılır.",
+    "rankingPrefix": "Adaylar şu senaryolar için bağımsız olarak sıralanır:",
+    "immediateImpact": "anlık katkı",
+    "development": "gelişim",
+    "value": "değer",
+    "shortTermContribution": "kısa vadeli katkı",
+    "rankingDescription": "Sıralama; turnuva performansını, taktiksel rolü, konumsal kanıtı ve piyasa bağlamını birleştirir.",
+    "openingRecommendations": "Öneriler açılıyor…",
+    "findAlternatives": "Transfer alternatiflerini bul",
+    "validation": {
+      "minimumMinutes": "Sıfır veya daha yüksek bir turnuva dakikası girin.",
+      "roleConfidence": "0 ile 100 arasında bir rol güveni yüzdesi girin.",
+      "marketValue": "Sıfır veya daha yüksek bir piyasa değeri girin.",
+      "heatmapFallback": "0 ile 100 arasında bir ısı haritası yedek yüzdesi girin."
+    }
+  },
+  "AnalysisResultsPage": {
+    "eyebrow": "Transfer analitiği",
+    "invalidTitle": "Geçersiz analiz yapılandırması",
+    "invalidDescription": "Bu URL içindeki oyuncu alım eşikleri geçerli değil.",
+    "configureAnalysis": "Analizi yapılandır",
+    "invalidParametersTitle": "URL parametreleri kullanılamadı",
+    "invalidParametersDescription": "Yapılandırma sayfasına dönerek geçerli oyuncu alım eşikleri gönderin.",
+    "title": "Alternatif oyuncu önerileri",
+    "description": "Adayları dört oyuncu alım senaryosunda inceleyin, öneri kanıtlarını değerlendirin ve doğrudan oyuncu karşılaştırmasına geçin."
+  },
+  "TransferAnalysisResults": {
+    "analysisUnavailable": "Analiz kullanılamıyor",
+    "playerNotFound": "Hedef oyuncu bulunamadı",
+    "datasetsUnavailable": "Analitik veri setleri kullanılamıyor",
+    "analysisFailed": "Transfer analizi tamamlanamadı",
+    "requestFailed": "Transfer analizi isteği başarısız oldu.",
+    "retryAnalysis": "Analizi yeniden dene",
+    "adjustParameters": "Parametreleri düzenle",
+    "analysisTarget": "Analiz hedefi",
+    "roleUnavailable": "Rol bilgisi yok",
+    "nationalTeamUnavailable": "Millî takım bilgisi yok",
+    "notReported": "Bildirilmedi",
+    "appearances": "maç",
+    "minutes": "dakika",
+    "marketValue": "Piyasa değeri",
+    "playerQuality": "Oyuncu kalitesi",
+    "roleConfidence": "Rol güveni",
+    "adjustCriteria": "Oyuncu alım ölçütlerini düzenle",
+    "activeScenario": "Aktif senaryo",
+    "recruitmentStrategy": "Oyuncu alım stratejisi",
+    "modeTabsAriaLabel": "Transfer önerisi senaryoları",
+    "noCandidates": "Uygun aday bulunamadı",
+    "noCandidatesDescription": "Aday havuzunu genişletmek için oyuncu alım eşiklerini düzenleyin.",
+    "leadingRecommendation": "Öne çıkan öneri",
+    "leadingRecommendationTitle": "Bu senaryo için en yüksek sıralı aday",
+    "otherCandidates": "Diğer adaylar",
+    "otherCandidatesTitle": "Alternatif oyuncu alım seçenekleri",
+    "alternativeCount": "{count} alternatif",
+    "showTopRecommendations": "En iyi önerileri göster",
+    "showAllCandidates": "{count} adayın tamamını göster",
+    "modes": {
+      "immediate": {
+        "label": "Anlık katkı",
+        "shortLabel": "Anlık",
+        "description": "Şimdi ilk takıma katkı sağlaması beklenen adaylar."
+      },
+      "development": {
+        "label": "Gelişim yatırımı",
+        "shortLabel": "Gelişim",
+        "description": "Gelecekte değer üretmesi beklenen genç veya gelişmekte olan adaylar."
+      },
+      "value": {
+        "label": "Piyasa değeri fırsatı",
+        "shortLabel": "Değer",
+        "description": "Uygunluk ile finansal verimliliği dengeleyen adaylar."
+      },
+      "shortTerm": {
+        "label": "Kısa vadeli çözüm",
+        "shortLabel": "Kısa vade",
+        "description": "Daha kısa bir oyuncu alım dönemine uygun deneyimli adaylar."
+      }
+    },
+    "runningAnalysis": "Transfer analizi çalıştırılıyor",
+    "requestId": "İstek kimliği"
+  },
+  "TransferRecommendationCard": {
+    "notReported": "Bildirilmedi",
+    "positionUnavailable": "Pozisyon bilgisi yok",
+    "nationalTeamUnavailable": "Millî takım bilgisi yok",
+    "roleUnavailable": "Rol bilgisi yok",
+    "positionLabels": {
+      "G": "Kaleci",
+      "D": "Defans",
+      "M": "Orta saha",
+      "F": "Forvet"
+    },
+    "statisticalSimilarity": "İstatistiksel benzerlik",
+    "spatialSimilarity": "Konumsal benzerlik",
+    "roleFit": "Rol uyumu",
+    "marketAdvantage": "Piyasa avantajı",
+    "statistical": "İstatistiksel",
+    "spatial": "Konumsal",
+    "market": "Piyasa",
+    "marketValue": "Piyasa değeri",
+    "age": "Yaş",
+    "ageYears": "{age} yaş",
+    "minutes": "Dakika",
+    "tournamentMinutes": "Turnuva dakikası",
+    "compare": "Karşılaştır",
+    "profile": "Profil",
+    "compareWithTarget": "Hedef oyuncuyla karşılaştır",
+    "openPlayerProfile": "Oyuncu profilini aç",
+    "scoreLabels": {
+      "immediate": "Anlık katkı skoru",
+      "development": "Gelişim skoru",
+      "value": "Değer skoru",
+      "shortTerm": "Kısa vadeli katkı skoru"
+    }
+  },
+  "RecommendationExplainability": {
+    "whyCandidate": "Neden bu aday?",
+    "weightedSignals": "Ağırlıklı sinyaller",
+    "appliedBonuses": "Uygulanan bonuslar",
+    "viewBreakdown": "Skor dökümünü görüntüle",
+    "scoreComposition": "Skor bileşimi",
+    "bonuses": "Bonuslar",
+    "preClipScore": "Sınırlandırma öncesi skor",
+    "finalScore": "Nihai skor",
+    "clippedDescription": "Sınırlandırma öncesi skor, modelin 0–100 çıktı aralığına çekildi.",
+    "input": "Girdi",
+    "weight": "Ağırlık",
+    "contribution": "Katkı",
+    "modeBonuses": "Senaryo bonusları",
+    "applied": "Uygulandı",
+    "notApplied": "Uygulanmadı",
+    "disclaimer": "Bu skor, seçilen oyuncu alım senaryosundaki model uyumunu açıklar. Bir transferin başarılı olma olasılığını göstermez.",
+    "evidence": {
+      "available": "Doğrudan kanıt",
+      "fallback": "Yedek girdi",
+      "missing": "Eksik girdi"
+    }
+  },
+  "RoleCompatibilityPanel": {
+    "eyebrow": "Rol uyumluluğu",
+    "title": "Taktik rol uyumu",
+    "description": "Hedef ve adayın rol, arketip, saha bölgesi ve hareket davranışı profillerini karşılaştırın.",
+    "profile": "Taktik profil",
+    "target": "Hedef",
+    "candidate": "Aday",
+    "notReported": "Bildirilmedi",
+    "finalRole": "Nihai rol",
+    "archetype": "Arketip",
+    "spatialRole": "Sahadaki rol",
+    "lateralProfile": "Yatay profil",
+    "verticalProfile": "Dikey profil",
+    "mobility": "Hareketlilik",
+    "roleConfidence": "Rol güveni"
+  },
+  "RadarProfile": {
+    "unavailable": "{playerName} için oyun stili radar verisi mevcut değil.",
+    "incompatible": "Bu oyun stili profilleri farklı radar boyutları kullandığı için aynı katmanda gösterilemiyor.",
+    "comparisonAriaLabel": "{primaryPlayer} ve {secondaryPlayer} için oyun stili radar karşılaştırması",
+    "singleAriaLabel": "{playerName} için oyun stili radarı",
+    "title": "Pozisyona göre oyun stili",
+    "scale": "Yüzdelik dilim · 0–100",
+    "axisUnavailable": "mevcut değil",
+    "axisPercentile": "yüzdelik dilim",
+    "legendAriaLabel": "Radar seri göstergesi",
+    "partialEvidence": "En az bir radar boyutunda ölçülmüş yüzdelik dilim bulunmuyor. Eksik değerler nötr bir skorla değiştirilmek yerine grafikte gösterilmez.",
+    "guidance": "Her eksen, oyuncunun aynı pozisyondaki oyunculara göre ilgili oyun stili boyutunu ne kadar güçlü sergilediğini gösterir. Daha yüksek yüzdelik dilimler tek başına oyuncunun genel olarak daha iyi olduğu anlamına gelmez."
+  },
+  "PlayerComparisonPage": {
+    "eyebrow": "Oyuncu karşılaştırması",
+    "invalidTitle": "Geçersiz karşılaştırma yapılandırması",
+    "validScenarioRequired": "Geçerli bir transfer senaryosu gereklidir.",
+    "invalidParameters": "Karşılaştırma parametreleri geçersiz.",
+    "configureAnalysis": "Analizi yapılandır",
+    "incompleteContext": "Karşılaştırma bağlamı eksik",
+    "incompleteDescription": "Alternatif analizine dönün ve öneri senaryolarından bir aday seçin.",
+    "title": "Hedef ve aday karşılaştırması",
+    "description": "Taktik rolü, turnuva performansını, güvenilirliği, piyasa bağlamını ve transfer önerisinin arkasındaki kanıtları karşılaştırın.",
+    "backToRecommendations": "Önerilere dön"
+  },
+  "PlayerComparison": {
+    "preparing": "Oyuncu karşılaştırması hazırlanıyor…",
+    "notReported": "Bildirilmedi",
+    "scenarioScore": "Senaryo skoru",
+    "score": "Skor",
+    "positionUnavailable": "Pozisyon bilgisi yok",
+    "nationalTeamUnavailable": "Millî takım bilgisi yok",
+    "roleUnavailable": "Rol bilgisi yok",
+    "marketValue": "Piyasa değeri",
+    "age": "Yaş",
+    "ageYears": "{value} yaş",
+    "tournamentMinutes": "Turnuva dakikası",
+    "weightedRating": "Ağırlıklı puan",
+    "roleConfidence": "Rol güveni",
+    "dataReliability": "Veri güvenilirliği",
+    "positionLabels": {
+      "G": "Kaleci",
+      "D": "Defans",
+      "M": "Orta saha",
+      "F": "Forvet"
+    },
+    "comparisonUnavailable": "Karşılaştırma kullanılamıyor",
+    "comparisonFailedTitle": "Oyuncu karşılaştırması hazırlanamadı",
+    "requestFailed": "Alternatif analizi isteği başarısız oldu.",
+    "requestId": "İstek kimliği",
+    "retryComparison": "Karşılaştırmayı yeniden dene",
+    "candidateUnavailable": "Aday kullanılamıyor",
+    "candidateIneligibleTitle": "Bu aday artık uygun değil",
+    "candidateIneligibleDescription": "Oyuncu, mevcut analiz eşikleriyle seçilen transfer senaryosunda yer almıyor.",
+    "returnToRecommendations": "Önerilere dön",
+    "modes": {
+      "immediate": {
+        "label": "Hazır etki",
+        "shortLabel": "Hazır",
+        "scoreLabel": "Hazır etki skoru"
+      },
+      "development": {
+        "label": "Gelişim yatırımı",
+        "shortLabel": "Gelişim",
+        "scoreLabel": "Gelişim skoru"
+      },
+      "value": {
+        "label": "Piyasa değeri fırsatı",
+        "shortLabel": "Değer",
+        "scoreLabel": "Değer skoru"
+      },
+      "shortTerm": {
+        "label": "Kısa vadeli çözüm",
+        "shortLabel": "Kısa vade",
+        "scoreLabel": "Kısa vadeli çözüm skoru"
+      }
+    },
+    "metrics": {
+      "statisticalSimilarity": "İstatistiksel benzerlik",
+      "statisticalSimilarityDescription": "Pozisyona özgü istatistiksel özellik kümesindeki benzerlik.",
+      "spatialSimilarity": "Konumsal benzerlik",
+      "spatialSimilarityDescription": "Ortalama pozisyon, konumsal yayılım, saha bölgeleri ve koridor kullanımındaki benzerlik.",
+      "heatmapSimilarity": "Isı haritası benzerliği",
+      "heatmapSimilarityDescription": "Kullanılan saha bölgeleri ve ısı haritası yapısındaki doğrudan ölçülmüş benzerlik.",
+      "roleFit": "Rol uyumu",
+      "roleFitDescription": "Hedef oyuncunun taktik rolüyle uyum.",
+      "marketAdvantage": "Piyasa avantajı",
+      "marketAdvantageDescription": "Hedef oyuncuya kıyasla tahmin edilen finansal avantaj."
+    },
+    "sameFinalRole": "Aynı nihai rol",
+    "sameArchetype": "Aynı arketip",
+    "directHeatmapEvidence": "Doğrudan ısı haritası kanıtı",
+    "targetPlayer": "Hedef oyuncu",
+    "candidateRank": "Aday · Sıra {rank}",
+    "comparisonIndicators": "Karşılaştırma göstergeleri",
+    "recommendationEvidence": "Öneri kanıtı",
+    "whyCandidate": "Neden {player}?",
+    "recommendationContext": "Bu adayın {scenario} senaryosundaki yerini destekleyen temel kanıtlar.",
+    "rankBadge": "Sıra #{rank}",
+    "whyRecommended": "Neden önerildi?",
+    "explanationUnavailable": "Öneri açıklaması mevcut değil.",
+    "evidenceChecks": "Kanıt kontrolleri",
+    "yes": "Evet",
+    "no": "Hayır",
+    "noEvidenceChecks": "Ek bir kanıt kontrolü mevcut değil.",
+    "recommendationDisclaimer": "Transfer önerileri scouting incelemesini destekler; ayrıntılı taktik, konumsal ve ölçülmüş turnuva kanıtları aşağıda devam eder.",
+    "candidateProfile": "Aday profili",
+    "targetProfile": "Hedef profili",
+    "tacticalSpatialEyebrow": "Taktik ve konumsal uyum",
+    "tacticalSpatialTitle": "Rol ve pozisyon bağlamı",
+    "tacticalSpatialDescription": "Adayın hedef oyuncunun taktik profili ve gözlemlenen turnuva pozisyonuyla ne kadar eşleştiğini karşılaştırın.",
+    "spatialProfile": "Konumsal profil",
+    "spatialTitle": "Pozisyon ve alan kullanımı bağlamı",
+    "spatialDescription": "Ağırlıklı turnuva pozisyonlarını ve konumsal yayılımı aynı saha üzerinde karşılaştırın.",
+    "lateralSimilarity": "Yanal benzerlik",
+    "verticalSimilarity": "Dikey benzerlik",
+    "spatialGuidance": "Saha işaretleri ağırlıklı ortalama turnuva pozisyonunu, elipsler ise her eksendeki konumsal yayılımı gösterir. Genel konumsal benzerlik ayrıca saha bölgelerini ve koridor kullanımını da dikkate alır; yalnızca iki işaret arasındaki mesafeden oluşmaz.",
+    "target": "Hedef",
+    "candidate": "Aday",
+    "radar": {
+      "regionLabel": "Oyun stili radar karşılaştırması",
+      "eyebrow": "Oyun stili",
+      "title": "Pozisyona göre radar profili",
+      "description": "Her oyuncunun pozisyonuyla ilişkili istatistiksel oyun stili boyutlarını ne kadar güçlü sergilediğini karşılaştırın.",
+      "sharedOverlay": "Paylaşılan pozisyon katmanı",
+      "separateProfiles": "Ayrı pozisyon profilleri",
+      "loading": "Radar karşılaştırması yükleniyor",
+      "unavailable": "Radar karşılaştırması kullanılamıyor",
+      "unavailableDescription": "Ana transfer karşılaştırması kullanılabilir durumda ancak pozisyona göre oyun stili profilleri yüklenemedi.",
+      "retry": "Radarı yeniden dene",
+      "percentilesTitle": "Boyut yüzdelik dilimleri",
+      "percentilesDescription": "Paylaşılan radar profilinde kullanılan pozisyona göre yüzdelik dilim değerleri.",
+      "percentileGuidance": "Daha yüksek yüzdelik dilimler, ilgili oyun stili boyutunun oyuncunun pozisyon eşlerine göre daha güçlü sergilendiğini gösterir.",
+      "incompatibleDescription": "Bu oyuncular ortak bir radar ekseni sözleşmesini paylaşmıyor. Farklı pozisyon boyutlarını tek grafiğe zorlamak yerine profilleri ayrı gösteriliyor."
+    },
+    "heatmap": {
+      "regionLabel": "Isı haritası profil karşılaştırması",
+      "eyebrow": "Isı haritası profili",
+      "title": "Ölçülmüş turnuva alan kullanımı",
+      "description": "Ölçülmüş ısı haritası kanıtıyla iki oyuncunun turnuva boyunca sahada kullandığı bölgeleri karşılaştırın.",
+      "measuredEvidence": "Ölçülmüş çift kanıtı",
+      "evidenceUnavailable": "Çift kanıtı mevcut değil",
+      "loading": "Isı haritası karşılaştırması yükleniyor",
+      "unavailable": "Isı haritası karşılaştırması kullanılamıyor",
+      "unavailableDescription": "Ana transfer karşılaştırması kullanılabilir durumda ancak ölçülmüş ısı haritası kanıtı yüklenemedi.",
+      "retry": "Isı haritasını yeniden dene",
+      "densityTitle": "Göreli turnuva alan kullanım yoğunluğu",
+      "densityDescription": "Her iki saha aynı ortak yoğunluk ölçeğini kullanır. Görsel yoğunluk konumsal olasılığı değil, gözlemlenen turnuva ısı haritası alan kullanımını yansıtır.",
+      "metricsLabel": "Isı haritası kanıt metrikleri",
+      "metrics": {
+        "measuredSimilarity": "Ölçülmüş benzerlik",
+        "measuredSimilarityDescription": "İki turnuva ısı haritası profili arasındaki genel ölçülmüş benzerlik.",
+        "cosineSimilarity": "Kosinüs benzerliği",
+        "cosineSimilarityDescription": "Alan kullanım yoğunluğunun tüm hücrelere dağılımındaki benzerlik.",
+        "occupationOverlap": "Alan kullanımı örtüşmesi",
+        "occupationOverlapDescription": "İki oyuncunun sahanın aynı bölgelerini ne ölçüde kullandığı.",
+        "peakZoneSimilarity": "Tepe bölge benzerliği",
+        "peakZoneSimilarityDescription": "Oyuncuların en yoğun kullandığı bölgeler arasındaki benzerlik.",
+        "peakZoneDistance": "Tepe bölge mesafesi",
+        "peakZoneDistanceDescription": "Normalize edilmiş sahadaki en yoğun konumlar arasındaki mesafe.",
+        "entropySimilarity": "Entropi benzerliği",
+        "entropySimilarityDescription": "İki alan kullanım profilinin yoğunlaşma veya yayılma biçimindeki benzerlik."
+      }
+    }
+  },
+  "MultiPlayerComparisonPage": {
+    "metadataTitle": "Çoklu oyuncu karşılaştırması",
+    "metadataDescription": "Bir hedef oyuncuyu aynı pozisyondaki en fazla üç transfer adayıyla karşılaştırın.",
+    "eyebrow": "Oyuncu karşılaştırması",
+    "title": "Çoklu oyuncu karşılaştırması",
+    "description": "Bir hedef oyuncuyu aynı pozisyondaki en fazla üç adayla; oyuncu bağlamı ve hedefe göre analitik kanıtlar üzerinden karşılaştırın.",
+    "backToShortlists": "Kısa listelere dön"
+  },
+  "MultiPlayerComparison": {
+    "unavailable": "Kullanılamıyor",
+    "reference": "Referans",
+    "yearsSuffix": "yaş",
+    "loading": "Çoklu oyuncu karşılaştırması hazırlanıyor",
+    "comparisonUnavailable": "Karşılaştırma kullanılamıyor",
+    "comparisonFailedTitle": "Çoklu oyuncu karşılaştırması hazırlanamadı",
+    "comparisonRequestFailed": "Karşılaştırma isteği başarısız oldu.",
+    "retryComparison": "Karşılaştırmayı yeniden dene",
+    "candidatesUnavailable": "Adaylar kullanılamıyor",
+    "noCandidatesTitle": "Karşılaştırma adayı döndürülmedi",
+    "noCandidatesDescription": "Kısa liste çalışma alanına dönün ve aynı pozisyondan en az bir aday seçin.",
+    "returnToShortlists": "Kısa listelere dön",
+    "overviewEyebrow": "Genel karşılaştırma matrisi",
+    "overviewTitle": "Hedefe göre karşılaştırma",
+    "candidateSummary": "{target} ile {count} aday karşılaştırılıyor. Kullanılamayan ikili kanıtlar açıkça kullanılamıyor olarak gösterilir.",
+    "scrollRegionLabel": "Kaydırılabilir çoklu oyuncu karşılaştırma matrisi",
+    "tableCaption": "Hedefe göre oyuncu karşılaştırması özeti",
+    "metric": "Metrik",
+    "target": "Hedef",
+    "candidateLabel": "Aday {index}",
+    "referenceGuidance": "Referans hücreleri hedef oyuncunun temel değerlerini gösterir. Kullanılamayan değerler, istenen oyuncu çifti için mevcut veri kümesinde ölçülmüş kanıt bulunmadığı anlamına gelir.",
+    "positions": {
+      "goalkeeper": "Kaleci",
+      "defender": "Defans",
+      "midfielder": "Orta saha",
+      "forward": "Forvet"
+    },
+    "rows": {
+      "position": {
+        "label": "Pozisyon",
+        "description": "Oyuncunun genel pozisyonu."
+      },
+      "role": {
+        "label": "Nihai rol",
+        "description": "Birincil analitik rol etiketi."
+      },
+      "age": {
+        "label": "Yaş",
+        "description": "Bildirilen oyuncu yaşı."
+      },
+      "marketValue": {
+        "label": "Piyasa değeri",
+        "description": "Bildirilen piyasa değeri ve para birimi."
+      },
+      "minutes": {
+        "label": "Turnuva dakikası",
+        "description": "Turnuva veri kümesinde kaydedilen dakika."
+      },
+      "quality": {
+        "label": "Oyuncu kalitesi",
+        "description": "Birleşik oyuncu kalite skoru."
+      },
+      "reliability": {
+        "label": "Veri güvenilirliği",
+        "description": "Mevcut oyuncu kanıtlarının güvenilirliği."
+      },
+      "statisticalSimilarity": {
+        "label": "İstatistiksel benzerlik",
+        "description": "Hedef oyuncuya göre ölçülen istatistiksel benzerlik."
+      },
+      "spatialSimilarity": {
+        "label": "Konumsal benzerlik",
+        "description": "Hedef oyuncuya göre aynı pozisyondaki konumsal benzerlik."
+      },
+      "heatmapSimilarity": {
+        "label": "Isı haritası benzerliği",
+        "description": "Hedef oyuncuya göre ölçülen turnuva ısı haritası benzerliği."
+      },
+      "roleFit": {
+        "label": "Rol uyumu",
+        "description": "Hedef oyuncuya göre rol uyumluluğu."
+      },
+      "marketAdvantage": {
+        "label": "Piyasa avantajı",
+        "description": "Adayın hedef oyuncuya göre piyasa değeri avantajı."
+      }
+    }
+  },
+  "MultiPlayerRoleMetrics": {
+    "eyebrow": "Rol performansı",
+    "title": "Hedef nihai rol metrikleri",
+    "descriptionBeforeRole": "Tüm oyuncular şu rolün görevlerine göre değerlendiriliyor:",
+    "descriptionAfterRole": ". Her değer turnuva toplamını ve ardından 90 dakika başına oranı gösterir.",
+    "targetRoleFallback": "hedef rol",
+    "unavailableDescription": "Bu hedef için rol metriği kanıtı kullanılamıyor.",
+    "scrollRegionLabel": "Kaydırılabilir hedef nihai rol metrikleri",
+    "tableLabel": "Hedef nihai rol metrik karşılaştırması",
+    "metric": "Metrik",
+    "target": "Hedef",
+    "candidate": "Aday {index}",
+    "unavailable": "Kullanılamıyor",
+    "valueLabel": "{total} toplam, {per90} 90 dakika başına",
+    "guidance": "Metrikler hedef oyuncunun nihai rol görevlerinden seçilir. Eksik turnuva kanıtları hiçbir zaman sıfırla değiştirilmez.",
+    "groups": {
+      "shot_stopping": "Şut durdurma",
+      "box_command": "Ceza sahası hâkimiyeti",
+      "short_distribution": "Kısa pas dağıtımı",
+      "defending": "Savunma",
+      "duels": "Yer mücadeleleri",
+      "aerial": "Hava savunması",
+      "passing": "Pas",
+      "progression": "Top ilerletme",
+      "wide_attack": "Geniş alan hücum katkısı",
+      "security": "Topa sahip olma güvenliği",
+      "passing_volume": "Pas hacmi",
+      "creativity": "Şans yaratma",
+      "defensive_work": "Savunma katkısı",
+      "scoring": "Skor üretimi",
+      "scoring_threat": "Gol tehdidi",
+      "wide_creation": "Kanat üretkenliği",
+      "ball_security": "Top güvenliği",
+      "finishing": "Bitiricilik",
+      "shooting_volume": "Şut hacmi",
+      "link_play": "Bağlantı oyunu",
+      "aerial_presence": "Hava hâkimiyeti"
+    },
+    "metrics": {
+      "saves": "Kurtarışlar",
+      "goalsPrevented": "Önlenen goller",
+      "keeperSaveValue": "Kaleci kurtarış değeri",
+      "savedShotsFromInsideTheBox": "Ceza sahası içi kurtarışlar",
+      "goodHighClaim": "Başarılı yüksek top kontrolleri",
+      "punches": "Yumruklamalar",
+      "totalPass": "Paslar",
+      "accuratePass": "İsabetli paslar",
+      "totalLongBalls": "Uzun toplar",
+      "accurateLongBalls": "İsabetli uzun toplar",
+      "totalTackle": "Müdahaleler",
+      "wonTackle": "Kazanılan müdahaleler",
+      "interceptionWon": "Top kesmeler",
+      "totalClearance": "Uzaklaştırmalar",
+      "outfielderBlock": "Bloklar",
+      "ballRecovery": "Top kazanımları",
+      "duelWon": "Kazanılan mücadeleler",
+      "aerialWon": "Kazanılan hava mücadeleleri",
+      "totalProgression": "Top ilerletme mesafesi",
+      "progressiveBallCarriesCount": "İlerletici top taşımalar",
+      "ballCarriesCount": "Top taşımalar",
+      "totalBallCarriesDistance": "Top taşıma mesafesi",
+      "totalCross": "Ortalar",
+      "accurateCross": "İsabetli ortalar",
+      "keyPass": "Kilit paslar",
+      "expectedAssists": "Beklenen asist",
+      "possessionLostCtrl": "Top kayıpları",
+      "errorLeadToAShot": "Şuta yol açan hatalar",
+      "errorLeadToAGoal": "Gole yol açan hatalar",
+      "goalAssist": "Asistler",
+      "bigChanceCreated": "Yaratılan büyük fırsatlar",
+      "goals": "Goller",
+      "expectedGoals": "Beklenen gol",
+      "totalShots": "Şutlar",
+      "shots": "Şutlar",
+      "onTargetScoringAttempt": "İsabetli şutlar",
+      "dispossessed": "Top kaptırmalar",
+      "unsuccessfulTouch": "Başarısız top kontrolleri",
+      "bigChanceMissed": "Kaçırılan büyük fırsatlar",
+      "touches": "Topla buluşmalar"
+    }
+  },
+  "MultiPlayerComparisonEvidence": {
+    "unavailable": "Kullanılamıyor",
+    "sectionLabel": "Ayrıntılı karşılaştırma kanıtı",
+    "showingEvidence": "{target} ve {candidate} için ayrıntılı kanıt gösteriliyor.",
+    "radar": {
+      "sectionLabel": "Odaklanılan oyun stili radar karşılaştırması",
+      "eyebrow": "Oyun stili",
+      "title": "Pozisyona göre radar",
+      "description": "Seçilen oyuncu çiftini pozisyona göre oyun stili yüzdelik dilimleriyle karşılaştırın.",
+      "candidateSelector": "Radar karşılaştırması adayı",
+      "loading": "Odaklanılan radar karşılaştırması yükleniyor",
+      "unavailable": "Radar karşılaştırması kullanılamıyor",
+      "unavailableDescription": "Genel karşılaştırma matrisi kullanılabilir durumda ancak odaklanılan radar yüklenemedi.",
+      "retry": "Radarı yeniden dene",
+      "incompatible": "Bu profiller ortak ve uyumlu bir radar ekseni sözleşmesini paylaşamıyor. Profiller ayrı ayrı gösteriliyor."
+    },
+    "heatmap": {
+      "sectionLabel": "Odaklanılan ısı haritası profil karşılaştırması",
+      "eyebrow": "Isı haritası profili",
+      "title": "Ölçülmüş turnuva alan kullanımı",
+      "description": "Seçilen oyuncuların sahada kullandığı bölgeleri ölçülmüş turnuva kanıtlarıyla karşılaştırın.",
+      "candidateSelector": "Isı haritası karşılaştırması adayı",
+      "loading": "Odaklanılan ısı haritası karşılaştırması yükleniyor",
+      "unavailable": "Isı haritası karşılaştırması kullanılamıyor",
+      "unavailableDescription": "Genel karşılaştırma matrisi kullanılabilir durumda ancak odaklanılan ısı haritası kanıtı yüklenemedi.",
+      "retry": "Isı haritasını yeniden dene",
+      "sharedScale": "Ortak yoğunluk ölçeği",
+      "sharedScaleDescription": "Her iki saha aynı göreli alan kullanım yoğunluğu ölçeğini kullanır.",
+      "metricsLabel": "Odaklanılan ısı haritası kanıt metrikleri",
+      "metrics": {
+        "measuredSimilarity": "Ölçülen benzerlik",
+        "measuredSimilarityDescription": "İki turnuva ısı haritası profili arasındaki genel ölçülmüş benzerlik.",
+        "cosineSimilarity": "Kosinüs benzerliği",
+        "cosineSimilarityDescription": "Tüm alan kullanım yoğunluğu ızgarasındaki benzerlik.",
+        "occupationOverlap": "Alan kullanımı örtüşmesi",
+        "occupationOverlapDescription": "İki oyuncunun sahanın aynı bölgelerini kullanma düzeyi.",
+        "peakZoneSimilarity": "Zirve bölge benzerliği",
+        "peakZoneSimilarityDescription": "En yoğun kullanılan bölgeler arasındaki benzerlik.",
+        "peakZoneDistance": "Zirve bölge mesafesi",
+        "peakZoneDistanceDescription": "En yüksek yoğunluğa sahip konumlar arasındaki mesafe.",
+        "entropySimilarity": "Entropi benzerliği",
+        "entropySimilarityDescription": "Alan kullanım profillerinin yoğunlaşma biçimindeki benzerlik."
+      }
+    }
+  },
+  "ApplicationError": {
+    "eyebrow": "Uygulama hatası",
+    "title": "Bu analiz görünümü gösterilemedi",
+    "description": "Beklenmeyen bir hata mevcut sayfayı kesintiye uğrattı. Görünümü yeniden deneyin veya uygulamanın kararlı bir bölümüne dönün.",
+    "errorReference": "Hata referansı",
+    "tryAgain": "Yeniden dene",
+    "openPlayers": "Oyuncuları aç",
+    "returnHome": "Ana sayfaya dön"
+  },
+  "NotFound": {
+    "title": "Bu sayfa analiz alanının dışında.",
+    "description": "İstenen WC26 kaynağı bulunamadı veya henüz mevcut olmayabilir.",
+    "returnHome": "Ana sayfaya dön",
+    "openPlayers": "Oyuncuları aç"
+  },
+  "StatusPage": {
+    "metadataTitle": "Sistem Durumu",
+    "metadataDescription": "WC26 oyuncu verilerinin ve scouting servislerinin mevcut kullanılabilirliği.",
+    "eyebrow": "Sistem durumu",
+    "title": "Scouting servislerine genel bakış",
+    "description": "Oyuncu verilerinin ve transfer analizi servislerinin kullanıma hazır olup olmadığını kontrol edin."
+  },
+  "ApiStatusOverview": {
+    "checking": "Sistem kullanılabilirliği kontrol ediliyor…",
+    "unavailable": "Sistem durumu kullanılamıyor",
+    "loadFailed": "Sistem durumu yüklenemedi.",
+    "retry": "Yeniden dene",
+    "currentAvailability": "Mevcut kullanılabilirlik",
+    "allOperational": "Tüm scouting servisleri çalışıyor",
+    "allOperationalDescription": "Oyuncu arama ve transfer analizi kullanıma hazır.",
+    "playerDataAttention": "Oyuncu verisi kontrol gerektiriyor",
+    "playerDataAttentionDescription": "Temel servisler yanıt veriyor ancak oyuncu kataloğu hazır değil.",
+    "scoutingApi": "Scouting API",
+    "operational": "Çalışıyor",
+    "scoutingApiDescription": "Temel scouting istekleri normal şekilde yanıt veriyor.",
+    "playerData": "Oyuncu verisi",
+    "ready": "Hazır",
+    "notReady": "Hazır değil",
+    "lastLoaded": "Son yükleme {timestamp}",
+    "loadTimeNotReported": "Yükleme zamanı bildirilmedi.",
+    "lastChecked": "Son kontrol {timestamp}",
+    "refresh": "Durumu yenile",
+    "technicalDetails": "Teknik ayrıntılar",
+    "environment": "Ortam",
+    "deployment": "Deployment",
+    "version": "Sürüm",
+    "branch": "Branch",
+    "datasetFingerprint": "Veri kümesi parmak izi",
+    "apiStarted": "API başlangıcı",
+    "notReported": "Bildirilmedi"
+  },
+  "ApiStatusBadge": {
+    "checking": "API kontrol ediliyor",
+    "ready": "API hazır",
+    "notReady": "API hazır değil",
+    "unavailable": "API kullanılamıyor"
+  },
+  "ApiErrorReference": {
+    "requestId": "İstek kimliği"
+  },
+  "Methodology": {
+    "metadataTitle": "Metodoloji",
+    "metadataDescription": "WC26 Transfer Intelligence'ın oyuncu kanıtlarını nasıl yorumladığı ve alternatif adayları nasıl sıraladığı.",
+    "eyebrow": "Metodoloji",
+    "title": "Benzerlik bir kanıttır, nihai karar değildir",
+    "description": "WC26 Transfer Intelligence, belirli bir oyuncu alım hedefi için alternatifleri sıralarken istatistiksel, taktiksel, konumsal, ısı haritası, kalite, güvenilirlik, yaş ve piyasa kanıtlarını birleştirir.",
+    "core": {
+      "eyebrow": "Temel ilke",
+      "title": "Amaç en benzer oyuncuyu değil, seçilen oyuncu alım bağlamına en uygun alternatifi bulmaktır.",
+      "description": "İstatistiksel benzerlik profil yakınlığını açıklar. Nihai öneri ayrıca taktik uyumu, kullanılan alanları, turnuva kalitesini, kanıt güvenilirliğini, yaşı ve piyasa değerini dikkate alır."
+    },
+    "pipeline": {
+      "eyebrow": "Karar süreci",
+      "title": "Hedef oyuncudan sıralanmış adaylara",
+      "steps": {
+        "selectTarget": {
+          "number": "01",
+          "title": "Hedefi seçin",
+          "description": "Analiz, tek ve kararlı bir oyuncu kimliği ile oyuncunun turnuva, rol, konumsal ve piyasa profilinden başlar."
+        },
+        "buildCandidatePool": {
+          "number": "02",
+          "title": "Aday havuzunu oluşturun",
+          "description": "Adaylar oynama süresi, rol güveni, isteğe bağlı bütçe ve istatistiksel benzerlik kanıtının kullanılabilirliğine göre filtrelenir."
+        },
+        "calculateSignals": {
+          "number": "03",
+          "title": "Karar sinyallerini hesaplayın",
+          "description": "Motor; taktik rol uyumu, konumsal benzerlik, ısı haritası kanıtı, piyasa avantajı ve yaş uygunluğunu ekler."
+        },
+        "applyEligibility": {
+          "number": "04",
+          "title": "Senaryo uygunluğunu uygulayın",
+          "description": "Her oyuncu alım senaryosu kendi minimum benzerlik, kalite, güvenilirlik, rol ve yaş gereksinimlerini uygular."
+        },
+        "scoreAndExplain": {
+          "number": "05",
+          "title": "Puanlayın ve açıklayın",
+          "description": "Uygun adaylar senaryoya özgü puan, sıra, öneri türü ve okunabilir kanıt açıklamaları alır."
+        }
+      }
+    },
+    "evidence": {
+      "eyebrow": "Kanıtların yorumlanması",
+      "title": "Oyuncu kanıtları nasıl okunur?",
+      "description": "Oyuncu değerleri, yüzdelik dilimler ve örneklem büyüklükleri farklı soruları yanıtlar. Eksik kanıtlar ölçülmüş performans olarak değerlendirilmeden birlikte okunmalıdır.",
+      "cards": {
+        "output": {
+          "label": "Çıktı",
+          "title": "Ham ve 90 dakika başına değerler",
+          "description": "Gösterilen çıktı oyuncunun ölçülmüş turnuva değeridir. 90 dakika başına değerler, hacmi oynama süresine göre normalize eder; yüzdelik dilim değildir."
+        },
+        "positionContext": {
+          "label": "Pozisyon bağlamı",
+          "title": "Aynı pozisyon yüzdelik dilimi",
+          "description": "Yüzdelik dilimler oyuncuyu aynı pozisyon grubundaki uygun akranlarla karşılaştırır. Daha yüksek yüzdelik dilim metriğin daha güçlü sergilendiğini gösterir."
+        },
+        "peerSample": {
+          "label": "Akran örneklemi",
+          "title": "n neyi temsil eder?",
+          "description": "n değeri, aynı pozisyondaki uygun akranların sayısıdır. Akran grupları en az 180 turnuva dakikası ve kullanılabilir 10 oyuncu gerektirir."
+        },
+        "evidenceState": {
+          "label": "Kanıt durumu",
+          "title": "Ölçülen veri sıfır değildir",
+          "description": "Kullanılamayan kanıt eksik kalır. Ölçülmüş sıfır gerçek bir değer olarak korunur ve nötr ya da uydurulmuş bir sonuçla değiştirilmez."
+        }
+      }
+    },
+    "roleModel": {
+      "eyebrow": "Rol modeli",
+      "title": "Performans profilinden taktik role",
+      "description": "Platform; istatistiksel stili, ölçülmüş alan kullanımını ve nihai taktik yorumu ayrı tutar. Böylece her katman bağımsız olarak incelenebilir.",
+      "supportingLabel": "Destekleyici rol kanıtı",
+      "supportingDescription": "Yanal profil, dikey profil ve hareketlilik profili oyuncunun sahayı nasıl kullandığını ve saha içinde nasıl hareket ettiğini açıklar. Rol güveni, mevcut kanıtın atanan rolü ne kadar güçlü desteklediğini gösterir.",
+      "cards": {
+        "statisticalArchetype": {
+          "title": "İstatistiksel arketip",
+          "description": "Oyuncunun turnuva aksiyonlarının ve performans metriklerinin istatistiksel olarak nasıl kümelendiğini açıklar."
+        },
+        "spatialRole": {
+          "title": "Konumsal rol",
+          "description": "Oyuncunun ortalama konum, koridor kullanımı, dikey bölge ve konumsal yayılım üzerinden nerede görev yaptığını açıklar."
+        },
+        "finalRole": {
+          "title": "Nihai rol",
+          "description": "İstatistiksel arketipi ölçülmüş konumsal profille birleştirerek öneri motorunun kullandığı taktik rolü üretir."
+        }
+      }
+    },
+    "signals": {
+      "eyebrow": "Karar sinyalleri",
+      "title": "Karar motoru neyi değerlendirir?",
+      "cards": {
+        "statisticalSimilarity": {
+          "title": "İstatistiksel benzerlik",
+          "description": "Önceden hesaplanan oyuncu benzerliği modeli, pozisyona uygun bir karşılaştırma üretir. Ölçülmüş istatistiksel benzerliği bulunmayan adaylar değerlendirme dışında bırakılır.",
+          "detail": "Bu sinyal benzerliği açıklar; adayın otomatik olarak daha iyi oyuncu olduğunu göstermez."
+        },
+        "roleFit": {
+          "title": "Rol uyumu",
+          "description": "Rol uyumu; aynı nihai rol için 45, aynı arketip için 25, aynı konumsal rol için 12 puan verir. Eşleşen yanal, dikey ve hareketlilik profilleri sırasıyla 7, 6 ve 5 puan ekler.",
+          "detail": "Ham eşleşme puanı, adayın rol güveni düzeyine göre dengelenir."
+        },
+        "spatialSimilarity": {
+          "title": "Konumsal benzerlik",
+          "description": "Hedef profille olan mesafe hesaplanmadan önce ortalama konum, konumsal yayılım, saha üçte biri ve koridor kullanımı standartlaştırılır.",
+          "detail": "Kullanılabilir konumsal alan sayısı üçten az olduğunda motor 50 puanlık nötr değer kullanır."
+        },
+        "heatmapSimilarity": {
+          "title": "Isı haritası benzerliği",
+          "description": "Ölçülen ısı haritası kanıtı; kosinüs benzerliği, ortak bölge kullanımı, yanal ve dikey yapı, yoğun bölgeler ve entropiyi kapsar.",
+          "detail": "Eksik ısı haritası kanıtı açıkça eksik kalır; yapılandırılmış nötr değer yalnızca karar puanında kullanılır."
+        },
+        "marketAdvantage": {
+          "title": "Piyasa avantajı",
+          "description": "Adayın piyasa değeri hedef oyuncuya göre değerlendirilir. Daha düşük maliyetli adaylar genellikle daha güçlü bir finansal avantaj sinyali alır.",
+          "detail": "Hedef oyuncunun kullanılabilir piyasa değeri yoksa aday havuzundaki piyasa değeri yüzdelik dilimi kullanılır."
+        },
+        "ageSuitability": {
+          "title": "Yaş uygunluğu",
+          "description": "Yaş uygunluğu, genel yaş eğrisini aday ile hedef arasındaki yaş farkına dayanan bir düzeltmeyle birleştirir.",
+          "detail": "Bu sinyalin önemi oyuncu alım senaryosuna göre önemli ölçüde değişir."
+        },
+        "playerQuality": {
+          "title": "Oyuncu kalitesi",
+          "description": "Turnuva performansından üretilen kalite sinyali, yalnızca benzerliğin yeterli performans düzeyine sahip olmayan adayları öne çıkarmasını önler.",
+          "detail": "Minimum kalite gereksinimleri hazır katkı, gelişim, değer ve kısa vadeli analiz senaryolarına göre değişir."
+        },
+        "dataReliability": {
+          "title": "Veri güvenilirliği",
+          "description": "Güvenilirlik, mevcut turnuva örnekleminin oyuncu için hesaplanan profili ne kadar güçlü desteklediğini gösterir.",
+          "detail": "Daha yüksek riskli senaryolar düşük güvenilirliği kabul edebilirken hazır katkı ve kısa vadeli öneriler daha güçlü kanıt gerektirir."
+        }
+      }
+    },
+    "comparisonEvidence": {
+      "eyebrow": "Konumsal ve karşılaştırmalı kanıtlar",
+      "title": "Farklı görünümler farklı soruları yanıtlar",
+      "note": "İstatistiksel benzerlik, konumsal benzerlik ve ısı haritası benzerliği birbirini tamamlayan sinyallerdir. Hiçbiri diğerinin yerini almaz veya bir oyuncunun üstün olduğunu tek başına kanıtlamaz.",
+      "cards": {
+        "measuredHeatmap": {
+          "title": "Ölçülen ısı haritası",
+          "description": "Saha görünümü, turnuvada gözlemlenen alan kullanımını gösterir. Isı haritası yoğunluğu ve ortalama konum, aynı koordinat sistemi üzerinde gösterilen bağımsız kanıt kaynaklarıdır."
+        },
+        "heatmapComparison": {
+          "title": "Isı haritası karşılaştırması",
+          "description": "Kosinüs benzerliği, kullanım örtüşmesi, yanal ve dikey yapı, yoğun bölgeler ve entropi konumsal benzerliğin farklı yönlerini açıklar."
+        },
+        "radarComparison": {
+          "title": "Radar karşılaştırması",
+          "description": "Radar boyutları pozisyona göre hesaplanan yüzdelik dilimleri kullanır. Aynı pozisyondaki oyuncular ortak bir ölçek kullanabilir; farklı pozisyonlardaki oyuncular kendi pozisyon bağlamlarını korur."
+        }
+      }
+    },
+    "scenarios": {
+      "eyebrow": "Oyuncu alım senaryoları",
+      "title": "Tek aday havuzu, dört farklı karar",
+      "description": "Her senaryo adayları kendi uygunluk kurallarıyla filtreler ve ardından farklı bir ağırlıklandırma modeli uygular. Aşağıdaki ağırlıklar karar motorunun güncel yapılandırmasını gösterir.",
+      "eligibility": "Uygunluk koşulları",
+      "scoreWeights": "Puan ağırlıkları",
+      "sameFinalRoleBonus": "Aynı nihai rol bonusu: +{bonus}",
+      "sameArchetypeBonus": "Aynı arketip bonusu: +{bonus}",
+      "signalLabels": {
+        "statistical_similarity_pct": "İstatistiksel benzerlik",
+        "role_fit_pct": "Rol uyumu",
+        "spatial_similarity_pct": "Konumsal benzerlik",
+        "effective_heatmap_score_pct": "Isı haritası puanı",
+        "player_quality_score": "Oyuncu kalitesi",
+        "data_reliability_score": "Veri güvenilirliği",
+        "market_value_advantage_pct": "Piyasa avantajı",
+        "age_suitability_pct": "Yaş uygunluğu"
+      },
+      "modes": {
+        "immediate": {
+          "title": "Hazır katkı",
+          "summary": "Birinci takıma hemen katkı sağlayabilecek adaylar için taktik devamlılığa, mevcut kaliteye ve güvenilir kanıtlara öncelik verir.",
+          "eligibility": {
+            "statisticalSimilarity": "İstatistiksel benzerlik ≥ 30",
+            "roleFit": "Rol uyumu ≥ 35",
+            "playerQuality": "Oyuncu kalitesi ≥ 55",
+            "dataReliability": "Veri güvenilirliği ≥ 55",
+            "age": "Maksimum yaş: 31"
+          }
+        },
+        "development": {
+          "title": "Gelişim yatırımı",
+          "summary": "Daha fazla taktik uyarlamayı kabul eder; yaş potansiyeline ve gelecekteki piyasa değerine en yüksek önemi verir.",
+          "eligibility": {
+            "statisticalSimilarity": "İstatistiksel benzerlik ≥ 25",
+            "roleFit": "Rol uyumu ≥ 5",
+            "playerQuality": "Oyuncu kalitesi ≥ 30",
+            "dataReliability": "Veri güvenilirliği ≥ 35",
+            "age": "Maksimum yaş: 23"
+          }
+        },
+        "value": {
+          "title": "Piyasa değeri fırsatı",
+          "summary": "Taktik uygunluğu finansal verimlilikle dengeler ve en yüksek ağırlığı fiyat avantajına verir.",
+          "eligibility": {
+            "statisticalSimilarity": "İstatistiksel benzerlik ≥ 25",
+            "roleFit": "Rol uyumu ≥ 25",
+            "playerQuality": "Oyuncu kalitesi ≥ 35",
+            "dataReliability": "Veri güvenilirliği ≥ 35",
+            "age": "Senaryoya özgü yaş sınırı yok"
+          }
+        },
+        "short_term": {
+          "title": "Kısa vadeli çözüm",
+          "summary": "Deneyimli adayları hedefler; rol devamlılığına, turnuva kalitesine ve veri güvenilirliğine ağırlık verir.",
+          "eligibility": {
+            "statisticalSimilarity": "İstatistiksel benzerlik ≥ 20",
+            "roleFit": "Rol uyumu ≥ 30",
+            "playerQuality": "Oyuncu kalitesi ≥ 45",
+            "dataReliability": "Veri güvenilirliği ≥ 50",
+            "age": "Minimum yaş: 29"
+          }
+        }
+      }
+    },
+    "ranking": {
+      "eyebrow": "Sıralama mantığı",
+      "title": "Puan, sıralama ve açıklama nasıl üretilir?",
+      "paragraphs": {
+        "weightedScore": "Motor önce ağırlıklandırılmış bir senaryo puanı hesaplar. Eşleşen nihai rol ve istatistiksel arketip, senaryoya özgü bonuslar ekleyebilir. Sonuç daha sonra 0–100 aralığıyla sınırlandırılır.",
+        "tieBreaking": "Adaylar öncelikle senaryo puanına göre sıralanır. Eşitlikler ve birbirine yakın sonuçlar sırasıyla rol uyumu, etkin ısı haritası puanı, istatistiksel benzerlik ve oyuncu kalitesi kullanılarak çözülür.",
+        "explanation": "Açıklama motoru mevcut kanıtları sıralar ve en fazla dört farklı kanıt grubu seçer. Böylece tek bir kanıt türünün açıklamanın tamamına hâkim olması önlenir."
+      },
+      "heatmapFallback": {
+        "eyebrow": "Isı haritası yedek değeri",
+        "title": "Nötr değer ölçülmüş benzerlik değildir",
+        "description": "Doğrudan ısı haritası kanıtı bulunmadığında ölçülen ısı haritası alanları eksik kalır. Yapılandırılabilir nötr puan yalnızca ağırlıklandırılmış karar modeli içinde kullanılır."
+      }
+    },
+    "scoreBands": {
+      "eyebrow": "Puanın yorumlanması",
+      "title": "Öneri gücü bantları",
+      "bands": {
+        "elite": {
+          "label": "Üst düzey",
+          "range": "80–100",
+          "meaning": "Ağırlıklandırılmış karar sinyallerinin tamamında olağanüstü güçlü senaryo uyumu."
+        },
+        "strong": {
+          "label": "Güçlü",
+          "range": "72–79,99",
+          "meaning": "Seçilen senaryo için kapsamlı kanıtlarla desteklenen ikna edici aday."
+        },
+        "good": {
+          "label": "İyi",
+          "range": "64–71,99",
+          "meaning": "Güvenilir ancak genel gerekçesi daha az kapsamlı olan kullanışlı öneri."
+        },
+        "moderate": {
+          "label": "Orta",
+          "range": "56–63,99",
+          "meaning": "Bağlamsal olarak daha yakından gözlemlenmesi gereken potansiyel aday."
+        },
+        "low": {
+          "label": "Düşük",
+          "range": "56'nın altı",
+          "meaning": "Senaryoya uygun olmakla birlikte daha zayıf birleşik kanıtlarla desteklenen aday."
+        }
+      }
+    },
+    "limitations": {
+      "eyebrow": "Sorumlu kullanım",
+      "title": "Analizin kanıtlamadığı noktalar",
+      "paragraphs": {
+        "sample": "Turnuva verileri sınırlı bir rekabet örneklemini temsil eder. Güçlü bir turnuva profili; tam bir lig sezonunda, başka bir taktik sistemde veya farklı bir fiziksel ortamda aynı çıktıyı garanti etmez.",
+        "marketContext": "Piyasa değerleri transfer ücretleri değil, bağlamsal tahminlerdir. Sözleşme süresi, ücretler, tescil kuralları, sakatlık geçmişi, kişilik ve kulüp stratejisi mevcut puanlama modelinin dışındadır.",
+        "similarity": "Benzerlik üstünlük değildir. Bir aday hedef oyuncuya benzeyebilir ancak daha az üretken, daha az güvenilir veya planlanan oyuncu alım zamanlamasına uygun olmayabilir.",
+        "decisionSupport": "Platform bir karar destek sistemidir. Nihai oyuncu alım kararları bu kanıtları video analizi, canlı gözlem, sağlık değerlendirmesi ve kulübün daha geniş bağlamıyla birleştirmelidir."
+      }
+    }
+  }
+}

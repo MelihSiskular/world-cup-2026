@@ -21,7 +21,7 @@ Thumbs.db
 src/players/detailed
 src/transfer_intelligence/build_transfer_feature_table.py
 src/transfer_intelligence/visualizations/player_image_service.py
-src/player_heatmaps/build_player_heatmap_profiles.py
+# Runtime heatmap profile builder is tracked as part of the release pipeline.
 src/assets
 src/player_similarity/matrix
 src/player_similarity/build_player_profiles.py
@@ -29,7 +29,9 @@ src/player_similarity/similarity_engine.py
 src/player_similarity/breakdown/build_similarity_breakdown.py
 src/player_similarity/breakdown/create_similarity_markdown_report.py
 
-src/get_data/
+# Legacy data collectors remain ignored by default.
+src/get_data/*
+!src/get_data/collect_heatmaps.py
 src/test.py
 src/goal_minute/analyze_goal_timing.py
 

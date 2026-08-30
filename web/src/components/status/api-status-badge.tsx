@@ -1,6 +1,9 @@
 "use client";
 
 import {
+  useTranslations,
+} from "next-intl";
+import {
   useEffect,
   useState,
 } from "react";
@@ -14,14 +17,6 @@ type ApiStatusState =
   | "ready"
   | "not_ready"
   | "unavailable";
-
-const statusLabels:
-  Record<ApiStatusState, string> = {
-    checking: "Checking API",
-    ready: "API ready",
-    not_ready: "API not ready",
-    unavailable: "API unavailable",
-  };
 
 const containerClasses:
   Record<ApiStatusState, string> = {
@@ -44,6 +39,20 @@ const indicatorClasses:
   };
 
 export function ApiStatusBadge() {
+  const t = useTranslations(
+    "ApiStatusBadge",
+  );
+
+  const statusLabels:
+    Record<ApiStatusState, string> = {
+      checking: t("checking"),
+      ready: t("ready"),
+      not_ready:
+        t("notReady"),
+      unavailable:
+        t("unavailable"),
+    };
+
   const [
     status,
     setStatus,

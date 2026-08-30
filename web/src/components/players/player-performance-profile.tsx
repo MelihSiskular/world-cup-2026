@@ -1,5 +1,17 @@
-import type { PlayerProfileResponse } from "@/lib/api/types";
-import { formatProfileNumber } from "@/lib/players/profile-format";
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
+
+import type {
+  PlayerProfileResponse,
+} from "@/lib/api/types";
+import {
+  formatProfileNumber,
+} from "@/lib/players/profile-format";
+import type {
+  ProfileFormatContext,
+} from "@/lib/players/profile-format";
 
 type PlayerIntelligence = NonNullable<PlayerProfileResponse["intelligence"]>;
 
@@ -11,19 +23,14 @@ type PlayerPerformanceProfileProps = Readonly<{
   intelligence: PlayerProfileResponse["intelligence"];
 }>;
 
-const GROUP_LABELS: Readonly<Record<string, string>> = {
-  creation: "Chance creation",
-  progression: "Ball progression",
-  possession: "Possession",
-  defending: "Defensive contribution",
-  scoring: "Scoring threat",
-  physical: "Physical output",
-  goalkeeping: "Goalkeeping",
-};
-
-function getGroupLabel(key: string): string {
+function getGroupLabel(
+  key: string,
+  labels: Readonly<
+    Record<string, string>
+  >,
+): string {
   return (
-    GROUP_LABELS[key] ??
+    labels[key] ??
     key
       .replaceAll("_", " ")
       .replace(/\b\w/g, (character) => character.toUpperCase())
@@ -34,10 +41,17 @@ function clampPercentile(percentile: number): number {
   return Math.min(100, Math.max(0, percentile));
 }
 
-function formatMetricValue(metric: PerformanceMetric): string {
-  const value = formatProfileNumber(metric.value, {
-    maximumFractionDigits: 2,
-  });
+function formatMetricValue(
+  metric: PerformanceMetric,
+  context: ProfileFormatContext,
+): string {
+  const value = formatProfileNumber(
+    metric.value,
+    {
+      maximumFractionDigits: 2,
+    },
+    context,
+  );
 
   if (metric.unit === "percent") {
     return `${value}%`;
@@ -99,7 +113,29 @@ function MetricRow({
 }: Readonly<{
   metric: PerformanceMetric;
 }>) {
-  const percentile = metric.performance_percentile;
+  const locale =
+    useLocale();
+
+  const translations =
+    useTranslations(
+      "PlayerPerformanceProfile",
+    );
+
+  const commonTranslations =
+    useTranslations(
+      "Common",
+    );
+
+  const formatContext = {
+    locale,
+    missingValue:
+      commonTranslations(
+        "notReported",
+      ),
+  };
+
+  const percentile =
+    metric.performance_percentile;
 
   const hasPercentile =
     percentile !== null &&
@@ -124,17 +160,24 @@ function MetricRow({
 
         <div className="flex items-end justify-between gap-4 md:block md:text-right">
           <p className="text-xs font-semibold text-muted md:hidden">
-            Value
+            {translations(
+              "value",
+            )}
           </p>
 
           <div>
             <p className="text-lg font-bold tracking-[-0.03em]">
-              {formatMetricValue(metric)}
+              {formatMetricValue(
+                metric,
+                formatContext,
+              )}
             </p>
 
             {metric.unit === "raw" ? (
               <p className="mt-1 text-[0.65rem] font-semibold tracking-[0.08em] text-muted uppercase">
-                Raw value
+                {translations(
+                  "rawValue",
+                )}
               </p>
             ) : null}
           </div>
@@ -145,19 +188,31 @@ function MetricRow({
             <>
               <div className="flex items-center justify-between gap-4">
                 <p className="text-xs font-semibold text-muted md:hidden">
-                  Percentile
+                  {translations(
+                    "percentile",
+                  )}
                 </p>
 
                 <p className="ml-auto shrink-0 text-sm font-bold text-brand-dark">
-                  {formatProfileNumber(percentile, {
-                    maximumFractionDigits: 1,
-                  })}
+                  {formatProfileNumber(
+                    percentile,
+                    {
+                      maximumFractionDigits: 1,
+                    },
+                    formatContext,
+                  )}
                 </p>
               </div>
 
               <div
                 role="progressbar"
-                aria-label={`${metric.short_label} performance percentile`}
+                aria-label={translations(
+                  "percentileAriaLabel",
+                  {
+                    metric:
+                      metric.short_label,
+                  },
+                )}
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-valuenow={percentile}
@@ -174,30 +229,47 @@ function MetricRow({
               </div>
 
               <p className="mt-1.5 text-right text-[0.7rem] leading-5 text-muted">
-                n=
-                {formatProfileNumber(
-                  metric.peer_count,
-                )}{" "}
-                peers
+                {translations(
+                  "peerSample",
+                  {
+                    count:
+                      formatProfileNumber(
+                        metric.peer_count,
+                        {},
+                        formatContext,
+                      ),
+                  },
+                )}
               </p>
             </>
           ) : (
             <div className="rounded-xl border border-dashed border-border bg-page px-3 py-3">
               <div className="flex items-center justify-between gap-4">
                 <p className="text-xs font-semibold text-muted">
-                  Percentile unavailable
+                  {translations(
+                    "percentileUnavailable",
+                  )}
                 </p>
 
                 <p className="shrink-0 text-[0.7rem] font-semibold text-muted">
-                  n=
-                  {formatProfileNumber(
-                    metric.peer_count,
+                  {translations(
+                    "peerSampleCompact",
+                    {
+                      count:
+                        formatProfileNumber(
+                          metric.peer_count,
+                          {},
+                          formatContext,
+                        ),
+                    },
                   )}
                 </p>
               </div>
 
               <p className="mt-1 text-xs leading-5 text-muted">
-                Reported value retained.
+                {translations(
+                  "reportedValueRetained",
+                )}
               </p>
             </div>
           )}
@@ -212,6 +284,42 @@ function MetricGroup({
 }: Readonly<{
   group: PerformanceGroup;
 }>) {
+  const translations =
+    useTranslations(
+      "PlayerPerformanceProfile",
+    );
+
+  const groupLabels = {
+    creation:
+      translations(
+        "groups.creation",
+      ),
+    progression:
+      translations(
+        "groups.progression",
+      ),
+    possession:
+      translations(
+        "groups.possession",
+      ),
+    defending:
+      translations(
+        "groups.defending",
+      ),
+    scoring:
+      translations(
+        "groups.scoring",
+      ),
+    physical:
+      translations(
+        "groups.physical",
+      ),
+    goalkeeping:
+      translations(
+        "groups.goalkeeping",
+      ),
+  };
+
   return (
     <section
       aria-labelledby={`performance-group-${group.key}`}
@@ -222,7 +330,10 @@ function MetricGroup({
           id={`performance-group-${group.key}`}
           className="min-w-0 break-words text-lg font-bold tracking-[-0.025em]"
         >
-          {getGroupLabel(group.key)}
+          {getGroupLabel(
+            group.key,
+            groupLabels,
+          )}
         </h3>
 
       </header>
@@ -244,20 +355,29 @@ function EmptyPerformanceState({
 }: Readonly<{
   children: string;
 }>) {
+  const translations =
+    useTranslations(
+      "PlayerPerformanceProfile",
+    );
+
   return (
     <section
       aria-labelledby="performance-profile-title"
       className="rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-7"
     >
       <p className="text-sm font-semibold tracking-[0.15em] text-brand uppercase">
-        Performance intelligence
+        {translations(
+          "eyebrow",
+        )}
       </p>
 
       <h2
         id="performance-profile-title"
         className="mt-3 text-2xl font-bold tracking-[-0.03em]"
       >
-        Performance profile
+        {translations(
+          "title",
+        )}
       </h2>
 
       <p className="mt-5 rounded-2xl border border-dashed border-border bg-page p-5 text-sm leading-6 text-muted">
@@ -270,11 +390,17 @@ function EmptyPerformanceState({
 export function PlayerPerformanceProfile({
   intelligence,
 }: PlayerPerformanceProfileProps) {
+  const translations =
+    useTranslations(
+      "PlayerPerformanceProfile",
+    );
+
   if (!intelligence) {
     return (
       <EmptyPerformanceState>
-        Position-aware performance metrics were
-        not reported for this player.
+        {translations(
+          "unavailable",
+        )}
       </EmptyPerformanceState>
     );
   }
@@ -282,8 +408,9 @@ export function PlayerPerformanceProfile({
   if (intelligence.groups.length === 0) {
     return (
       <EmptyPerformanceState>
-        No position-aware performance metrics
-        were available for this player.
+        {translations(
+          "empty",
+        )}
       </EmptyPerformanceState>
     );
   }
@@ -302,20 +429,24 @@ export function PlayerPerformanceProfile({
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-sm font-semibold tracking-[0.15em] text-brand uppercase">
-              Performance intelligence
+              {translations(
+                "eyebrow",
+              )}
             </p>
 
             <h2
               id="performance-profile-title"
               className="mt-3 text-2xl font-bold tracking-[-0.03em]"
             >
-              Performance profile
+              {translations(
+                "title",
+              )}
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-muted">
-              Position-specific tournament metrics
-              with raw or per-90 output and
-              same-position percentile context.
+              {translations(
+                "description",
+              )}
             </p>
           </div>
 
@@ -327,17 +458,23 @@ export function PlayerPerformanceProfile({
               id="performance-profile-guide-title"
               className="text-xs font-semibold text-brand-dark"
             >
-              How to read the profile
+              {translations(
+                "guideTitle",
+              )}
             </p>
 
             <div className="mt-3 grid grid-cols-[minmax(0,1fr)_3.5rem_minmax(6.5rem,0.9fr)] items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2.5">
               <div className="min-w-0">
                 <p className="text-xs font-bold">
-                  Example metric
+                  {translations(
+                    "exampleMetric",
+                  )}
                 </p>
 
                 <p className="mt-0.5 text-[0.65rem] text-muted">
-                  Illustrative
+                  {translations(
+                    "illustrative",
+                  )}
                 </p>
               </div>
 
@@ -358,17 +495,17 @@ export function PlayerPerformanceProfile({
                 </div>
 
                 <p className="mt-1 text-right text-[0.6rem] text-muted">
-                  n=XXX peers
+                  {translations(
+                    "peerSamplePlaceholder",
+                  )}
                 </p>
               </div>
             </div>
 
             <p className="mt-2 text-[0.7rem] leading-5 text-muted">
-              X.XX is the metric output; 75.0 and
-              the bar show the same-position
-              percentile; n is the eligible peer
-              sample. Higher percentile is more
-              favorable.
+              {translations(
+                "guideDescription",
+              )}
             </p>
           </aside>
         </div>

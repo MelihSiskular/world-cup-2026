@@ -37,6 +37,32 @@ describe("player profile formatters", () => {
         }),
       ).toBe("7.46");
     });
+
+    it("supports locale-specific numbers and missing-value labels", () => {
+      expect(
+        formatProfileNumber(
+          1234.5,
+          {
+            minimumFractionDigits: 1,
+          },
+          {
+            locale: "tr",
+            missingValue: "Bildirilmedi",
+          },
+        ),
+      ).toBe("1.234,5");
+
+      expect(
+        formatProfileNumber(
+          null,
+          {},
+          {
+            locale: "tr",
+            missingValue: "Bildirilmedi",
+          },
+        ),
+      ).toBe("Bildirilmedi");
+    });
   });
 
   describe("formatProfilePercentage", () => {
@@ -122,6 +148,31 @@ describe("player profile formatters", () => {
       expect(
         formatPlayerPosition("M"),
       ).toBe("Midfielder");
+
+      expect(
+        formatPlayerPosition(
+          "M",
+          {
+            labels: {
+              M: "Orta saha",
+            },
+            unavailable:
+              "Pozisyon bilgisi yok",
+          },
+        ),
+      ).toBe("Orta saha");
+
+      expect(
+        formatPlayerPosition(
+          null,
+          {
+            unavailable:
+              "Pozisyon bilgisi yok",
+          },
+        ),
+      ).toBe(
+        "Pozisyon bilgisi yok",
+      );
     });
   });
 });

@@ -2,14 +2,22 @@ import {
   render,
   screen,
 } from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 import userEvent from "@testing-library/user-event";
 import type {
+  ComponentProps,
   ReactNode,
 } from "react";
 import {
   describe,
   expect,
   it,
+  vi,
 } from "vitest";
 
 import {
@@ -33,6 +41,41 @@ import type {
   ShortlistPlayerSnapshot,
   ShortlistState,
 } from "@/lib/shortlists/types";
+
+vi.mock(
+  "@/i18n/navigation",
+  async () => {
+    const {
+      useLocale,
+    } = await vi.importActual<
+      typeof import("next-intl")
+    >("next-intl");
+
+    return {
+      Link: ({
+        href,
+        ...properties
+      }: ComponentProps<"a"> &
+        Readonly<{
+          href: string;
+        }>) => {
+        const locale =
+          useLocale();
+
+        return (
+          <a
+            href={
+              locale === "tr"
+                ? `/tr${href}`
+                : href
+            }
+            {...properties}
+          />
+        );
+      },
+    };
+  },
+);
 
 const NOW =
   "2026-08-25T03:00:00.000Z";
@@ -134,24 +177,36 @@ function createPopulatedState():
 function renderManager({
   storage,
   createId = () => "list-1",
+  locale = "en",
 }: Readonly<{
   storage:
     ShortlistStorageAdapter | null;
   createId?: () => string;
+  locale?: "en" | "tr";
 }>) {
   function Wrapper({
     children,
   }: Readonly<{
     children: ReactNode;
   }>) {
+    const messages =
+      locale === "tr"
+        ? turkishMessages
+        : englishMessages;
+
     return (
-      <ShortlistProvider
-        storage={storage}
-        now={() => NOW}
-        createId={createId}
+      <NextIntlClientProvider
+        locale={locale}
+        messages={messages}
       >
-        {children}
-      </ShortlistProvider>
+        <ShortlistProvider
+          storage={storage}
+          now={() => NOW}
+          createId={createId}
+        >
+          {children}
+        </ShortlistProvider>
+      </NextIntlClientProvider>
     );
   }
 
@@ -521,5 +576,115 @@ describe(
         );
       },
     );
+    it(
+      "localizes the empty shortlist workspace in Turkish",
+      async () => {
+        const storage =
+          createMemoryStorage();
+
+        renderManager({
+          storage:
+            storage.adapter,
+          locale: "tr",
+        });
+
+        expect(
+          await screen.findByRole(
+            "heading",
+            {
+              name:
+                "Kısa liste çalışma alanı",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Henüz kısa liste yok",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByRole(
+            "link",
+            {
+              name:
+                "Oyuncuları keşfet",
+            },
+          ),
+        ).toHaveAttribute(
+          "href",
+          "/tr/players",
+        );
+      },
+    );
+
+    it(
+      "localizes saved player cards without translating player data",
+      async () => {
+        const storage =
+          createMemoryStorage(
+            createPopulatedState(),
+          );
+
+        renderManager({
+          storage:
+            storage.adapter,
+          locale: "tr",
+        });
+
+        expect(
+          await screen.findByRole(
+            "heading",
+            {
+              name:
+                "Kısa liste çalışma alanı",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByRole(
+            "link",
+            {
+              name:
+                "Michael Olise",
+            },
+          ),
+        ).toHaveAttribute(
+          "href",
+          "/tr/players/978838",
+        );
+
+        expect(
+          screen.getByText(
+            "Right Half-Space Creator",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Orta saha",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "24 yaş",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByRole(
+            "button",
+            {
+              name:
+                "Michael Olise oyuncusunu Summer 2027 — LCB listesinden çıkar",
+            },
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
   },
 );

@@ -1,7 +1,16 @@
 import {
-  render,
+  render as renderTestingLibrary,
   screen,
 } from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+import type {
+  ReactElement,
+} from "react";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 import {
   describe,
   expect,
@@ -11,6 +20,27 @@ import {
 import {
   SpatialPositionPitch,
 } from "@/components/transfer-intelligence/spatial-position-pitch";
+
+type TestLocale =
+  "en" | "tr";
+
+function render(
+  element: ReactElement,
+  locale: TestLocale = "en",
+) {
+  return renderTestingLibrary(
+    <NextIntlClientProvider
+      locale={locale}
+      messages={
+        locale === "tr"
+          ? turkishMessages
+          : englishMessages
+      }
+    >
+      {element}
+    </NextIntlClientProvider>,
+  );
+}
 
 describe(
   "SpatialPositionPitch",
@@ -132,5 +162,60 @@ describe(
         ).toBeInTheDocument();
       },
     );
+
+    it(
+      "localizes pitch direction and accessible context in Turkish",
+      () => {
+        render(
+          <SpatialPositionPitch
+            target={{
+              playerId: 978838,
+              playerName:
+                "Michael Olise",
+              meanX: 58,
+              meanY: 50,
+            }}
+            candidate={{
+              playerId: 12345,
+              playerName:
+                "Test Candidate",
+              meanX: 62,
+              meanY: 43,
+            }}
+          />,
+          "tr",
+        );
+
+        expect(
+          screen.getByText(
+            "Savunma",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Hücum yönü →",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByRole(
+            "img",
+            {
+              name:
+                "Michael Olise ve Test Candidate için konumsal pozisyon karşılaştırması",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Elipsler mevcut olduğunda konumsal yayılımı gösterir.",
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
+
   },
 );

@@ -1,5 +1,5 @@
 {
-  "bundle_sha256": "4fc9f780253af6bbcc51cd7e572e92e70cc0466d7dcacd0ed6249a625a7a851f",
+  "bundle_sha256": "3ef8894b6e83ca123ba22d50312cd55978d1608759519bce74574276f07b9e43",
   "datasets": [
     {
       "artifact_type": "csv",
@@ -564,9 +564,9 @@
       ],
       "key": "heatmap_similarity",
       "path": "data/processed/player_heatmaps/heatmap_similarity_long.csv",
-      "row_count": 26356,
-      "sha256": "8446e3410bca4f7ab069a2861bcf716bd0e298a443d1f4a9d64db6b0037cbb97",
-      "size_bytes": 8758836
+      "row_count": 26456,
+      "sha256": "183652d19bc597b04c711b89da6ee59b004a9f62c0aef495a87ab72fe6de0cf8",
+      "size_bytes": 8788572
     },
     {
       "artifact_type": "csv",
@@ -609,20 +609,20 @@
       ],
       "key": "heatmap_profiles",
       "path": "data/processed/player_heatmaps/player_heatmap_profiles.csv",
-      "row_count": 978,
-      "sha256": "48ff64627433ad6bf61c008a3375111fd2da14fb59f47222bc5311814f9d195f",
-      "size_bytes": 474146
+      "row_count": 984,
+      "sha256": "c03867ff91fbe76ba31dd8e9619729b1ae36ecba5550a086bfcb7e7f6bf503bb",
+      "size_bytes": 477146
     },
     {
       "artifact_type": "heatmap_grid_npz",
       "dtype": "float32",
-      "grid_count": 978,
+      "grid_count": 984,
       "grid_height": 14,
       "grid_width": 21,
       "key": "heatmap_grids",
       "path": "data/processed/player_heatmaps/player_heatmap_grids.npz",
-      "sha256": "a79302dd670f401dc618498e969eeab2c780c7ce3135dbb6bb7bc64523b656b4",
-      "size_bytes": 1228217
+      "sha256": "6baf829274b736ba38948598a29ceb1f4c052edbf71a23842041b533e243ca1d",
+      "size_bytes": 1237195
     }
   ],
   "manifest_version": 2

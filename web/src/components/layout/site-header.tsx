@@ -1,6 +1,11 @@
 import Image from "next/image";
-import Link from "next/link";
+import {
+  useTranslations,
+} from "next-intl";
 
+import {
+  LocaleSwitcher,
+} from "@/components/layout/locale-switcher";
 import {
   PageContainer,
 } from "@/components/layout/page-container";
@@ -10,15 +15,25 @@ import {
 import {
   ApiStatusBadge,
 } from "@/components/status/api-status-badge";
+import {
+  Link,
+} from "@/i18n/navigation";
 
 export function SiteHeader() {
+  const commonTranslations =
+    useTranslations("Common");
+  const headerTranslations =
+    useTranslations("Header");
+
   return (
     <header className="relative z-50 border-b border-border bg-surface">
       <PageContainer className="flex min-h-18 items-center justify-between gap-3 sm:gap-6">
         <Link
           href="/"
           className="flex min-w-0 items-center gap-3 rounded-lg"
-          aria-label="WC26 Transfer Intelligence home"
+          aria-label={headerTranslations(
+            "homeLabel",
+          )}
         >
           <span className="relative flex size-11 shrink-0 items-center justify-center overflow-visible">
             <Image
@@ -33,22 +48,30 @@ export function SiteHeader() {
 
           <span className="min-w-0">
             <span className="block truncate text-sm font-bold tracking-[-0.02em] text-foreground">
-              WC26 Transfer Intelligence
+              {commonTranslations(
+                "brandName",
+              )}
             </span>
 
             <span className="hidden text-xs text-muted sm:block">
-              Recruitment decision support
+              {headerTranslations(
+                "tagline",
+              )}
             </span>
           </span>
         </Link>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <SiteNavigation />
+
+          <LocaleSwitcher />
 
           <Link
             href="/status"
             className="hidden rounded-full lg:block"
-            aria-label="Open system status page"
+            aria-label={headerTranslations(
+              "statusLabel",
+            )}
           >
             <ApiStatusBadge />
           </Link>

@@ -184,7 +184,7 @@ def test_runtime_catalog_loads_once_and_serves_complete_api_flow(
         assert not runtime_catalog.similarity.empty
         assert not runtime_catalog.heatmap_similarity.empty
         assert not runtime_catalog.heatmap_profiles.empty
-        assert len(runtime_catalog.heatmap_grids) == 978
+        assert len(runtime_catalog.heatmap_grids) == len(runtime_catalog.heatmap_profiles)
         assert 978838 in runtime_catalog.heatmap_grids
         assert runtime_catalog.heatmap_grids[978838].shape == (14, 21)
         assert not runtime_catalog.heatmap_grids[978838].flags.writeable

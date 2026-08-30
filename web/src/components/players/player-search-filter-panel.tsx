@@ -1,6 +1,10 @@
 "use client";
 
 import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
+import {
   useId,
 } from "react";
 
@@ -20,14 +24,6 @@ import type {
   PlayerSearchSortDirection,
   PlayerSearchSortField,
 } from "@/lib/players/search-parameters";
-
-const positionLabels:
-  Readonly<Record<string, string>> = {
-    G: "Goalkeeper",
-    D: "Defender",
-    M: "Midfielder",
-    F: "Forward",
-  };
 
 type PlayerSearchFilterPanelProps =
   Readonly<{
@@ -105,18 +101,9 @@ function formatOptionLabel(
   return option.label;
 }
 
-function formatPositionLabel(
-  option:
-    PlayerSearchFilterOptionResponse,
-): string {
-  return (
-    positionLabels[option.value] ??
-    option.label
-  );
-}
-
 function formatRangeValue(
   value: number | null,
+  locale: string,
   options: Readonly<{
     suffix?: string;
     divisor?: number;
@@ -131,7 +118,7 @@ function formatRangeValue(
     (options.divisor ?? 1);
 
   return `${displayedValue.toLocaleString(
-    "en",
+    locale,
     {
       maximumFractionDigits:
         Math.abs(displayedValue) < 1
@@ -144,6 +131,7 @@ function formatRangeValue(
 function formatRange(
   range:
     PlayerSearchFilterRangeResponse,
+  locale: string,
   options: Readonly<{
     suffix?: string;
     divisor?: number;
@@ -151,9 +139,11 @@ function formatRange(
 ): string {
   return `${formatRangeValue(
     range.minimum,
+    locale,
     options,
   )}–${formatRangeValue(
     range.maximum,
+    locale,
     options,
   )}`;
 }
@@ -187,6 +177,10 @@ function OptionChecklist({
   showCountryFlags = false,
   formatLabel = formatOptionLabel,
 }: OptionChecklistProps) {
+  const translations =
+    useTranslations(
+      "PlayerDiscovery",
+    );
   const descriptionId = useId();
 
   return (
@@ -217,8 +211,9 @@ function OptionChecklist({
         id={descriptionId}
         className="sr-only"
       >
-        Select one or more {label.toLowerCase()}.
-        Multiple selections are combined as alternatives.
+        {translations(
+          "optionChecklistDescription",
+        )}
       </p>
 
       <fieldset
@@ -249,9 +244,19 @@ function OptionChecklist({
                 <input
                   type="checkbox"
                   checked={checked}
-                  aria-label={`${formatLabel(
-                    option,
-                  )}, ${option.count} players`}
+                  aria-label={
+                    translations(
+                      "filterOptionCount",
+                      {
+                        label:
+                          formatLabel(
+                            option,
+                          ),
+                        count:
+                          option.count,
+                      },
+                    )
+                  }
                   onChange={() => {
                     onToggle(
                       option.value,
@@ -356,6 +361,29 @@ export function PlayerSearchFilterPanel({
   onClear,
   className = "",
 }: PlayerSearchFilterPanelProps) {
+  const locale =
+    useLocale();
+  const translations =
+    useTranslations(
+      "PlayerDiscovery",
+    );
+
+  const positionLabels:
+    Readonly<Record<string, string>> = {
+      G: translations(
+        "positionLabels.goalkeeper",
+      ),
+      D: translations(
+        "positionLabels.defender",
+      ),
+      M: translations(
+        "positionLabels.midfielder",
+      ),
+      F: translations(
+        "positionLabels.forward",
+      ),
+    };
+
   const normalized =
     normalizePlayerSearchParameters(
       parameters,
@@ -422,35 +450,43 @@ export function PlayerSearchFilterPanel({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-            Player discovery
+            {translations("filterEyebrow")}
           </p>
 
           <h2
             id="advanced-player-filters-title"
             className="mt-2 text-lg font-bold tracking-[-0.025em]"
           >
-            Advanced filters
+            {translations("advancedFilters")}
           </h2>
 
           <p className="mt-1 text-xs leading-5 text-muted">
-            Explore the complete{" "}
-            {metadata.player_count.toLocaleString(
-              "en",
+            {translations(
+              "catalogueSummary",
+              {
+                count:
+                  metadata.player_count,
+              },
             )}
-            -player analytical catalogue.
           </p>
         </div>
 
         {filterCount > 0 ? (
           <span className="shrink-0 rounded-full bg-brand/10 px-2.5 py-1 text-xs font-semibold text-brand">
-            {filterCount} active
+            {translations(
+              "activeFilterCount",
+              {
+                count:
+                  filterCount,
+              },
+            )}
           </span>
         ) : null}
       </div>
 
       <div className="mt-5 border-y border-border">
         <OptionChecklist
-          label="Position"
+          label={translations("position")}
           options={metadata.positions}
           selectedValues={
             normalized.positions
@@ -462,13 +498,18 @@ export function PlayerSearchFilterPanel({
             );
           }}
           defaultOpen
-          formatLabel={
-            formatPositionLabel
+          formatLabel={(
+            option,
+          ) =>
+            positionLabels[
+              option.value
+            ] ??
+            option.label
           }
         />
 
         <OptionChecklist
-          label="Final role"
+          label={translations("finalRole")}
           options={metadata.final_roles}
           selectedValues={
             normalized.finalRoles
@@ -482,7 +523,7 @@ export function PlayerSearchFilterPanel({
         />
 
         <OptionChecklist
-          label="Archetype"
+          label={translations("archetype")}
           options={metadata.archetypes}
           selectedValues={
             normalized.archetypes
@@ -496,7 +537,7 @@ export function PlayerSearchFilterPanel({
         />
 
         <OptionChecklist
-          label="Nationality"
+          label={translations("nationality")}
           options={metadata.countries}
           selectedValues={
             normalized.countries
@@ -513,7 +554,7 @@ export function PlayerSearchFilterPanel({
         <details className="group border-t border-border">
           <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden">
             <span>
-              Recruitment criteria
+              {translations("recruitmentCriteria")}
             </span>
 
             <span
@@ -527,7 +568,7 @@ export function PlayerSearchFilterPanel({
           <div className="grid gap-3 pb-5 sm:grid-cols-2 lg:grid-cols-1">
             <div className="grid grid-cols-2 gap-3">
               <NumericInput
-                label="Minimum age"
+                label={translations("minimumAge")}
                 value={
                   normalized.minimumAge
                 }
@@ -540,7 +581,7 @@ export function PlayerSearchFilterPanel({
                   undefined
                 }
                 step={0.1}
-                placeholder="Min"
+                placeholder={translations("minimumPlaceholder")}
                 onChange={(value) => {
                   update({
                     minimumAge:
@@ -550,7 +591,7 @@ export function PlayerSearchFilterPanel({
               />
 
               <NumericInput
-                label="Maximum age"
+                label={translations("maximumAge")}
                 value={
                   normalized.maximumAge
                 }
@@ -563,7 +604,7 @@ export function PlayerSearchFilterPanel({
                   undefined
                 }
                 step={0.1}
-                placeholder="Max"
+                placeholder={translations("maximumPlaceholder")}
                 onChange={(value) => {
                   update({
                     maximumAge:
@@ -574,15 +615,21 @@ export function PlayerSearchFilterPanel({
             </div>
 
             <p className="-mt-1 text-[11px] text-muted sm:col-span-2 lg:col-span-1">
-              Age range:{" "}
-              {formatRange(
-                metadata.age,
+              {translations(
+                "ageRange",
+                {
+                  range:
+                    formatRange(
+                      metadata.age,
+                      locale,
+                    ),
+                },
               )}
             </p>
 
             <div className="grid grid-cols-2 gap-3">
               <NumericInput
-                label="Minimum value"
+                label={translations("minimumValue")}
                 value={
                   normalized.minimumMarketValue
                 }
@@ -601,7 +648,7 @@ export function PlayerSearchFilterPanel({
                       1_000_000
                 }
                 step={0.1}
-                placeholder="Min"
+                placeholder={translations("minimumPlaceholder")}
                 suffix="€M"
                 scale={1_000_000}
                 onChange={(value) => {
@@ -613,7 +660,7 @@ export function PlayerSearchFilterPanel({
               />
 
               <NumericInput
-                label="Maximum value"
+                label={translations("maximumValue")}
                 value={
                   normalized.maximumMarketValue
                 }
@@ -632,7 +679,7 @@ export function PlayerSearchFilterPanel({
                       1_000_000
                 }
                 step={0.1}
-                placeholder="Max"
+                placeholder={translations("maximumPlaceholder")}
                 suffix="€M"
                 scale={1_000_000}
                 onChange={(value) => {
@@ -645,24 +692,35 @@ export function PlayerSearchFilterPanel({
             </div>
 
             <p
-              aria-label="Market value range"
+              aria-label={
+                translations(
+                  "marketValueRangeLabel",
+                )
+              }
               className="-mt-1 text-[11px] text-muted sm:col-span-2 lg:col-span-1"
             >
-              Value range:{" "}
-              {formatRange(
-                metadata.market_value,
+              {translations(
+                "valueRange",
                 {
-                  suffix: "M",
-                  divisor:
-                    1_000_000,
+                  range:
+                    formatRange(
+                      metadata.market_value,
+                      locale,
+                      {
+                        suffix: "M",
+                        divisor:
+                          1_000_000,
+                      },
+                    ),
+                  currency:
+                    metadata.market_value_currency ??
+                    "",
                 },
-              )}{" "}
-              {metadata.market_value_currency ??
-                ""}
+              )}
             </p>
 
             <NumericInput
-              label="Minimum tournament minutes"
+              label={translations("minimumTournamentMinutes")}
               value={
                 normalized.minimumMinutes
               }
@@ -675,7 +733,7 @@ export function PlayerSearchFilterPanel({
                 undefined
               }
               step={30}
-              placeholder="e.g. 300"
+              placeholder={translations("minutesExample")}
               onChange={(value) => {
                 update({
                   minimumMinutes:
@@ -685,15 +743,20 @@ export function PlayerSearchFilterPanel({
             />
 
             <p className="-mt-1 text-[11px] text-muted sm:col-span-2 lg:col-span-1">
-              Observed range:{" "}
-              {formatRange(
-                metadata.minutes,
-              )}{" "}
-              minutes
+              {translations(
+                "observedMinutesRange",
+                {
+                  range:
+                    formatRange(
+                      metadata.minutes,
+                      locale,
+                    ),
+                },
+              )}
             </p>
 
             <NumericInput
-              label="Minimum role confidence"
+              label={translations("minimumRoleConfidence")}
               value={
                 normalized.minimumRoleConfidence
               }
@@ -706,7 +769,7 @@ export function PlayerSearchFilterPanel({
                 undefined
               }
               step={1}
-              placeholder="e.g. 70"
+              placeholder={translations("roleConfidenceExample")}
               suffix="%"
               onChange={(value) => {
                 update({
@@ -717,7 +780,7 @@ export function PlayerSearchFilterPanel({
             />
 
             <NumericInput
-              label="Minimum data reliability"
+              label={translations("minimumDataReliability")}
               value={
                 normalized.minimumDataReliability
               }
@@ -730,7 +793,7 @@ export function PlayerSearchFilterPanel({
                 undefined
               }
               step={1}
-              placeholder="e.g. 60"
+              placeholder={translations("dataReliabilityExample")}
               suffix="%"
               onChange={(value) => {
                 update({
@@ -748,7 +811,7 @@ export function PlayerSearchFilterPanel({
           htmlFor="player-search-sort"
           className="text-xs font-semibold text-muted"
         >
-          Sort results
+          {translations("sortResults")}
         </label>
 
         <select
@@ -787,28 +850,28 @@ export function PlayerSearchFilterPanel({
           className="mt-1.5 min-h-11 w-full rounded-xl border border-border bg-page px-3 py-2 text-sm font-semibold outline-none transition hover:border-brand/40 focus:border-brand focus:bg-surface"
         >
           <option value="recommended">
-            Recommended
+            {translations("sortRecommended")}
           </option>
           <option value="player_name:asc">
-            Player name A–Z
+            {translations("sortPlayerName")}
           </option>
           <option value="age:asc">
-            Youngest first
+            {translations("sortYoungest")}
           </option>
           <option value="market_value:asc">
-            Lowest market value
+            {translations("sortLowestValue")}
           </option>
           <option value="minutes:desc">
-            Most tournament minutes
+            {translations("sortMostMinutes")}
           </option>
           <option value="role_confidence:desc">
-            Highest role confidence
+            {translations("sortHighestRoleConfidence")}
           </option>
           <option value="data_reliability:desc">
-            Highest data reliability
+            {translations("sortHighestDataReliability")}
           </option>
           <option value="player_quality:desc">
-            Highest player quality
+            {translations("sortHighestPlayerQuality")}
           </option>
         </select>
       </div>
@@ -817,10 +880,10 @@ export function PlayerSearchFilterPanel({
         type="button"
         onClick={onClear}
         disabled={filterCount === 0}
-        aria-label="Clear all filters"
+        aria-label={translations("clearAllFilters")}
         className="mt-4 min-h-11 w-full rounded-xl border border-border bg-surface px-4 py-2 text-sm font-semibold text-brand-dark transition-colors enabled:hover:bg-surface-secondary disabled:cursor-not-allowed disabled:opacity-45"
       >
-        Clear all
+        {translations("clearAll")}
       </button>
     </section>
   );

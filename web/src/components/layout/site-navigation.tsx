@@ -1,13 +1,16 @@
 "use client";
 
-import Link from "next/link";
 import {
-  usePathname,
-} from "next/navigation";
+  useTranslations,
+} from "next-intl";
 import {
   useState,
 } from "react";
 
+import {
+  Link,
+  usePathname,
+} from "@/i18n/navigation";
 import {
   isNavigationItemActive,
   primaryNavigationItems,
@@ -26,6 +29,8 @@ function navigationLinkClasses(
 
 export function SiteNavigation() {
   const pathname = usePathname();
+  const translations =
+    useTranslations("Navigation");
 
   const [
     menuOpen,
@@ -35,7 +40,9 @@ export function SiteNavigation() {
   return (
     <>
       <nav
-        aria-label="Primary navigation"
+        aria-label={translations(
+          "primaryLabel",
+        )}
         className="hidden md:block"
       >
         <ul className="flex items-center gap-1">
@@ -60,7 +67,9 @@ export function SiteNavigation() {
                         : undefined
                     }
                   >
-                    {item.label}
+                    {translations(
+                      item.messageKey,
+                    )}
                   </Link>
                 </li>
               );
@@ -77,8 +86,8 @@ export function SiteNavigation() {
           aria-controls="mobile-navigation"
           aria-label={
             menuOpen
-              ? "Close navigation"
-              : "Open navigation"
+              ? translations("close")
+              : translations("open")
           }
           onClick={() => {
             setMenuOpen(
@@ -114,7 +123,9 @@ export function SiteNavigation() {
         {menuOpen ? (
           <nav
             id="mobile-navigation"
-            aria-label="Mobile navigation"
+            aria-label={translations(
+              "mobileLabel",
+            )}
             className="absolute inset-x-0 top-full border-b border-border bg-surface shadow-lg"
           >
             <ul className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-4 sm:px-8">
@@ -145,7 +156,9 @@ export function SiteNavigation() {
                             : undefined
                         }
                       >
-                        {item.label}
+                        {translations(
+                          item.messageKey,
+                        )}
                       </Link>
                     </li>
                   );

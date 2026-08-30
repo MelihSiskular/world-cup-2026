@@ -1,3 +1,14 @@
+import type {
+  ComponentProps,
+  ReactNode,
+} from "react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
+
 import {
   fireEvent,
   screen,
@@ -24,6 +35,42 @@ import type {
 import {
   renderWithQueryClient,
 } from "@/test/render-with-query-client";
+
+vi.mock(
+  "@/i18n/navigation",
+  async () => {
+    const {
+      useLocale,
+    } = await vi.importActual<
+      typeof import("next-intl")
+    >("next-intl");
+
+    return {
+      Link: ({
+        href,
+        ...properties
+      }: ComponentProps<"a"> &
+        Readonly<{
+          href: string;
+        }>) => {
+        const locale =
+          useLocale();
+
+        const localizedHref =
+          locale === "tr"
+            ? `/tr${href}`
+            : href;
+
+        return (
+          <a
+            href={localizedHref}
+            {...properties}
+          />
+        );
+      },
+    };
+  },
+);
 
 vi.mock(
   "@/lib/api/browser-players",
@@ -64,6 +111,28 @@ const profileResponse = {
     "Michael Olise",
 } as unknown as PlayerProfileResponse;
 
+type TestLocale =
+  "en" | "tr";
+
+function renderResultCard(
+  children: ReactNode,
+  locale: TestLocale = "en",
+) {
+  const messages =
+    locale === "tr"
+      ? turkishMessages
+      : englishMessages;
+
+  return renderWithQueryClient(
+    <NextIntlClientProvider
+      locale={locale}
+      messages={messages}
+    >
+      {children}
+    </NextIntlClientProvider>,
+  );
+}
+
 describe(
   "PlayerSearchResultCard",
   () => {
@@ -80,7 +149,7 @@ describe(
     it(
       "prefetches the player profile on hover",
       async () => {
-        renderWithQueryClient(
+        renderResultCard(
           <ul>
             <PlayerSearchResultCard
               player={player}
@@ -121,7 +190,7 @@ describe(
     it(
       "prefetches the player profile for keyboard navigation",
       async () => {
-        renderWithQueryClient(
+        renderResultCard(
           <ul>
             <PlayerSearchResultCard
               player={player}
@@ -155,7 +224,7 @@ describe(
     it(
       "exposes shortlist controls outside the profile link",
       async () => {
-        renderWithQueryClient(
+        renderResultCard(
           <ul>
             <PlayerSearchResultCard
               player={player}
@@ -210,7 +279,7 @@ describe(
     it(
       "does not refetch an already fresh prefetched profile",
       async () => {
-        renderWithQueryClient(
+        renderResultCard(
           <ul>
             <PlayerSearchResultCard
               player={player}
@@ -252,5 +321,56 @@ describe(
         });
       },
     );
+    it(
+      "localizes player-card presentation without translating player data",
+      () => {
+        renderResultCard(
+          <ul>
+            <PlayerSearchResultCard
+              player={player}
+            />
+          </ul>,
+          "tr",
+        );
+
+        expect(
+          screen.getByRole(
+            "link",
+            {
+              name:
+                "Michael Olise scouting profilini aç",
+            },
+          ),
+        ).toHaveAttribute(
+          "href",
+          "/tr/players/978838",
+        );
+
+        expect(
+          screen.getByText(
+            "Nihai rol:",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Central Half-Space Creator",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Orta saha",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "25 yaş",
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
   },
 );

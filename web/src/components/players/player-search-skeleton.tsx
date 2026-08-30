@@ -1,10 +1,24 @@
+"use client";
+
+import {
+  useTranslations,
+} from "next-intl";
+
 export function PlayerSearchSkeleton() {
+  const translations =
+    useTranslations(
+      "PlayerDiscovery",
+    );
   return (
     <div
       className="space-y-4"
       role="status"
       aria-live="polite"
-      aria-label="Searching players"
+      aria-label={
+        translations(
+          "searchingPlayers",
+        )
+      }
     >
       {Array.from({
         length: 4,
@@ -25,7 +39,9 @@ export function PlayerSearchSkeleton() {
       ))}
 
       <span className="sr-only">
-        Searching player catalogue…
+        {translations(
+          "searchingCatalogue",
+        )}
       </span>
     </div>
   );

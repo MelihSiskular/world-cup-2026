@@ -25,6 +25,13 @@ import {
 } from "@/test/render-with-query-client";
 
 vi.mock(
+  "@/i18n/navigation",
+  () => ({
+    Link: "a",
+  }),
+);
+
+vi.mock(
   "@/components/transfer-intelligence/multi-player-comparison-evidence",
   () => ({
     MultiPlayerComparisonEvidence:
@@ -505,5 +512,79 @@ describe(
         );
       },
     );
+    it(
+      "localizes the overview matrix in Turkish",
+      async () => {
+        fetchMultiPlayerComparisonMock
+          .mockResolvedValue(
+            response,
+          );
+
+        renderWithQueryClient(
+          <MultiPlayerComparison
+            identifiers={
+              identifiers
+            }
+          />,
+          "tr",
+        );
+
+        const table =
+          await screen.findByRole(
+            "table",
+            {
+              name:
+                "Hedefe göre oyuncu karşılaştırması özeti",
+            },
+          );
+
+        expect(
+          screen.getByRole(
+            "heading",
+            {
+              name:
+                "Hedefe göre karşılaştırma",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          within(table).getByText(
+            "Metrik",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          within(table).getByText(
+            "Hedef",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          within(table).getByText(
+            "Aday 1",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          within(table).getAllByText(
+            "Orta saha",
+          ),
+        ).toHaveLength(3);
+
+        expect(
+          within(table).getAllByText(
+            "Kullanılamıyor",
+          ),
+        ).toHaveLength(2);
+
+        expect(
+          within(table).getAllByText(
+            "Referans",
+          ),
+        ).toHaveLength(5);
+      },
+    );
+
   },
 );

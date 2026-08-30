@@ -1,8 +1,17 @@
 import {
   fireEvent,
-  render,
+  render as renderTestingLibrary,
   screen,
 } from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+import type {
+  ReactElement,
+} from "react";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 import {
   describe,
   expect,
@@ -16,6 +25,27 @@ import {
 import type {
   HeatmapPlayerResponse,
 } from "@/lib/api/types";
+
+type TestLocale =
+  "en" | "tr";
+
+function render(
+  element: ReactElement,
+  locale: TestLocale = "en",
+) {
+  return renderTestingLibrary(
+    <NextIntlClientProvider
+      locale={locale}
+      messages={
+        locale === "tr"
+          ? turkishMessages
+          : englishMessages
+      }
+    >
+      {element}
+    </NextIntlClientProvider>,
+  );
+}
 
 const heatmap: HeatmapPlayerResponse = {
   player_id: 978838,
@@ -126,4 +156,47 @@ describe("PlayerSpatialProfile", () => {
 
     expect(onRetry).toHaveBeenCalledOnce();
   });
+
+  it("localizes spatial error and retry context in Turkish", () => {
+    const onRetry = vi.fn();
+
+    render(
+      <PlayerSpatialProfile
+        playerName="Michael Olise"
+        heatmap={null}
+        isPending={false}
+        isError
+        onRetry={onRetry}
+      />,
+      "tr",
+    );
+
+    expect(
+      screen.getByText(
+        "Konumsal profil kullanılamıyor",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "Michael Olise için turnuva ısı haritası yüklenemedi.",
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole(
+        "button",
+        {
+          name:
+            "Konumsal veriyi yeniden dene",
+        },
+      ),
+    );
+
+    expect(
+      onRetry,
+    ).toHaveBeenCalledOnce();
+  });
+
+
 });

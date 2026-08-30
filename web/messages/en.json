@@ -1,0 +1,1325 @@
+{
+  "Common": {
+    "brandName": "WC26 Transfer Intelligence",
+    "notReported": "Not reported",
+    "unavailable": "Unavailable",
+    "skipToContent": "Skip to content"
+  },
+  "Navigation": {
+    "primaryLabel": "Primary navigation",
+    "mobileLabel": "Mobile navigation",
+    "open": "Open navigation",
+    "close": "Close navigation",
+    "home": "Home",
+    "players": "Players",
+    "shortlists": "Shortlists",
+    "methodology": "Methodology",
+    "systemStatus": "System Status"
+  },
+  "Header": {
+    "homeLabel": "WC26 Transfer Intelligence home",
+    "tagline": "Recruitment decision support",
+    "statusLabel": "Open system status page"
+  },
+  "Footer": {
+    "description": "Football scouting and replacement analysis powered by World Cup 2026 tournament data.",
+    "navigationLabel": "Footer navigation",
+    "copyright": "© {year} WC26 Analytics"
+  },
+  "LocaleSwitcher": {
+    "label": "Language",
+    "english": "English",
+    "turkish": "Turkish",
+    "changeTo": "Change language to {language}"
+  },
+  "Metadata": {
+    "description": "Football scouting and player replacement analysis powered by World Cup 2026 data."
+  },
+  "Home": {
+    "heroTitle": "Find the right replacement.",
+    "heroEmphasis": "Not just the most similar player.",
+    "intro": "Combine statistical similarity, spatial role, reliability, market context and recruitment strategy in one structured decision-support workflow.",
+    "searchPlayers": "Search players",
+    "viewMethodology": "View methodology",
+    "workflowEyebrow": "Product workflow",
+    "workflowTitle": "From player search to recruitment decision",
+    "step1Title": "Find a player",
+    "step1Description": "Search the World Cup 2026 player catalogue.",
+    "step2Title": "Inspect the profile",
+    "step2Description": "Review role, spatial profile, reliability, quality and market context.",
+    "step3Title": "Analyze replacements",
+    "step3Description": "Compare immediate, development, value and short-term alternatives."
+  },
+  "PlayerDiscovery": {
+    "metadataTitle": "Players",
+    "metadataDescription": "Search the World Cup 2026 player catalogue and open scouting profiles.",
+    "eyebrow": "Player catalogue",
+    "title": "Search and inspect tournament players",
+    "description": "Find the correct player through stable catalogue identities, role information and market context before starting replacement analysis.",
+    "searchHeading": "Search players",
+    "searchDescription": "Search by player name or combine advanced recruitment filters.",
+    "searchPlaceholder": "Search Michael Olise, Alex Baena…",
+    "clearSearch": "Clear",
+    "advancedFilters": "Advanced filters",
+    "loadingAdvancedFilters": "Loading advanced filters",
+    "filtersUnavailable": "Filters unavailable",
+    "filtersUnavailableDescription": "The player catalogue can still be searched by name.",
+    "retryFilters": "Retry filters",
+    "initialTitle": "Start with a player name",
+    "initialDescription": "Search directly or use advanced filters to explore the full analytical catalogue.",
+    "partialTitle": "Keep typing",
+    "partialDescription": "Player-name searches require at least {minimum} characters. Clear the partial name to search only with filters.",
+    "searchUnavailable": "Player search unavailable",
+    "searchUnavailableDescription": "The player catalogue could not be searched.",
+    "retrySearch": "Retry search",
+    "noResultsTitle": "No players found",
+    "noResultsDescription": "No catalogue entries matched the current discovery criteria. Broaden the filters or try another player name.",
+    "resultsFound": "{count, plural, one {# player found} other {# players found}}",
+    "resultsFoundFor": "{count, plural, one {# player found for “{query}”} other {# players found for “{query}”}}",
+    "showingRange": "Showing {start}–{end} of {total}",
+    "updating": "Updating…",
+    "paginationLabel": "Player search pagination",
+    "previousPage": "Previous",
+    "pageNumber": "Page {page}",
+    "nextPage": "Next",
+    "searchingPlayers": "Searching players",
+    "searchingCatalogue": "Searching player catalogue…",
+    "filterEyebrow": "Player discovery",
+    "catalogueSummary": "Explore the complete {count, number}-player analytical catalogue.",
+    "activeFilterCount": "{count} active",
+    "position": "Position",
+    "finalRole": "Final role",
+    "archetype": "Archetype",
+    "nationality": "Nationality",
+    "optionChecklistDescription": "Select one or more options. Multiple selections are combined as alternatives.",
+    "filterOptionCount": "{label}, {count, plural, one {# player} other {# players}}",
+    "recruitmentCriteria": "Recruitment criteria",
+    "minimumAge": "Minimum age",
+    "maximumAge": "Maximum age",
+    "minimumValue": "Minimum value",
+    "maximumValue": "Maximum value",
+    "minimumPlaceholder": "Min",
+    "maximumPlaceholder": "Max",
+    "ageRange": "Age range: {range}",
+    "marketValueRangeLabel": "Market value range",
+    "valueRange": "Value range: {range} {currency}",
+    "minimumTournamentMinutes": "Minimum tournament minutes",
+    "minutesExample": "e.g. 300",
+    "observedMinutesRange": "Observed range: {range} minutes",
+    "minimumRoleConfidence": "Minimum role confidence",
+    "roleConfidenceExample": "e.g. 70",
+    "minimumDataReliability": "Minimum data reliability",
+    "dataReliabilityExample": "e.g. 60",
+    "sortResults": "Sort results",
+    "sortRecommended": "Recommended",
+    "sortPlayerName": "Player name A–Z",
+    "sortYoungest": "Youngest first",
+    "sortLowestValue": "Lowest market value",
+    "sortMostMinutes": "Most tournament minutes",
+    "sortHighestRoleConfidence": "Highest role confidence",
+    "sortHighestDataReliability": "Highest data reliability",
+    "sortHighestPlayerQuality": "Highest player quality",
+    "clearAllFilters": "Clear all filters",
+    "clearAll": "Clear all",
+    "positionLabels": {
+      "goalkeeper": "Goalkeeper",
+      "defender": "Defender",
+      "midfielder": "Midfielder",
+      "forward": "Forward"
+    },
+    "activeFiltersTitle": "Active filters",
+    "clearFilters": "Clear filters",
+    "removeFilter": "Remove {label} filter",
+    "positionFilter": "Position: {value}",
+    "finalRoleFilter": "Final role: {value}",
+    "archetypeFilter": "Archetype: {value}",
+    "nationalityFilter": "Nationality: {value}",
+    "minimumAgeFilter": "Age ≥ {value}",
+    "maximumAgeFilter": "Age ≤ {value}",
+    "minimumValueFilter": "Value ≥ {value}",
+    "maximumValueFilter": "Value ≤ {value}",
+    "minimumMinutesFilter": "Minutes ≥ {value}",
+    "minimumRoleConfidenceFilter": "Role confidence ≥ {value}%",
+    "minimumDataReliabilityFilter": "Data reliability ≥ {value}%",
+    "openProfileLabel": "Open {player} scouting profile",
+    "nationalTeamUnavailable": "National team unavailable",
+    "finalRoleLabel": "Final role:",
+    "archetypeLabel": "Archetype:",
+    "spatialRoleLabel": "Spatial role:",
+    "ageLabel": "Age",
+    "marketValueLabel": "Market value",
+    "positionLabel": "Position",
+    "ageUnavailable": "Age unavailable",
+    "ageYears": "{value} years",
+    "marketValueUnavailable": "Market value unavailable",
+    "positionUnavailable": "Position unavailable",
+    "openScoutingProfile": "Open scouting profile"
+  },
+  "Shortlists": {
+    "metadataTitle": "Shortlists",
+    "metadataDescription": "Create and manage browser-saved World Cup 2026 recruitment shortlists."
+  },
+  "ShortlistAction": {
+    "loading": "Loading shortlists",
+    "shortlistedCount": "Shortlisted ({count})",
+    "add": "Add to shortlist",
+    "optionsLabel": "Shortlist options for {player}",
+    "eyebrow": "Shortlists",
+    "savePlayer": "Save {player}",
+    "done": "Done",
+    "select": "Select shortlists",
+    "playerCount": "{count, plural, one {# player} other {# players}}",
+    "empty": "No shortlists yet. Create the first list below.",
+    "newShortlist": "New shortlist",
+    "namePlaceholder": "Summer 2027 — LCB",
+    "createAndAdd": "Create and add",
+    "playerAdded": "{player} added to {shortlist}.",
+    "playerRemoved": "{player} removed from {shortlist}.",
+    "createdAndAdded": "{shortlist} created and {player} added.",
+    "issues": {
+      "notHydrated": "Shortlists are still loading.",
+      "storageUnavailable": "Shortlists cannot access browser storage.",
+      "readFailed": "Saved shortlists could not be read.",
+      "invalidJson": "Saved shortlist data is malformed.",
+      "unsupportedVersion": "Saved shortlist data uses an unsupported version.",
+      "invalidData": "Saved shortlist data does not match the expected contract.",
+      "invalidState": "The updated shortlist state is invalid.",
+      "writeFailed": "Shortlist changes could not be saved.",
+      "invalidShortlistId": "Shortlist ID cannot be empty.",
+      "invalidShortlistName": "Shortlist name must contain between 1 and {maximum} characters.",
+      "invalidTimestamp": "Shortlist operations require a valid timestamp.",
+      "duplicateShortlistId": "Shortlist IDs must be unique.",
+      "duplicateShortlistName": "Shortlist names must be unique.",
+      "shortlistLimitReached": "A maximum of {maximum} shortlists is supported.",
+      "shortlistNotFound": "The requested shortlist could not be found.",
+      "invalidPlayer": "The player information is invalid.",
+      "playerLimitReached": "A maximum of {maximum} players is supported per shortlist."
+    }
+  },
+  "ShortlistManager": {
+    "loading": "Loading shortlists",
+    "eyebrow": "Recruitment workspace",
+    "title": "Shortlist workspace",
+    "description": "Organize tournament players into focused recruitment lists. Saved data remains in this browser.",
+    "shortlistsStat": "Shortlists",
+    "uniquePlayersStat": "Unique players",
+    "savedSelectionsStat": "Saved selections",
+    "createLabel": "Create a shortlist",
+    "namePlaceholder": "Summer 2027 — LCB",
+    "createButton": "Create shortlist",
+    "dismiss": "Dismiss",
+    "emptyWorkspaceTitle": "No shortlists yet",
+    "emptyWorkspaceDescription": "Create a named recruitment list here or save a player directly from discovery, profile and recommendation surfaces.",
+    "explorePlayers": "Explore players",
+    "shortlistEyebrow": "Shortlist",
+    "entryCount": "{count, plural, one {# player} other {# players}}",
+    "rename": "Rename",
+    "delete": "Delete",
+    "renameLabel": "Rename {shortlist}",
+    "saveName": "Save name",
+    "cancel": "Cancel",
+    "deleteQuestion": "Delete {shortlist}?",
+    "deleteDescription": "This removes the list and all of its saved player references from this browser.",
+    "confirmDeleteLabel": "Confirm delete {shortlist}",
+    "confirmDelete": "Confirm delete",
+    "emptyListTitle": "This shortlist is empty",
+    "emptyListDescription": "Add players from the discovery catalogue, profile pages or recommendations.",
+    "createdAnnouncement": "{shortlist} created.",
+    "renamedAnnouncement": "{shortlist} renamed to {newName}.",
+    "deletedAnnouncement": "{shortlist} deleted.",
+    "playerRemovedAnnouncement": "{player} removed from {shortlist}.",
+    "nationalTeamUnavailable": "National team unavailable",
+    "roleUnavailable": "Role unavailable",
+    "positionLabel": "Position",
+    "ageLabel": "Age",
+    "marketValueLabel": "Market value",
+    "tournamentSampleLabel": "Tournament sample",
+    "positionUnavailable": "Position unavailable",
+    "ageUnavailable": "Age unavailable",
+    "ageValue": "{value} years",
+    "marketValueUnavailable": "Market value unavailable",
+    "minutesUnavailable": "Minutes unavailable",
+    "minutesValue": "{value} minutes",
+    "openProfile": "Open profile",
+    "remove": "Remove",
+    "removePlayerLabel": "Remove {player} from {shortlist}",
+    "positionLabels": {
+      "goalkeeper": "Goalkeeper",
+      "defender": "Defender",
+      "midfielder": "Midfielder",
+      "forward": "Forward"
+    }
+  },
+  "ShortlistComparison": {
+    "sectionLabel": "Compare players in {shortlist}",
+    "eyebrow": "Multi-player comparison",
+    "title": "Compare shortlist players",
+    "description": "Choose one target and up to {maximum} candidates from the same position.",
+    "selectionCount": "{selected} of {maximum} candidates selected",
+    "needMorePlayers": "Add at least one more player before starting a comparison.",
+    "targetPlayer": "Target player",
+    "candidatePlayers": "Candidate players",
+    "selectCandidate": "Select {player} as candidate",
+    "positionUnavailable": "Position unavailable",
+    "differentPosition": "Different or unavailable position",
+    "noCompatibleCandidates": "This target has no same-position candidates in the shortlist.",
+    "compareSelected": "Compare selected players",
+    "positionLabels": {
+      "goalkeeper": "Goalkeeper",
+      "defender": "Defender",
+      "midfielder": "Midfielder",
+      "forward": "Forward"
+    }
+  },
+  "PlayerProfile": {
+    "metadataPlayerTitle": "Player {playerId}",
+    "metadataNotFoundTitle": "Player not found",
+    "metadataDescription": "World Cup 2026 player scouting profile and transfer-analysis entry point.",
+    "loadingProfile": "Loading player scouting profile…",
+    "notFoundEyebrow": "Player not found",
+    "unavailableEyebrow": "Profile unavailable",
+    "notFoundTitle": "This player is not in the current catalogue",
+    "loadFailedTitle": "The scouting profile could not be loaded",
+    "notFoundDescription": "The requested player is not available in the current analytical catalogue.",
+    "loadFailedDescription": "The player profile request failed. Try loading the profile again.",
+    "retryProfile": "Retry profile",
+    "returnToSearch": "Return to player search",
+    "countryUnavailable": "Country unavailable",
+    "positionUnavailable": "Position unavailable",
+    "finalRoleUnavailable": "Final role unavailable",
+    "archetypeUnavailable": "Archetype unavailable",
+    "spatialRoleUnavailable": "Spatial role unavailable",
+    "ageLabel": "Age",
+    "heightLabel": "Height",
+    "marketValueLabel": "Market value",
+    "ageYears": "{value} years",
+    "heightCentimeters": "{value} cm",
+    "backToSearch": "Back to player search",
+    "back": "Back",
+    "runTransferAnalysis": "Run transfer analysis",
+    "positionLabels": {
+      "goalkeeper": "Goalkeeper",
+      "defender": "Defender",
+      "midfielder": "Midfielder",
+      "forward": "Forward"
+    },
+    "roleInterpretationEyebrow": "Role interpretation",
+    "roleInterpretationTitle": "How the player operates",
+    "lateralProfile": "Lateral profile",
+    "verticalProfile": "Vertical profile",
+    "mobilityProfile": "Mobility profile",
+    "spatialReliability": "Spatial reliability",
+    "tournamentSample": "Tournament sample",
+    "participationContext": "Participation context",
+    "matches": "Matches",
+    "starts": "Starts",
+    "minutes": "Minutes",
+    "primaryFormation": "Primary formation",
+    "viewRoleEvidence": "View role assignment evidence",
+    "roleEvidenceDescription": "Supporting model evidence used to interpret the player's tactical and spatial role.",
+    "modelContextEyebrow": "Model context",
+    "modelConfidenceTitle": "Confidence behind the profile",
+    "modelConfidenceDescription": "Supporting quality and reliability signals used to interpret the tournament profile.",
+    "weightedRating": "Weighted rating",
+    "weightedRatingDescription": "Reliability-aware tournament performance rating",
+    "playerQuality": "Player quality",
+    "playerQualityDescription": "Combined performance-quality assessment",
+    "dataReliability": "Data reliability",
+    "dataReliabilityDescription": "Confidence supported by available tournament data",
+    "roleConfidence": "Role confidence",
+    "roleConfidenceDescription": "Confidence in the assigned tactical role"
+  },
+  "PlayerFeaturedMetrics": {
+    "eyebrow": "Featured performance",
+    "title": "Position-relevant metrics",
+    "description": "A quick read of the player's tournament output for this position. Full metric detail remains available below.",
+    "unitPer90": "Per 90",
+    "unitPercent": "Percentage",
+    "unitRaw": "Tournament total",
+    "samePositionPercentile": "Same-position percentile",
+    "percentileAriaLabel": "{metric} performance percentile",
+    "peerComparison": "Compared with <countValue>{count}</countValue> eligible peers.",
+    "percentileUnavailable": "Same-position percentile unavailable."
+  },
+  "PlayerScoutingInsights": {
+    "eyebrow": "Scouting intelligence",
+    "title": "Scouting insights",
+    "description": "Position-aware performance signals derived from same-position percentile comparisons across the tournament sample.",
+    "unavailable": "Position-aware scouting insights were not reported for this player.",
+    "strengths": "Strengths",
+    "standoutSignals": "Standout signals",
+    "watchOuts": "Watch-outs",
+    "areasToReview": "Areas to review",
+    "surfacedCount": "{count, plural, one {# surfaced} other {# surfaced}}",
+    "noStrengths": "No standout strengths were surfaced by the current position-aware profile.",
+    "noWatchOuts": "No watch-out signals were surfaced by the current position-aware profile.",
+    "percentile": "percentile",
+    "percentileAriaLabel": "{metric} performance percentile"
+  },
+  "PlayerPerformanceProfile": {
+    "eyebrow": "Performance intelligence",
+    "title": "Performance profile",
+    "description": "Position-specific tournament metrics with raw or per-90 output and same-position percentile context.",
+    "unavailable": "Position-aware performance metrics were not reported for this player.",
+    "empty": "No position-aware performance metrics were available for this player.",
+    "value": "Value",
+    "rawValue": "Raw value",
+    "percentile": "Percentile",
+    "percentileUnavailable": "Percentile unavailable",
+    "percentileAriaLabel": "{metric} performance percentile",
+    "peerSample": "n={count} peers",
+    "peerSampleCompact": "n={count}",
+    "reportedValueRetained": "Reported value retained.",
+    "guideTitle": "How to read the profile",
+    "exampleMetric": "Example metric",
+    "illustrative": "Illustrative",
+    "peerSamplePlaceholder": "n=XXX peers",
+    "guideDescription": "X.XX is the metric output; 75.0 and the bar show the same-position percentile; n is the eligible peer sample. Higher percentile is more favorable.",
+    "groups": {
+      "creation": "Chance creation",
+      "progression": "Ball progression",
+      "possession": "Possession",
+      "defending": "Defensive contribution",
+      "scoring": "Scoring threat",
+      "physical": "Physical output",
+      "goalkeeping": "Goalkeeping"
+    }
+  },
+  "PlayerSpatialProfile": {
+    "regionLabel": "Player spatial profile",
+    "loading": "Loading player spatial profile",
+    "profileUnavailable": "Spatial profile unavailable",
+    "loadFailedDescription": "The tournament heatmap for {player} could not be loaded.",
+    "retry": "Retry spatial data",
+    "dataUnavailable": "Spatial data unavailable",
+    "dataUnavailableDescription": "No measured tournament heatmap is available for {player}."
+  },
+  "SpatialPositionPitch": {
+    "coordinatesUnavailable": "Positional coordinates are not available for either player.",
+    "defensive": "Defensive",
+    "attackingDirection": "Attacking direction →",
+    "comparisonAriaLabel": "Spatial position comparison for {target} and {candidate}",
+    "meanPositionTitle": "{player}: mean position ({x}, {y})",
+    "dispersionDescription": "Ellipses show positional dispersion when available."
+  },
+  "HeatmapPitch": {
+    "unavailable": "Tournament heatmap data are not available for {player}.",
+    "defensive": "Defensive",
+    "attackingDirection": "Attacking direction →",
+    "ariaLabel": "Tournament heatmap for {player}",
+    "averagePositionTitle": "{player}: average tournament position ({x}, {y})",
+    "averagePosition": "Average tournament position",
+    "densityTitle": "Relative tournament occupation density",
+    "densityDescription": "Visual intensity reflects observed tournament heatmap occupation, not positional probability.",
+    "densityLegendAriaLabel": "Relative occupation density legend",
+    "low": "Low",
+    "high": "High",
+    "matches": "Matches",
+    "points": "Points",
+    "entropy": "Entropy"
+  },
+  "PlayerImage": {
+    "photoAlt": "{player} player photo",
+    "photoUnavailable": "{player} player photo unavailable"
+  },
+  "TransferAnalysisPage": {
+    "eyebrow": "Transfer intelligence",
+    "title": "Replacement analysis",
+    "description": "Define the candidate pool and rank transfer alternatives across four recruitment scenarios.",
+    "backToProfile": "Back to player profile"
+  },
+  "TransferAnalysisForm": {
+    "recruitmentSearch": "Recruitment search",
+    "candidatePool": "Candidate pool",
+    "description": "Set the minimum evidence and budget constraints used to identify eligible replacement candidates.",
+    "analysisTargetAriaLabel": "Analysis target",
+    "targetUnavailable": "Target unavailable",
+    "targetUnavailableDescription": "Return to player search and select the target again.",
+    "analysisTarget": "Analysis target",
+    "countryUnavailable": "Country unavailable",
+    "roleUnavailable": "Role unavailable",
+    "metricUnavailable": "Unavailable",
+    "tournamentMinutes": "Tournament minutes",
+    "roleConfidence": "Role confidence",
+    "playerQuality": "Player quality",
+    "tournamentExperience": "Tournament experience",
+    "minimumWorldCupMinutes": "Minimum World Cup minutes",
+    "minutesUnit": "min",
+    "roleEvidence": "Role evidence",
+    "minimumRoleConfidence": "Minimum tactical-role confidence",
+    "budgetCeiling": "Budget ceiling",
+    "maximumMarketValue": "Maximum candidate market value",
+    "noLimit": "No limit",
+    "advancedSettings": "Advanced settings",
+    "technicalFallbackBehavior": "Technical fallback behavior",
+    "missingHeatmapFallback": "Missing heatmap fallback",
+    "missingHeatmapDescription": "Used only when measured spatial evidence is unavailable",
+    "fallbackExplanation": "This fallback does not create spatial evidence. The configured value is used only when measured heatmap coverage is missing.",
+    "rankingPrefix": "Candidates are ranked independently for",
+    "immediateImpact": "immediate impact",
+    "development": "development",
+    "value": "value",
+    "shortTermContribution": "short-term contribution",
+    "rankingDescription": "Ranking combines tournament performance, tactical role, spatial evidence and market context.",
+    "openingRecommendations": "Opening recommendations…",
+    "findAlternatives": "Find transfer alternatives",
+    "validation": {
+      "minimumMinutes": "Enter tournament minutes of 0 or more.",
+      "roleConfidence": "Enter a role-confidence percentage between 0 and 100.",
+      "marketValue": "Enter a market value of 0 or more.",
+      "heatmapFallback": "Enter a heatmap fallback percentage between 0 and 100."
+    }
+  },
+  "AnalysisResultsPage": {
+    "eyebrow": "Transfer intelligence",
+    "invalidTitle": "Invalid analysis configuration",
+    "invalidDescription": "The recruitment thresholds in this URL are invalid.",
+    "configureAnalysis": "Configure analysis",
+    "invalidParametersTitle": "The URL parameters could not be used",
+    "invalidParametersDescription": "Return to the configuration page and submit valid recruitment thresholds.",
+    "title": "Replacement recommendations",
+    "description": "Review candidates across four recruitment scenarios, inspect the recommendation evidence and continue to direct player comparison."
+  },
+  "TransferAnalysisResults": {
+    "analysisUnavailable": "Analysis unavailable",
+    "playerNotFound": "The target player could not be found",
+    "datasetsUnavailable": "The analytics datasets are unavailable",
+    "analysisFailed": "The transfer analysis could not be completed",
+    "requestFailed": "The transfer analysis request failed.",
+    "retryAnalysis": "Retry analysis",
+    "adjustParameters": "Adjust parameters",
+    "analysisTarget": "Analysis target",
+    "roleUnavailable": "Role unavailable",
+    "nationalTeamUnavailable": "National team unavailable",
+    "notReported": "Not reported",
+    "appearances": "appearances",
+    "minutes": "minutes",
+    "marketValue": "Market value",
+    "playerQuality": "Player quality",
+    "roleConfidence": "Role confidence",
+    "adjustCriteria": "Adjust recruitment criteria",
+    "activeScenario": "Active scenario",
+    "recruitmentStrategy": "Recruitment strategy",
+    "modeTabsAriaLabel": "Transfer recommendation modes",
+    "noCandidates": "No eligible candidates",
+    "noCandidatesDescription": "Adjust the recruitment thresholds to expand the candidate pool.",
+    "leadingRecommendation": "Leading recommendation",
+    "leadingRecommendationTitle": "Best-ranked candidate for this scenario",
+    "otherCandidates": "Other candidates",
+    "otherCandidatesTitle": "Alternative recruitment options",
+    "alternativeCount": "{count, plural, one {# alternative} other {# alternatives}}",
+    "showTopRecommendations": "Show top recommendations",
+    "showAllCandidates": "Show all {count} candidates",
+    "modes": {
+      "immediate": {
+        "label": "Immediate impact",
+        "shortLabel": "Immediate",
+        "description": "Candidates ranked for first-team contribution now."
+      },
+      "development": {
+        "label": "Development investment",
+        "shortLabel": "Development",
+        "description": "Younger or developing candidates ranked for future value."
+      },
+      "value": {
+        "label": "Market value opportunity",
+        "shortLabel": "Value",
+        "description": "Candidates balancing suitability with financial efficiency."
+      },
+      "shortTerm": {
+        "label": "Short-term solution",
+        "shortLabel": "Short term",
+        "description": "Experienced candidates suited to a shorter recruitment horizon."
+      }
+    },
+    "runningAnalysis": "Running transfer analysis",
+    "requestId": "Request ID"
+  },
+  "TransferRecommendationCard": {
+    "notReported": "Not reported",
+    "positionUnavailable": "Position unavailable",
+    "nationalTeamUnavailable": "National team unavailable",
+    "roleUnavailable": "Role unavailable",
+    "positionLabels": {
+      "G": "Goalkeeper",
+      "D": "Defender",
+      "M": "Midfielder",
+      "F": "Forward"
+    },
+    "statisticalSimilarity": "Statistical similarity",
+    "spatialSimilarity": "Spatial similarity",
+    "roleFit": "Role fit",
+    "marketAdvantage": "Market advantage",
+    "statistical": "Statistical",
+    "spatial": "Spatial",
+    "market": "Market",
+    "marketValue": "Market value",
+    "age": "Age",
+    "ageYears": "{age} years",
+    "minutes": "Minutes",
+    "tournamentMinutes": "Tournament minutes",
+    "compare": "Compare",
+    "profile": "Profile",
+    "compareWithTarget": "Compare with target",
+    "openPlayerProfile": "Open player profile",
+    "scoreLabels": {
+      "immediate": "Immediate score",
+      "development": "Development score",
+      "value": "Value score",
+      "shortTerm": "Short-term score"
+    }
+  },
+  "RecommendationExplainability": {
+    "whyCandidate": "Why this candidate",
+    "weightedSignals": "Weighted signals",
+    "appliedBonuses": "Applied bonuses",
+    "viewBreakdown": "View score breakdown",
+    "scoreComposition": "Score composition",
+    "bonuses": "Bonuses",
+    "preClipScore": "Pre-clip score",
+    "finalScore": "Final score",
+    "clippedDescription": "The pre-clip score was constrained to the model's 0–100 output range.",
+    "input": "Input",
+    "weight": "Weight",
+    "contribution": "Contribution",
+    "modeBonuses": "Mode bonuses",
+    "applied": "Applied",
+    "notApplied": "Not applied",
+    "disclaimer": "This score explains model fit within the selected recruitment scenario. It is not a probability that a transfer will succeed.",
+    "evidence": {
+      "available": "Direct evidence",
+      "fallback": "Fallback input",
+      "missing": "Missing input"
+    }
+  },
+  "RoleCompatibilityPanel": {
+    "eyebrow": "Role compatibility",
+    "title": "Tactical role alignment",
+    "description": "Compare how the target and candidate are profiled across role, archetype, pitch zone and movement behaviour.",
+    "profile": "Tactical profile",
+    "target": "Target",
+    "candidate": "Candidate",
+    "notReported": "Not reported",
+    "finalRole": "Final role",
+    "archetype": "Archetype",
+    "spatialRole": "Spatial role",
+    "lateralProfile": "Lateral profile",
+    "verticalProfile": "Vertical profile",
+    "mobility": "Mobility",
+    "roleConfidence": "Role confidence"
+  },
+  "RadarProfile": {
+    "unavailable": "Playing-style radar data are not available for {playerName}.",
+    "incompatible": "These playing-style profiles use different radar dimensions and cannot share one overlay.",
+    "comparisonAriaLabel": "Playing style radar comparison for {primaryPlayer} and {secondaryPlayer}",
+    "singleAriaLabel": "Playing style radar for {playerName}",
+    "title": "Position-relative playing style",
+    "scale": "Percentile · 0–100",
+    "axisUnavailable": "not available",
+    "axisPercentile": "percentile",
+    "legendAriaLabel": "Radar series legend",
+    "partialEvidence": "At least one radar dimension has no measured percentile. Missing values are left unplotted rather than replaced with a neutral score.",
+    "guidance": "Each axis shows how strongly the player expresses that playing-style dimension relative to players in the same position. Higher percentiles do not by themselves mean a better overall player."
+  },
+  "PlayerComparisonPage": {
+    "eyebrow": "Player comparison",
+    "invalidTitle": "Invalid comparison configuration",
+    "validScenarioRequired": "A valid recruitment scenario is required.",
+    "invalidParameters": "The comparison parameters are invalid.",
+    "configureAnalysis": "Configure analysis",
+    "incompleteContext": "The comparison context is incomplete",
+    "incompleteDescription": "Return to transfer analysis and select a candidate from one of the recommendation scenarios.",
+    "title": "Target versus candidate",
+    "description": "Compare tactical role, tournament performance, reliability, market context and the evidence behind the recruitment recommendation.",
+    "backToRecommendations": "Back to recommendations"
+  },
+  "PlayerComparison": {
+    "preparing": "Preparing player comparison…",
+    "notReported": "Not reported",
+    "scenarioScore": "Scenario score",
+    "score": "Score",
+    "positionUnavailable": "Position unavailable",
+    "nationalTeamUnavailable": "National team unavailable",
+    "roleUnavailable": "Role unavailable",
+    "marketValue": "Market value",
+    "age": "Age",
+    "ageYears": "{value} years",
+    "tournamentMinutes": "Tournament minutes",
+    "weightedRating": "Weighted rating",
+    "roleConfidence": "Role confidence",
+    "dataReliability": "Data reliability",
+    "positionLabels": {
+      "G": "Goalkeeper",
+      "D": "Defender",
+      "M": "Midfielder",
+      "F": "Forward"
+    },
+    "comparisonUnavailable": "Comparison unavailable",
+    "comparisonFailedTitle": "The player comparison could not be prepared",
+    "requestFailed": "The transfer analysis request failed.",
+    "requestId": "Request ID",
+    "retryComparison": "Retry comparison",
+    "candidateUnavailable": "Candidate unavailable",
+    "candidateIneligibleTitle": "This candidate is no longer eligible",
+    "candidateIneligibleDescription": "The player does not appear in the selected recruitment scenario with the current analysis thresholds.",
+    "returnToRecommendations": "Return to recommendations",
+    "modes": {
+      "immediate": {
+        "label": "Immediate impact",
+        "shortLabel": "Immediate",
+        "scoreLabel": "Immediate score"
+      },
+      "development": {
+        "label": "Development investment",
+        "shortLabel": "Development",
+        "scoreLabel": "Development score"
+      },
+      "value": {
+        "label": "Market value opportunity",
+        "shortLabel": "Value",
+        "scoreLabel": "Value score"
+      },
+      "shortTerm": {
+        "label": "Short-term solution",
+        "shortLabel": "Short term",
+        "scoreLabel": "Short-term score"
+      }
+    },
+    "metrics": {
+      "statisticalSimilarity": "Statistical similarity",
+      "statisticalSimilarityDescription": "Similarity across the position-specific statistical feature set.",
+      "spatialSimilarity": "Spatial similarity",
+      "spatialSimilarityDescription": "Similarity in average position, spatial spread, thirds and lane occupation.",
+      "heatmapSimilarity": "Heatmap similarity",
+      "heatmapSimilarityDescription": "Direct measured similarity in occupied pitch zones and heatmap structure.",
+      "roleFit": "Role fit",
+      "roleFitDescription": "Alignment with the target player's tactical role.",
+      "marketAdvantage": "Market advantage",
+      "marketAdvantageDescription": "Estimated financial advantage relative to the target."
+    },
+    "sameFinalRole": "Same final role",
+    "sameArchetype": "Same archetype",
+    "directHeatmapEvidence": "Direct heatmap evidence",
+    "targetPlayer": "Target player",
+    "candidateRank": "Candidate · Rank {rank}",
+    "comparisonIndicators": "Comparison indicators",
+    "recommendationEvidence": "Recommendation evidence",
+    "whyCandidate": "Why {player}?",
+    "recommendationContext": "The main evidence behind this candidate's place in {scenario}.",
+    "rankBadge": "Rank #{rank}",
+    "whyRecommended": "Why recommended",
+    "explanationUnavailable": "Recommendation explanation is not available.",
+    "evidenceChecks": "Evidence checks",
+    "yes": "Yes",
+    "no": "No",
+    "noEvidenceChecks": "No additional evidence checks are available.",
+    "recommendationDisclaimer": "Recruitment recommendations support scouting review; detailed tactical, spatial and measured tournament evidence continues below.",
+    "candidateProfile": "Candidate profile",
+    "targetProfile": "Target profile",
+    "tacticalSpatialEyebrow": "Tactical & spatial fit",
+    "tacticalSpatialTitle": "Role and position context",
+    "tacticalSpatialDescription": "Compare how the candidate matches the target's tactical profile and observed tournament positioning.",
+    "spatialProfile": "Spatial profile",
+    "spatialTitle": "Position and occupation context",
+    "spatialDescription": "Compare weighted tournament positions and positional dispersion on the same pitch.",
+    "lateralSimilarity": "Lateral similarity",
+    "verticalSimilarity": "Vertical similarity",
+    "spatialGuidance": "Pitch markers represent weighted mean tournament position. Ellipses represent positional dispersion on each axis. Overall spatial similarity also considers pitch thirds and lane occupation, so it is not simply the distance between the two markers.",
+    "target": "Target",
+    "candidate": "Candidate",
+    "radar": {
+      "regionLabel": "Playing style radar comparison",
+      "eyebrow": "Playing style",
+      "title": "Position-relative radar profile",
+      "description": "Compare how strongly each player expresses the statistical playing-style dimensions associated with their position.",
+      "sharedOverlay": "Shared position overlay",
+      "separateProfiles": "Separate position profiles",
+      "loading": "Loading radar comparison",
+      "unavailable": "Radar comparison unavailable",
+      "unavailableDescription": "The main recruitment comparison remains available, but position-relative playing-style profiles could not be loaded.",
+      "retry": "Retry radar",
+      "percentilesTitle": "Dimension percentiles",
+      "percentilesDescription": "Position-relative percentile values used by the shared radar profile.",
+      "percentileGuidance": "Higher percentile values indicate stronger expression of that playing-style dimension relative to the player's positional peer group.",
+      "incompatibleDescription": "These players do not share one compatible radar axis contract. Their profiles are shown separately rather than forcing unlike position dimensions onto one chart."
+    },
+    "heatmap": {
+      "regionLabel": "Heatmap profile comparison",
+      "eyebrow": "Heatmap profile",
+      "title": "Measured tournament occupation",
+      "description": "Compare where both players actually occupied the pitch during the tournament using measured heatmap evidence.",
+      "measuredEvidence": "Measured pair evidence",
+      "evidenceUnavailable": "Pair evidence unavailable",
+      "loading": "Loading heatmap comparison",
+      "unavailable": "Heatmap comparison unavailable",
+      "unavailableDescription": "The main recruitment comparison remains available, but measured heatmap evidence could not be loaded.",
+      "retry": "Retry heatmap",
+      "densityTitle": "Relative tournament occupation density",
+      "densityDescription": "Both pitches use the same shared density scale. Visual intensity reflects observed tournament heatmap occupation, not positional probability.",
+      "metricsLabel": "Heatmap evidence metrics",
+      "metrics": {
+        "measuredSimilarity": "Measured similarity",
+        "measuredSimilarityDescription": "Overall measured similarity between the two tournament heatmap profiles.",
+        "cosineSimilarity": "Cosine similarity",
+        "cosineSimilarityDescription": "Similarity in the full distribution of occupation density across grid cells.",
+        "occupationOverlap": "Occupation overlap",
+        "occupationOverlapDescription": "How strongly the two players occupy the same areas of the pitch.",
+        "peakZoneSimilarity": "Peak-zone similarity",
+        "peakZoneSimilarityDescription": "Similarity between the players' strongest occupation zones.",
+        "peakZoneDistance": "Peak-zone distance",
+        "peakZoneDistanceDescription": "Distance between the strongest-density locations on the normalized pitch.",
+        "entropySimilarity": "Entropy similarity",
+        "entropySimilarityDescription": "Similarity in how concentrated or dispersed the two occupation profiles are."
+      }
+    }
+  },
+  "MultiPlayerComparisonPage": {
+    "metadataTitle": "Multi-player comparison",
+    "metadataDescription": "Compare one target with up to three same-position recruitment candidates.",
+    "eyebrow": "Player comparison",
+    "title": "Multi-player comparison",
+    "description": "Compare one target with up to three same-position candidates using player context and target-relative analytical evidence.",
+    "backToShortlists": "Back to shortlists"
+  },
+  "MultiPlayerComparison": {
+    "unavailable": "Unavailable",
+    "reference": "Reference",
+    "yearsSuffix": "years",
+    "loading": "Preparing multi-player comparison",
+    "comparisonUnavailable": "Comparison unavailable",
+    "comparisonFailedTitle": "The multi-player comparison could not be prepared",
+    "comparisonRequestFailed": "The comparison request failed.",
+    "retryComparison": "Retry comparison",
+    "candidatesUnavailable": "Candidates unavailable",
+    "noCandidatesTitle": "No comparison candidates were returned",
+    "noCandidatesDescription": "Return to the shortlist workspace and choose at least one same-position candidate.",
+    "returnToShortlists": "Return to shortlists",
+    "overviewEyebrow": "Overview matrix",
+    "overviewTitle": "Target-relative comparison",
+    "candidateSummary": "{count, plural, one {# candidate} other {# candidates}} compared with {target}. Unavailable pair evidence remains explicitly unavailable.",
+    "scrollRegionLabel": "Scrollable multi-player comparison matrix",
+    "tableCaption": "Target-relative comparison overview",
+    "metric": "Metric",
+    "target": "Target",
+    "candidateLabel": "Candidate {index}",
+    "referenceGuidance": "Reference cells identify the target baseline. Unavailable values mean the requested pair has no measured evidence in the current dataset.",
+    "positions": {
+      "goalkeeper": "Goalkeeper",
+      "defender": "Defender",
+      "midfielder": "Midfielder",
+      "forward": "Forward"
+    },
+    "rows": {
+      "position": {
+        "label": "Position",
+        "description": "Broad player position."
+      },
+      "role": {
+        "label": "Final role",
+        "description": "Primary analytical role label."
+      },
+      "age": {
+        "label": "Age",
+        "description": "Reported player age."
+      },
+      "marketValue": {
+        "label": "Market value",
+        "description": "Reported market value and currency."
+      },
+      "minutes": {
+        "label": "Tournament minutes",
+        "description": "Minutes recorded in the tournament dataset."
+      },
+      "quality": {
+        "label": "Player quality",
+        "description": "Combined player-quality score."
+      },
+      "reliability": {
+        "label": "Data reliability",
+        "description": "Reliability of the available player evidence."
+      },
+      "statisticalSimilarity": {
+        "label": "Statistical similarity",
+        "description": "Measured statistical similarity relative to the target."
+      },
+      "spatialSimilarity": {
+        "label": "Spatial similarity",
+        "description": "Same-position spatial similarity relative to the target."
+      },
+      "heatmapSimilarity": {
+        "label": "Heatmap similarity",
+        "description": "Measured tournament heatmap similarity relative to the target."
+      },
+      "roleFit": {
+        "label": "Role fit",
+        "description": "Role compatibility relative to the target."
+      },
+      "marketAdvantage": {
+        "label": "Market advantage",
+        "description": "Candidate market-value advantage relative to the target."
+      }
+    }
+  },
+  "MultiPlayerRoleMetrics": {
+    "eyebrow": "Role performance",
+    "title": "Target final-role metrics",
+    "descriptionBeforeRole": "All players are evaluated against the duties of",
+    "descriptionAfterRole": ". Each value shows tournament total followed by the per-90 rate.",
+    "targetRoleFallback": "the target role",
+    "unavailableDescription": "Role metric evidence is unavailable for this target.",
+    "scrollRegionLabel": "Scrollable target final-role metrics",
+    "tableLabel": "Target final-role metric comparison",
+    "metric": "Metric",
+    "target": "Target",
+    "candidate": "Candidate {index}",
+    "unavailable": "Unavailable",
+    "valueLabel": "{total} total, {per90} per 90",
+    "guidance": "Metrics are selected from the target player's final-role duties. Missing tournament evidence is never replaced with zero.",
+    "groups": {
+      "shot_stopping": "Shot stopping",
+      "box_command": "Box command",
+      "short_distribution": "Short distribution",
+      "defending": "Defending",
+      "duels": "Ground duels",
+      "aerial": "Aerial defending",
+      "passing": "Passing",
+      "progression": "Progression",
+      "wide_attack": "Wide attacking output",
+      "security": "Possession security",
+      "passing_volume": "Passing volume",
+      "creativity": "Chance creation",
+      "defensive_work": "Defensive work",
+      "scoring": "Scoring",
+      "scoring_threat": "Scoring threat",
+      "wide_creation": "Wide creation",
+      "ball_security": "Ball security",
+      "finishing": "Finishing",
+      "shooting_volume": "Shooting volume",
+      "link_play": "Link play",
+      "aerial_presence": "Aerial presence"
+    },
+    "metrics": {
+      "saves": "Saves",
+      "goalsPrevented": "Goals prevented",
+      "keeperSaveValue": "Keeper save value",
+      "savedShotsFromInsideTheBox": "Inside-box saves",
+      "goodHighClaim": "High claims",
+      "punches": "Punches",
+      "totalPass": "Passes",
+      "accuratePass": "Accurate passes",
+      "totalLongBalls": "Long balls",
+      "accurateLongBalls": "Accurate long balls",
+      "totalTackle": "Tackles",
+      "wonTackle": "Tackles won",
+      "interceptionWon": "Interceptions",
+      "totalClearance": "Clearances",
+      "outfielderBlock": "Blocks",
+      "ballRecovery": "Ball recoveries",
+      "duelWon": "Duels won",
+      "aerialWon": "Aerial duels won",
+      "totalProgression": "Progression distance",
+      "progressiveBallCarriesCount": "Progressive carries",
+      "ballCarriesCount": "Carries",
+      "totalBallCarriesDistance": "Carry distance",
+      "totalCross": "Crosses",
+      "accurateCross": "Accurate crosses",
+      "keyPass": "Key passes",
+      "expectedAssists": "Expected assists",
+      "possessionLostCtrl": "Possessions lost",
+      "errorLeadToAShot": "Errors leading to a shot",
+      "errorLeadToAGoal": "Errors leading to a goal",
+      "goalAssist": "Assists",
+      "bigChanceCreated": "Big chances created",
+      "goals": "Goals",
+      "expectedGoals": "Expected goals",
+      "totalShots": "Shots",
+      "shots": "Shots",
+      "onTargetScoringAttempt": "Shots on target",
+      "dispossessed": "Times dispossessed",
+      "unsuccessfulTouch": "Unsuccessful touches",
+      "bigChanceMissed": "Big chances missed",
+      "touches": "Touches"
+    }
+  },
+  "MultiPlayerComparisonEvidence": {
+    "unavailable": "Unavailable",
+    "sectionLabel": "Detailed comparison evidence",
+    "showingEvidence": "Showing detailed evidence for {target} and {candidate}.",
+    "radar": {
+      "sectionLabel": "Focused playing style radar comparison",
+      "eyebrow": "Playing style",
+      "title": "Position-relative radar",
+      "description": "Compare the selected pair using their position-relative playing-style percentiles.",
+      "candidateSelector": "Radar comparison candidate",
+      "loading": "Loading focused radar comparison",
+      "unavailable": "Radar comparison unavailable",
+      "unavailableDescription": "The overview matrix remains available, but the focused radar could not be loaded.",
+      "retry": "Retry radar",
+      "incompatible": "These profiles cannot share one compatible radar axis contract. They are shown separately."
+    },
+    "heatmap": {
+      "sectionLabel": "Focused heatmap profile comparison",
+      "eyebrow": "Heatmap profile",
+      "title": "Measured tournament occupation",
+      "description": "Compare where the selected players occupied the pitch using measured tournament evidence.",
+      "candidateSelector": "Heatmap comparison candidate",
+      "loading": "Loading focused heatmap comparison",
+      "unavailable": "Heatmap comparison unavailable",
+      "unavailableDescription": "The overview matrix remains available, but the focused heatmap evidence could not be loaded.",
+      "retry": "Retry heatmap",
+      "sharedScale": "Shared density scale",
+      "sharedScaleDescription": "Both pitches use the same relative occupation-density scale.",
+      "metricsLabel": "Focused heatmap evidence metrics",
+      "metrics": {
+        "measuredSimilarity": "Measured similarity",
+        "measuredSimilarityDescription": "Overall measured similarity between the two tournament heatmap profiles.",
+        "cosineSimilarity": "Cosine similarity",
+        "cosineSimilarityDescription": "Similarity across the complete occupation-density grid.",
+        "occupationOverlap": "Occupation overlap",
+        "occupationOverlapDescription": "How strongly both players occupy the same pitch areas.",
+        "peakZoneSimilarity": "Peak-zone similarity",
+        "peakZoneSimilarityDescription": "Similarity between the strongest occupation zones.",
+        "peakZoneDistance": "Peak-zone distance",
+        "peakZoneDistanceDescription": "Distance between the strongest-density locations.",
+        "entropySimilarity": "Entropy similarity",
+        "entropySimilarityDescription": "Similarity in occupation-profile concentration."
+      }
+    }
+  },
+  "ApplicationError": {
+    "eyebrow": "Application error",
+    "title": "This analysis view could not be displayed",
+    "description": "An unexpected error interrupted the current page. Retry the view or return to a stable part of the application.",
+    "errorReference": "Error reference",
+    "tryAgain": "Try again",
+    "openPlayers": "Open players",
+    "returnHome": "Return home"
+  },
+  "NotFound": {
+    "title": "This page is outside the analysis zone.",
+    "description": "The requested WC26 resource could not be found or may not exist yet.",
+    "returnHome": "Return home",
+    "openPlayers": "Open players"
+  },
+  "StatusPage": {
+    "metadataTitle": "System Status",
+    "metadataDescription": "Current availability of WC26 player data and scouting services.",
+    "eyebrow": "System status",
+    "title": "Scouting services at a glance",
+    "description": "Check whether player data and transfer analysis services are ready to use."
+  },
+  "ApiStatusOverview": {
+    "checking": "Checking system availability…",
+    "unavailable": "System status unavailable",
+    "loadFailed": "The system status could not be loaded.",
+    "retry": "Retry",
+    "currentAvailability": "Current availability",
+    "allOperational": "All scouting services operational",
+    "allOperationalDescription": "Player search and transfer analysis are ready to use.",
+    "playerDataAttention": "Player data requires attention",
+    "playerDataAttentionDescription": "Core services are responding, but the player catalogue is not ready.",
+    "scoutingApi": "Scouting API",
+    "operational": "Operational",
+    "scoutingApiDescription": "Core scouting requests are responding normally.",
+    "playerData": "Player data",
+    "ready": "Ready",
+    "notReady": "Not ready",
+    "lastLoaded": "Last loaded {timestamp}",
+    "loadTimeNotReported": "Load time not reported.",
+    "lastChecked": "Last checked {timestamp}",
+    "refresh": "Refresh status",
+    "technicalDetails": "Technical details",
+    "environment": "Environment",
+    "deployment": "Deployment",
+    "version": "Version",
+    "branch": "Branch",
+    "datasetFingerprint": "Dataset fingerprint",
+    "apiStarted": "API started",
+    "notReported": "Not reported"
+  },
+  "ApiStatusBadge": {
+    "checking": "Checking API",
+    "ready": "API ready",
+    "notReady": "API not ready",
+    "unavailable": "API unavailable"
+  },
+  "ApiErrorReference": {
+    "requestId": "Request ID"
+  },
+  "Methodology": {
+    "metadataTitle": "Methodology",
+    "metadataDescription": "How WC26 Transfer Intelligence interprets player evidence and ranks replacement candidates.",
+    "eyebrow": "Methodology",
+    "title": "Similarity is evidence, not the final decision",
+    "description": "WC26 Transfer Intelligence combines statistical, tactical, spatial, heatmap, quality, reliability, age and market evidence to rank replacements for a specific recruitment objective.",
+    "core": {
+      "eyebrow": "Core principle",
+      "title": "The objective is not to find the most similar player. It is to find the most suitable replacement for the selected recruitment context.",
+      "description": "Statistical similarity describes profile resemblance. The final recommendation also considers tactical fit, occupied areas, tournament quality, evidence reliability, age and market value."
+    },
+    "pipeline": {
+      "eyebrow": "Decision pipeline",
+      "title": "From target player to ranked candidates",
+      "steps": {
+        "selectTarget": {
+          "number": "01",
+          "title": "Select the target",
+          "description": "The analysis starts from one stable player identity and its tournament, role, spatial and market profile."
+        },
+        "buildCandidatePool": {
+          "number": "02",
+          "title": "Build the candidate pool",
+          "description": "Candidates are filtered by playing time, role confidence, optional budget and the availability of statistical similarity evidence."
+        },
+        "calculateSignals": {
+          "number": "03",
+          "title": "Calculate decision signals",
+          "description": "The engine adds tactical role fit, spatial similarity, heatmap evidence, market advantage and age suitability."
+        },
+        "applyEligibility": {
+          "number": "04",
+          "title": "Apply scenario eligibility",
+          "description": "Each recruitment scenario applies its own minimum similarity, quality, reliability, role and age requirements."
+        },
+        "scoreAndExplain": {
+          "number": "05",
+          "title": "Score and explain",
+          "description": "Eligible candidates receive a scenario-specific score, rank, recommendation type and human-readable evidence."
+        }
+      }
+    },
+    "evidence": {
+      "eyebrow": "Evidence interpretation",
+      "title": "How to read player evidence",
+      "description": "Player values, percentiles and sample sizes answer different questions. They should be read together without treating missing evidence as measured performance.",
+      "cards": {
+        "output": {
+          "label": "Output",
+          "title": "Raw and per-90 values",
+          "description": "The reported output is the player's measured tournament value. Per-90 values normalize volume for playing time; they are not percentile scores."
+        },
+        "positionContext": {
+          "label": "Position context",
+          "title": "Same-position percentile",
+          "description": "Percentiles compare the player with eligible peers in the same position group. A higher percentile means stronger expression of that metric."
+        },
+        "peerSample": {
+          "label": "Peer sample",
+          "title": "What n represents",
+          "description": "The n value is the number of eligible same-position peers. Peer cohorts require at least 180 tournament minutes and 10 usable players."
+        },
+        "evidenceState": {
+          "label": "Evidence state",
+          "title": "Missing is not zero",
+          "description": "Unavailable evidence remains missing. A measured zero is preserved as a real value and is never replaced with a neutral or invented result."
+        }
+      }
+    },
+    "roleModel": {
+      "eyebrow": "Role model",
+      "title": "From performance profile to tactical role",
+      "description": "The platform keeps statistical style, measured occupation and the final tactical interpretation distinct so each layer can be inspected independently.",
+      "supportingLabel": "Supporting role evidence",
+      "supportingDescription": "Lateral profile, vertical profile and mobility profile describe how the player occupied and moved through the pitch. Role confidence expresses how strongly the available evidence supports the assigned role.",
+      "cards": {
+        "statisticalArchetype": {
+          "title": "Statistical archetype",
+          "description": "Describes how the player's tournament actions and performance metrics cluster statistically."
+        },
+        "spatialRole": {
+          "title": "Spatial role",
+          "description": "Describes where the player operated using average location, lane occupation, vertical zone and spatial spread."
+        },
+        "finalRole": {
+          "title": "Final role",
+          "description": "Combines the statistical archetype with the measured spatial profile to produce the tactical role used by the recommendation engine."
+        }
+      }
+    },
+    "signals": {
+      "eyebrow": "Decision signals",
+      "title": "What the engine evaluates",
+      "cards": {
+        "statisticalSimilarity": {
+          "title": "Statistical similarity",
+          "description": "A position-relevant comparison from the precomputed player similarity model. Candidates without a measured statistical similarity are excluded.",
+          "detail": "This signal describes similarity, not whether the candidate is automatically the better player."
+        },
+        "roleFit": {
+          "title": "Role fit",
+          "description": "Role fit awards 45 points for the same final role, 25 for the same archetype, 12 for the same spatial role, then 7, 6 and 5 points for matching lateral, vertical and mobility profiles.",
+          "detail": "The raw match score is moderated by the candidate's role-confidence level."
+        },
+        "spatialSimilarity": {
+          "title": "Spatial similarity",
+          "description": "Average position, spatial spread, third occupation and lane occupation are standardized before calculating distance from the target profile.",
+          "detail": "When fewer than three usable spatial fields exist, the engine uses a neutral score of 50."
+        },
+        "heatmapSimilarity": {
+          "title": "Heatmap similarity",
+          "description": "Measured heatmap evidence includes cosine similarity, shared-zone occupation, lateral and vertical structure, peak zones and entropy.",
+          "detail": "Missing heatmap evidence remains explicitly missing; only the decision score receives the configured neutral fallback."
+        },
+        "marketAdvantage": {
+          "title": "Market advantage",
+          "description": "The candidate's market value is evaluated relative to the target. Less expensive candidates generally receive a stronger financial-advantage signal.",
+          "detail": "When the target has no usable market value, the candidate pool's market-value percentile is used instead."
+        },
+        "ageSuitability": {
+          "title": "Age suitability",
+          "description": "Age suitability combines a general age curve with an adjustment based on the candidate's age difference from the target.",
+          "detail": "Its importance changes substantially by recruitment scenario."
+        },
+        "playerQuality": {
+          "title": "Player quality",
+          "description": "A tournament-derived quality signal helps prevent similarity alone from promoting candidates without sufficient performance level.",
+          "detail": "Minimum quality requirements vary between immediate, development, value and short-term analysis."
+        },
+        "dataReliability": {
+          "title": "Data reliability",
+          "description": "Reliability represents how strongly the available tournament sample supports the player's calculated profile.",
+          "detail": "Higher-risk scenarios can accept lower reliability, while immediate and short-term recommendations demand stronger evidence."
+        }
+      }
+    },
+    "comparisonEvidence": {
+      "eyebrow": "Spatial and comparison evidence",
+      "title": "Different views answer different questions",
+      "note": "Statistical similarity, spatial similarity and heatmap similarity are complementary signals. None of them replaces the others or proves that one player is superior.",
+      "cards": {
+        "measuredHeatmap": {
+          "title": "Measured heatmap",
+          "description": "The pitch shows observed tournament occupation. Heatmap density and average position are independent evidence sources displayed on the same coordinate system."
+        },
+        "heatmapComparison": {
+          "title": "Heatmap comparison",
+          "description": "Cosine similarity, occupation overlap, lateral and vertical structure, peak zones and entropy describe different aspects of spatial resemblance."
+        },
+        "radarComparison": {
+          "title": "Radar comparison",
+          "description": "Radar dimensions use position-relative percentiles. Same-position players can share one scale; cross-position players retain separate positional contexts."
+        }
+      }
+    },
+    "scenarios": {
+      "eyebrow": "Recruitment scenarios",
+      "title": "One candidate pool, four different decisions",
+      "description": "Every scenario filters candidates using its own eligibility rules and then applies a different weighting model. The weights below represent the current engine configuration.",
+      "eligibility": "Eligibility",
+      "scoreWeights": "Score weights",
+      "sameFinalRoleBonus": "Same final role bonus: +{bonus}",
+      "sameArchetypeBonus": "Same archetype bonus: +{bonus}",
+      "signalLabels": {
+        "statistical_similarity_pct": "Statistical similarity",
+        "role_fit_pct": "Role fit",
+        "spatial_similarity_pct": "Spatial similarity",
+        "effective_heatmap_score_pct": "Heatmap score",
+        "player_quality_score": "Player quality",
+        "data_reliability_score": "Data reliability",
+        "market_value_advantage_pct": "Market advantage",
+        "age_suitability_pct": "Age suitability"
+      },
+      "modes": {
+        "immediate": {
+          "title": "Immediate impact",
+          "summary": "Prioritizes tactical continuity, current quality and reliable evidence for first-team contribution now.",
+          "eligibility": {
+            "statisticalSimilarity": "Statistical similarity ≥ 30",
+            "roleFit": "Role fit ≥ 35",
+            "playerQuality": "Player quality ≥ 55",
+            "dataReliability": "Data reliability ≥ 55",
+            "age": "Maximum age: 31"
+          }
+        },
+        "development": {
+          "title": "Development investment",
+          "summary": "Accepts more tactical adaptation and places the strongest emphasis on age upside and future market potential.",
+          "eligibility": {
+            "statisticalSimilarity": "Statistical similarity ≥ 25",
+            "roleFit": "Role fit ≥ 5",
+            "playerQuality": "Player quality ≥ 30",
+            "dataReliability": "Data reliability ≥ 35",
+            "age": "Maximum age: 23"
+          }
+        },
+        "value": {
+          "title": "Market value opportunity",
+          "summary": "Balances tactical suitability with financial efficiency and places the largest weight on price advantage.",
+          "eligibility": {
+            "statisticalSimilarity": "Statistical similarity ≥ 25",
+            "roleFit": "Role fit ≥ 25",
+            "playerQuality": "Player quality ≥ 35",
+            "dataReliability": "Data reliability ≥ 35",
+            "age": "No scenario age limit"
+          }
+        },
+        "short_term": {
+          "title": "Short-term solution",
+          "summary": "Targets experienced candidates and emphasizes role continuity, tournament quality and data reliability.",
+          "eligibility": {
+            "statisticalSimilarity": "Statistical similarity ≥ 20",
+            "roleFit": "Role fit ≥ 30",
+            "playerQuality": "Player quality ≥ 45",
+            "dataReliability": "Data reliability ≥ 50",
+            "age": "Minimum age: 29"
+          }
+        }
+      }
+    },
+    "ranking": {
+      "eyebrow": "Ranking logic",
+      "title": "How score, rank and explanation are produced",
+      "paragraphs": {
+        "weightedScore": "The engine first calculates a weighted scenario score. A matching final role and statistical archetype can add scenario-specific bonuses. The result is then restricted to the 0–100 range.",
+        "tieBreaking": "Candidates are ordered first by scenario score. Ties and close results are resolved using role fit, effective heatmap score, statistical similarity and player quality, in that order.",
+        "explanation": "The explanation engine ranks available evidence and selects up to four distinct evidence groups. This prevents one type of evidence from dominating the complete explanation."
+      },
+      "heatmapFallback": {
+        "eyebrow": "Heatmap fallback",
+        "title": "Neutral is not measured similarity",
+        "description": "When direct heatmap evidence is unavailable, the measured heatmap fields remain missing. The configurable neutral score is used only inside the weighted decision model."
+      }
+    },
+    "scoreBands": {
+      "eyebrow": "Score interpretation",
+      "title": "Recommendation strength bands",
+      "bands": {
+        "elite": {
+          "label": "Elite",
+          "range": "80–100",
+          "meaning": "Exceptionally strong scenario fit across the weighted decision signals."
+        },
+        "strong": {
+          "label": "Strong",
+          "range": "72–79.99",
+          "meaning": "Convincing candidate with substantial evidence for the selected scenario."
+        },
+        "good": {
+          "label": "Good",
+          "range": "64–71.99",
+          "meaning": "Useful recommendation with a credible, but less complete, overall case."
+        },
+        "moderate": {
+          "label": "Moderate",
+          "range": "56–63.99",
+          "meaning": "Potentially relevant candidate requiring closer contextual scouting."
+        },
+        "low": {
+          "label": "Low",
+          "range": "Below 56",
+          "meaning": "Eligible for the scenario, but supported by comparatively weaker combined evidence."
+        }
+      }
+    },
+    "limitations": {
+      "eyebrow": "Responsible use",
+      "title": "What the analysis does not prove",
+      "paragraphs": {
+        "sample": "Tournament data represents a limited competitive sample. A strong tournament profile does not guarantee the same output across a full domestic season, another tactical system or a different physical environment.",
+        "marketContext": "Market values are contextual estimates rather than transfer fees. Contract length, wages, registration rules, injury history, personality and club strategy are outside the current scoring model.",
+        "similarity": "Similarity is not superiority. A candidate can resemble the target while being less productive, less reliable or unsuitable for the intended recruitment timescale.",
+        "decisionSupport": "The platform is a decision-support system. Final recruitment decisions should combine this evidence with video, live scouting, medical review and broader club context."
+      }
+    }
+  }
+}

@@ -1,6 +1,12 @@
 import {
+  NextIntlClientProvider,
+} from "next-intl";
+import {
   useState,
 } from "react";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 import {
   fireEvent,
   render,
@@ -113,15 +119,34 @@ function FilterPanelHarness() {
   );
 }
 
+type TestLocale =
+  "en" | "tr";
+
+function renderFilterPanel(
+  locale: TestLocale = "en",
+) {
+  const messages =
+    locale === "tr"
+      ? turkishMessages
+      : englishMessages;
+
+  return render(
+    <NextIntlClientProvider
+      locale={locale}
+      messages={messages}
+    >
+      <FilterPanelHarness />
+    </NextIntlClientProvider>,
+  );
+}
+
 describe(
   "PlayerSearchFilterPanel",
   () => {
     it(
       "renders dataset-backed option counts and ranges",
       () => {
-        render(
-          <FilterPanelHarness />,
-        );
+        renderFilterPanel();
 
         expect(
           screen.getByText(
@@ -158,9 +183,7 @@ describe(
     it(
       "updates categorical and numeric filters",
       () => {
-        render(
-          <FilterPanelHarness />,
-        );
+        renderFilterPanel();
 
         const defender =
           screen.getByRole(
@@ -224,9 +247,7 @@ describe(
     it(
       "clears filters while preserving the search query",
       () => {
-        render(
-          <FilterPanelHarness />,
-        );
+        renderFilterPanel();
 
         const defender =
           screen.getByRole(
@@ -276,9 +297,7 @@ describe(
     it(
       "supports explicit result sorting",
       () => {
-        render(
-          <FilterPanelHarness />,
-        );
+        renderFilterPanel();
 
         const sortControl =
           screen.getByRole(
@@ -306,5 +325,40 @@ describe(
         );
       },
     );
+    it(
+      "localizes filter controls in Turkish",
+      () => {
+        renderFilterPanel("tr");
+
+        expect(
+          screen.getByRole(
+            "checkbox",
+            {
+              name:
+                "Defans, 193 oyuncu",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByRole(
+            "combobox",
+            {
+              name:
+                "Sonuçları sırala",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            /Yaş aralığı:/i,
+          ),
+        ).toHaveTextContent(
+          "17,8–41,4",
+        );
+      },
+    );
+
   },
 );

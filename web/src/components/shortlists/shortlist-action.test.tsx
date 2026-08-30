@@ -3,6 +3,12 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 import userEvent from "@testing-library/user-event";
 import type {
   ReactNode,
@@ -124,24 +130,36 @@ function createStateWithList(
 function renderAction({
   storage,
   createId = () => "list-1",
+  locale = "en",
 }: Readonly<{
   storage:
     ShortlistStorageAdapter | null;
   createId?: () => string;
+  locale?: "en" | "tr";
 }>) {
   function Wrapper({
     children,
   }: Readonly<{
     children: ReactNode;
   }>) {
+    const messages =
+      locale === "tr"
+        ? turkishMessages
+        : englishMessages;
+
     return (
-      <ShortlistProvider
-        storage={storage}
-        now={() => NOW}
-        createId={createId}
+      <NextIntlClientProvider
+        locale={locale}
+        messages={messages}
       >
-        {children}
-      </ShortlistProvider>
+        <ShortlistProvider
+          storage={storage}
+          now={() => NOW}
+          createId={createId}
+        >
+          {children}
+        </ShortlistProvider>
+      </NextIntlClientProvider>
     );
   }
 
@@ -488,5 +506,74 @@ describe(
         ).not.toBeInTheDocument();
       },
     );
+    it(
+      "localizes shortlist membership actions in Turkish",
+      async () => {
+        const user =
+          userEvent.setup();
+
+        const storage =
+          createMemoryStorage(
+            createStateWithList(),
+          );
+
+        renderAction({
+          storage:
+            storage.adapter,
+          locale: "tr",
+        });
+
+        const disclosure =
+          await screen.findByRole(
+            "button",
+            {
+              name:
+                "Kısa listeye ekle",
+            },
+          );
+
+        await waitFor(() => {
+          expect(
+            disclosure,
+          ).toBeEnabled();
+        });
+
+        await user.click(
+          disclosure,
+        );
+
+        const checkbox =
+          screen.getByRole(
+            "checkbox",
+            {
+              name:
+                /Summer 2027 — LCB/i,
+            },
+          );
+
+        await user.click(
+          checkbox,
+        );
+
+        expect(
+          await screen.findByRole(
+            "status",
+          ),
+        ).toHaveTextContent(
+          "Michael Olise, Summer 2027 — LCB listesine eklendi.",
+        );
+
+        expect(
+          screen.getByRole(
+            "region",
+            {
+              name:
+                "Michael Olise için kısa liste seçenekleri",
+            },
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
   },
 );

@@ -40,7 +40,7 @@ const {
 );
 
 vi.mock(
-  "next/navigation",
+  "@/i18n/navigation",
   () => ({
     useRouter: () => ({
       push: pushMock,
@@ -111,6 +111,117 @@ describe(
           {} as TransferAnalysisResponse,
         );
     });
+
+    it(
+      "localizes the form and validation feedback in Turkish",
+      async () => {
+        const user =
+          userEvent.setup();
+
+        renderWithQueryClient(
+          <TransferAnalysisForm
+            playerId={978838}
+            initialValues={{
+              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+            }}
+          />,
+          "tr",
+        );
+
+        expect(
+          await screen.findByText(
+            "Michael Olise",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByRole(
+            "heading",
+            {
+              name:
+                "Aday havuzu",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        const minutesInput =
+          screen.getByRole(
+            "textbox",
+            {
+              name:
+                /Turnuva deneyimi/,
+            },
+          );
+
+        await user.clear(
+          minutesInput,
+        );
+
+        await user.type(
+          minutesInput,
+          "-1",
+        );
+
+        await user.click(
+          screen.getByRole(
+            "button",
+            {
+              name:
+                "Transfer alternatiflerini bul",
+            },
+          ),
+        );
+
+        expect(
+          await screen.findByRole(
+            "alert",
+          ),
+        ).toHaveTextContent(
+          "Sıfır veya daha yüksek bir turnuva dakikası girin.",
+        );
+
+        expect(
+          pushMock,
+        ).not.toHaveBeenCalled();
+      },
+    );
+
+    it(
+      "renders unavailable target metrics without inventing zero values",
+      async () => {
+        fetchPlayerProfileMock
+          .mockResolvedValue({
+            ...playerProfile,
+            minutes: null,
+            role_confidence_pct:
+              null,
+            player_quality_score:
+              null,
+          } as unknown as PlayerProfileResponse);
+
+        renderWithQueryClient(
+          <TransferAnalysisForm
+            playerId={978838}
+            initialValues={{
+              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+            }}
+          />,
+          "tr",
+        );
+
+        expect(
+          await screen.findByText(
+            "Michael Olise",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getAllByText(
+            "Mevcut değil",
+          ),
+        ).toHaveLength(3);
+      },
+    );
 
     it(
       "prefetches analysis data while navigating to results",

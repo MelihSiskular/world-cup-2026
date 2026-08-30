@@ -1,7 +1,16 @@
+"use client";
+
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
 import {
   Fragment,
 } from "react";
-import Link from "next/link";
+
+import {
+  Link,
+} from "@/i18n/navigation";
 
 import type {
   MultiPlayerComparisonCandidateResponse,
@@ -28,9 +37,10 @@ type MultiPlayerRoleMetricsProps =
 function formatMetricNumber(
   value: number,
   maximumFractionDigits: number,
+  locale: string,
 ): string {
   return new Intl.NumberFormat(
-    "en-US",
+    locale,
     {
       maximumFractionDigits,
     },
@@ -40,6 +50,9 @@ function formatMetricNumber(
 function RoleMetricValue({
   total,
   per90,
+  locale,
+  unavailable,
+  accessibleLabel,
 }: Readonly<{
   total:
     | number
@@ -49,6 +62,12 @@ function RoleMetricValue({
     | number
     | null
     | undefined;
+  locale: string;
+  unavailable: string;
+  accessibleLabel: (
+    total: string,
+    per90: string,
+  ) => string;
 }>) {
   if (
     total === null ||
@@ -58,7 +77,7 @@ function RoleMetricValue({
   ) {
     return (
       <span className="text-muted">
-        Unavailable
+        {unavailable}
       </span>
     );
   }
@@ -69,12 +88,14 @@ function RoleMetricValue({
       Number.isInteger(total)
         ? 0
         : 2,
+      locale,
     );
 
   const per90Text =
     formatMetricNumber(
       per90,
       2,
+      locale,
     );
 
   return (
@@ -85,8 +106,10 @@ function RoleMetricValue({
       </span>
 
       <span className="sr-only">
-        {totalText} total,{" "}
-        {per90Text} per 90
+        {accessibleLabel(
+          totalText,
+          per90Text,
+        )}
       </span>
     </span>
   );
@@ -97,6 +120,21 @@ export function MultiPlayerRoleMetrics({
   candidates,
   groups,
 }: MultiPlayerRoleMetricsProps) {
+  const locale = useLocale();
+  const t = useTranslations(
+    "MultiPlayerRoleMetrics",
+  );
+
+  const groupLabels =
+    t.raw("groups") as Readonly<
+      Record<string, string>
+    >;
+
+  const metricLabels =
+    t.raw("metrics") as Readonly<
+      Record<string, string>
+    >;
+
   const players = [
     target,
     ...candidates.map(
@@ -111,26 +149,23 @@ export function MultiPlayerRoleMetrics({
     >
       <div className="border-b border-border p-5 sm:p-7">
         <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-          Role performance
+          {t("eyebrow")}
         </p>
 
         <h2
           id="role-metrics-title"
           className="mt-2 text-2xl font-bold tracking-[-0.035em]"
         >
-          Target final-role metrics
+          {t("title")}
         </h2>
 
         <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
-          All players are evaluated
-          against the duties of{" "}
+          {t("descriptionBeforeRole")}{" "}
           <span className="font-semibold text-foreground">
             {target.final_role ??
-              "the target role"}
+              t("targetRoleFallback")}
           </span>
-          . Each value shows tournament
-          total followed by the per-90
-          rate.
+          {t("descriptionAfterRole")}
         </p>
       </div>
 
@@ -139,18 +174,17 @@ export function MultiPlayerRoleMetrics({
           role="status"
           className="p-6 text-sm text-muted"
         >
-          Role metric evidence is
-          unavailable for this target.
+          {t("unavailableDescription")}
         </p>
       ) : (
         <div
           role="region"
-          aria-label="Scrollable target final-role metrics"
+          aria-label={t("scrollRegionLabel")}
           tabIndex={0}
           className="w-0 min-w-full overflow-x-auto overscroll-x-contain"
         >
           <table
-            aria-label="Target final-role metric comparison"
+            aria-label={t("tableLabel")}
             className="min-w-[760px] w-full border-collapse text-left text-sm"
           >
             <thead className="bg-surface-secondary">
@@ -159,7 +193,7 @@ export function MultiPlayerRoleMetrics({
                   scope="col"
                   className="w-52 border-r border-border bg-surface-secondary px-5 py-4 font-bold sm:sticky sm:left-0 sm:z-10"
                 >
-                  Metric
+                  {t("metric")}
                 </th>
 
                 {players.map(
@@ -176,8 +210,13 @@ export function MultiPlayerRoleMetrics({
                     >
                       <span className="block text-[10px] font-semibold tracking-[0.14em] text-muted uppercase">
                         {index === 0
-                          ? "Target"
-                          : `Candidate ${index}`}
+                          ? t("target")
+                          : t(
+                              "candidate",
+                              {
+                                index,
+                              },
+                            )}
                       </span>
 
                       <Link
@@ -209,7 +248,10 @@ export function MultiPlayerRoleMetrics({
                         }
                         className="border-y border-border bg-page px-5 py-3 text-xs font-semibold tracking-[0.12em] text-brand uppercase"
                       >
-                        {group.label}
+                        {groupLabels[
+                          group.key
+                        ] ??
+                          group.label}
                       </th>
                     </tr>
 
@@ -225,9 +267,10 @@ export function MultiPlayerRoleMetrics({
                             scope="row"
                             className="border-r border-border bg-surface px-5 py-4 font-semibold sm:sticky sm:left-0 sm:z-10"
                           >
-                            {
-                              metric.label
-                            }
+                            {metricLabels[
+                              metric.key
+                            ] ??
+                              metric.label}
                           </th>
 
                           {players.map(
@@ -257,6 +300,26 @@ export function MultiPlayerRoleMetrics({
                                     per90={
                                       value?.per90
                                     }
+                                    locale={
+                                      locale
+                                    }
+                                    unavailable={t(
+                                      "unavailable",
+                                    )}
+                                    accessibleLabel={(
+                                      totalText,
+                                      per90Text,
+                                    ) =>
+                                      t(
+                                        "valueLabel",
+                                        {
+                                          total:
+                                            totalText,
+                                          per90:
+                                            per90Text,
+                                        },
+                                      )
+                                    }
                                   />
                                 </td>
                               );
@@ -274,11 +337,7 @@ export function MultiPlayerRoleMetrics({
       )}
 
       <p className="border-t border-border bg-page px-5 py-4 text-xs leading-5 text-muted">
-        Metrics are selected from the
-        target player&apos;s final-role
-        duties. Missing tournament
-        evidence is never replaced with
-        zero.
+        {t("guidance")}
       </p>
     </section>
   );

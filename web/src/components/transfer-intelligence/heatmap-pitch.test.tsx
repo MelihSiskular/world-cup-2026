@@ -1,7 +1,16 @@
 import {
-  render,
+  render as renderTestingLibrary,
   screen,
 } from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+import type {
+  ReactElement,
+} from "react";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 import {
   describe,
   expect,
@@ -15,6 +24,27 @@ import {
 import type {
   HeatmapPlayerResponse,
 } from "@/lib/api/types";
+
+type TestLocale =
+  "en" | "tr";
+
+function render(
+  element: ReactElement,
+  locale: TestLocale = "en",
+) {
+  return renderTestingLibrary(
+    <NextIntlClientProvider
+      locale={locale}
+      messages={
+        locale === "tr"
+          ? turkishMessages
+          : englishMessages
+      }
+    >
+      {element}
+    </NextIntlClientProvider>,
+  );
+}
 
 function createPlayer(
   overrides:
@@ -264,6 +294,59 @@ describe(
     ).toBeInTheDocument();
   },
 );
+
+    it(
+      "localizes heatmap guidance and evidence in Turkish",
+      () => {
+        render(
+          <HeatmapPitch
+            player={
+              createPlayer({
+                heatmap_point_count:
+                  1509,
+              })
+            }
+          />,
+          "tr",
+        );
+
+        expect(
+          screen.getByRole(
+            "img",
+            {
+              name:
+                "Michael Olise için turnuva ısı haritası",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Hücum yönü →",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Göreli turnuva alan kullanım yoğunluğu",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByLabelText(
+            "Göreli alan kullanım yoğunluğu göstergesi",
+          ),
+        ).toHaveTextContent(
+          "Düşük",
+        );
+
+        expect(
+          screen.getByText(
+            "1.509",
+          ),
+        ).toBeInTheDocument();
+      },
+    );
 
     it(
       "does not render a malformed available grid",

@@ -1,6 +1,10 @@
-import type { ReactNode } from "react";
-
-import Link from "next/link";
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
+import type {
+  ReactNode,
+} from "react";
 
 import { CountryFlag } from "@/components/players/country-flag";
 import { PlayerFeaturedMetrics } from "@/components/players/player-featured-metrics";
@@ -10,6 +14,9 @@ import { PlayerPerformanceProfile } from "@/components/players/player-performanc
 import {
   ShortlistAction,
 } from "@/components/shortlists/shortlist-action";
+import {
+  Link,
+} from "@/i18n/navigation";
 
 import type { PlayerProfileResponse } from "@/lib/api/types";
 import {
@@ -79,6 +86,27 @@ function PlayerModelContext({
 }: Readonly<{
   player: PlayerProfileResponse;
 }>) {
+  const locale =
+    useLocale();
+
+  const translations =
+    useTranslations(
+      "PlayerProfile",
+    );
+
+  const commonTranslations =
+    useTranslations(
+      "Common",
+    );
+
+  const formatContext = {
+    locale,
+    missingValue:
+      commonTranslations(
+        "notReported",
+      ),
+  };
+
   return (
     <section
       aria-labelledby="player-model-context-title"
@@ -86,48 +114,82 @@ function PlayerModelContext({
     >
       <div className="max-w-3xl">
         <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-          Model context
+          {translations(
+            "modelContextEyebrow",
+          )}
         </p>
 
         <h2
           id="player-model-context-title"
           className="mt-2 text-xl font-bold tracking-[-0.025em]"
         >
-          Confidence behind the profile
+          {translations(
+          "modelConfidenceTitle",
+        )}
         </h2>
 
         <p className="mt-2 text-sm leading-6 text-muted">
-          Supporting quality and reliability signals used to interpret the
-          tournament profile.
+          {translations(
+          "modelConfidenceDescription",
+        )}
         </p>
       </div>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
-          label="Weighted rating"
-          value={formatProfileNumber(player.weighted_rating, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
-          description="Reliability-aware tournament performance rating"
+          label={translations(
+            "weightedRating",
+          )}
+          value={formatProfileNumber(
+            player.weighted_rating,
+            {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            },
+            formatContext,
+          )}
+          description={translations(
+            "weightedRatingDescription",
+          )}
         />
 
         <MetricCard
-          label="Player quality"
-          value={formatProfilePercentage(player.player_quality_score)}
-          description="Combined performance-quality assessment"
+          label={translations(
+            "playerQuality",
+          )}
+          value={formatProfilePercentage(
+            player.player_quality_score,
+            formatContext,
+          )}
+          description={translations(
+            "playerQualityDescription",
+          )}
         />
 
         <MetricCard
-          label="Data reliability"
-          value={formatProfilePercentage(player.data_reliability_score)}
-          description="Confidence supported by available tournament data"
+          label={translations(
+            "dataReliability",
+          )}
+          value={formatProfilePercentage(
+            player.data_reliability_score,
+            formatContext,
+          )}
+          description={translations(
+            "dataReliabilityDescription",
+          )}
         />
 
         <MetricCard
-          label="Role confidence"
-          value={formatProfilePercentage(player.role_confidence_pct)}
-          description="Confidence in the assigned tactical role"
+          label={translations(
+            "roleConfidence",
+          )}
+          value={formatProfilePercentage(
+            player.role_confidence_pct,
+            formatContext,
+          )}
+          description={translations(
+            "roleConfidenceDescription",
+          )}
         />
       </div>
     </section>
@@ -139,6 +201,48 @@ export function PlayerProfileView({
   player,
   spatialProfile,
 }: PlayerProfileViewProps) {
+  const locale =
+    useLocale();
+
+  const translations =
+    useTranslations(
+      "PlayerProfile",
+    );
+
+  const commonTranslations =
+    useTranslations(
+      "Common",
+    );
+
+  const formatContext = {
+    locale,
+    missingValue:
+      commonTranslations(
+        "notReported",
+      ),
+  };
+
+  const positionOptions = {
+    unavailable:
+      translations(
+        "positionUnavailable",
+      ),
+    labels: {
+      G: translations(
+        "positionLabels.goalkeeper",
+      ),
+      D: translations(
+        "positionLabels.defender",
+      ),
+      M: translations(
+        "positionLabels.midfielder",
+      ),
+      F: translations(
+        "positionLabels.forward",
+      ),
+    },
+  };
+
   const roleReasonParts =
     player.role_reason
       ?.split("|")
@@ -186,7 +290,9 @@ export function PlayerProfileView({
               <span>
                 {player.country_name ??
                   player.national_team_name ??
-                  "Country unavailable"}
+                  translations(
+                    "countryUnavailable",
+                  )}
               </span>
 
               <span aria-hidden="true" className="text-border">
@@ -194,56 +300,99 @@ export function PlayerProfileView({
               </span>
 
               <span>
-                {formatPlayerPosition(player.position)}
+                {formatPlayerPosition(
+                  player.position,
+                  positionOptions,
+                )}
               </span>
             </div>
 
             <p className="mt-4 break-words text-lg font-semibold text-brand">
-              {player.final_role ?? "Final role unavailable"}
+              {player.final_role ??
+                translations(
+                  "finalRoleUnavailable",
+                )}
             </p>
 
             <p className="mt-1.5 break-words text-sm leading-6 text-muted">
-              {player.archetype ?? "Archetype unavailable"}
+              {player.archetype ??
+                translations(
+                  "archetypeUnavailable",
+                )}
               {" · "}
-              {player.spatial_role ?? "Spatial role unavailable"}
+              {player.spatial_role ??
+                translations(
+                  "spatialRoleUnavailable",
+                )}
             </p>
 
             <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-4 border-t border-border pt-5">
               <div>
                 <dt className="text-xs font-medium text-muted">
-                  Age
+                  {translations(
+                    "ageLabel",
+                  )}
                 </dt>
 
                 <dd className="mt-1 text-sm font-bold">
                   {player.age === null
-                    ? "Not reported"
-                    : `${formatProfileNumber(player.age, {
-                        maximumFractionDigits: 0,
-                      })} years`}
+                    ? commonTranslations(
+                        "notReported",
+                      )
+                    : translations(
+                        "ageYears",
+                        {
+                          value:
+                            formatProfileNumber(
+                              player.age,
+                              {
+                                maximumFractionDigits: 0,
+                              },
+                              formatContext,
+                            ),
+                        },
+                      )}
                 </dd>
               </div>
 
               <div>
                 <dt className="text-xs font-medium text-muted">
-                  Height
+                  {translations(
+                    "heightLabel",
+                  )}
                 </dt>
 
                 <dd className="mt-1 text-sm font-bold">
                   {player.height_cm === null
-                    ? "Not reported"
-                    : `${formatProfileNumber(player.height_cm)} cm`}
+                    ? commonTranslations(
+                        "notReported",
+                      )
+                    : translations(
+                        "heightCentimeters",
+                        {
+                          value:
+                            formatProfileNumber(
+                              player.height_cm,
+                              {},
+                              formatContext,
+                            ),
+                        },
+                      )}
                 </dd>
               </div>
 
               <div>
                 <dt className="text-xs font-medium text-muted">
-                  Market value
+                  {translations(
+                    "marketValueLabel",
+                  )}
                 </dt>
 
                 <dd className="mt-1 text-sm font-bold text-brand-dark">
                   {formatMarketValue(
                     player.market_value,
                     player.market_value_currency,
+                    formatContext,
                   )}
                 </dd>
               </div>
@@ -252,7 +401,9 @@ export function PlayerProfileView({
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center lg:flex-nowrap">
               <Link
                 href="/players"
-                aria-label="Back to player search"
+                aria-label={translations(
+                  "backToSearch",
+                )}
                 className="inline-flex min-h-12 w-full shrink-0 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-3 text-center text-sm font-semibold transition-colors hover:bg-surface-secondary sm:w-auto"
               >
                 <svg
@@ -266,14 +417,20 @@ export function PlayerProfileView({
                   <path d="M19 12H5m7-7-7 7 7 7" />
                 </svg>
 
-                <span>Back</span>
+                <span>
+                  {translations(
+                    "back",
+                  )}
+                </span>
               </Link>
 
               <Link
                 href={`/analysis/${player.player_id}`}
                 className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-5 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-dark sm:w-auto"
               >
-                Run transfer analysis
+                {translations(
+                  "runTransferAnalysis",
+                )}
               </Link>
 
               <ShortlistAction
@@ -300,36 +457,64 @@ export function PlayerProfileView({
         className="rounded-2xl border border-border bg-surface p-5 shadow-sm sm:p-6"
       >
         <p className="text-sm font-semibold tracking-[0.15em] text-brand uppercase">
-          Role interpretation
+          {translations(
+          "roleInterpretationEyebrow",
+        )}
         </p>
 
         <h2
           id="player-role-interpretation-title"
           className="mt-3 text-2xl font-bold tracking-[-0.03em]"
         >
-          How the player operates
+          {translations(
+          "roleInterpretationTitle",
+        )}
         </h2>
 
         <dl className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <ProfileDetailCard
-            label="Lateral profile"
-            value={player.lateral_profile ?? "Not reported"}
+            label={translations(
+              "lateralProfile",
+            )}
+            value={
+              player.lateral_profile ??
+              commonTranslations(
+                "notReported",
+              )
+            }
           />
 
           <ProfileDetailCard
-            label="Vertical profile"
-            value={player.vertical_profile ?? "Not reported"}
+            label={translations(
+              "verticalProfile",
+            )}
+            value={
+              player.vertical_profile ??
+              commonTranslations(
+                "notReported",
+              )
+            }
           />
 
           <ProfileDetailCard
-            label="Mobility profile"
-            value={player.mobility_profile ?? "Not reported"}
+            label={translations(
+              "mobilityProfile",
+            )}
+            value={
+              player.mobility_profile ??
+              commonTranslations(
+                "notReported",
+              )
+            }
           />
 
           <ProfileDetailCard
-            label="Spatial reliability"
+            label={translations(
+              "spatialReliability",
+            )}
             value={formatUnitIntervalPercentage(
               player.spatial_reliability,
+              formatContext,
             )}
             accent
           />
@@ -337,32 +522,61 @@ export function PlayerProfileView({
 
         <div className="mt-6 border-t border-border pt-6">
           <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-            Tournament sample
+            {translations(
+              "tournamentSample",
+            )}
           </p>
 
           <h3 className="mt-2 text-lg font-bold tracking-[-0.025em]">
-            Participation context
+            {translations(
+            "participationContext",
+          )}
           </h3>
 
           <dl className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <ProfileDetailCard
-              label="Matches"
-              value={formatProfileNumber(tournamentMatches)}
+              label={translations(
+                "matches",
+              )}
+              value={formatProfileNumber(
+                tournamentMatches,
+                {},
+                formatContext,
+              )}
             />
 
             <ProfileDetailCard
-              label="Starts"
-              value={formatProfileNumber(tournamentStarts)}
+              label={translations(
+                "starts",
+              )}
+              value={formatProfileNumber(
+                tournamentStarts,
+                {},
+                formatContext,
+              )}
             />
 
             <ProfileDetailCard
-              label="Minutes"
-              value={formatProfileNumber(tournamentMinutes)}
+              label={translations(
+                "minutes",
+              )}
+              value={formatProfileNumber(
+                tournamentMinutes,
+                {},
+                formatContext,
+              )}
             />
 
             <ProfileDetailCard
-              label="Primary formation"
-              value={tournament?.primary_formation ?? "Not reported"}
+              label={translations(
+                "primaryFormation",
+              )}
+              value={
+                tournament?.primary_formation ??
+                commonTranslations(
+                  "notReported",
+                )
+              }
             />
           </dl>
 
@@ -372,7 +586,11 @@ export function PlayerProfileView({
         {roleReasonParts.length > 0 ? (
           <details className="group mt-5 overflow-hidden rounded-xl border border-border bg-surface-secondary">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3.5 font-semibold text-brand-dark transition-colors hover:bg-page [&::-webkit-details-marker]:hidden">
-              <span>View role assignment evidence</span>
+              <span>
+                {translations(
+                  "viewRoleEvidence",
+                )}
+              </span>
 
               <span
                 aria-hidden="true"
@@ -384,8 +602,9 @@ export function PlayerProfileView({
 
             <div className="border-t border-border px-5 py-4">
               <p className="text-xs leading-5 text-muted">
-                Supporting model evidence used to interpret the player&apos;s
-                tactical and spatial role.
+                {translations(
+                "roleEvidenceDescription",
+              )}
               </p>
 
               <ul className="mt-4 space-y-3 text-sm leading-6 text-muted">

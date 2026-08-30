@@ -660,6 +660,84 @@ describe(
         );
       },
     );
+    it(
+      "localizes focused evidence and heatmap metrics in Turkish",
+      async () => {
+        fetchRadarComparisonMock
+          .mockResolvedValue(
+            createRadarResponse(),
+          );
+
+        fetchHeatmapComparisonMock
+          .mockResolvedValue(
+            createHeatmapResponse(),
+          );
+
+        renderWithQueryClient(
+          <MultiPlayerComparisonEvidence
+            target={target}
+            candidates={
+              candidates
+            }
+          />,
+          "tr",
+        );
+
+        expect(
+          screen.getByRole(
+            "region",
+            {
+              name:
+                "Ayrıntılı karşılaştırma kanıtı",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByRole(
+            "group",
+            {
+              name:
+                "Radar karşılaştırması adayı",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByRole(
+            "group",
+            {
+              name:
+                "Isı haritası karşılaştırması adayı",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        const metrics =
+          await screen.findByLabelText(
+            "Odaklanılan ısı haritası kanıt metrikleri",
+          );
+
+        expect(
+          within(metrics).getByText(
+            "Ölçülen benzerlik",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          within(metrics).getByText(
+            "Zirve bölge mesafesi",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          within(metrics).getByText(
+            "8,5",
+          ),
+        ).toBeInTheDocument();
+      },
+    );
+
   },
 );
 

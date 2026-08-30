@@ -2,11 +2,22 @@ import {
   render,
   screen,
 } from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+import type {
+  ComponentProps,
+  ReactNode,
+} from "react";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 import userEvent from "@testing-library/user-event";
 import {
   describe,
   expect,
   it,
+  vi,
 } from "vitest";
 
 import {
@@ -16,6 +27,41 @@ import type {
   Shortlist,
   ShortlistPlayerSnapshot,
 } from "@/lib/shortlists/types";
+
+vi.mock(
+  "@/i18n/navigation",
+  async () => {
+    const {
+      useLocale,
+    } = await vi.importActual<
+      typeof import("next-intl")
+    >("next-intl");
+
+    return {
+      Link: ({
+        href,
+        ...properties
+      }: ComponentProps<"a"> &
+        Readonly<{
+          href: string;
+        }>) => {
+        const locale =
+          useLocale();
+
+        return (
+          <a
+            href={
+              locale === "tr"
+                ? `/tr${href}`
+                : href
+            }
+            {...properties}
+          />
+        );
+      },
+    };
+  },
+);
 
 const BASE_PLAYER:
   ShortlistPlayerSnapshot = {
@@ -99,13 +145,35 @@ function buildShortlist(
   };
 }
 
+type TestLocale =
+  "en" | "tr";
+
+function renderComparison(
+  children: ReactNode,
+  locale: TestLocale = "en",
+) {
+  const messages =
+    locale === "tr"
+      ? turkishMessages
+      : englishMessages;
+
+  return render(
+    <NextIntlClientProvider
+      locale={locale}
+      messages={messages}
+    >
+      {children}
+    </NextIntlClientProvider>,
+  );
+}
+
 describe(
   "ShortlistComparisonBuilder",
   () => {
     it(
       "requires at least two saved players",
       () => {
-        render(
+        renderComparison(
           <ShortlistComparisonBuilder
             shortlist={buildShortlist(
               [
@@ -139,7 +207,7 @@ describe(
         const user =
           userEvent.setup();
 
-        render(
+        renderComparison(
           <ShortlistComparisonBuilder
             shortlist={buildShortlist(
               PLAYERS,
@@ -209,7 +277,7 @@ describe(
         const user =
           userEvent.setup();
 
-        render(
+        renderComparison(
           <ShortlistComparisonBuilder
             shortlist={buildShortlist(
               PLAYERS,
@@ -276,7 +344,7 @@ describe(
         const user =
           userEvent.setup();
 
-        render(
+        renderComparison(
           <ShortlistComparisonBuilder
             shortlist={buildShortlist(
               PLAYERS,
@@ -330,5 +398,70 @@ describe(
         ).toBeInTheDocument();
       },
     );
+    it(
+      "localizes comparison controls while preserving canonical IDs",
+      async () => {
+        const user =
+          userEvent.setup();
+
+        renderComparison(
+          <ShortlistComparisonBuilder
+            shortlist={buildShortlist(
+              PLAYERS,
+            )}
+          />,
+          "tr",
+        );
+
+        expect(
+          screen.getByRole(
+            "region",
+            {
+              name:
+                "Creative midfielders listesindeki oyuncuları karşılaştır",
+            },
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByRole(
+            "combobox",
+            {
+              name:
+                "Hedef oyuncu",
+            },
+          ),
+        ).toHaveValue(
+          "978838",
+        );
+
+        await user.click(
+          screen.getByRole(
+            "checkbox",
+            {
+              name:
+                "Dani Olmo oyuncusunu aday olarak seç",
+            },
+          ),
+        );
+
+        expect(
+          screen.getByRole(
+            "link",
+            {
+              name:
+                "Seçilen oyuncuları karşılaştır",
+            },
+          ),
+        ).toHaveAttribute(
+          "href",
+          (
+            "/tr/compare/multi/978838"
+            + "?candidates=789071"
+          ),
+        );
+      },
+    );
+
   },
 );

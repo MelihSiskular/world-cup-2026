@@ -1,3 +1,8 @@
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
+
 export type RadarProfileDimension = Readonly<{
   key: string;
   label: string;
@@ -202,6 +207,9 @@ function labelAnchor(
 
 function axisDescription(
   series: RadarProfileSeries,
+  locale: string,
+  unavailableLabel: string,
+  percentileLabel: string,
 ): string {
   return series.dimensions
     .map((dimension) => {
@@ -212,8 +220,16 @@ function axisDescription(
 
       return `${dimension.label}: ${
         percentile === null
-          ? "not available"
-          : `${percentile.toFixed(1)} percentile`
+          ? unavailableLabel
+          : `${new Intl.NumberFormat(
+              locale,
+              {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+              },
+            ).format(
+              percentile,
+            )} ${percentileLabel}`
       }`;
     })
     .join("; ");
@@ -315,6 +331,11 @@ export function RadarProfile({
   ariaLabel,
   showHeader = true,
 }: RadarProfileProps) {
+  const locale = useLocale();
+  const t = useTranslations(
+    "RadarProfile",
+  );
+
   if (
     !hasRenderableAxisContract(
       primary,
@@ -325,9 +346,10 @@ export function RadarProfile({
         data-testid="radar-unavailable"
         className="flex min-h-72 items-center justify-center rounded-2xl border border-dashed border-border bg-page px-6 text-center text-sm leading-6 text-muted"
       >
-        Playing-style radar data are not
-        available for{" "}
-        {primary.player_name}.
+        {t("unavailable", {
+          playerName:
+            primary.player_name,
+        })}
       </div>
     );
   }
@@ -343,9 +365,10 @@ export function RadarProfile({
         data-testid="radar-unavailable"
         className="flex min-h-72 items-center justify-center rounded-2xl border border-dashed border-border bg-page px-6 text-center text-sm leading-6 text-muted"
       >
-        Playing-style radar data are not
-        available for{" "}
-        {secondary.player_name}.
+        {t("unavailable", {
+          playerName:
+            secondary.player_name,
+        })}
       </div>
     );
   }
@@ -362,9 +385,7 @@ export function RadarProfile({
         data-testid="radar-incompatible"
         className="flex min-h-72 items-center justify-center rounded-2xl border border-dashed border-border bg-page px-6 text-center text-sm leading-6 text-muted"
       >
-        These playing-style profiles use
-        different radar dimensions and
-        cannot share one overlay.
+        {t("incompatible")}
       </div>
     );
   }
@@ -372,8 +393,16 @@ export function RadarProfile({
   const resolvedAriaLabel =
     ariaLabel ??
     (secondary
-      ? `Playing style radar comparison for ${primary.player_name} and ${secondary.player_name}`
-      : `Playing style radar for ${primary.player_name}`);
+      ? t("comparisonAriaLabel", {
+          primaryPlayer:
+            primary.player_name,
+          secondaryPlayer:
+            secondary.player_name,
+        })
+      : t("singleAriaLabel", {
+          playerName:
+            primary.player_name,
+        }));
 
   const primaryPartial =
     hasPartialEvidence(primary);
@@ -391,11 +420,11 @@ export function RadarProfile({
         {showHeader ? (
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3 px-1">
             <p className="text-xs font-semibold text-foreground">
-              Position-relative playing style
+              {t("title")}
             </p>
 
             <span className="rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold text-muted">
-              Percentile · 0–100
+              {t("scale")}
             </span>
           </div>
         ) : null}
@@ -411,10 +440,20 @@ export function RadarProfile({
           <desc>
             {axisDescription(
               primary,
+              locale,
+              t("axisUnavailable"),
+              t("axisPercentile"),
             )}
             {secondary
               ? `. ${axisDescription(
                   secondary,
+                  locale,
+                  t(
+                    "axisUnavailable",
+                  ),
+                  t(
+                    "axisPercentile",
+                  ),
                 )}`
               : ""}
           </desc>
@@ -587,7 +626,7 @@ export function RadarProfile({
         </svg>
 
         <div
-          aria-label="Radar series legend"
+          aria-label={t("legendAriaLabel")}
           className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border px-1 pt-4"
         >
           <span className="inline-flex min-w-0 items-center gap-2 text-xs font-semibold">
@@ -621,22 +660,12 @@ export function RadarProfile({
             data-testid="radar-partial-evidence"
             className="mt-4 rounded-xl border border-warning/20 bg-warning/10 px-4 py-3 text-xs leading-5 text-muted"
           >
-            At least one radar dimension
-            has no measured percentile.
-            Missing values are left
-            unplotted rather than replaced
-            with a neutral score.
+            {t("partialEvidence")}
           </p>
         ) : null}
 
         <p className="mt-4 px-1 text-[11px] leading-5 text-muted">
-          Each axis shows how strongly the
-          player expresses that
-          playing-style dimension relative
-          to players in the same position.
-          Higher percentiles do not by
-          themselves mean a better overall
-          player.
+          {t("guidance")}
         </p>
       </div>
     </div>

@@ -1,7 +1,67 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import {
+  fireEvent,
+  render as renderTestingLibrary,
+  screen,
+} from "@testing-library/react";
+import {
+  NextIntlClientProvider,
+} from "next-intl";
+import type {
+  ReactElement,
+  ReactNode,
+} from "react";
+
+import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
+import {
+  describe,
+  expect,
+  it,
+} from "vitest";
 
 import { PlayerImage, getPlayerImageSrc } from "./player-image";
+
+type TestLocale =
+  "en" | "tr";
+
+function createIntlWrapper(
+  locale: TestLocale,
+) {
+  const messages =
+    locale === "tr"
+      ? turkishMessages
+      : englishMessages;
+
+  return function IntlTestProvider({
+    children,
+  }: Readonly<{
+    children: ReactNode;
+  }>) {
+    return (
+      <NextIntlClientProvider
+        locale={locale}
+        messages={messages}
+      >
+        {children}
+      </NextIntlClientProvider>
+    );
+  };
+}
+
+function render(
+  element: ReactElement,
+  locale: TestLocale = "en",
+) {
+  return renderTestingLibrary(
+    element,
+    {
+      wrapper:
+        createIntlWrapper(
+          locale,
+        ),
+    },
+  );
+}
 
 describe("PlayerImage", () => {
   it("builds a deterministic player-image path", () => {
@@ -42,6 +102,34 @@ describe("PlayerImage", () => {
     });
 
     expect(fallback).toHaveTextContent("MO");
+  });
+
+  it("localizes photo and fallback accessibility labels in Turkish", () => {
+    render(
+      <PlayerImage
+        playerId={978838}
+        playerName="Michael Olise"
+      />,
+      "tr",
+    );
+
+    const image = screen.getByRole("img", {
+      name: "Michael Olise oyuncu fotoğrafı",
+    });
+
+    expect(image).toHaveAttribute(
+      "alt",
+      "Michael Olise oyuncu fotoğrafı",
+    );
+
+    fireEvent.error(image);
+
+    expect(
+      screen.getByRole("img", {
+        name:
+          "Michael Olise oyuncu fotoğrafı mevcut değil",
+      }),
+    ).toHaveTextContent("MO");
   });
 
   it("tries a new image when the player changes after a failure", () => {

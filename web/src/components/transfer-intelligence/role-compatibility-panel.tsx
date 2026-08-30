@@ -1,3 +1,8 @@
+import {
+  useLocale,
+  useTranslations,
+} from "next-intl";
+
 import type {
   TransferRecommendationResponse,
   TransferTargetResponse,
@@ -21,13 +26,14 @@ type TacticalProfileRow =
 
 function formatRoleValue(
   value: string | null | undefined,
+  missingValue: string,
 ): string {
   if (
     value === null ||
     value === undefined ||
     value.trim() === ""
   ) {
-    return "Not reported";
+    return missingValue;
   }
 
   return value;
@@ -35,8 +41,14 @@ function formatRoleValue(
 
 function TacticalProfileComparison({
   row,
+  targetLabel,
+  candidateLabel,
+  missingValue,
 }: Readonly<{
   row: TacticalProfileRow;
+  targetLabel: string;
+  candidateLabel: string;
+  missingValue: string;
 }>) {
   return (
     <div className="tactical-profile-row grid items-start gap-x-4 gap-y-2 border-b border-border/70 py-4 sm:items-center sm:gap-y-0 last:border-b-0">
@@ -46,12 +58,13 @@ function TacticalProfileComparison({
 
       <div className="min-w-0">
         <p className="text-[0.68rem] font-semibold tracking-[0.08em] text-muted uppercase sm:hidden">
-          Target
+          {targetLabel}
         </p>
 
         <p className="mt-1 min-w-0 break-words text-sm font-semibold sm:mt-0">
           {formatRoleValue(
             row.target,
+            missingValue,
           )}
         </p>
       </div>
@@ -65,12 +78,13 @@ function TacticalProfileComparison({
 
       <div className="min-w-0">
         <p className="text-[0.68rem] font-semibold tracking-[0.08em] text-muted uppercase sm:hidden">
-          Candidate
+          {candidateLabel}
         </p>
 
         <p className="mt-1 min-w-0 break-words text-sm font-semibold sm:mt-0">
           {formatRoleValue(
             row.candidate,
+            missingValue,
           )}
         </p>
       </div>
@@ -82,56 +96,71 @@ export function RoleCompatibilityPanel({
   target,
   candidate,
 }: RoleCompatibilityPanelProps) {
+  const locale = useLocale();
+  const t = useTranslations(
+    "RoleCompatibilityPanel",
+  );
+
   const rows: readonly TacticalProfileRow[] =
     [
       {
-        label: "Final role",
+        label: t("finalRole"),
         target: target.final_role,
         candidate:
           candidate.final_role,
       },
       {
-        label: "Archetype",
+        label: t("archetype"),
         target: target.archetype,
         candidate:
           candidate.archetype,
       },
       {
-        label: "Spatial role",
+        label: t("spatialRole"),
         target: target.spatial_role,
         candidate:
           candidate.spatial_role,
       },
       {
-        label: "Lateral profile",
+        label: t("lateralProfile"),
         target:
           target.lateral_profile,
         candidate:
           candidate.lateral_profile,
       },
       {
-        label: "Vertical profile",
+        label: t("verticalProfile"),
         target:
           target.vertical_profile,
         candidate:
           candidate.vertical_profile,
       },
       {
-        label: "Mobility",
+        label: t("mobility"),
         target:
           target.mobility_profile,
         candidate:
           candidate.mobility_profile,
       },
       {
-        label: "Role confidence",
+        label: t("roleConfidence"),
         target:
           formatProfilePercentage(
             target.role_confidence_pct,
+            {
+              locale,
+              missingValue:
+                t("notReported"),
+            },
           ),
         candidate:
           formatProfilePercentage(
             candidate.role_confidence_pct,
+            {
+              locale,
+              missingValue:
+                t("notReported"),
+            },
           ),
       },
     ];
@@ -142,16 +171,15 @@ export function RoleCompatibilityPanel({
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div className="max-w-xl">
             <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-              Role compatibility
+              {t("eyebrow")}
             </p>
 
             <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
-              Tactical role alignment
+              {t("title")}
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-muted">
-              Compare how the target and candidate are profiled across role,
-              archetype, pitch zone and movement behaviour.
+              {t("description")}
             </p>
           </div>
 
@@ -160,7 +188,7 @@ export function RoleCompatibilityPanel({
 
       <div className="p-5 sm:p-6">
         <p className="mb-4 text-xs font-semibold tracking-[0.12em] text-muted uppercase">
-          Tactical profile
+          {t("profile")}
         </p>
 
         <div className="tactical-profile-header hidden gap-4 border-b border-border pb-3 sm:grid">
@@ -182,6 +210,13 @@ export function RoleCompatibilityPanel({
             <TacticalProfileComparison
               key={row.label}
               row={row}
+              targetLabel={t("target")}
+              candidateLabel={t(
+                "candidate",
+              )}
+              missingValue={t(
+                "notReported",
+              )}
             />
           ))}
         </div>
