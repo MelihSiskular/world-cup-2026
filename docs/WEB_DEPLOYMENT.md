@@ -141,7 +141,7 @@ curl --silent --show-error --head "${WC26_WEB_URL}/status"
 
 1. Vercel originates from the expected `main` commit.
 2. `/api/status/ready` reports ready.
-3. `/api/status/deployment` reports backend version `0.4.0` and the expected commit.
+3. `/api/status/deployment` reports backend version `0.5.0` and the expected commit.
 4. The dataset bundle matches `config/runtime_dataset_manifest.json`.
 5. Player discovery, profile, shortlist and transfer analysis work.
 6. One-target/multiple-candidate comparison loads and keeps radar/heatmap selection synchronized.
