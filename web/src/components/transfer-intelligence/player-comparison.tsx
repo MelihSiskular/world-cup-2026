@@ -1,27 +1,28 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-  useLocale,
-  useTranslations,
-} from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { ApiErrorReference } from "@/components/feedback/api-error-reference";
-import {
-  Link,
-} from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
+import { CountryFlag } from "@/components/players/country-flag";
 import { PlayerImage } from "@/components/players/player-image";
 import {
   getHeatmapGridMaximum,
   HeatmapDensityLegend,
   HeatmapPitch,
 } from "@/components/transfer-intelligence/heatmap-pitch";
+import { MultiPlayerRoleMetrics } from "@/components/transfer-intelligence/multi-player-role-metrics";
 import { PlayerComparisonSkeleton } from "@/components/transfer-intelligence/player-comparison-skeleton";
-import { RadarProfile } from "@/components/transfer-intelligence/radar-profile";
+import {
+  RadarProfile,
+  useRadarDimensionLabel,
+} from "@/components/transfer-intelligence/radar-profile";
 import { RoleCompatibilityPanel } from "@/components/transfer-intelligence/role-compatibility-panel";
 import { SpatialPositionPitch } from "@/components/transfer-intelligence/spatial-position-pitch";
 import {
   fetchHeatmapComparison,
+  fetchMultiPlayerComparison,
   fetchRadarComparison,
 } from "@/lib/api/browser-transfer-intelligence";
 import type {
@@ -35,13 +36,9 @@ import {
   formatProfileNumber,
   formatProfilePercentage,
 } from "@/lib/players/profile-format";
-import {
-  createAnalysisSearchParameters,
-} from "@/lib/transfer-intelligence/analysis-form";
+import { createAnalysisSearchParameters } from "@/lib/transfer-intelligence/analysis-form";
 import type { TransferAnalysisFormValues } from "@/lib/transfer-intelligence/analysis-form";
-import {
-  createTransferAnalysisQueryOptions,
-} from "@/lib/transfer-intelligence/analysis-query";
+import { createTransferAnalysisQueryOptions } from "@/lib/transfer-intelligence/analysis-query";
 import {
   getRecommendationRank,
   getRecommendationScore,
@@ -59,10 +56,7 @@ type ComparisonPlayer = TransferTargetResponse | TransferRecommendationResponse;
 function getRecommendationReasons(
   value: string | null | undefined,
 ): readonly string[] {
-  if (
-    value === null ||
-    value === undefined
-  ) {
+  if (value === null || value === undefined) {
     return [];
   }
 
@@ -83,17 +77,13 @@ function ComparisonMetric({
 }>) {
   return (
     <article className="min-w-0 rounded-xl border border-border bg-surface px-4 py-4 shadow-sm">
-      <p className="text-xs font-medium leading-4 text-muted">
-        {label}
-      </p>
+      <p className="text-xs font-medium leading-4 text-muted">{label}</p>
 
       <p className="mt-2 text-2xl font-bold tracking-[-0.035em] text-brand-dark">
         {value}
       </p>
 
-      <p className="sr-only">
-        {description}
-      </p>
+      <p className="sr-only">{description}</p>
     </article>
   );
 }
@@ -108,19 +98,16 @@ function HeatmapEvidenceMetric({
   description: string;
 }>) {
   return (
-    <div
-      title={description}
-      className="min-w-0 rounded-xl border border-border bg-page px-4 py-3.5"
-    >
-      <dt className="text-[11px] font-medium leading-4 text-muted">
-        {label}
-      </dt>
+    <div className="min-w-0 rounded-xl border border-border bg-page px-4 py-3.5">
+      <dt className="text-[11px] font-medium leading-4 text-muted">{label}</dt>
 
-      <dd className="mt-1.5 text-2xl font-bold tracking-[-0.03em] text-brand-dark">
-        {value}
+      <dd className="mt-1.5">
+        <span className="block text-2xl font-bold tracking-[-0.03em] text-brand-dark">
+          {value}
+        </span>
 
-        <span className="sr-only">
-          . {description}
+        <span className="mt-2 block text-[10px] font-normal leading-4 text-muted">
+          {description}
         </span>
       </dd>
     </div>
@@ -141,14 +128,11 @@ function PlayerIdentityCard({
   scenarioLabel?: string;
 }>) {
   const locale = useLocale();
-  const t = useTranslations(
-    "PlayerComparison",
-  );
+  const t = useTranslations("PlayerComparison");
 
   const formatContext = {
     locale,
-    missingValue:
-      t("notReported"),
+    missingValue: t("notReported"),
   };
 
   const formattedScenarioScore =
@@ -180,57 +164,34 @@ function PlayerIdentityCard({
 
           {score !== undefined ? (
             <span
-              title={
-                scoreLabel ??
-                t("scenarioScore")
-              }
+              title={scoreLabel ?? t("scenarioScore")}
               className="rounded-full bg-brand-dark px-2.5 py-1 text-[11px] font-bold text-white"
             >
               <span className="sr-only">
-                {scoreLabel ??
-                  t("scenarioScore")}{" "}
+                {scoreLabel ?? t("scenarioScore")}{" "}
               </span>
-              {t("score")}{" "}
-              {formattedScenarioScore}
+              {t("score")} {formattedScenarioScore}
             </span>
           ) : null}
         </div>
 
         <span className="rounded-full bg-surface-secondary px-3 py-1.5 text-xs font-semibold text-brand-dark">
-          {formatPlayerPosition(
-            player.position,
-            {
-              labels: {
-                G: t(
-                  "positionLabels.G",
-                ),
-                D: t(
-                  "positionLabels.D",
-                ),
-                M: t(
-                  "positionLabels.M",
-                ),
-                F: t(
-                  "positionLabels.F",
-                ),
-              },
-              unavailable:
-                t(
-                  "positionUnavailable",
-                ),
+          {formatPlayerPosition(player.position, {
+            labels: {
+              G: t("positionLabels.G"),
+              D: t("positionLabels.D"),
+              M: t("positionLabels.M"),
+              F: t("positionLabels.F"),
             },
-          )}
+            unavailable: t("positionUnavailable"),
+          })}
         </span>
       </div>
 
       <div className="mt-5 flex min-w-0 items-start gap-4">
         <PlayerImage
-          playerId={
-            player.player_id
-          }
-          playerName={
-            player.player_name
-          }
+          playerId={player.player_id}
+          playerName={player.player_name}
           size="card"
           className="shrink-0 bg-page"
         />
@@ -240,29 +201,27 @@ function PlayerIdentityCard({
             {player.player_name}
           </h2>
 
-          <p className="mt-2 break-words text-sm font-medium text-muted">
-            {player.national_team_name ??
-              player.country_name ??
-              t(
-                "nationalTeamUnavailable",
-              )}
-          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-1.5 break-words text-sm font-medium text-muted">
+            <CountryFlag
+              countryName={player.country_name ?? player.national_team_name}
+            />
+
+            <span>
+              {player.national_team_name ??
+                player.country_name ??
+                t("nationalTeamUnavailable")}
+            </span>
+          </div>
 
           <p className="mt-3 break-words font-semibold text-brand">
-            {player.final_role ??
-              player.archetype ??
-              t(
-                "roleUnavailable",
-              )}
+            {player.final_role ?? player.archetype ?? t("roleUnavailable")}
           </p>
         </div>
       </div>
 
       <dl className="mt-7 grid grid-cols-2 gap-x-4 gap-y-5 rounded-2xl bg-surface-secondary p-5 text-sm sm:grid-cols-3">
         <div className="min-w-0">
-          <dt className="text-muted">
-            {t("marketValue")}
-          </dt>
+          <dt className="text-muted">{t("marketValue")}</dt>
 
           <dd className="mt-1 font-bold">
             {formatMarketValue(
@@ -274,45 +233,33 @@ function PlayerIdentityCard({
         </div>
 
         <div className="min-w-0">
-          <dt className="text-muted">
-            {t("age")}
-          </dt>
+          <dt className="text-muted">{t("age")}</dt>
 
           <dd className="mt-1 font-bold">
             {player.age === null
               ? t("notReported")
               : t("ageYears", {
-                  value:
-                    formatProfileNumber(
-                      player.age,
-                      {
-                        maximumFractionDigits:
-                          0,
-                      },
-                      formatContext,
-                    ),
+                  value: formatProfileNumber(
+                    player.age,
+                    {
+                      maximumFractionDigits: 0,
+                    },
+                    formatContext,
+                  ),
                 })}
           </dd>
         </div>
 
         <div className="min-w-0">
-          <dt className="text-muted">
-            {t("tournamentMinutes")}
-          </dt>
+          <dt className="text-muted">{t("tournamentMinutes")}</dt>
 
           <dd className="mt-1 font-bold">
-            {formatProfileNumber(
-              player.minutes,
-              {},
-              formatContext,
-            )}
+            {formatProfileNumber(player.minutes, {}, formatContext)}
           </dd>
         </div>
 
         <div className="min-w-0 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
-          <dt className="text-muted">
-            {t("weightedRating")}
-          </dt>
+          <dt className="text-muted">{t("weightedRating")}</dt>
 
           <dd className="mt-1 font-bold">
             {formatProfileNumber(
@@ -327,22 +274,15 @@ function PlayerIdentityCard({
         </div>
 
         <div className="min-w-0 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
-          <dt className="text-muted">
-            {t("roleConfidence")}
-          </dt>
+          <dt className="text-muted">{t("roleConfidence")}</dt>
 
           <dd className="mt-1 font-bold">
-            {formatProfilePercentage(
-              player.role_confidence_pct,
-              formatContext,
-            )}
+            {formatProfilePercentage(player.role_confidence_pct, formatContext)}
           </dd>
         </div>
 
         <div className="min-w-0 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
-          <dt className="text-muted">
-            {t("dataReliability")}
-          </dt>
+          <dt className="text-muted">{t("dataReliability")}</dt>
 
           <dd className="mt-1 font-bold">
             {formatProfilePercentage(
@@ -363,48 +303,28 @@ export function PlayerComparison({
   values,
 }: PlayerComparisonProps) {
   const locale = useLocale();
-  const t = useTranslations(
-    "PlayerComparison",
-  );
+  const t = useTranslations("PlayerComparison");
+
+  const formatRadarDimensionLabel = useRadarDimensionLabel();
+
+  const reasonT = useTranslations("RecommendationExplainability");
 
   const formatContext = {
     locale,
-    missingValue:
-      t("notReported"),
+    missingValue: t("notReported"),
   };
 
-  const formatPercentage = (
-    value:
-      | number
-      | null
-      | undefined,
-  ) =>
-    formatProfilePercentage(
-      value,
-      formatContext,
-    );
+  const formatPercentage = (value: number | null | undefined) =>
+    formatProfilePercentage(value, formatContext);
 
   const formatNumber = (
-    value:
-      | number
-      | null
-      | undefined,
-    options:
-      Intl.NumberFormatOptions = {},
-  ) =>
-    formatProfileNumber(
-      value,
-      options,
-      formatContext,
-    );
+    value: number | null | undefined,
+    options: Intl.NumberFormatOptions = {},
+  ) => formatProfileNumber(value, options, formatContext);
 
-  const comparison =
-    useQuery(
-      createTransferAnalysisQueryOptions(
-        targetPlayerId,
-        values,
-      ),
-    );
+  const comparison = useQuery(
+    createTransferAnalysisQueryOptions(targetPlayerId, values),
+  );
 
   const supplementalCandidateIsEligible =
     comparison.data?.modes[mode].recommendations.some(
@@ -440,11 +360,7 @@ export function PlayerComparison({
       candidatePlayerId,
     ],
     queryFn: ({ signal }) =>
-      fetchRadarComparison(
-        targetPlayerId,
-        candidatePlayerId,
-        signal,
-      ),
+      fetchRadarComparison(targetPlayerId, candidatePlayerId, signal),
     enabled: supplementalCandidateIsEligible,
     staleTime: 5 * 60 * 1000,
 
@@ -453,6 +369,32 @@ export function PlayerComparison({
      * playing-style evidence. A radar
      * failure must not invalidate the
      * recruitment comparison.
+     */
+    retry: false,
+  });
+
+  const roleMetricComparison = useQuery({
+    queryKey: [
+      "transfer-intelligence",
+      "pair-role-metrics",
+      targetPlayerId,
+      candidatePlayerId,
+      "all_players",
+    ],
+    queryFn: ({ signal }) =>
+      fetchMultiPlayerComparison(
+        targetPlayerId,
+        [candidatePlayerId],
+        signal,
+        "all_players",
+      ),
+    enabled: supplementalCandidateIsEligible,
+    staleTime: 5 * 60 * 1000,
+
+    /*
+     * Role metrics are supplemental
+     * evidence. Failure must not hide
+     * the main player comparison.
      */
     retry: false,
   });
@@ -481,10 +423,7 @@ export function PlayerComparison({
             : t("requestFailed")}
         </p>
 
-        <ApiErrorReference
-          error={comparison.error}
-          label={t("requestId")}
-        />
+        <ApiErrorReference error={comparison.error} label={t("requestId")} />
 
         <button
           type="button"
@@ -544,25 +483,13 @@ export function PlayerComparison({
 
   const candidateRank = getRecommendationRank(mode, candidate);
 
-  const modeKey =
-    mode === "short_term"
-      ? "shortTerm"
-      : mode;
+  const modeKey = mode === "short_term" ? "shortTerm" : mode;
 
-  const scenarioLabel =
-    t(
-      `modes.${modeKey}.label`,
-    );
+  const scenarioLabel = t(`modes.${modeKey}.label`);
 
-  const scenarioShortLabel =
-    t(
-      `modes.${modeKey}.shortLabel`,
-    );
+  const scenarioShortLabel = t(`modes.${modeKey}.shortLabel`);
 
-  const scenarioScoreLabel =
-    t(
-      `modes.${modeKey}.scoreLabel`,
-    );
+  const scenarioScoreLabel = t(`modes.${modeKey}.scoreLabel`);
 
   const sharedHeatmapMaximum = heatmapComparison.data
     ? Math.max(
@@ -575,20 +502,17 @@ export function PlayerComparison({
     {
       label: t("metrics.statisticalSimilarity"),
       value: formatPercentage(candidate.statistical_similarity_pct),
-      description:
-        t("metrics.statisticalSimilarityDescription"),
+      description: t("metrics.statisticalSimilarityDescription"),
     },
     {
       label: t("metrics.spatialSimilarity"),
       value: formatPercentage(candidate.spatial_similarity_pct),
-      description:
-        t("metrics.spatialSimilarityDescription"),
+      description: t("metrics.spatialSimilarityDescription"),
     },
     {
       label: t("metrics.heatmapSimilarity"),
       value: formatPercentage(candidate.heatmap_similarity_score_pct),
-      description:
-        t("metrics.heatmapSimilarityDescription"),
+      description: t("metrics.heatmapSimilarityDescription"),
     },
     {
       label: t("metrics.roleFit"),
@@ -624,32 +548,142 @@ export function PlayerComparison({
     }> => typeof item.value === "boolean",
   );
 
-  const recommendationReasons =
-    getRecommendationReasons(
-      candidate.why_recommended,
+  const localizeRecommendationReason = (reason: string): string => {
+    const percentageMatch = reason.match(/\((\d+(?:\.\d+)?)%\)$/);
+
+    const percentageValue = percentageMatch ? Number(percentageMatch[1]) : null;
+
+    const formattedPercentage =
+      percentageValue !== null && Number.isFinite(percentageValue)
+        ? formatProfilePercentage(percentageValue, formatContext)
+        : null;
+
+    if (reason === "same final role") {
+      return reasonT("reasons.sameFinalRole");
+    }
+
+    if (reason === "same statistical archetype") {
+      return reasonT("reasons.sameArchetype");
+    }
+
+    if (
+      formattedPercentage !== null &&
+      reason.includes("statistical similarity")
+    ) {
+      return reasonT(
+        percentageValue! >= 75
+          ? "reasons.statisticalSimilarity.veryStrong"
+          : "reasons.statisticalSimilarity.good",
+        {
+          value: formattedPercentage,
+        },
+      );
+    }
+
+    if (formattedPercentage !== null && reason.includes("role fit")) {
+      return reasonT(
+        percentageValue! >= 85
+          ? "reasons.roleFit.elite"
+          : "reasons.roleFit.strong",
+        {
+          value: formattedPercentage,
+        },
+      );
+    }
+
+    if (formattedPercentage !== null && reason.includes("spatial similarity")) {
+      return reasonT("reasons.spatialSimilarity", {
+        value: formattedPercentage,
+      });
+    }
+
+    if (
+      formattedPercentage !== null &&
+      reason.includes("heatmap occupation similarity")
+    ) {
+      const messageKey =
+        percentageValue! >= 90
+          ? "reasons.heatmapSimilarity.elite"
+          : percentageValue! >= 82
+            ? "reasons.heatmapSimilarity.strong"
+            : "reasons.heatmapSimilarity.useful";
+
+      return reasonT(messageKey, {
+        value: formattedPercentage,
+      });
+    }
+
+    if (
+      formattedPercentage !== null &&
+      reason.includes("shared-zone occupation")
+    ) {
+      return reasonT("reasons.heatmapOverlap", {
+        value: formattedPercentage,
+      });
+    }
+
+    let zoneMatch = reason.match(
+      /^replicates the target's (.+) and (.+) occupation$/,
     );
+
+    if (zoneMatch) {
+      return reasonT("reasons.heatmapZone.sameZones", {
+        lateral: zoneMatch[1]!,
+        vertical: zoneMatch[2]!,
+      });
+    }
+
+    zoneMatch = reason.match(
+      /^uses the same (.+), but operates more in the (.+)$/,
+    );
+
+    if (zoneMatch) {
+      return reasonT("reasons.heatmapZone.sameLateral", {
+        lateral: zoneMatch[1]!,
+        vertical: zoneMatch[2]!,
+      });
+    }
+
+    zoneMatch = reason.match(
+      /^matches the target's (.+) depth with more (.+) occupation$/,
+    );
+
+    if (zoneMatch) {
+      return reasonT("reasons.heatmapZone.sameDepth", {
+        vertical: zoneMatch[1]!,
+        lateral: zoneMatch[2]!,
+      });
+    }
+
+    zoneMatch = reason.match(/^operates mainly in the (.+) and (.+)$/);
+
+    if (zoneMatch) {
+      return reasonT("reasons.heatmapZone.mainZones", {
+        lateral: zoneMatch[1]!,
+        vertical: zoneMatch[2]!,
+      });
+    }
+
+    return reason;
+  };
+
+  const recommendationReasons = getRecommendationReasons(
+    candidate.why_recommended,
+  ).map(localizeRecommendationReason);
 
   return (
     <div className="space-y-8">
       <section className="grid gap-4 lg:grid-cols-2">
-        <PlayerIdentityCard
-          label={t("targetPlayer")}
-          player={target}
-        />
+        <PlayerIdentityCard label={t("targetPlayer")} player={target} />
 
         <PlayerIdentityCard
           label={t("candidateRank", {
-            rank:
-              candidateRank ?? "—",
+            rank: candidateRank ?? "—",
           })}
           player={candidate}
-          scenarioLabel={
-            scenarioShortLabel
-          }
+          scenarioLabel={scenarioShortLabel}
           score={candidateScore}
-          scoreLabel={
-            scenarioScoreLabel
-          }
+          scoreLabel={scenarioScoreLabel}
         />
       </section>
 
@@ -657,18 +691,14 @@ export function PlayerComparison({
         aria-label={t("comparisonIndicators")}
         className="comparison-indicator-grid grid gap-3 py-5"
       >
-        {comparisonMetrics.map(
-          (metric) => (
-            <ComparisonMetric
-              key={metric.label}
-              label={metric.label}
-              value={metric.value}
-              description={
-                metric.description
-              }
-            />
-          ),
-        )}
+        {comparisonMetrics.map((metric) => (
+          <ComparisonMetric
+            key={metric.label}
+            label={metric.label}
+            value={metric.value}
+            description={metric.description}
+          />
+        ))}
       </section>
 
       <div className="py-1">
@@ -676,56 +706,35 @@ export function PlayerComparison({
           aria-label={t("recommendationEvidence")}
           className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
         >
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border px-5 py-5 sm:px-7 sm:py-6">
-          <div className="max-w-3xl">
-            <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-              {t("recommendationEvidence")}
-            </p>
+          <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border px-5 py-5 sm:px-7 sm:py-6">
+            <div className="max-w-3xl">
+              <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
+                {t("recommendationEvidence")}
+              </p>
 
-            <h2 className="mt-2 text-2xl font-bold tracking-[-0.035em]">
-              {t("whyCandidate", {
-                player:
-                  candidate.player_name,
-              })}
-            </h2>
+              <h2 className="mt-2 text-2xl font-bold tracking-[-0.035em]">
+                {t("whyCandidate", {
+                  player: candidate.player_name,
+                })}
+              </h2>
 
-            <p className="mt-2 text-sm leading-6 text-muted">
-              {t(
-                "recommendationContext",
-                {
-                  scenario:
-                    scenarioLabel.toLocaleLowerCase(
-                      locale,
-                    ),
-                },
-              )}
-            </p>
+              <p className="mt-2 text-sm leading-6 text-muted">
+                {t("recommendationContext", {
+                  scenario: scenarioLabel.toLocaleLowerCase(locale),
+                })}
+              </p>
+            </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <span className="rounded-full border border-brand/20 bg-brand/5 px-3 py-1.5 text-xs font-semibold text-brand-dark">
-              {candidate.recommendation_strength}
-            </span>
+          <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)]">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
+                {t("whyRecommended")}
+              </p>
 
-            <span className="rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-muted">
-              {t("rankBadge", {
-                rank:
-                  candidateRank ?? "—",
-              })}
-            </span>
-          </div>
-        </div>
-
-        <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)]">
-          <div className="min-w-0">
-            <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
-              {t("whyRecommended")}
-            </p>
-
-            {recommendationReasons.length > 0 ? (
-              <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-                {recommendationReasons.map(
-                  (reason) => (
+              {recommendationReasons.length > 0 ? (
+                <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {recommendationReasons.map((reason) => (
                     <li
                       key={reason}
                       className="flex min-w-0 gap-3 rounded-xl border border-border bg-surface-secondary px-4 py-3.5 text-sm leading-6 text-foreground"
@@ -735,29 +744,25 @@ export function PlayerComparison({
                         className="mt-2 size-1.5 shrink-0 rounded-full bg-brand"
                       />
 
-                      <span>
-                        {reason}
-                      </span>
+                      <span>{reason}</span>
                     </li>
-                  ),
-                )}
-              </ul>
-            ) : (
-              <p className="mt-4 rounded-xl border border-border bg-surface-secondary px-4 py-4 text-sm leading-6 text-muted">
-                {t("explanationUnavailable")}
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-4 rounded-xl border border-border bg-surface-secondary px-4 py-4 text-sm leading-6 text-muted">
+                  {t("explanationUnavailable")}
+                </p>
+              )}
+            </div>
+
+            <div className="min-w-0">
+              <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
+                {t("evidenceChecks")}
               </p>
-            )}
-          </div>
 
-          <div className="min-w-0">
-            <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
-              {t("evidenceChecks")}
-            </p>
-
-            {evidenceItems.length > 0 ? (
-              <dl className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-                {evidenceItems.map(
-                  (item) => (
+              {evidenceItems.length > 0 ? (
+                <dl className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                  {evidenceItems.map((item) => (
                     <div
                       key={item.label}
                       className={[
@@ -783,55 +788,48 @@ export function PlayerComparison({
                           aria-hidden="true"
                           className={[
                             "size-1.5 rounded-full",
-                            item.value
-                              ? "bg-brand"
-                              : "bg-muted",
+                            item.value ? "bg-brand" : "bg-muted",
                           ].join(" ")}
                         />
 
-                        {item.value
-                          ? t("yes")
-                          : t("no")}
+                        {item.value ? t("yes") : t("no")}
                       </dd>
                     </div>
-                  ),
-                )}
-              </dl>
-            ) : (
-              <p className="mt-4 text-sm text-muted">
-                {t("noEvidenceChecks")}
-              </p>
-            )}
+                  ))}
+                </dl>
+              ) : (
+                <p className="mt-4 text-sm text-muted">
+                  {t("noEvidenceChecks")}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border px-5 py-4 sm:px-7">
-          <p className="max-w-2xl text-xs leading-5 text-muted">
-            {t("recommendationDisclaimer")}
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border px-5 py-4 sm:px-7">
+            <p className="max-w-2xl text-xs leading-5 text-muted">
+              {t("recommendationDisclaimer")}
+            </p>
 
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href={`/players/${candidate.player_id}`}
-              className="rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
-            >
-              {t("candidateProfile")}
-            </Link>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href={`/players/${candidate.player_id}`}
+                className="rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+              >
+                {t("candidateProfile")}
+              </Link>
 
-            <Link
-              href={`/players/${target.player_id}`}
-              className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-page"
-            >
-              {t("targetProfile")}
-            </Link>
+              <Link
+                href={`/players/${target.player_id}`}
+                className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-page"
+              >
+                {t("targetProfile")}
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
       </div>
 
-      <section
-        aria-labelledby="tactical-spatial-fit-heading"
-      >
+      <section aria-labelledby="tactical-spatial-fit-heading">
         <div className="mb-6">
           <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
             {t("tacticalSpatialEyebrow")}
@@ -852,77 +850,70 @@ export function PlayerComparison({
         <div className="grid min-w-0 gap-6 md:grid-cols-2">
           <RoleCompatibilityPanel target={target} candidate={candidate} />
 
-        <article className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
-          <div className="border-b border-border p-5 sm:p-6">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
-                  {t("spatialProfile")}
-                </p>
+          <article className="min-w-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+            <div className="border-b border-border p-5 sm:p-6">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold tracking-[0.14em] text-brand uppercase">
+                    {t("spatialProfile")}
+                  </p>
 
-                <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
-                  {t("spatialTitle")}
-                </h2>
+                  <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em]">
+                    {t("spatialTitle")}
+                  </h2>
 
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-                  {t("spatialDescription")}
-                </p>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+                    {t("spatialDescription")}
+                  </p>
+                </div>
               </div>
-
             </div>
-          </div>
 
-          <div className="p-5 sm:p-6">
-            <SpatialPositionPitch
-              target={{
-                playerId: target.player_id,
-                playerName: target.player_name,
-                meanX: target.weighted_mean_x,
-                meanY: target.weighted_mean_y,
-                xStd: target.weighted_x_std,
-                yStd: target.weighted_y_std,
-              }}
-              candidate={{
-                playerId: candidate.player_id,
-                playerName: candidate.player_name,
-                meanX: candidate.weighted_mean_x,
-                meanY: candidate.weighted_mean_y,
-                xStd: candidate.weighted_x_std,
-                yStd: candidate.weighted_y_std,
-              }}
-            />
+            <div className="p-5 sm:p-6">
+              <SpatialPositionPitch
+                target={{
+                  playerId: target.player_id,
+                  playerName: target.player_name,
+                  meanX: target.weighted_mean_x,
+                  meanY: target.weighted_mean_y,
+                  xStd: target.weighted_x_std,
+                  yStd: target.weighted_y_std,
+                }}
+                candidate={{
+                  playerId: candidate.player_id,
+                  playerName: candidate.player_name,
+                  meanX: candidate.weighted_mean_x,
+                  meanY: candidate.weighted_mean_y,
+                  xStd: candidate.weighted_x_std,
+                  yStd: candidate.weighted_y_std,
+                }}
+              />
 
-            <dl className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-xl border border-border bg-page p-4">
-                <dt className="text-xs text-muted">
-                  {t("lateralSimilarity")}
-                </dt>
+              <dl className="mt-5 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border border-border bg-page p-4">
+                  <dt className="text-xs text-muted">
+                    {t("lateralSimilarity")}
+                  </dt>
 
-                <dd className="mt-2 text-lg font-bold">
-                  {formatPercentage(
-                    candidate.lateral_profile_similarity_pct,
-                  )}
-                </dd>
-              </div>
+                  <dd className="mt-2 text-lg font-bold">
+                    {formatPercentage(candidate.lateral_profile_similarity_pct)}
+                  </dd>
+                </div>
 
-              <div className="rounded-xl border border-border bg-page p-4">
-                <dt className="text-xs text-muted">
-                  {t("verticalSimilarity")}
-                </dt>
+                <div className="rounded-xl border border-border bg-page p-4">
+                  <dt className="text-xs text-muted">
+                    {t("verticalSimilarity")}
+                  </dt>
 
-                <dd className="mt-2 text-lg font-bold">
-                  {formatPercentage(
-                    candidate.vertical_profile_similarity_pct,
-                  )}
-                </dd>
-              </div>
-            </dl>
-
-            <p className="mt-4 text-xs leading-5 text-muted">
-              {t("spatialGuidance")}
-            </p>
-          </div>
-        </article>
+                  <dd className="mt-2 text-lg font-bold">
+                    {formatPercentage(
+                      candidate.vertical_profile_similarity_pct,
+                    )}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </article>
         </div>
       </section>
 
@@ -945,24 +936,6 @@ export function PlayerComparison({
                 {t("radar.description")}
               </p>
             </div>
-
-            {radarComparison.data ? (
-              <span
-                className={
-                  radarComparison.data.comparison.overlay_available
-                    ? "rounded-full border border-success/20 bg-success/10 px-3 py-1.5 text-xs font-semibold text-success"
-                    : "rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-muted"
-                }
-              >
-                {radarComparison.data.comparison.overlay_available
-                  ? t(
-                      "radar.sharedOverlay",
-                    )
-                  : t(
-                      "radar.separateProfiles",
-                    )}
-              </span>
-            ) : null}
           </div>
         </div>
 
@@ -984,15 +957,11 @@ export function PlayerComparison({
               </p>
 
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-                {t(
-                  "radar.unavailableDescription",
-                )}
+                {t("radar.unavailableDescription")}
               </p>
 
               <ApiErrorReference
-                error={
-                  radarComparison.error
-                }
+                error={radarComparison.error}
                 label={t("requestId")}
               />
 
@@ -1008,9 +977,7 @@ export function PlayerComparison({
             </div>
           ) : radarComparison.data ? (
             radarComparison.data.comparison.overlay_available ? (
-              <div
-                className="comparison-radar-layout grid min-w-0 gap-5"
-              >
+              <div className="comparison-radar-layout grid min-w-0 gap-5">
                 <div className="min-w-0">
                   <RadarProfile
                     primary={radarComparison.data.target}
@@ -1026,15 +993,11 @@ export function PlayerComparison({
                     </p>
 
                     <p className="mt-2 text-xs leading-5 text-muted">
-                      {t(
-                        "radar.percentilesDescription",
-                      )}
+                      {t("radar.percentilesDescription")}
                     </p>
                   </div>
 
-                  <div
-                    className="comparison-percentile-grid mt-4 grid items-center gap-x-2 border-b border-border pb-3 sm:gap-x-3"
-                  >
+                  <div className="comparison-percentile-grid mt-4 grid items-center gap-x-2 border-b border-border pb-3 sm:gap-x-3">
                     <span />
 
                     <div className="flex min-w-0 items-center justify-center gap-1.5 text-center">
@@ -1043,7 +1006,10 @@ export function PlayerComparison({
                         className="size-2 shrink-0 rounded-full bg-brand"
                       />
 
-                      <p className="min-w-0 [overflow-wrap:anywhere] text-[11px] font-semibold leading-4 text-foreground">
+                      <p
+                        title={radarComparison.data.target.player_name}
+                        className="min-w-0 truncate whitespace-nowrap text-[11px] font-semibold leading-4 text-foreground"
+                      >
                         {radarComparison.data.target.player_name}
                       </p>
                     </div>
@@ -1054,7 +1020,10 @@ export function PlayerComparison({
                         className="size-2 shrink-0 rounded-full bg-brand-navy"
                       />
 
-                      <p className="min-w-0 [overflow-wrap:anywhere] text-[11px] font-semibold leading-4 text-foreground">
+                      <p
+                        title={radarComparison.data.candidate.player_name}
+                        className="min-w-0 truncate whitespace-nowrap text-[11px] font-semibold leading-4 text-foreground"
+                      >
                         {radarComparison.data.candidate.player_name}
                       </p>
                     </div>
@@ -1062,14 +1031,9 @@ export function PlayerComparison({
 
                   <dl>
                     {radarComparison.data.target.dimensions.map(
-                      (
-                        dimension,
-                        index,
-                      ) => {
+                      (dimension, index) => {
                         const candidateDimension =
-                          radarComparison.data.candidate.dimensions[
-                            index
-                          ];
+                          radarComparison.data.candidate.dimensions[index];
 
                         return (
                           <div
@@ -1077,19 +1041,16 @@ export function PlayerComparison({
                             className="comparison-percentile-grid grid items-center gap-x-2 border-b border-border/70 py-3 sm:gap-x-3 last:border-b-0"
                           >
                             <dt className="min-w-0 text-xs font-medium leading-5 text-muted">
-                              {dimension.label}
+                              {formatRadarDimensionLabel(dimension)}
                             </dt>
 
                             <dd className="text-center text-sm font-bold text-brand-dark">
-                              {formatPercentage(
-                                dimension.percentile,
-                              )}
+                              {formatPercentage(dimension.percentile)}
                             </dd>
 
                             <dd className="text-center text-sm font-bold text-brand-navy">
                               {formatPercentage(
-                                candidateDimension?.percentile ??
-                                  null,
+                                candidateDimension?.percentile ?? null,
                               )}
                             </dd>
                           </div>
@@ -1099,18 +1060,14 @@ export function PlayerComparison({
                   </dl>
 
                   <p className="mt-2 border-t border-border pt-4 text-[11px] leading-5 text-muted">
-                    {t(
-                      "radar.percentileGuidance",
-                    )}
+                    {t("radar.percentileGuidance")}
                   </p>
                 </aside>
               </div>
             ) : (
               <>
                 <div className="mb-5 rounded-xl border border-border bg-surface-secondary px-4 py-3 text-xs leading-5 text-muted sm:px-5">
-                  {t(
-                    "radar.incompatibleDescription",
-                  )}
+                  {t("radar.incompatibleDescription")}
                 </div>
 
                 <div className="grid min-w-0 gap-5 lg:grid-cols-2">
@@ -1151,7 +1108,6 @@ export function PlayerComparison({
               </>
             )
           ) : null}
-
         </div>
       </section>
 
@@ -1175,21 +1131,10 @@ export function PlayerComparison({
               </p>
             </div>
 
-            {heatmapComparison.data ? (
-              <span
-                className={
-                  heatmapComparison.data.similarity.available
-                    ? "rounded-full border border-success/20 bg-success/10 px-3 py-1.5 text-xs font-semibold text-success"
-                    : "rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-muted"
-                }
-              >
-                {heatmapComparison.data.similarity.available
-                  ? t(
-                      "heatmap.measuredEvidence",
-                    )
-                  : t(
-                      "heatmap.evidenceUnavailable",
-                    )}
+            {heatmapComparison.data &&
+            !heatmapComparison.data.similarity.available ? (
+              <span className="rounded-full border border-border bg-page px-3 py-1.5 text-xs font-semibold text-muted">
+                {t("heatmap.evidenceUnavailable")}
               </span>
             ) : null}
           </div>
@@ -1216,15 +1161,11 @@ export function PlayerComparison({
               </p>
 
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-                {t(
-                  "heatmap.unavailableDescription",
-                )}
+                {t("heatmap.unavailableDescription")}
               </p>
 
               <ApiErrorReference
-                error={
-                  heatmapComparison.error
-                }
+                error={heatmapComparison.error}
                 label={t("requestId")}
               />
 
@@ -1247,9 +1188,7 @@ export function PlayerComparison({
                   </p>
 
                   <p className="mt-1 max-w-3xl text-[11px] leading-5 text-muted">
-                    {t(
-                      "heatmap.densityDescription",
-                    )}
+                    {t("heatmap.densityDescription")}
                   </p>
                 </div>
 
@@ -1300,6 +1239,10 @@ export function PlayerComparison({
                 </article>
               </div>
 
+              <p className="mt-4 text-xs leading-5 text-muted">
+                {t("heatmap.sampleGuidance")}
+              </p>
+
               <dl
                 aria-label={t("heatmap.metricsLabel")}
                 className="heatmap-evidence-grid mt-6 grid gap-3"
@@ -1310,7 +1253,9 @@ export function PlayerComparison({
                     heatmapComparison.data.similarity
                       .heatmap_similarity_score_pct,
                   )}
-                  description={t("heatmap.metrics.measuredSimilarityDescription")}
+                  description={t(
+                    "heatmap.metrics.measuredSimilarityDescription",
+                  )}
                 />
 
                 <HeatmapEvidenceMetric
@@ -1327,7 +1272,9 @@ export function PlayerComparison({
                   value={formatPercentage(
                     heatmapComparison.data.similarity.occupation_overlap_pct,
                   )}
-                  description={t("heatmap.metrics.occupationOverlapDescription")}
+                  description={t(
+                    "heatmap.metrics.occupationOverlapDescription",
+                  )}
                 />
 
                 <HeatmapEvidenceMetric
@@ -1335,7 +1282,9 @@ export function PlayerComparison({
                   value={formatPercentage(
                     heatmapComparison.data.similarity.peak_zone_similarity_pct,
                   )}
-                  description={t("heatmap.metrics.peakZoneSimilarityDescription")}
+                  description={t(
+                    "heatmap.metrics.peakZoneSimilarityDescription",
+                  )}
                 />
 
                 <HeatmapEvidenceMetric
@@ -1354,17 +1303,65 @@ export function PlayerComparison({
                   value={formatPercentage(
                     heatmapComparison.data.similarity.entropy_similarity_pct,
                   )}
-                  description={t("heatmap.metrics.entropySimilarityDescription")}
+                  description={t(
+                    "heatmap.metrics.entropySimilarityDescription",
+                  )}
                 />
               </dl>
-
             </>
           ) : null}
         </div>
       </section>
 
+      {roleMetricComparison.isPending ? (
+        <section
+          role="status"
+          aria-label={t("roleMetrics.loading")}
+          aria-busy="true"
+          className="min-h-56 animate-pulse rounded-3xl border border-border bg-surface-secondary"
+        />
+      ) : roleMetricComparison.isError ? (
+        <section
+          role="alert"
+          className="overflow-hidden rounded-3xl border border-warning/25 bg-surface shadow-sm"
+        >
+          <div className="p-6 sm:p-7">
+            <p className="text-xs font-semibold tracking-[0.14em] text-warning uppercase">
+              {t("roleMetrics.unavailableEyebrow")}
+            </p>
 
+            <h2 className="mt-2 text-2xl font-bold tracking-[-0.035em]">
+              {t("roleMetrics.unavailableTitle")}
+            </h2>
 
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
+              {t("roleMetrics.unavailableDescription")}
+            </p>
+
+            <ApiErrorReference
+              error={roleMetricComparison.error}
+              label={t("requestId")}
+            />
+
+            <button
+              type="button"
+              onClick={() => {
+                void roleMetricComparison.refetch();
+              }}
+              className="mt-5 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-page"
+            >
+              {t("roleMetrics.retry")}
+            </button>
+          </div>
+        </section>
+      ) : roleMetricComparison.data ? (
+        <MultiPlayerRoleMetrics
+          target={roleMetricComparison.data.target}
+          candidates={roleMetricComparison.data.candidates}
+          groups={roleMetricComparison.data.role_metrics ?? []}
+          variant="pair"
+        />
+      ) : null}
     </div>
   );
 }

@@ -59,6 +59,13 @@ type ProfileDetailCardProps = Readonly<{
   accent?: boolean;
 }>;
 
+type RoleEvidenceLabels = Readonly<{
+  statisticalArchetype: string;
+  spatialProfile: string;
+  meanPosition: string;
+  spatialSpread: string;
+}>;
+
 function ProfileDetailCard({
   label,
   value,
@@ -79,6 +86,65 @@ function ProfileDetailCard({
       </dd>
     </div>
   );
+}
+
+function localizeRoleReason(
+  reason: string,
+  labels: RoleEvidenceLabels,
+): string {
+  const statisticalArchetypePrefix =
+    "Statistical archetype: ";
+
+  if (
+    reason.startsWith(
+      statisticalArchetypePrefix,
+    )
+  ) {
+    return `${labels.statisticalArchetype}: ${reason.slice(
+      statisticalArchetypePrefix.length,
+    )}`;
+  }
+
+  const spatialProfilePrefix =
+    "Spatial profile: ";
+
+  if (
+    reason.startsWith(
+      spatialProfilePrefix,
+    )
+  ) {
+    return `${labels.spatialProfile}: ${reason.slice(
+      spatialProfilePrefix.length,
+    )}`;
+  }
+
+  const meanPositionPrefix =
+    "Mean position: ";
+
+  if (
+    reason.startsWith(
+      meanPositionPrefix,
+    )
+  ) {
+    return `${labels.meanPosition}: ${reason.slice(
+      meanPositionPrefix.length,
+    )}`;
+  }
+
+  const spatialSpreadPrefix =
+    "Spatial spread=";
+
+  if (
+    reason.startsWith(
+      spatialSpreadPrefix,
+    )
+  ) {
+    return `${labels.spatialSpread}: ${reason.slice(
+      spatialSpreadPrefix.length,
+    )}`;
+  }
+
+  return reason;
 }
 
 function PlayerModelContext({
@@ -248,6 +314,34 @@ export function PlayerProfileView({
       ?.split("|")
       .map((part) => part.trim())
       .filter(Boolean) ?? [];
+
+  const roleEvidenceLabels: RoleEvidenceLabels = {
+    statisticalArchetype:
+      translations(
+        "roleEvidenceLabels.statisticalArchetype",
+      ),
+    spatialProfile:
+      translations(
+        "roleEvidenceLabels.spatialProfile",
+      ),
+    meanPosition:
+      translations(
+        "roleEvidenceLabels.meanPosition",
+      ),
+    spatialSpread:
+      translations(
+        "roleEvidenceLabels.spatialSpread",
+      ),
+  };
+
+  const localizedRoleReasonParts =
+    roleReasonParts.map(
+      (reason) =>
+        localizeRoleReason(
+          reason,
+          roleEvidenceLabels,
+        ),
+    );
 
   const tournament = player.tournament ?? null;
 
@@ -583,7 +677,7 @@ export function PlayerProfileView({
 
         </div>
 
-        {roleReasonParts.length > 0 ? (
+        {localizedRoleReasonParts.length > 0 ? (
           <details className="group mt-5 overflow-hidden rounded-xl border border-border bg-surface-secondary">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3.5 font-semibold text-brand-dark transition-colors hover:bg-page [&::-webkit-details-marker]:hidden">
               <span>
@@ -608,7 +702,7 @@ export function PlayerProfileView({
               </p>
 
               <ul className="mt-4 space-y-3 text-sm leading-6 text-muted">
-                {roleReasonParts.map((reason) => (
+                {localizedRoleReasonParts.map((reason) => (
                   <li key={reason} className="flex gap-3">
                     <span
                       aria-hidden="true"

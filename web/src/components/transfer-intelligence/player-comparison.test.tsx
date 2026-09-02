@@ -3,62 +3,49 @@ import {
   screen,
   within,
 } from "@testing-library/react";
-import {
-  NextIntlClientProvider,
-} from "next-intl";
-import type {
-  ComponentProps,
-  ReactElement,
-} from "react";
+import { NextIntlClientProvider } from "next-intl";
+import type { ComponentProps, ReactElement } from "react";
 
 import englishMessages from "../../../messages/en.json";
+import turkishMessages from "../../../messages/tr.json";
 
-import {
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { PlayerComparison } from "@/components/transfer-intelligence/player-comparison";
 import {
   fetchHeatmapComparison,
+  fetchMultiPlayerComparison,
   fetchRadarComparison,
   runTransferAnalysis,
 } from "@/lib/api/browser-transfer-intelligence";
 import type {
   HeatmapComparisonResponse,
+  MultiPlayerComparisonResponse,
   RadarComparisonResponse,
   TransferAnalysisResponse,
   TransferRecommendationResponse,
 } from "@/lib/api/types";
 import { DEFAULT_TRANSFER_ANALYSIS_VALUES } from "@/lib/transfer-intelligence/analysis-form";
-import {
-  createTransferAnalysisQueryKey,
-} from "@/lib/transfer-intelligence/analysis-query";
+import { createTransferAnalysisQueryKey } from "@/lib/transfer-intelligence/analysis-query";
 import { renderWithQueryClient } from "@/test/render-with-query-client";
 
-vi.mock(
-  "@/i18n/navigation",
-  () => ({
-    Link: ({
-      href,
-      ...properties
-    }: ComponentProps<"a">) => (
-      <a
-        href={href}
-        {...properties}
-      />
-    ),
-  }),
-);
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({ href, ...properties }: ComponentProps<"a">) => (
+    <a href={href} {...properties} />
+  ),
+}));
 
 vi.mock("@/lib/api/browser-transfer-intelligence", () => ({
   fetchHeatmapComparison: vi.fn(),
+  fetchMultiPlayerComparison: vi.fn(),
   fetchRadarComparison: vi.fn(),
   runTransferAnalysis: vi.fn(),
 }));
 
 const fetchHeatmapComparisonMock = vi.mocked(fetchHeatmapComparison);
+
+const fetchMultiPlayerComparisonMock = vi.mocked(fetchMultiPlayerComparison);
 
 const fetchRadarComparisonMock = vi.mocked(fetchRadarComparison);
 
@@ -73,7 +60,7 @@ function createResponse(
         {
           player_id: 12345,
           player_name: "Test Candidate",
-          national_team_name: "Test Nation",
+          national_team_name: "Brazil",
           position: "M",
           age: 23,
           minutes: 500,
@@ -206,9 +193,7 @@ function createHeatmapResponse(
   };
 }
 
-function createRadarResponse(
-  overlayAvailable = true,
-): RadarComparisonResponse {
+function createRadarResponse(overlayAvailable = true): RadarComparisonResponse {
   const targetDimensions = [
     {
       key: "creativity",
@@ -293,34 +278,102 @@ function createRadarResponse(
     candidate: {
       player_id: 12345,
       player_name: "Test Candidate",
-      position: overlayAvailable
-        ? "M"
-        : "F",
+      position: overlayAvailable ? "M" : "F",
       available: true,
-      peer_count: overlayAvailable
-        ? 216
-        : 75,
+      peer_count: overlayAvailable ? 216 : 75,
       dimensions: candidateDimensions,
     },
     comparison: {
       same_position: overlayAvailable,
       overlay_available: overlayAvailable,
-      reason: overlayAvailable
-        ? null
-        : "different_position_profiles",
+      reason: overlayAvailable ? null : "different_position_profiles",
     },
   };
 }
 
+function createRoleMetricResponse(): MultiPlayerComparisonResponse {
+  const values = (targetTotal: number, candidateTotal: number) => [
+    {
+      player_id: 978838,
+      total: targetTotal,
+      per90: targetTotal / 10,
+    },
+    {
+      player_id: 12345,
+      total: candidateTotal,
+      per90: candidateTotal / 10,
+    },
+  ];
 
-function render(
-  element: ReactElement,
-) {
+  return {
+    target: {
+      player_id: 978838,
+      player_name: "Michael Olise",
+      national_team_name: "France",
+      position: "M",
+      final_role: "Central Half-Space Creator",
+      archetype: "Wide Creator",
+    },
+    candidates: [
+      {
+        player: {
+          player_id: 12345,
+          player_name: "Test Candidate",
+          national_team_name: "Brazil",
+          position: "M",
+          final_role: "Creative Central Midfielder",
+          archetype: "Wide Creator",
+        },
+        evidence: {
+          statistical_similarity_pct: 72.5,
+          spatial_similarity_pct: 61.2,
+          heatmap_similarity_score_pct: 88.4,
+          role_fit_pct: 79.5,
+          market_value_advantage_pct: 82.6,
+        },
+      },
+    ],
+    role_metrics: [
+      {
+        key: "creativity",
+        label: "Chance creation",
+        metrics: [
+          {
+            key: "goalAssist",
+            label: "Assists",
+            values: values(4, 6),
+          },
+        ],
+      },
+      {
+        key: "progression",
+        label: "Progression",
+        metrics: [
+          {
+            key: "totalProgression",
+            label: "Progression distance",
+            values: values(320, 280),
+          },
+        ],
+      },
+      {
+        key: "passing_volume",
+        label: "Passing volume",
+        metrics: [
+          {
+            key: "totalPass",
+            label: "Passes",
+            values: values(410, 520),
+          },
+        ],
+      },
+    ],
+  } as unknown as MultiPlayerComparisonResponse;
+}
+
+function render(element: ReactElement) {
   return renderTestingLibrary(
-    <NextIntlClientProvider
-      locale="en"
-      messages={englishMessages}
-    >
+    <NextIntlClientProvider locale="en" messages={englishMessages}>
       {element}
     </NextIntlClientProvider>,
   );
@@ -330,66 +383,58 @@ describe("PlayerComparison", () => {
   beforeEach(() => {
     fetchHeatmapComparisonMock.mockReset();
 
+    fetchMultiPlayerComparisonMock.mockReset();
+
     fetchRadarComparisonMock.mockReset();
 
     runTransferAnalysisMock.mockReset();
 
     fetchHeatmapComparisonMock.mockResolvedValue(createHeatmapResponse());
 
+    fetchMultiPlayerComparisonMock.mockResolvedValue(
+      createRoleMetricResponse(),
+    );
+
     fetchRadarComparisonMock.mockResolvedValue(createRadarResponse());
   });
 
-  it(
-    "reuses fresh transfer-analysis data from the shared cache",
-    async () => {
-      const values = {
-        ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
-      };
+  it("reuses fresh transfer-analysis data from the shared cache", async () => {
+    const values = {
+      ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+    };
 
-      const queryClient =
-        new QueryClient({
-          defaultOptions: {
-            queries: {
-              retry: false,
-            },
-          },
-        });
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    });
 
-      queryClient.setQueryData(
-        createTransferAnalysisQueryKey(
-          978838,
-          values,
-        ),
-        createResponse(true),
-      );
+    queryClient.setQueryData(
+      createTransferAnalysisQueryKey(978838, values),
+      createResponse(true),
+    );
 
-      render(
-        <QueryClientProvider
-          client={queryClient}
-        >
-          <PlayerComparison
-            targetPlayerId={978838}
-            candidatePlayerId={12345}
-            mode="immediate"
-            values={values}
-          />
-        </QueryClientProvider>,
-      );
+    render(
+      <QueryClientProvider client={queryClient}>
+        <PlayerComparison
+          targetPlayerId={978838}
+          candidatePlayerId={12345}
+          mode="immediate"
+          values={values}
+        />
+      </QueryClientProvider>,
+    );
 
-      expect(
-        await screen.findByRole(
-          "heading",
-          {
-            name: "Test Candidate",
-          },
-        ),
-      ).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", {
+        name: "Test Candidate",
+      }),
+    ).toBeInTheDocument();
 
-      expect(
-        runTransferAnalysisMock,
-      ).not.toHaveBeenCalled();
-    },
-  );
+    expect(runTransferAnalysisMock).not.toHaveBeenCalled();
+  });
 
   it("shows a candidate-unavailable state", async () => {
     runTransferAnalysisMock.mockResolvedValue(createResponse(false));
@@ -417,6 +462,33 @@ describe("PlayerComparison", () => {
       "href",
       "/analysis/978838/results?minimum_minutes=150&minimum_role_confidence=50&neutral_heatmap_score=70&mode=immediate",
     );
+  });
+
+  it("renders target and candidate country flags", async () => {
+    runTransferAnalysisMock.mockResolvedValue(createResponse(true));
+
+    const rendered = renderWithQueryClient(
+      <PlayerComparison
+        targetPlayerId={978838}
+        candidatePlayerId={12345}
+        mode="immediate"
+        values={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+      />,
+    );
+
+    expect(await screen.findByText("France")).toBeInTheDocument();
+
+    expect(screen.getByText("Brazil")).toBeInTheDocument();
+
+    expect(
+      rendered.container.querySelector('[data-country-code="FRA"]'),
+    ).not.toBeNull();
+
+    expect(
+      rendered.container.querySelector('[data-country-code="BRA"]'),
+    ).not.toBeNull();
   });
 
   it("keeps spatial and heatmap similarity separate", async () => {
@@ -556,6 +628,18 @@ describe("PlayerComparison", () => {
     expect(
       screen.getByTestId("candidate-spatial-position"),
     ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "Markers show the average position; ellipses show the player's spread around that position.",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(
+        "Pitch markers represent weighted mean tournament position. Ellipses represent positional dispersion on each axis. Overall spatial similarity also considers pitch thirds and lane occupation, so it is not simply the distance between the two markers.",
+      ),
+    ).not.toBeInTheDocument();
   });
 
   it("renders missing candidate identity evidence explicitly", async () => {
@@ -641,7 +725,13 @@ describe("PlayerComparison", () => {
     ).toBeInTheDocument();
 
     expect(
-      within(heatmapRegion).getByText("Measured pair evidence"),
+      within(heatmapRegion).queryByText("Measured pair evidence"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      within(heatmapRegion).getByText(
+        englishMessages.PlayerComparison.heatmap.sampleGuidance,
+      ),
     ).toBeInTheDocument();
 
     expect(within(heatmapRegion).getByText("90.9%")).toBeInTheDocument();
@@ -699,60 +789,52 @@ describe("PlayerComparison", () => {
       />,
     );
 
-    const radarRegion = await screen.findByRole(
-      "region",
-      {
-        name: "Playing style radar comparison",
-      },
+    const radarRegion = await screen.findByRole("region", {
+      name: "Playing style radar comparison",
+    });
+
+    expect(fetchRadarComparisonMock).toHaveBeenCalledTimes(1);
+
+    expect(fetchRadarComparisonMock.mock.calls[0]?.[0]).toBe(978838);
+
+    expect(fetchRadarComparisonMock.mock.calls[0]?.[1]).toBe(12345);
+
+    expect(
+      within(radarRegion).queryByText("Shared position overlay"),
+    ).not.toBeInTheDocument();
+
+    const targetPercentileName =
+      await within(radarRegion).findByTitle("Michael Olise");
+
+    const candidatePercentileName =
+      within(radarRegion).getByTitle("Test Candidate");
+
+    expect(targetPercentileName).toHaveClass("truncate", "whitespace-nowrap");
+
+    expect(candidatePercentileName).toHaveClass(
+      "truncate",
+      "whitespace-nowrap",
     );
 
     expect(
-      fetchRadarComparisonMock,
-    ).toHaveBeenCalledTimes(1);
-
-    expect(
-      fetchRadarComparisonMock.mock.calls[0]?.[0],
-    ).toBe(978838);
-
-    expect(
-      fetchRadarComparisonMock.mock.calls[0]?.[1],
-    ).toBe(12345);
-
-    expect(
-      await within(radarRegion).findByText(
-        "Shared position overlay",
-      ),
+      within(radarRegion).getByRole("img", {
+        name: "Playing style radar comparison for Michael Olise and Test Candidate",
+      }),
     ).toBeInTheDocument();
 
     expect(
-      within(radarRegion).getByRole(
-        "img",
-        {
-          name:
-            "Playing style radar comparison for Michael Olise and Test Candidate",
-        },
-      ),
+      within(radarRegion).getByTestId("radar-polygon-primary"),
     ).toBeInTheDocument();
 
     expect(
-      within(radarRegion).getByTestId(
-        "radar-polygon-primary",
-      ),
-    ).toBeInTheDocument();
-
-    expect(
-      within(radarRegion).getByTestId(
-        "radar-polygon-secondary",
-      ),
+      within(radarRegion).getByTestId("radar-polygon-secondary"),
     ).toBeInTheDocument();
   });
 
   it("renders cross-position radar profiles separately", async () => {
     runTransferAnalysisMock.mockResolvedValue(createResponse(true));
 
-    fetchRadarComparisonMock.mockResolvedValue(
-      createRadarResponse(false),
-    );
+    fetchRadarComparisonMock.mockResolvedValue(createRadarResponse(false));
 
     renderWithQueryClient(
       <PlayerComparison
@@ -765,47 +847,30 @@ describe("PlayerComparison", () => {
       />,
     );
 
-    const radarRegion = await screen.findByRole(
-      "region",
-      {
-        name: "Playing style radar comparison",
-      },
-    );
+    const radarRegion = await screen.findByRole("region", {
+      name: "Playing style radar comparison",
+    });
 
     expect(
-      await within(radarRegion).findByText(
-        "Separate position profiles",
-      ),
+      within(radarRegion).queryByText("Separate position profiles"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      await within(radarRegion).findByRole("img", {
+        name: "Playing style radar for Michael Olise",
+      }),
     ).toBeInTheDocument();
 
     expect(
-      within(radarRegion).getByRole(
-        "img",
-        {
-          name:
-            "Playing style radar for Michael Olise",
-        },
-      ),
+      within(radarRegion).getByRole("img", {
+        name: "Playing style radar for Test Candidate",
+      }),
     ).toBeInTheDocument();
 
     expect(
-      within(radarRegion).getByRole(
-        "img",
-        {
-          name:
-            "Playing style radar for Test Candidate",
-        },
-      ),
-    ).toBeInTheDocument();
-
-    expect(
-      within(radarRegion).queryByRole(
-        "img",
-        {
-          name:
-            "Playing style radar comparison for Michael Olise and Test Candidate",
-        },
-      ),
+      within(radarRegion).queryByRole("img", {
+        name: "Playing style radar comparison for Michael Olise and Test Candidate",
+      }),
     ).not.toBeInTheDocument();
   });
 
@@ -834,176 +899,250 @@ describe("PlayerComparison", () => {
     ).toBeInTheDocument();
 
     expect(
-      await screen.findByText(
-        "Radar comparison unavailable",
-      ),
+      await screen.findByText("Radar comparison unavailable"),
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByText(
-        "Statistical similarity",
-      ),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Statistical similarity")).toBeInTheDocument();
 
     expect(
-      screen.queryByText(
-        "The player comparison could not be prepared",
-      ),
+      screen.queryByText("The player comparison could not be prepared"),
     ).not.toBeInTheDocument();
   });
-  it(
-    "localizes the comparison core while preserving backend evidence",
-    async () => {
-      runTransferAnalysisMock.mockResolvedValue(
-        createResponse(true),
-      );
+  it("localizes the comparison core while preserving backend evidence", async () => {
+    runTransferAnalysisMock.mockResolvedValue(createResponse(true));
 
-      renderWithQueryClient(
-        <PlayerComparison
-          targetPlayerId={978838}
-          candidatePlayerId={12345}
-          mode="immediate"
-          values={{
-            ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
-          }}
-        />,
-        "tr",
-      );
+    renderWithQueryClient(
+      <PlayerComparison
+        targetPlayerId={978838}
+        candidatePlayerId={12345}
+        mode="immediate"
+        values={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+      />,
+      "tr",
+    );
 
+    expect(
+      await screen.findByRole("heading", {
+        name: "Test Candidate",
+      }),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("İstatistiksel benzerlik")).toBeInTheDocument();
+
+    expect(screen.getByText("Aday · Sıra 2")).toBeInTheDocument();
+
+    expect(screen.getByText("Neden Test Candidate?")).toBeInTheDocument();
+
+    expect(screen.getByText("Taktik ve konumsal uyum")).toBeInTheDocument();
+
+    expect(screen.getAllByText("Central Half-Space Creator")).toHaveLength(2);
+  });
+
+  it("localizes radar and heatmap comparison evidence", async () => {
+    runTransferAnalysisMock.mockResolvedValue(createResponse(true));
+
+    renderWithQueryClient(
+      <PlayerComparison
+        targetPlayerId={978838}
+        candidatePlayerId={12345}
+        mode="immediate"
+        values={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+      />,
+      "tr",
+    );
+
+    const radarRegion = await screen.findByRole("region", {
+      name: "Oyun stili radar karşılaştırması",
+    });
+
+    expect(
+      within(radarRegion).queryByText("Paylaşılan pozisyon katmanı"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      await within(radarRegion).findByRole("img", {
+        name: "Michael Olise ve Test Candidate için oyun stili radar karşılaştırması",
+      }),
+    ).toBeInTheDocument();
+
+    expect(await within(radarRegion).findAllByText("Yaratıcılık")).toHaveLength(
+      2,
+    );
+
+    expect(within(radarRegion).getByText("Top ilerletme")).toBeInTheDocument();
+
+    expect(within(radarRegion).getByText("Top")).toBeInTheDocument();
+
+    expect(within(radarRegion).getByText("ilerletme")).toBeInTheDocument();
+
+    expect(
+      within(radarRegion).queryByText("Creativity"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      within(radarRegion).queryByText("Progression"),
+    ).not.toBeInTheDocument();
+
+    const heatmapRegion = screen.getByRole("region", {
+      name: "Isı haritası profil karşılaştırması",
+    });
+
+    expect(
+      within(heatmapRegion).getByRole("heading", {
+        name: "Ölçülmüş turnuva alan kullanımı",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      await within(heatmapRegion).findByText("Ölçülmüş benzerlik"),
+    ).toBeInTheDocument();
+
+    expect(
+      within(heatmapRegion).queryByText("Ölçülmüş çift kanıtı"),
+    ).not.toBeInTheDocument();
+
+    const localizedHeatmap = turkishMessages.PlayerComparison.heatmap;
+
+    expect(
+      within(heatmapRegion).getByText(localizedHeatmap.sampleGuidance),
+    ).toBeInTheDocument();
+
+    for (const description of [
+      localizedHeatmap.metrics.measuredSimilarityDescription,
+      localizedHeatmap.metrics.cosineSimilarityDescription,
+      localizedHeatmap.metrics.occupationOverlapDescription,
+      localizedHeatmap.metrics.peakZoneSimilarityDescription,
+      localizedHeatmap.metrics.peakZoneDistanceDescription,
+      localizedHeatmap.metrics.entropySimilarityDescription,
+    ]) {
+      expect(within(heatmapRegion).getByText(description)).toBeInTheDocument();
+    }
+  });
+  it("localizes recommendation evidence and removes technical chips", async () => {
+    runTransferAnalysisMock.mockResolvedValue(
+      createResponse(true, {
+        recommendation_strength: "Moderate",
+        why_recommended:
+          "same statistical archetype; high shared-zone occupation (80.8%); strong heatmap occupation similarity (89.6%); replicates the target's left half-space and advanced middle third occupation",
+      }),
+    );
+
+    renderWithQueryClient(
+      <PlayerComparison
+        targetPlayerId={978838}
+        candidatePlayerId={12345}
+        mode="immediate"
+        values={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+      />,
+      "tr",
+    );
+
+    const evidenceRegion = await screen.findByRole("region", {
+      name: /Öneri kanıtı/i,
+    });
+
+    const reasonMessages = turkishMessages.RecommendationExplainability.reasons;
+
+    expect(
+      within(evidenceRegion).getByText(reasonMessages.sameArchetype),
+    ).toBeInTheDocument();
+
+    expect(
+      within(evidenceRegion).getByText(
+        reasonMessages.heatmapOverlap.replace("{value}", "80,8%"),
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      within(evidenceRegion).getByText(
+        reasonMessages.heatmapSimilarity.strong.replace("{value}", "89,6%"),
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      within(evidenceRegion).getByText(
+        reasonMessages.heatmapZone.sameZones
+          .replace("{lateral}", "left half-space")
+          .replace("{vertical}", "advanced middle third"),
+      ),
+    ).toBeInTheDocument();
+
+    for (const englishReason of [
+      "same statistical archetype",
+      "high shared-zone occupation (80.8%)",
+      "strong heatmap occupation similarity (89.6%)",
+      "replicates the target's left half-space and advanced middle third occupation",
+    ]) {
       expect(
-        await screen.findByRole(
-          "heading",
-          {
-            name:
-              "Test Candidate",
-          },
-        ),
-      ).toBeInTheDocument();
+        within(evidenceRegion).queryByText(englishReason),
+      ).not.toBeInTheDocument();
+    }
 
-      expect(
-        screen.getByText(
-          "İstatistiksel benzerlik",
-        ),
-      ).toBeInTheDocument();
+    expect(
+      within(evidenceRegion).queryByText("Moderate"),
+    ).not.toBeInTheDocument();
 
-      expect(
-        screen.getByText(
-          "Aday · Sıra 2",
-        ),
-      ).toBeInTheDocument();
+    expect(
+      within(evidenceRegion).queryByText(/Sıra #?2/),
+    ).not.toBeInTheDocument();
+  });
+  it("renders the target-first union of both player role metrics", async () => {
+    runTransferAnalysisMock.mockResolvedValue(createResponse(true));
 
-      expect(
-        screen.getByText(
-          "Neden Test Candidate?",
-        ),
-      ).toBeInTheDocument();
+    renderWithQueryClient(
+      <PlayerComparison
+        targetPlayerId={978838}
+        candidatePlayerId={12345}
+        mode="immediate"
+        values={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+      />,
+      "tr",
+    );
 
-      expect(
-        screen.getByText(
-          "Taktik ve konumsal uyum",
-        ),
-      ).toBeInTheDocument();
+    const table = await screen.findByRole("table", {
+      name: "İki oyuncunun rol metriği karşılaştırması",
+    });
 
-      expect(
-        screen.getAllByText(
-          "Central Half-Space Creator",
-        ),
-      ).toHaveLength(2);
-    },
-  );
+    expect(
+      screen.getByRole("heading", {
+        name: "Rol odaklı metrik karşılaştırması",
+      }),
+    ).toBeInTheDocument();
 
-  it(
-    "localizes radar and heatmap comparison evidence",
-    async () => {
-      runTransferAnalysisMock.mockResolvedValue(
-        createResponse(true),
-      );
+    expect(within(table).getByText("Şans yaratma")).toBeInTheDocument();
 
-      renderWithQueryClient(
-        <PlayerComparison
-          targetPlayerId={978838}
-          candidatePlayerId={12345}
-          mode="immediate"
-          values={{
-            ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
-          }}
-        />,
-        "tr",
-      );
+    expect(within(table).getByText("Top ilerletme")).toBeInTheDocument();
 
-      const radarRegion =
-        await screen.findByRole(
-          "region",
-          {
-            name:
-              "Oyun stili radar karşılaştırması",
-          },
-        );
+    expect(within(table).getByText("Pas hacmi")).toBeInTheDocument();
 
-      expect(
-        await within(
-          radarRegion,
-        ).findByText(
-          "Paylaşılan pozisyon katmanı",
-        ),
-      ).toBeInTheDocument();
+    expect(within(table).getAllByText("Asistler")).toHaveLength(1);
 
-      expect(
-        await within(
-          radarRegion,
-        ).findByRole(
-          "img",
-          {
-            name:
-              "Michael Olise ve Test Candidate için oyun stili radar karşılaştırması",
-          },
-        ),
-      ).toBeInTheDocument();
+    const roleMetricSection = table.closest("section");
 
-      expect(
-        await within(
-          radarRegion,
-        ).findAllByText(
-          "Creativity",
-        ),
-      ).toHaveLength(2);
+    if (!roleMetricSection) {
+      throw new Error("Pair role metric section not found");
+    }
 
-      const heatmapRegion =
-        screen.getByRole(
-          "region",
-          {
-            name:
-              "Isı haritası profil karşılaştırması",
-          },
-        );
+    expect(
+      within(roleMetricSection).getByText("Central Half-Space Creator"),
+    ).toBeInTheDocument();
 
-      expect(
-        within(heatmapRegion).getByRole(
-          "heading",
-          {
-            name:
-              "Ölçülmüş turnuva alan kullanımı",
-          },
-        ),
-      ).toBeInTheDocument();
+    expect(
+      within(roleMetricSection).getByText("Creative Central Midfielder"),
+    ).toBeInTheDocument();
 
-      expect(
-        await within(
-          heatmapRegion,
-        ).findByText(
-          "Ölçülmüş çift kanıtı",
-        ),
-      ).toBeInTheDocument();
+    const request = fetchMultiPlayerComparisonMock.mock.calls[0];
 
-      expect(
-        await within(
-          heatmapRegion,
-        ).findByText(
-          "Ölçülmüş benzerlik",
-        ),
-      ).toBeInTheDocument();
-    },
-  );
+    expect(request?.slice(0, 2)).toEqual([978838, [12345]]);
 
-
+    expect(request?.[3]).toBe("all_players");
+  });
 });

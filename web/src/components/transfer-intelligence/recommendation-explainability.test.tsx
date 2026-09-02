@@ -1,28 +1,14 @@
-import {
-  render,
-  screen,
-} from "@testing-library/react";
-import {
-  NextIntlClientProvider,
-} from "next-intl";
+import { render, screen } from "@testing-library/react";
+import { NextIntlClientProvider } from "next-intl";
 
 import englishMessages from "../../../messages/en.json";
 import turkishMessages from "../../../messages/tr.json";
-import {
-  describe,
-  expect,
-  it,
-} from "vitest";
+import { describe, expect, it } from "vitest";
 
-import {
-  RecommendationExplainability,
-} from "@/components/transfer-intelligence/recommendation-explainability";
-import type {
-  TransferRecommendationResponse,
-} from "@/lib/api/types";
+import { RecommendationExplainability } from "@/components/transfer-intelligence/recommendation-explainability";
+import type { TransferRecommendationResponse } from "@/lib/api/types";
 
-type Explainability =
-  TransferRecommendationResponse["explainability"];
+type Explainability = TransferRecommendationResponse["explainability"];
 
 const explainability = {
   mode: "immediate",
@@ -35,22 +21,20 @@ const explainability = {
   },
   signals: [
     {
-      key: "heatmap",
+      key: "effective_heatmap_score_pct",
       label: "Heatmap evidence",
-      description:
-        "Backend-provided signal description.",
+      description: "Backend-provided signal description.",
       source_score: null,
       input_score: 70,
       weight: 0.12,
       weighted_contribution: 8.4,
       evidence_status: "fallback",
-      note:
-        "Backend-provided fallback note.",
+      note: "Backend-provided fallback note.",
     },
   ],
   bonuses: [
     {
-      key: "same_role",
+      key: "same_final_role",
       label: "Same final role",
       configured_points: 6,
       applied: true,
@@ -59,104 +43,57 @@ const explainability = {
   ],
   reasons: [
     {
-      key: "same_role",
+      key: "same_final_role",
       group: "role",
       text: "same final role",
     },
   ],
 } as unknown as Explainability;
 
-describe(
-  "RecommendationExplainability",
-  () => {
-    it(
-      "localizes presentation while preserving backend evidence",
-      () => {
-        render(
-          <NextIntlClientProvider
-            locale="tr"
-            messages={turkishMessages}
-          >
-            <RecommendationExplainability
-              explainability={
-                explainability
-              }
-            />
-          </NextIntlClientProvider>,
-        );
-
-        expect(
-          screen.getByText(
-            "Neden bu aday?",
-          ),
-        ).toBeInTheDocument();
-
-        expect(
-          screen.getByText(
-            "Skor dökümünü görüntüle",
-          ),
-        ).toBeInTheDocument();
-
-        expect(
-          screen.getByText(
-            "Yedek girdi",
-          ),
-        ).toBeInTheDocument();
-
-        expect(
-          screen.getByText(
-            "Uygulandı",
-          ),
-        ).toBeInTheDocument();
-
-        expect(
-          screen.getByText(
-            "same final role",
-          ),
-        ).toBeInTheDocument();
-
-        expect(
-          screen.getByText(
-            "Backend-provided signal description.",
-          ),
-        ).toBeInTheDocument();
-
-        expect(
-          screen.getByText(
-            "Backend-provided fallback note.",
-          ),
-        ).toBeInTheDocument();
-      },
+describe("RecommendationExplainability", () => {
+  it("localizes structured recommendation evidence", () => {
+    render(
+      <NextIntlClientProvider locale="tr" messages={turkishMessages}>
+        <RecommendationExplainability explainability={explainability} />
+      </NextIntlClientProvider>,
     );
 
-    it(
-      "retains the English presentation contract",
-      () => {
-        render(
-          <NextIntlClientProvider
-            locale="en"
-            messages={englishMessages}
-          >
-            <RecommendationExplainability
-              explainability={
-                explainability
-              }
-            />
-          </NextIntlClientProvider>,
-        );
+    expect(screen.getByText("Neden bu aday?")).toBeInTheDocument();
 
-        expect(
-          screen.getByText(
-            "Why this candidate",
-          ),
-        ).toBeInTheDocument();
+    expect(screen.getByText("Skor dökümünü görüntüle")).toBeInTheDocument();
 
-        expect(
-          screen.getByText(
-            "Fallback input",
-          ),
-        ).toBeInTheDocument();
-      },
+    expect(screen.getByText("Yedek girdi")).toBeInTheDocument();
+
+    expect(screen.getByText("Uygulandı")).toBeInTheDocument();
+
+    expect(screen.getByText("Isı haritası kanıtı")).toBeInTheDocument();
+
+    expect(screen.getByText("Aynı nihai rol")).toBeInTheDocument();
+
+    expect(screen.getByText("aynı nihai rol")).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "Oyuncu alım skorlama modelinde kullanılan ısı haritası yerleşim kanıtı.",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "Doğrudan ısı haritası kanıtı bulunmadığı için skorlamada yapılandırılmış nötr yedek değer kullanılıyor.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("retains the English presentation contract", () => {
+    render(
+      <NextIntlClientProvider locale="en" messages={englishMessages}>
+        <RecommendationExplainability explainability={explainability} />
+      </NextIntlClientProvider>,
     );
-  },
-);
+
+    expect(screen.getByText("Why this candidate")).toBeInTheDocument();
+
+    expect(screen.getByText("Fallback input")).toBeInTheDocument();
+  });
+});

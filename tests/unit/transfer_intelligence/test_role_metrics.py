@@ -1,7 +1,10 @@
 """Tests for target final-role metric selection."""
 
+from itertools import permutations
+
 from wc26.analytics.transfer_intelligence.role_metrics import (
     SUPPORTED_FINAL_ROLES,
+    resolve_combined_role_metric_groups,
     resolve_role_metric_groups,
 )
 
@@ -171,4 +174,121 @@ def test_returns_no_metrics_when_role_identity_is_unavailable() -> None:
             archetype=None,
         )
         == ()
+    )
+
+
+def test_combines_target_and_candidate_role_metrics_without_duplicates() -> None:
+    groups = resolve_combined_role_metric_groups(
+        role_identities=(
+            (
+                "Central Half-Space Creator",
+                "Wide Creator",
+            ),
+            (
+                "Creative Central Midfielder",
+                "Wide Creator",
+            ),
+        ),
+    )
+
+    assert tuple(group.key for group in groups) == (
+        "creativity",
+        "passing_volume",
+        "progression",
+    )
+
+    metric_keys = tuple(metric.key for group in groups for metric in group.metrics)
+
+    assert len(metric_keys) == len(set(metric_keys))
+
+    assert metric_keys.count("goalAssist") == 1
+
+    assert metric_keys.count("totalPass") == 1
+
+
+def test_combined_role_metrics_are_independent_of_player_order() -> None:
+    role_identities = (
+        (
+            "Central Half-Space Creator",
+            "Wide Creator",
+        ),
+        (
+            "Creative Central Midfielder",
+            "Wide Creator",
+        ),
+        (
+            "Advanced Central Playmaker",
+            "Wide Creator",
+        ),
+    )
+
+    signatures = {
+        tuple(
+            (
+                group.key,
+                tuple(metric.key for metric in group.metrics),
+            )
+            for group in resolve_combined_role_metric_groups(
+                role_identities=tuple(
+                    ordered_identities,
+                ),
+            )
+        )
+        for ordered_identities in permutations(
+            role_identities,
+        )
+    }
+
+    assert len(signatures) == 1
+
+    assert signatures == {
+        (
+            (
+                "creativity",
+                (
+                    "goalAssist",
+                    "expectedAssists",
+                    "keyPass",
+                    "bigChanceCreated",
+                ),
+            ),
+            (
+                "passing_volume",
+                (
+                    "totalPass",
+                    "accuratePass",
+                    "totalLongBalls",
+                    "accurateLongBalls",
+                ),
+            ),
+            (
+                "progression",
+                (
+                    "totalProgression",
+                    "progressiveBallCarriesCount",
+                    "ballCarriesCount",
+                    "totalBallCarriesDistance",
+                ),
+            ),
+        )
+    }
+
+
+def test_combining_the_same_role_does_not_repeat_groups() -> None:
+    groups = resolve_combined_role_metric_groups(
+        role_identities=(
+            (
+                "Central Half-Space Creator",
+                "Wide Creator",
+            ),
+            (
+                "Central Half-Space Creator",
+                "Wide Creator",
+            ),
+        ),
+    )
+
+    assert tuple(group.key for group in groups) == (
+        "creativity",
+        "progression",
     )

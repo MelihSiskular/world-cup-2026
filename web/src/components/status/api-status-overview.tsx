@@ -12,10 +12,8 @@ import {
 import {
   fetchApiHealth,
   fetchApiReadiness,
-  fetchDeploymentIdentity,
 } from "@/lib/api/browser-status";
 import type {
-  DeploymentIdentityResponse,
   HealthResponse,
   ReadinessResponse,
 } from "@/lib/api/types";
@@ -23,7 +21,6 @@ import type {
 type StatusSnapshot = Readonly<{
   health: HealthResponse;
   readiness: ReadinessResponse;
-  deployment: DeploymentIdentityResponse;
   checkedAt: string;
 }>;
 
@@ -46,17 +43,14 @@ async function fetchStatusSnapshot(
   const [
     health,
     readiness,
-    deployment,
   ] = await Promise.all([
     fetchApiHealth(signal),
     fetchApiReadiness(signal),
-    fetchDeploymentIdentity(signal),
   ]);
 
   return {
     health,
     readiness,
-    deployment,
     checkedAt: new Date().toISOString(),
   };
 }
@@ -126,26 +120,6 @@ function StatusCard({
         {description}
       </p>
     </article>
-  );
-}
-
-function TechnicalDetail({
-  label,
-  value,
-}: Readonly<{
-  label: string;
-  value: string;
-}>) {
-  return (
-    <div className="min-w-0 rounded-xl border border-border bg-page p-4">
-      <dt className="text-xs font-semibold text-muted">
-        {label}
-      </dt>
-
-      <dd className="mt-2 min-w-0 break-words text-sm font-semibold">
-        {value}
-      </dd>
-    </div>
   );
 }
 
@@ -263,7 +237,6 @@ export function ApiStatusOverview() {
   const {
     health,
     readiness,
-    deployment,
     checkedAt,
   } = state.data;
 
@@ -324,10 +297,12 @@ export function ApiStatusOverview() {
 
       <div className="grid gap-5 md:grid-cols-2">
         <StatusCard
-          label={t("scoutingApi")}
+          label={t(
+            "analysisService",
+          )}
           value={t("operational")}
           description={t(
-            "scoutingApiDescription",
+            "analysisServiceDescription",
           )}
         />
 
@@ -378,71 +353,6 @@ export function ApiStatusOverview() {
           {t("refresh")}
         </button>
       </div>
-
-      <details className="group overflow-hidden rounded-xl border border-border bg-surface">
-        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 px-5 py-3.5 font-semibold text-brand-dark transition-colors hover:bg-surface-secondary [&::-webkit-details-marker]:hidden">
-          <span>
-            {t("technicalDetails")}
-          </span>
-
-          <span
-            aria-hidden="true"
-            className="text-lg leading-none text-muted transition-transform group-open:rotate-45"
-          >
-            +
-          </span>
-        </summary>
-
-        <dl className="grid gap-3 border-t border-border p-4 sm:grid-cols-2 lg:grid-cols-3">
-          <TechnicalDetail
-            label={t("environment")}
-            value={health.environment}
-          />
-
-          <TechnicalDetail
-            label={t("deployment")}
-            value={deployment.provider}
-          />
-
-          <TechnicalDetail
-            label={t("version")}
-            value={deployment.version}
-          />
-
-          <TechnicalDetail
-            label={t("branch")}
-            value={
-              deployment.branch ??
-              t("notReported")
-            }
-          />
-
-          <TechnicalDetail
-            label={t(
-              "datasetFingerprint",
-            )}
-            value={
-              deployment.dataset_bundle_sha256
-                ? deployment.dataset_bundle_sha256.slice(
-                    0,
-                    12,
-                  )
-                : t(
-                    "notReported",
-                  )
-            }
-          />
-
-          <TechnicalDetail
-            label={t("apiStarted")}
-            value={formatTimestamp(
-              health.started_at,
-              locale,
-              t("notReported"),
-            )}
-          />
-        </dl>
-      </details>
     </div>
   );
 }

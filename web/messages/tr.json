@@ -18,8 +18,7 @@
   },
   "Header": {
     "homeLabel": "WC26 Transfer Intelligence ana sayfası",
-    "tagline": "Transfer karar desteği",
-    "statusLabel": "Sistem durumu sayfasını aç"
+    "tagline": "Transfer karar desteği"
   },
   "Footer": {
     "description": "2026 Dünya Kupası turnuva verileriyle desteklenen futbol scouting ve oyuncu alternatif analizi.",
@@ -201,9 +200,6 @@
     "eyebrow": "Transfer çalışma alanı",
     "title": "Kısa liste çalışma alanı",
     "description": "Turnuva oyuncularını odaklı transfer listelerinde düzenleyin. Kaydedilen veriler bu tarayıcıda tutulur.",
-    "shortlistsStat": "Kısa listeler",
-    "uniquePlayersStat": "Benzersiz oyuncular",
-    "savedSelectionsStat": "Kaydedilen seçimler",
     "createLabel": "Kısa liste oluştur",
     "namePlaceholder": "2027 Yaz — Sol Stoper",
     "createButton": "Kısa liste oluştur",
@@ -317,6 +313,12 @@
     "primaryFormation": "Ana diziliş",
     "viewRoleEvidence": "Rol atama kanıtını görüntüle",
     "roleEvidenceDescription": "Oyuncunun taktik ve konumsal rolünü yorumlamak için kullanılan destekleyici model kanıtları.",
+    "roleEvidenceLabels": {
+      "statisticalArchetype": "İstatistiksel arketip",
+      "spatialProfile": "Konumsal profil",
+      "meanPosition": "Ortalama konum",
+      "spatialSpread": "Konumsal yayılım"
+    },
     "modelContextEyebrow": "Model bağlamı",
     "modelConfidenceTitle": "Profilin arkasındaki güven",
     "modelConfidenceDescription": "Turnuva profilini yorumlamak için kullanılan kalite ve güvenilirlik sinyalleri.",
@@ -354,7 +356,51 @@
     "noStrengths": "Mevcut pozisyona özgü profilde öne çıkan güçlü bir sinyal bulunmadı.",
     "noWatchOuts": "Mevcut pozisyona özgü profilde dikkat gerektiren bir sinyal bulunmadı.",
     "percentile": "yüzdelik",
-    "percentileAriaLabel": "{metric} performans yüzdelik dilimi"
+    "percentileAriaLabel": "{metric} performans yüzdelik dilimi",
+    "evidence": "{count} aynı pozisyondaki oyuncu arasında {percentile}. yüzdelik dilim.",
+    "groups": {
+      "creation": "Fırsat yaratma",
+      "progression": "Top ilerletme",
+      "possession": "Topa sahip olma",
+      "defending": "Savunma katkısı",
+      "scoring": "Gol tehdidi",
+      "physical": "Fiziksel üretim",
+      "goalkeeping": "Kalecilik"
+    },
+    "metrics": {
+      "expected_assists_per90": "xA / 90",
+      "key_passes_per90": "Kilit pas / 90",
+      "assists_per90": "Asist / 90",
+      "big_chances_created_per90": "Büyük fırsat / 90",
+      "total_progression_per90": "Top ilerletme / 90",
+      "progressive_carries_per90": "İlerletici taşıma / 90",
+      "progressive_carry_distance_per90": "İlerletici taşıma mesafesi / 90",
+      "ball_carries_per90": "Top taşıma / 90",
+      "passes_per90": "Pas / 90",
+      "pass_accuracy": "Pas isabeti",
+      "touches_per90": "Topla buluşma / 90",
+      "possession_lost_per90": "Top kaybı / 90",
+      "ball_recoveries_per90": "Top geri kazanma / 90",
+      "tackles_per90": "Müdahale / 90",
+      "tackles_won_per90": "Başarılı müdahale / 90",
+      "interceptions_per90": "Pas arası / 90",
+      "clearances_per90": "Uzaklaştırma / 90",
+      "duel_success": "İkili mücadele başarısı",
+      "aerial_duel_success": "Hava topu başarısı",
+      "expected_goals_per90": "xG / 90",
+      "shots_per90": "Şut / 90",
+      "shots_on_target_per90": "İsabetli şut / 90",
+      "shot_on_target_percentage": "İsabetli şut %",
+      "goals_per90": "Gol / 90",
+      "distance_covered_per90": "Kat edilen mesafe / 90",
+      "sprints_per90": "Sprint / 90",
+      "top_speed": "Maksimum hız",
+      "saves_per90": "Kurtarış / 90",
+      "goals_prevented_per90": "Önlenen gol / 90",
+      "keeper_save_value_per90": "Kurtarış değeri / 90",
+      "keeper_sweeper_actions_per90": "Süpürücü aksiyon / 90",
+      "keeper_sweeper_accuracy": "Süpürücü aksiyon isabeti"
+    }
   },
   "PlayerPerformanceProfile": {
     "eyebrow": "Performans analitiği",
@@ -400,7 +446,7 @@
     "attackingDirection": "Hücum yönü →",
     "comparisonAriaLabel": "{target} ve {candidate} için konumsal pozisyon karşılaştırması",
     "meanPositionTitle": "{player}: ortalama pozisyon ({x}, {y})",
-    "dispersionDescription": "Elipsler mevcut olduğunda konumsal yayılımı gösterir."
+    "dispersionDescription": "İşaretler ortalama konumu, elipsler oyuncunun bu konum çevresindeki yayılımını gösterir."
   },
   "HeatmapPitch": {
     "unavailable": "{player} için turnuva ısı haritası verisi mevcut değil.",
@@ -590,6 +636,85 @@
       "available": "Doğrudan kanıt",
       "fallback": "Yedek girdi",
       "missing": "Eksik girdi"
+    },
+    "signals": {
+      "statistical_similarity_pct": {
+        "label": "İstatistiksel benzerlik",
+        "description": "Hedef ile adayın istatistiksel oyuncu profilleri arasındaki benzerlik."
+      },
+      "role_fit_pct": {
+        "label": "Rol uyumu",
+        "description": "Aday ile hedefin taktiksel rol modeli genelindeki uyumu."
+      },
+      "spatial_similarity_pct": {
+        "label": "Konumsal benzerlik",
+        "description": "Ortalama konum, konumsal yayılım, saha bölgeleri ve koridor kullanımındaki benzerlik."
+      },
+      "effective_heatmap_score_pct": {
+        "label": "Isı haritası kanıtı",
+        "description": "Oyuncu alım skorlama modelinde kullanılan ısı haritası yerleşim kanıtı."
+      },
+      "player_quality_score": {
+        "label": "Oyuncu kalitesi",
+        "description": "Adayın turnuva performans profilinden türetilen kalite sinyali."
+      },
+      "data_reliability_score": {
+        "label": "Veri güvenilirliği",
+        "description": "Mevcut analitik örneklemin gücünü yansıtan güvenilirlik sinyali."
+      },
+      "market_value_advantage_pct": {
+        "label": "Piyasa avantajı",
+        "description": "Hedef oyuncuya göre finansal değer avantajı."
+      },
+      "age_suitability_pct": {
+        "label": "Yaş uygunluğu",
+        "description": "Seçilen oyuncu alım senaryosuna göre yaş profili uygunluğu."
+      }
+    },
+    "bonusLabels": {
+      "same_final_role": "Aynı nihai rol",
+      "same_archetype": "Aynı istatistiksel arketip"
+    },
+    "notes": {
+      "heatmapFallback": "Doğrudan ısı haritası kanıtı bulunmadığı için skorlamada yapılandırılmış nötr yedek değer kullanılıyor.",
+      "heatmapMissing": "Isı haritası skorlama girdisi bulunmadığı için bu sinyal skora sıfır katkı sağlıyor.",
+      "sourceMissing": "Kaynak değer bulunmadığı için bu sinyal skora sıfır katkı sağlıyor."
+    },
+    "reasons": {
+      "sameFinalRole": "aynı nihai rol",
+      "sameArchetype": "aynı istatistiksel arketip",
+      "statisticalSimilarity": {
+        "veryStrong": "çok yüksek istatistiksel benzerlik ({value})",
+        "good": "iyi düzeyde istatistiksel benzerlik ({value})"
+      },
+      "roleFit": {
+        "elite": "üst düzey taktiksel uyum ({value})",
+        "strong": "güçlü taktiksel uyum ({value})"
+      },
+      "spatialSimilarity": "benzer ortalama konum profili ({value})",
+      "heatmapSimilarity": {
+        "elite": "üst düzey ısı haritası yerleşim benzerliği ({value})",
+        "strong": "güçlü ısı haritası yerleşim benzerliği ({value})",
+        "useful": "kayda değer ısı haritası yerleşim benzerliği ({value})"
+      },
+      "heatmapOverlap": "yüksek ortak bölge kullanımı ({value})",
+      "heatmapStructure": "yatay ve dikey kullanımı yakından eşleşiyor",
+      "heatmapZone": {
+        "sameZones": "hedefin {lateral} ve {vertical} kullanımını tekrarlıyor",
+        "sameLateral": "aynı {lateral} bölgesini kullanıyor ancak {vertical} bölgesinde daha fazla konumlanıyor",
+        "sameDepth": "hedefin {vertical} derinliğiyle eşleşiyor ve {lateral} bölgesini daha fazla kullanıyor",
+        "mainZones": "ağırlıklı olarak {lateral} ve {vertical} bölgelerinde konumlanıyor"
+      },
+      "marketAdvantage": {
+        "major": "yüksek fiyat avantajı",
+        "useful": "kayda değer fiyat avantajı"
+      },
+      "developmentAge": {
+        "elite": "üst düzey yaş avantajı",
+        "strong": "gelişim için uygun yaş"
+      },
+      "dataReliability": "güvenilir turnuva örneklemi",
+      "balancedProfile": "karar ölçütleri genelinde dengeli profil"
     }
   },
   "RoleCompatibilityPanel": {
@@ -618,6 +743,16 @@
     "axisUnavailable": "mevcut değil",
     "axisPercentile": "yüzdelik dilim",
     "legendAriaLabel": "Radar seri göstergesi",
+    "dimensions": {
+      "creativity": "Yaratıcılık",
+      "progression": "Top ilerletme",
+      "passing_volume": "Pas hacmi",
+      "ball_security": "Top güvenliği",
+      "dribbling": "Dripling",
+      "scoring_threat": "Gol tehdidi",
+      "defensive_work": "Savunma katkısı",
+      "wide_creation": "Kanat yaratıcılığı"
+    },
     "partialEvidence": "En az bir radar boyutunda ölçülmüş yüzdelik dilim bulunmuyor. Eksik değerler nötr bir skorla değiştirilmek yerine grafikte gösterilmez.",
     "guidance": "Her eksen, oyuncunun aynı pozisyondaki oyunculara göre ilgili oyun stili boyutunu ne kadar güçlü sergilediğini gösterir. Daha yüksek yüzdelik dilimler tek başına oyuncunun genel olarak daha iyi olduğu anlamına gelmez."
   },
@@ -724,7 +859,6 @@
     "spatialDescription": "Ağırlıklı turnuva pozisyonlarını ve konumsal yayılımı aynı saha üzerinde karşılaştırın.",
     "lateralSimilarity": "Yanal benzerlik",
     "verticalSimilarity": "Dikey benzerlik",
-    "spatialGuidance": "Saha işaretleri ağırlıklı ortalama turnuva pozisyonunu, elipsler ise her eksendeki konumsal yayılımı gösterir. Genel konumsal benzerlik ayrıca saha bölgelerini ve koridor kullanımını da dikkate alır; yalnızca iki işaret arasındaki mesafeden oluşmaz.",
     "target": "Hedef",
     "candidate": "Aday",
     "radar": {
@@ -732,8 +866,6 @@
       "eyebrow": "Oyun stili",
       "title": "Pozisyona göre radar profili",
       "description": "Her oyuncunun pozisyonuyla ilişkili istatistiksel oyun stili boyutlarını ne kadar güçlü sergilediğini karşılaştırın.",
-      "sharedOverlay": "Paylaşılan pozisyon katmanı",
-      "separateProfiles": "Ayrı pozisyon profilleri",
       "loading": "Radar karşılaştırması yükleniyor",
       "unavailable": "Radar karşılaştırması kullanılamıyor",
       "unavailableDescription": "Ana transfer karşılaştırması kullanılabilir durumda ancak pozisyona göre oyun stili profilleri yüklenemedi.",
@@ -748,7 +880,6 @@
       "eyebrow": "Isı haritası profili",
       "title": "Ölçülmüş turnuva alan kullanımı",
       "description": "Ölçülmüş ısı haritası kanıtıyla iki oyuncunun turnuva boyunca sahada kullandığı bölgeleri karşılaştırın.",
-      "measuredEvidence": "Ölçülmüş çift kanıtı",
       "evidenceUnavailable": "Çift kanıtı mevcut değil",
       "loading": "Isı haritası karşılaştırması yükleniyor",
       "unavailable": "Isı haritası karşılaştırması kullanılamıyor",
@@ -756,21 +887,29 @@
       "retry": "Isı haritasını yeniden dene",
       "densityTitle": "Göreli turnuva alan kullanım yoğunluğu",
       "densityDescription": "Her iki saha aynı ortak yoğunluk ölçeğini kullanır. Görsel yoğunluk konumsal olasılığı değil, gözlemlenen turnuva ısı haritası alan kullanımını yansıtır.",
+      "sampleGuidance": "Nokta, ısı haritasında kullanılan konum gözlemi sayısıdır; fazla nokta daha geniş örneklem demektir, daha iyi performans değil. Entropi alan kullanımının yayılımını gösterir: yüksek değer daha dağınık, düşük değer daha yoğun kullanımdır.",
       "metricsLabel": "Isı haritası kanıt metrikleri",
       "metrics": {
         "measuredSimilarity": "Ölçülmüş benzerlik",
-        "measuredSimilarityDescription": "İki turnuva ısı haritası profili arasındaki genel ölçülmüş benzerlik.",
+        "measuredSimilarityDescription": "Genel profil benzerliği; yüksek değer daha yakın alan kullanımıdır.",
         "cosineSimilarity": "Kosinüs benzerliği",
-        "cosineSimilarityDescription": "Alan kullanım yoğunluğunun tüm hücrelere dağılımındaki benzerlik.",
+        "cosineSimilarityDescription": "Hücre yoğunluğu benzerliği; yüksek değer daha benzer dağılımdır.",
         "occupationOverlap": "Alan kullanımı örtüşmesi",
-        "occupationOverlapDescription": "İki oyuncunun sahanın aynı bölgelerini ne ölçüde kullandığı.",
+        "occupationOverlapDescription": "Ortak kullanılan alan oranı; yüksek değer daha fazla örtüşmedir.",
         "peakZoneSimilarity": "Tepe bölge benzerliği",
-        "peakZoneSimilarityDescription": "Oyuncuların en yoğun kullandığı bölgeler arasındaki benzerlik.",
+        "peakZoneSimilarityDescription": "En yoğun bölgelerin benzerliği; yüksek değer daha yakın profildir.",
         "peakZoneDistance": "Tepe bölge mesafesi",
-        "peakZoneDistanceDescription": "Normalize edilmiş sahadaki en yoğun konumlar arasındaki mesafe.",
+        "peakZoneDistanceDescription": "En yoğun noktalar arası mesafe; düşük değer daha yakın konumdur.",
         "entropySimilarity": "Entropi benzerliği",
-        "entropySimilarityDescription": "İki alan kullanım profilinin yoğunlaşma veya yayılma biçimindeki benzerlik."
+        "entropySimilarityDescription": "Yayılım biçimi benzerliği; yüksek değer daha benzer dağılımdır."
       }
+    },
+    "roleMetrics": {
+      "loading": "Rol metrikleri yükleniyor",
+      "unavailableEyebrow": "Rol performansı",
+      "unavailableTitle": "Rol metriği karşılaştırması kullanılamıyor",
+      "unavailableDescription": "Rol metriği kanıtı yüklenemedi. Ana oyuncu karşılaştırmasını kullanmaya devam edebilirsiniz.",
+      "retry": "Rol metriklerini yeniden dene"
     }
   },
   "MultiPlayerComparisonPage": {
@@ -939,6 +1078,26 @@
       "unsuccessfulTouch": "Başarısız top kontrolleri",
       "bigChanceMissed": "Kaçırılan büyük fırsatlar",
       "touches": "Topla buluşmalar"
+    },
+    "allPlayers": {
+      "title": "Rol odaklı metrik karşılaştırması",
+      "description": "Metrikler hedef oyuncu ve tüm adayların rol görevlerinin birleşiminden seçilir. Her değer turnuva toplamını ve ardından 90 dakika başına oranı gösterir.",
+      "unavailableDescription": "Oyuncuların birleşik rol görevleri için karşılaştırılabilir turnuva metriği bulunmuyor.",
+      "scrollRegionLabel": "Kaydırılabilir tüm oyuncular rol metriği karşılaştırması",
+      "tableLabel": "Tüm oyuncuların rol metriği karşılaştırması",
+      "guidance": "Ortak metrikler tekrarlanmaz; eksik turnuva kanıtları hiçbir zaman sıfırla değiştirilmez."
+    },
+    "pair": {
+      "title": "Rol odaklı metrik karşılaştırması",
+      "descriptionBeforeTargetRole": "Metrikler",
+      "descriptionBetweenRoles": "ve",
+      "descriptionAfterRoles": " rollerinin görevlerinden seçilir. Her değer turnuva toplamını ve ardından 90 dakika başına oranı verir.",
+      "targetRoleFallback": "hedef oyuncunun rolü",
+      "candidateRoleFallback": "aday oyuncunun rolü",
+      "unavailableDescription": "Bu iki oyuncunun rolleri için karşılaştırılabilir turnuva metriği bulunmuyor.",
+      "scrollRegionLabel": "Kaydırılabilir ikili rol metriği karşılaştırması",
+      "tableLabel": "İki oyuncunun rol metriği karşılaştırması",
+      "guidance": "Metrikler hedef ve aday oyuncunun rol görevlerinin birleşiminden seçilir. Ortak metrikler tekrarlanmaz; eksik turnuva kanıtları hiçbir zaman sıfırla değiştirilmez."
     }
   },
   "MultiPlayerComparisonEvidence": {
@@ -1018,9 +1177,9 @@
     "allOperationalDescription": "Oyuncu arama ve transfer analizi kullanıma hazır.",
     "playerDataAttention": "Oyuncu verisi kontrol gerektiriyor",
     "playerDataAttentionDescription": "Temel servisler yanıt veriyor ancak oyuncu kataloğu hazır değil.",
-    "scoutingApi": "Scouting API",
+    "analysisService": "Analiz servisi",
     "operational": "Çalışıyor",
-    "scoutingApiDescription": "Temel scouting istekleri normal şekilde yanıt veriyor.",
+    "analysisServiceDescription": "Oyuncu arama ve transfer analizi istekleri normal şekilde yanıt veriyor.",
     "playerData": "Oyuncu verisi",
     "ready": "Hazır",
     "notReady": "Hazır değil",
@@ -1028,20 +1187,7 @@
     "loadTimeNotReported": "Yükleme zamanı bildirilmedi.",
     "lastChecked": "Son kontrol {timestamp}",
     "refresh": "Durumu yenile",
-    "technicalDetails": "Teknik ayrıntılar",
-    "environment": "Ortam",
-    "deployment": "Deployment",
-    "version": "Sürüm",
-    "branch": "Branch",
-    "datasetFingerprint": "Veri kümesi parmak izi",
-    "apiStarted": "API başlangıcı",
     "notReported": "Bildirilmedi"
-  },
-  "ApiStatusBadge": {
-    "checking": "API kontrol ediliyor",
-    "ready": "API hazır",
-    "notReady": "API hazır değil",
-    "unavailable": "API kullanılamıyor"
   },
   "ApiErrorReference": {
     "requestId": "İstek kimliği"
@@ -1319,6 +1465,97 @@
         "marketContext": "Piyasa değerleri transfer ücretleri değil, bağlamsal tahminlerdir. Sözleşme süresi, ücretler, tescil kuralları, sakatlık geçmişi, kişilik ve kulüp stratejisi mevcut puanlama modelinin dışındadır.",
         "similarity": "Benzerlik üstünlük değildir. Bir aday hedef oyuncuya benzeyebilir ancak daha az üretken, daha az güvenilir veya planlanan oyuncu alım zamanlamasına uygun olmayabilir.",
         "decisionSupport": "Platform bir karar destek sistemidir. Nihai oyuncu alım kararları bu kanıtları video analizi, canlı gözlem, sağlık değerlendirmesi ve kulübün daha geniş bağlamıyla birleştirmelidir."
+      }
+    },
+    "archetypeMaps": {
+      "eyebrow": "İstatistiksel arketipler",
+      "title": "Oyun tarzı kümeleri nasıl oluşur?",
+      "description": "Haritalar, her ana pozisyon grubundaki oyuncuların turnuva performans profillerine göre nasıl kümelendiğini gösterir. Pozisyon düğmelerini kullanın veya haritalar arasında yatay kaydırın.",
+      "positionSelectorLabel": "Pozisyon haritası seçin",
+      "carouselLabel": "Oyuncu arketip haritaları",
+      "previous": "Önceki",
+      "next": "Sonraki",
+      "positionCount": "{current} / {total}",
+      "reading": {
+        "title": "Harita nasıl okunur?",
+        "description": "Her nokta bir oyuncuyu, renkler arketip üyeliğini, X işaretleri ise arketip merkezlerini gösterir. Birbirine yakın oyuncular daha benzer istatistiksel profillere sahiptir."
+      },
+      "axes": {
+        "title": "Eksenler ne anlama gelir?",
+        "description": "PCA, çok sayıdaki performans metriğini görselleştirmek için iki boyuta indirger. Eksenler oyuncu kalitesini veya doğrudan bir taktik yönü temsil etmez."
+      },
+      "roleConnection": {
+        "title": "Arketipten nihai role",
+        "description": "Arketip istatistiksel oyun tarzını, konumsal profil ise oyuncunun nerede ve nasıl görev yaptığını açıklar. Nihai rol iki kanıt katmanını birleştirir."
+      },
+      "positions": {
+        "goalkeeper": {
+          "label": "Kaleciler",
+          "title": "Kaleci arketip haritası",
+          "alt": "Kaleci istatistiksel arketiplerini ve oyuncu kümelerini gösteren dağılım grafiği",
+          "description": "Dağıtım, ceza alanı hâkimiyeti ve şut kurtarma üretimi kaleci profillerini birbirinden ayırır."
+        },
+        "defender": {
+          "label": "Defanslar",
+          "title": "Defans arketip haritası",
+          "alt": "Defans oyuncusu istatistiksel arketiplerini ve oyuncu kümelerini gösteren dağılım grafiği",
+          "description": "Hava hâkimiyeti, top güvenliği, ilerletme ve geniş alandaki hücum katkısı defans profillerini birbirinden ayırır."
+        },
+        "midfielder": {
+          "label": "Orta sahalar",
+          "title": "Orta saha arketip haritası",
+          "alt": "Orta saha istatistiksel arketiplerini ve oyuncu kümelerini gösteren dağılım grafiği",
+          "description": "Gol tehdidi, pas hacmi, top güvenliği, savunma katkısı ve genişlik orta saha profillerini birbirinden ayırır."
+        },
+        "forward": {
+          "label": "Forvetler",
+          "title": "Forvet arketip haritası",
+          "alt": "Forvet istatistiksel arketiplerini ve oyuncu kümelerini gösteren dağılım grafiği",
+          "description": "Şut hacmi, ceza alanı tehdidi, bağlantı oyunu ve hedef oyuncu katkısı forvet profillerini birbirinden ayırır."
+        }
+      }
+    },
+    "finalRoleMaps": {
+      "eyebrow": "Nihai rol modeli",
+      "title": "Nihai roller sahada nasıl ayrışır?",
+      "description": "Bu haritalar, modelin nihai rol atamalarını defans, orta saha ve forvetlerin ölçülmüş turnuva konumlarıyla birleştirir. Tüm rol kümesini incelemek için bir pozisyon seçin.",
+      "positionSelectorLabel": "Nihai rol pozisyon haritası seçin",
+      "carouselLabel": "Nihai rol pozisyon haritaları",
+      "previous": "Önceki",
+      "next": "Sonraki",
+      "positionCount": "{current} / {total}",
+      "roleIndexTitle": "Rol indeksi",
+      "roleIndexDescription": "Sahadaki kodlar ağırlıklı rol merkezlerine karşılık gelir. Rol adları modelin özgün söz dağarcığıyla gösterilir.",
+      "playerSummary": "{count} oyuncu",
+      "roleSummary": "{count} rol",
+      "rolePlayerCount": "{count} oyuncu",
+      "reading": {
+        "title": "Rol haritası nasıl okunur?",
+        "description": "Her nokta bir oyuncunun ölçülmüş ortalama turnuva konumunu gösterir. X işaretleri nihai rollerin ağırlıklı merkezlerini, kodlar ise sahayla eksiksiz rol indeksinin bağlantısını gösterir."
+      },
+      "interpretation": {
+        "title": "Harita neyi sıralamaz?",
+        "description": "Sahadaki mesafe konumsal bağlamı açıklar; oyuncu kalitesini veya bir rolün üstünlüğünü göstermez. Nihai roller ayrıca istatistiksel arketipi ve destekleyici konumsal kanıtları içerir."
+      },
+      "positions": {
+        "defender": {
+          "label": "Defanslar",
+          "title": "Defans nihai rol haritası",
+          "alt": "Defans nihai rol gruplarını ve ağırlıklı merkezlerini gösteren saha haritası",
+          "description": "Stoper ve bek rolleri yanal kullanım, dikey konum ve istatistiksel oyun tarzı üzerinden ayrışır."
+        },
+        "midfielder": {
+          "label": "Orta sahalar",
+          "title": "Orta saha nihai rol haritası",
+          "alt": "Orta saha nihai rol gruplarını ve ağırlıklı merkezlerini gösteren saha haritası",
+          "description": "Topa sahip olma, yaratıcılık, gol tehdidi ve yarı alan rolleri farklı istatistiksel ve konumsal kanıt birleşimlerini kullanır."
+        },
+        "forward": {
+          "label": "Forvetler",
+          "title": "Forvet nihai rol haritası",
+          "alt": "Forvet nihai rol gruplarını ve ağırlıklı merkezlerini gösteren saha haritası",
+          "description": "Bitiricilik hacmi, bağlantı oyunu, hedef oyuncu katkısı ve genişlik forvet rol ailelerini birbirinden ayırır."
+        }
       }
     }
   }

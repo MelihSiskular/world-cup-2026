@@ -31,7 +31,7 @@ from wc26.analytics.transfer_intelligence.models import (
     PlayerSearchItem,
 )
 from wc26.analytics.transfer_intelligence.role_metrics import (
-    resolve_role_metric_groups,
+    resolve_combined_role_metric_groups,
 )
 from wc26.analytics.transfer_intelligence.scoring import (
     calculate_market_value_advantage,
@@ -107,6 +107,14 @@ def _validate_request(
     ):
         raise InvalidMultiPlayerComparisonRequestError(
             "Target and candidate player IDs must be unique."
+        )
+
+    if request.role_metric_scope not in {
+        "target",
+        "all_players",
+    }:
+        raise InvalidMultiPlayerComparisonRequestError(
+            "Role metric scope must be target or all_players."
         )
 
 
@@ -418,18 +426,30 @@ def _build_candidate_result(
 
 def _build_role_metric_groups(
     *,
-    target: pd.Series[Any],
+    role_players: tuple[
+        pd.Series[Any],
+        ...,
+    ],
     player_ids: tuple[int, ...],
     tournament_summary: pd.DataFrame,
 ) -> tuple[MultiPlayerComparisonRoleMetricGroupResult, ...]:
-    """Compare selected players using duties defined by the target's role."""
+    """Compare players using a target-first union of selected role duties."""
 
-    definitions = resolve_role_metric_groups(
-        final_role=_optional_text(
-            target.get("final_role"),
-        ),
-        archetype=_optional_text(
-            target.get("archetype"),
+    definitions = resolve_combined_role_metric_groups(
+        role_identities=tuple(
+            (
+                _optional_text(
+                    player.get(
+                        "final_role",
+                    ),
+                ),
+                _optional_text(
+                    player.get(
+                        "archetype",
+                    ),
+                ),
+            )
+            for player in role_players
         ),
     )
 
@@ -599,8 +619,17 @@ def run_multi_player_comparison_from_catalog(
         for candidate_player_id in request.candidate_player_ids
     )
 
+    role_players = (
+        (target,)
+        if request.role_metric_scope == "target"
+        else (
+            target,
+            *selected_players,
+        )
+    )
+
     role_metrics = _build_role_metric_groups(
-        target=target,
+        role_players=role_players,
         player_ids=(
             request.target_player_id,
             *request.candidate_player_ids,

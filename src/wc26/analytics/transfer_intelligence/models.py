@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 type JsonScalar = str | int | float | bool | None
 type JsonValue = JsonScalar | list[JsonValue] | dict[str, JsonValue]
 type JsonObject = dict[str, JsonValue]
+type RoleMetricScope = Literal["target", "all_players"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -520,6 +522,7 @@ class MultiPlayerComparisonRequest:
     heatmap_similarity: Path
     heatmap_profiles: Path
     player_tournament_summary: Path | None = None
+    role_metric_scope: RoleMetricScope = "target"
 
 
 @dataclass(frozen=True, slots=True)

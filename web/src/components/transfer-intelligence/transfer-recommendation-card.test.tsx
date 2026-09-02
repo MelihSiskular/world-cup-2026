@@ -3,32 +3,15 @@ import {
   screen,
   within,
 } from "@testing-library/react";
-import {
-  NextIntlClientProvider,
-} from "next-intl";
-import type {
-  ComponentProps,
-  ReactElement,
-  ReactNode,
-} from "react";
+import { NextIntlClientProvider } from "next-intl";
+import type { ComponentProps, ReactElement, ReactNode } from "react";
 
 import englishMessages from "../../../messages/en.json";
-import {
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-import {
-  TransferRecommendationCard,
-} from "@/components/transfer-intelligence/transfer-recommendation-card";
-import type {
-  TransferRecommendationResponse,
-} from "@/lib/api/types";
-import {
-  DEFAULT_TRANSFER_ANALYSIS_VALUES,
-} from "@/lib/transfer-intelligence/analysis-form";
+import { TransferRecommendationCard } from "@/components/transfer-intelligence/transfer-recommendation-card";
+import type { TransferRecommendationResponse } from "@/lib/api/types";
+import { DEFAULT_TRANSFER_ANALYSIS_VALUES } from "@/lib/transfer-intelligence/analysis-form";
 
 function IntlTestProvider({
   children,
@@ -36,67 +19,46 @@ function IntlTestProvider({
   children: ReactNode;
 }>) {
   return (
-    <NextIntlClientProvider
-      locale="en"
-      messages={englishMessages}
-    >
+    <NextIntlClientProvider locale="en" messages={englishMessages}>
       {children}
     </NextIntlClientProvider>
   );
 }
 
-function render(
-  element: ReactElement,
-) {
-  return renderTestingLibrary(
-    element,
-    {
-      wrapper:
-        IntlTestProvider,
-    },
-  );
+function render(element: ReactElement) {
+  return renderTestingLibrary(element, {
+    wrapper: IntlTestProvider,
+  });
 }
 
-vi.mock(
-  "@/i18n/navigation",
-  () => ({
-    Link: (
-      props: ComponentProps<"a">,
-    ) => (
-      <a {...props} />
-    ),
-  }),
-);
+vi.mock("@/i18n/navigation", () => ({
+  Link: (props: ComponentProps<"a">) => <a {...props} />,
+}));
 
-vi.mock(
-  "@/components/shortlists/shortlist-action",
-  () => ({
-    ShortlistAction: ({
-      player,
-      variant,
-    }: Readonly<{
-      player: {
-        playerName: string;
-      };
-      variant?: string;
-    }>) => (
-      <button type="button">
-        Save {player.playerName} (
-        {variant ?? "default"})
-      </button>
-    ),
-  }),
-);
+vi.mock("@/components/shortlists/shortlist-action", () => ({
+  ShortlistAction: ({
+    player,
+    variant,
+  }: Readonly<{
+    player: {
+      playerName: string;
+    };
+    variant?: string;
+  }>) => (
+    <button type="button">
+      Save {player.playerName} ({variant ?? "default"})
+    </button>
+  ),
+}));
 
-function createRecommendation():
-  TransferRecommendationResponse {
+function createRecommendation(): TransferRecommendationResponse {
   return {
     player_id: 12345,
     player_name: "Test Candidate",
-    national_team_name: "Test Nation",
-    country_name: "Test Country",
+    national_team_name: "Spain",
+    country_name: "Spain",
     position: "M",
-    age: 23,
+    age: 28.7,
     minutes: 500,
     weighted_rating: 7.1,
 
@@ -119,11 +81,9 @@ function createRecommendation():
     immediate_score: 74.3,
     immediate_rank: 2,
 
-    recommendation_type:
-      "Strong tactical alternative",
+    recommendation_type: "Strong tactical alternative",
     recommendation_strength: "Strong",
-    why_recommended:
-      "same final role; strong statistical similarity (72.5%)",
+    why_recommended: "same final role; strong statistical similarity (72.5%)",
     explainability: {
       mode: "immediate",
       score: {
@@ -137,8 +97,7 @@ function createRecommendation():
         {
           key: "statistical_similarity_pct",
           label: "Statistical similarity",
-          description:
-            "Similarity across the statistical feature model.",
+          description: "Similarity across the statistical feature model.",
           source_score: 72.5,
           input_score: 72.5,
           weight: 0.2,
@@ -156,8 +115,7 @@ function createRecommendation():
           weight: 0.12,
           weighted_contribution: 8.4,
           evidence_status: "fallback",
-          note:
-            "Direct heatmap evidence is unavailable; the configured neutral fallback is used for scoring.",
+          note: "Direct heatmap evidence is unavailable; the configured neutral fallback is used for scoring.",
         },
       ],
       bonuses: [
@@ -185,263 +143,212 @@ function createRecommendation():
         {
           key: "statistical_similarity",
           group: "statistics",
-          text:
-            "strong statistical similarity (72.5%)",
+          text: "strong statistical similarity (72.5%)",
         },
       ],
     },
   } as unknown as TransferRecommendationResponse;
 }
 
-describe(
-  "TransferRecommendationCard",
-  () => {
-    it(
-      "exposes shortlist controls in featured and compact variants",
-      () => {
-        const recommendation =
-          createRecommendation();
+describe("TransferRecommendationCard", () => {
+  it("exposes shortlist controls in featured and compact variants", () => {
+    const recommendation = createRecommendation();
 
-        const rendered = render(
-          <TransferRecommendationCard
-            targetPlayerId={978838}
-            mode="immediate"
-            analysisValues={{
-              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
-            }}
-            recommendation={
-              recommendation
-            }
-          />,
-        );
-
-        expect(
-          screen.getByRole(
-            "button",
-            {
-              name:
-                "Save Test Candidate (default)",
-            },
-          ),
-        ).toBeInTheDocument();
-
-        rendered.rerender(
-          <TransferRecommendationCard
-            targetPlayerId={978838}
-            mode="immediate"
-            analysisValues={{
-              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
-            }}
-            recommendation={
-              recommendation
-            }
-            variant="compact"
-          />,
-        );
-
-        expect(
-          screen.getByRole(
-            "button",
-            {
-              name:
-                "Save Test Candidate (compact)",
-            },
-          ),
-        ).toBeInTheDocument();
-      },
+    const rendered = render(
+      <TransferRecommendationCard
+        targetPlayerId={978838}
+        mode="immediate"
+        analysisValues={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+        recommendation={recommendation}
+      />,
     );
 
-    it(
-      "keeps decision fallback separate from measured spatial evidence",
-      () => {
-        render(
-          <TransferRecommendationCard
-            targetPlayerId={978838}
-            mode="immediate"
-            analysisValues={{
-              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
-            }}
-            recommendation={
-              createRecommendation()
-            }
-          />,
-        );
+    expect(
+      screen.getByRole("button", {
+        name: "Save Test Candidate (default)",
+      }),
+    ).toBeInTheDocument();
 
-        const spatialLabel =
-          screen.getByText(
-            "Spatial similarity",
-          );
-
-        const spatialMetric =
-          spatialLabel.closest("div");
-
-        if (!spatialMetric) {
-          throw new Error(
-            "Spatial similarity metric not found",
-          );
-        }
-
-        expect(
-          within(
-            spatialMetric,
-          ).getByText("61.2%"),
-        ).toBeInTheDocument();
-
-        expect(
-          within(
-            spatialMetric,
-          ).queryByText(
-            "70%",
-            {
-              exact: true,
-            },
-          ),
-        ).not.toBeInTheDocument();
-      },
+    rendered.rerender(
+      <TransferRecommendationCard
+        targetPlayerId={978838}
+        mode="immediate"
+        analysisValues={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+        recommendation={recommendation}
+        variant="compact"
+      />,
     );
 
-    it(
-      "renders the candidate player image",
-      () => {
-        render(
-          <TransferRecommendationCard
-            targetPlayerId={978838}
-            mode="immediate"
-            analysisValues={{
-              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
-            }}
-            recommendation={
-              createRecommendation()
-            }
-          />,
-        );
+    expect(
+      screen.getByRole("button", {
+        name: "Save Test Candidate (compact)",
+      }),
+    ).toBeInTheDocument();
+  });
 
-        expect(
-          screen.getByAltText(
-            "Test Candidate player photo",
-          ),
-        ).toBeInTheDocument();
-      },
+  it("keeps decision fallback separate from measured spatial evidence", () => {
+    render(
+      <TransferRecommendationCard
+        targetPlayerId={978838}
+        mode="immediate"
+        analysisValues={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+        recommendation={createRecommendation()}
+      />,
     );
 
-    it(
-      "renders missing market and role data explicitly",
-      () => {
-        render(
-          <TransferRecommendationCard
-            targetPlayerId={978838}
-            mode="immediate"
-            analysisValues={{
-              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
-            }}
-            recommendation={
-              createRecommendation()
-            }
-          />,
-        );
+    const spatialLabel = screen.getByText("Spatial similarity");
 
-        expect(
-          screen.getByText(
-            "Role unavailable",
-          ),
-        ).toBeInTheDocument();
+    const spatialMetric = spatialLabel.closest("div");
 
-        const marketLabel =
-          screen.getByText(
-            "Market value",
-          );
+    if (!spatialMetric) {
+      throw new Error("Spatial similarity metric not found");
+    }
 
-        const marketRow =
-          marketLabel.closest("div");
+    expect(within(spatialMetric).getByText("61.2%")).toBeInTheDocument();
 
-        if (!marketRow) {
-          throw new Error(
-            "Market value row not found",
-          );
-        }
+    expect(
+      within(spatialMetric).queryByText("70%", {
+        exact: true,
+      }),
+    ).not.toBeInTheDocument();
+  });
 
-        expect(
-          within(
-            marketRow,
-          ).getByText(
-            "Not reported",
-          ),
-        ).toBeInTheDocument();
-      },
-    );
-    it(
-      "renders backend-selected recommendation reasons",
-      () => {
-        render(
-          <TransferRecommendationCard
-            targetPlayerId={978838}
-            mode="immediate"
-            analysisValues={{
-              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
-            }}
-            recommendation={
-              createRecommendation()
-            }
-          />,
-        );
-
-        expect(
-          screen.getByText(
-            "Why this candidate",
-          ),
-        ).toBeInTheDocument();
-
-        expect(
-          screen.getByText(
-            "same final role",
-          ),
-        ).toBeInTheDocument();
-
-        expect(
-          screen.getByText(
-            "strong statistical similarity (72.5%)",
-          ),
-        ).toBeInTheDocument();
-      },
+  it("renders the candidate player image", () => {
+    render(
+      <TransferRecommendationCard
+        targetPlayerId={978838}
+        mode="immediate"
+        analysisValues={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+        recommendation={createRecommendation()}
+      />,
     );
 
-    it(
-      "preserves heatmap fallback semantics in score breakdown",
-      () => {
-        render(
-          <TransferRecommendationCard
-            targetPlayerId={978838}
-            mode="immediate"
-            analysisValues={{
-              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
-            }}
-            recommendation={
-              createRecommendation()
-            }
-          />,
-        );
+    expect(
+      screen.getByAltText("Test Candidate player photo"),
+    ).toBeInTheDocument();
+  });
 
-        expect(
-          screen.getByText(
-            "Fallback input",
-          ),
-        ).toBeInTheDocument();
-
-        expect(
-          screen.getByText(
-            /Direct heatmap evidence is unavailable/,
-          ),
-        ).toBeInTheDocument();
-
-        expect(
-          screen.getByText(
-            "It is not a probability that a transfer will succeed.",
-            {
-              exact: false,
-            },
-          ),
-        ).toBeInTheDocument();
-      },
+  it("renders missing market and role data explicitly", () => {
+    render(
+      <TransferRecommendationCard
+        targetPlayerId={978838}
+        mode="immediate"
+        analysisValues={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+        recommendation={createRecommendation()}
+      />,
     );
-  },
-);
+
+    expect(screen.getByText("Role unavailable")).toBeInTheDocument();
+
+    const marketLabel = screen.getByText("Market value");
+
+    const marketRow = marketLabel.closest("div");
+
+    if (!marketRow) {
+      throw new Error("Market value row not found");
+    }
+
+    expect(within(marketRow).getByText("Not reported")).toBeInTheDocument();
+  });
+  it("renders backend-selected recommendation reasons", () => {
+    render(
+      <TransferRecommendationCard
+        targetPlayerId={978838}
+        mode="immediate"
+        analysisValues={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+        recommendation={createRecommendation()}
+      />,
+    );
+
+    expect(screen.getByText("Why this candidate")).toBeInTheDocument();
+
+    expect(screen.getByText("same final role")).toBeInTheDocument();
+
+    expect(
+      screen.getByText("good statistical similarity (72.5%)"),
+    ).toBeInTheDocument();
+  });
+
+  it("preserves heatmap fallback semantics in score breakdown", () => {
+    render(
+      <TransferRecommendationCard
+        targetPlayerId={978838}
+        mode="immediate"
+        analysisValues={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+        recommendation={createRecommendation()}
+      />,
+    );
+
+    expect(screen.getByText("Fallback input")).toBeInTheDocument();
+
+    expect(
+      screen.getByText(/Direct heatmap evidence is unavailable/),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "It is not a probability that a transfer will succeed.",
+        {
+          exact: false,
+        },
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the country flag and truncates candidate age in both variants", () => {
+    const recommendation = createRecommendation();
+
+    const rendered = render(
+      <TransferRecommendationCard
+        targetPlayerId={978838}
+        mode="immediate"
+        analysisValues={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+        recommendation={recommendation}
+      />,
+    );
+
+    expect(
+      rendered.container.querySelector('[data-country-code="ESP"]'),
+    ).not.toBeNull();
+
+    expect(screen.getByText("28 years")).toBeInTheDocument();
+
+    expect(screen.queryByText("28.7 years")).not.toBeInTheDocument();
+
+    rendered.rerender(
+      <TransferRecommendationCard
+        targetPlayerId={978838}
+        mode="immediate"
+        analysisValues={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+        recommendation={recommendation}
+        variant="compact"
+      />,
+    );
+
+    expect(
+      rendered.container.querySelector('[data-country-code="ESP"]'),
+    ).not.toBeNull();
+
+    expect(screen.getByText("28 years")).toBeInTheDocument();
+
+    expect(screen.queryByText("28.7 years")).not.toBeInTheDocument();
+  });
+});

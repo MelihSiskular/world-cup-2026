@@ -61,7 +61,7 @@ export function LocaleSwitcher() {
       aria-label={translations(
         "label",
       )}
-      className="inline-flex shrink-0 rounded-xl border border-border bg-surface-secondary p-1"
+      className="inline-flex shrink-0 rounded-lg border border-border bg-surface-secondary p-0.5"
     >
       {localeOptions.map(
         (option) => {
@@ -88,7 +88,7 @@ export function LocaleSwitcher() {
                 pending
               }
               className={[
-                "inline-flex min-h-9 min-w-9 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-bold transition-colors sm:min-w-14",
+                "inline-flex min-h-8 min-w-8 items-center justify-center gap-1 rounded-md px-1.5 text-xs font-bold transition-colors sm:min-w-11",
                 active
                   ? "bg-brand-dark text-white"
                   : "text-muted hover:bg-surface hover:text-foreground",
@@ -117,6 +117,7 @@ export function LocaleSwitcher() {
                 countryAlpha3={
                   option.countryAlpha3
                 }
+                className="!w-4"
               />
 
               <span className="hidden sm:inline">

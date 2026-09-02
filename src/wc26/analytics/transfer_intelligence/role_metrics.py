@@ -375,11 +375,74 @@ def resolve_role_metric_groups(
     return tuple(groups)
 
 
+def resolve_combined_role_metric_groups(
+    *,
+    role_identities: tuple[
+        tuple[
+            str | None,
+            str | None,
+        ],
+        ...,
+    ],
+) -> tuple[RoleMetricGroupDefinition, ...]:
+    """Return an order-independent union of every selected role duty."""
+
+    selected_categories: set[str] = set()
+
+    for (
+        final_role,
+        archetype,
+    ) in role_identities:
+        categories = (
+            FINAL_ROLE_CATEGORIES.get(
+                final_role,
+            )
+            if final_role is not None
+            else None
+        )
+
+        if categories is None and archetype is not None:
+            categories = ARCHETYPE_CATEGORIES.get(
+                archetype,
+            )
+
+        if categories is not None:
+            selected_categories.update(
+                categories,
+            )
+
+    seen_metrics: set[str] = set()
+    groups: list[RoleMetricGroupDefinition] = []
+
+    for category in sorted(
+        selected_categories,
+    ):
+        metrics = tuple(
+            METRICS[key] for key in CATEGORY_METRIC_KEYS[category] if key not in seen_metrics
+        )
+
+        seen_metrics.update(metric.key for metric in metrics)
+
+        if not metrics:
+            continue
+
+        groups.append(
+            RoleMetricGroupDefinition(
+                key=category,
+                label=CATEGORY_LABELS[category],
+                metrics=metrics,
+            )
+        )
+
+    return tuple(groups)
+
+
 __all__ = [
     "ARCHETYPE_CATEGORIES",
     "FINAL_ROLE_CATEGORIES",
     "RoleMetricDefinition",
     "RoleMetricGroupDefinition",
     "SUPPORTED_FINAL_ROLES",
+    "resolve_combined_role_metric_groups",
     "resolve_role_metric_groups",
 ]

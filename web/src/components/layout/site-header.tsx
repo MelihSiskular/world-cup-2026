@@ -13,9 +13,6 @@ import {
   SiteNavigation,
 } from "@/components/layout/site-navigation";
 import {
-  ApiStatusBadge,
-} from "@/components/status/api-status-badge";
-import {
   Link,
 } from "@/i18n/navigation";
 
@@ -65,16 +62,6 @@ export function SiteHeader() {
           <SiteNavigation />
 
           <LocaleSwitcher />
-
-          <Link
-            href="/status"
-            className="hidden rounded-full lg:block"
-            aria-label={headerTranslations(
-              "statusLabel",
-            )}
-          >
-            <ApiStatusBadge />
-          </Link>
         </div>
       </PageContainer>
     </header>

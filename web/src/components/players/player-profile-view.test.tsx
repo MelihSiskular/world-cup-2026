@@ -553,6 +553,64 @@ describe("PlayerProfileView", () => {
     ).toBeInTheDocument();
   });
 
+  it(
+    "localizes role evidence labels while preserving technical values",
+    () => {
+      render(
+        <PlayerProfileView
+          player={{
+            ...basePlayer,
+            role_reason:
+              "Statistical archetype: Wide Creator | Spatial profile: Advanced Central Zone | Mean position: X=61.7, Y=41.6 | Wide=0.00, Half-space=0.42, Central=0.58 | Spatial spread=5.80",
+          }}
+        />,
+        "tr",
+      );
+
+      expect(
+        screen.getByText(
+          "İstatistiksel arketip: Wide Creator",
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          "Konumsal profil: Advanced Central Zone",
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          "Ortalama konum: X=61.7, Y=41.6",
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          "Wide=0.00, Half-space=0.42, Central=0.58",
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          "Konumsal yayılım: 5.80",
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.queryByText(
+          "Statistical archetype: Wide Creator",
+        ),
+      ).not.toBeInTheDocument();
+
+      expect(
+        screen.queryByText(
+          "Spatial profile: Advanced Central Zone",
+        ),
+      ).not.toBeInTheDocument();
+    },
+  );
+
   it("localizes the profile identity and actions in Turkish", () => {
     render(
       <PlayerProfileView

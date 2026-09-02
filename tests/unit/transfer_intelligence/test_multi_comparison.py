@@ -207,6 +207,7 @@ def _request(
         int,
         ...,
     ] = (2,),
+    role_metric_scope: str = "target",
 ) -> MultiPlayerComparisonRequest:
     return MultiPlayerComparisonRequest(
         target_player_id=target_player_id,
@@ -215,6 +216,7 @@ def _request(
         similarity=Path("similarity.csv"),
         heatmap_similarity=Path("heatmap-similarity.csv"),
         heatmap_profiles=Path("heatmap-profiles.csv"),
+        role_metric_scope=role_metric_scope,
     )
 
 
@@ -474,3 +476,73 @@ def test_serializes_null_evidence_without_fallback_scores() -> None:
     assert candidates[0]["evidence"]["statistical_similarity_pct"] is None
 
     assert candidates[1]["evidence"]["spatial_similarity_pct"] is None
+
+
+def test_combines_target_and_candidate_role_metric_duties() -> None:
+    catalog = _catalog()
+
+    catalog.players.loc[
+        catalog.players["player_id"].eq(2),
+        "final_role",
+    ] = "Creative Central Midfielder"
+
+    passing_columns = {
+        "stat_totalPass": 120.0,
+        "stat_totalPass_per90": 18.0,
+        "stat_accuratePass": 105.0,
+        "stat_accuratePass_per90": 15.5,
+        "stat_totalLongBalls": 20.0,
+        "stat_totalLongBalls_per90": 3.0,
+        "stat_accurateLongBalls": 14.0,
+        "stat_accurateLongBalls_per90": 2.1,
+    }
+
+    for (
+        column,
+        value,
+    ) in passing_columns.items():
+        catalog.player_tournament_summary[column] = value
+
+    result = run_multi_player_comparison_from_catalog(
+        _request(
+            candidate_player_ids=(2,),
+            role_metric_scope=("all_players"),
+        ),
+        catalog,
+    )
+
+    assert [group.key for group in result.role_metrics] == [
+        "creativity",
+        "passing_volume",
+        "progression",
+    ]
+
+    metric_keys = [metric.key for group in result.role_metrics for metric in group.metrics]
+
+    assert len(metric_keys) == len(set(metric_keys))
+
+    total_pass = next(
+        metric
+        for group in result.role_metrics
+        for metric in group.metrics
+        if metric.key == "totalPass"
+    )
+
+    assert [value.player_id for value in total_pass.values] == [
+        1,
+        2,
+    ]
+
+    assert all(value.total == 120.0 for value in total_pass.values)
+
+
+def test_target_role_metric_scope_remains_the_default() -> None:
+    result = run_multi_player_comparison_from_catalog(
+        _request(),
+        _catalog(),
+    )
+
+    assert [group.key for group in result.role_metrics] == [
+        "creativity",
+        "progression",
+    ]

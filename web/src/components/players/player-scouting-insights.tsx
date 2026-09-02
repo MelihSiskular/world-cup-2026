@@ -57,6 +57,41 @@ function InsightCard({
   const isStrength =
     tone === "strength";
 
+  const groupLabels =
+    translations.raw(
+      "groups",
+    ) as Readonly<
+      Record<string, string>
+    >;
+
+  const metricLabels =
+    translations.raw(
+      "metrics",
+    ) as Readonly<
+      Record<string, string>
+    >;
+
+  const groupLabel =
+    groupLabels[
+      insight.group
+    ] ??
+    insight.group_label;
+
+  const metricLabel =
+    metricLabels[
+      insight.metric_key
+    ] ??
+    insight.metric_short_label;
+
+  const formattedPercentile =
+    formatProfileNumber(
+      insight.percentile,
+      {
+        maximumFractionDigits: 1,
+      },
+      formatContext,
+    );
+
   return (
     <article
       className={[
@@ -74,23 +109,17 @@ function InsightCard({
               isStrength ? "text-brand" : "text-amber-700",
             ].join(" ")}
           >
-            {insight.group_label}
+            {groupLabel}
           </p>
 
           <h3 className="mt-2 break-words text-lg font-bold tracking-[-0.02em]">
-            {insight.metric_short_label}
+            {metricLabel}
           </h3>
         </div>
 
         <div className="shrink-0 text-right">
           <p className="text-2xl font-bold tracking-[-0.04em]">
-            {formatProfileNumber(
-              insight.percentile,
-              {
-                maximumFractionDigits: 1,
-              },
-              formatContext,
-            )}
+            {formattedPercentile}
           </p>
 
           <p className="text-[0.65rem] font-semibold tracking-[0.08em] text-muted uppercase">
@@ -107,7 +136,7 @@ function InsightCard({
           "percentileAriaLabel",
           {
             metric:
-              insight.metric_short_label,
+              metricLabel,
           },
         )}
         aria-valuemin={0}
@@ -126,7 +155,17 @@ function InsightCard({
         />
       </div>
 
-      <p className="mt-3 text-xs leading-5 text-muted">{insight.evidence}</p>
+      <p className="mt-3 text-xs leading-5 text-muted">
+        {translations(
+          "evidence",
+          {
+            count:
+              insight.peer_count,
+            percentile:
+              formattedPercentile,
+          },
+        )}
+      </p>
     </article>
   );
 }

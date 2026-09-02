@@ -1129,6 +1129,8 @@ export interface components {
             /** Version */
             readonly version: string;
         };
+        /** @enum {string} */
+        readonly RoleMetricScope: "target" | "all_players";
         /**
          * ShortTermTransferModeResponse
          * @description Short-term recruitment recommendations.
@@ -2096,6 +2098,8 @@ export interface operations {
             readonly query: {
                 /** @description Ordered candidate player IDs. Repeat the query parameter for each candidate. */
                 readonly candidate_player_ids: readonly number[];
+                /** @description Select metrics from only the target role or from every selected player role. */
+                readonly role_metric_scope?: components["schemas"]["RoleMetricScope"];
             };
             readonly header?: never;
             readonly path: {

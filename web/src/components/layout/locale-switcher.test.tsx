@@ -114,6 +114,43 @@ describe("LocaleSwitcher", () => {
       ),
     ).not.toBeNull();
 
+    expect(
+      languageGroup,
+    ).toHaveClass(
+      "rounded-lg",
+      "p-0.5",
+    );
+
+    for (
+      const languageButton
+      of within(
+        languageGroup,
+      ).getAllByRole("button")
+    ) {
+      expect(
+        languageButton,
+      ).toHaveClass(
+        "min-h-8",
+        "min-w-8",
+        "sm:min-w-11",
+      );
+    }
+
+    expect(
+      languageGroup.querySelector(
+        '[data-country-code="GBR"]',
+      ),
+    ).toHaveClass(
+      "!w-4",
+    );
+
+    expect(
+      languageGroup.querySelector(
+        '[data-country-code="TUR"]',
+      ),
+    ).toHaveClass(
+      "!w-4",
+    );
   });
 
   it("preserves the current route and query when changing locale", async () => {
