@@ -2,7 +2,7 @@
 
 ## Status
 
-- Product version: `0.5.0`
+- Product version: `0.6.0`
 - Phase 8: complete
 - Authentication: not required
 - Analytical source of truth: FastAPI and the validated runtime catalog
@@ -113,4 +113,4 @@ Phase 8 runtime coverage contains sparse same-position pair evidence. A selected
 
 ## Release Acceptance
 
-Version `0.5.0` is acceptable when the Python, Docker, web and browser quality gates pass; the OpenAPI contract is current; production builds succeed; and the complete user journeys work on Chromium, WebKit and their mobile projects.
+Version `0.6.0` is acceptable when the Python, Docker, web and browser quality gates pass; the OpenAPI contract is current; production builds succeed; and the complete user journeys work on Chromium, WebKit and their mobile projects.
