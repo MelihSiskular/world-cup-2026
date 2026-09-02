@@ -2,7 +2,7 @@
 
 ## Status
 
-- Product version: `0.5.0`
+- Product version: `0.6.0`
 - Phase 8 information architecture: implemented
 - Design direction: light, professional and evidence-focused
 
