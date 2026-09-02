@@ -177,7 +177,11 @@ export function FinalRoleMapCarousel() {
                 {t("roleIndexDescription")}
               </p>
 
-              <ul className="final-role-map-index-list mt-4 grid min-h-0 flex-1 content-start gap-x-4 sm:grid-cols-2">
+              <ul
+                aria-label={t("roleIndexTitle")}
+                tabIndex={0}
+                className="final-role-map-index-list mt-4 grid min-h-0 flex-1 content-start gap-x-4 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus-visible:ring-inset sm:grid-cols-2"
+              >
                 {activeMap.data.roles.map((role) => (
                   <li
                     key={role.code}
