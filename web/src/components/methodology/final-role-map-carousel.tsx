@@ -152,7 +152,7 @@ export function FinalRoleMapCarousel() {
           <div className="final-role-map-content grid min-w-0 lg:grid-cols-5">
             <figure className="final-role-map-visual min-w-0 border-b border-border p-4 sm:p-6 lg:col-span-3 lg:border-r lg:border-b-0">
               <div
-                className="relative h-full overflow-hidden rounded-2xl border border-white/15 shadow-inner"
+                className="relative h-full w-full overflow-hidden rounded-2xl border border-white/15 shadow-inner"
                 style={{
                   aspectRatio: "105 / 68",
                   backgroundColor: "#0b632d",
