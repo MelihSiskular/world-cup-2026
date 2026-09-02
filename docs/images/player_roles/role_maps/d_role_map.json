@@ -1,0 +1,184 @@
+{
+  "position": "D",
+  "player_count": 193,
+  "role_count": 22,
+  "minimum_role_size": 1,
+  "roles": [
+    {
+      "code": "D01",
+      "name": "Safe Ball-Playing Centre-Back",
+      "player_count": 29,
+      "color": "#1f77b4",
+      "center_x_pct": 33.5723,
+      "center_y_pct": 49.6474
+    },
+    {
+      "code": "D02",
+      "name": "Aerial-Dominant Centre-Back",
+      "player_count": 24,
+      "color": "#aec7e8",
+      "center_x_pct": 34.1974,
+      "center_y_pct": 51.6233
+    },
+    {
+      "code": "D03",
+      "name": "Left Wide Centre-Back",
+      "player_count": 17,
+      "color": "#ff7f0e",
+      "center_x_pct": 39.1464,
+      "center_y_pct": 67.4746
+    },
+    {
+      "code": "D04",
+      "name": "Right Wide Centre-Back",
+      "player_count": 16,
+      "color": "#ffbb78",
+      "center_x_pct": 38.5461,
+      "center_y_pct": 33.7087
+    },
+    {
+      "code": "D05",
+      "name": "Left Defensive Full-Back",
+      "player_count": 15,
+      "color": "#2ca02c",
+      "center_x_pct": 45.8367,
+      "center_y_pct": 82.0158
+    },
+    {
+      "code": "D06",
+      "name": "Right Aerial Full-Back",
+      "player_count": 11,
+      "color": "#98df8a",
+      "center_x_pct": 44.5349,
+      "center_y_pct": 19.4858
+    },
+    {
+      "code": "D07",
+      "name": "Right Attacking Full-Back",
+      "player_count": 11,
+      "color": "#d62728",
+      "center_x_pct": 49.8132,
+      "center_y_pct": 18.5737
+    },
+    {
+      "code": "D08",
+      "name": "Aggressive Stopper Centre-Back",
+      "player_count": 9,
+      "color": "#ff9896",
+      "center_x_pct": 34.6937,
+      "center_y_pct": 52.8396
+    },
+    {
+      "code": "D09",
+      "name": "Left Possession Full-Back",
+      "player_count": 9,
+      "color": "#9467bd",
+      "center_x_pct": 46.125,
+      "center_y_pct": 83.634
+    },
+    {
+      "code": "D10",
+      "name": "Left Aerial Full-Back",
+      "player_count": 8,
+      "color": "#c5b0d5",
+      "center_x_pct": 44.7824,
+      "center_y_pct": 82.1621
+    },
+    {
+      "code": "D11",
+      "name": "Left Attacking Full-Back",
+      "player_count": 8,
+      "color": "#8c564b",
+      "center_x_pct": 48.4325,
+      "center_y_pct": 84.2668
+    },
+    {
+      "code": "D12",
+      "name": "Right Defensive Full-Back",
+      "player_count": 7,
+      "color": "#c49c94",
+      "center_x_pct": 42.1225,
+      "center_y_pct": 17.8348
+    },
+    {
+      "code": "D13",
+      "name": "Right Possession Full-Back",
+      "player_count": 6,
+      "color": "#e377c2",
+      "center_x_pct": 43.9402,
+      "center_y_pct": 16.1524
+    },
+    {
+      "code": "D14",
+      "name": "Central Wide Centre-Back",
+      "player_count": 5,
+      "color": "#f7b6d2",
+      "center_x_pct": 39.72,
+      "center_y_pct": 52.7211
+    },
+    {
+      "code": "D15",
+      "name": "Right Overlapping Full-Back",
+      "player_count": 4,
+      "color": "#7f7f7f",
+      "center_x_pct": 58.4061,
+      "center_y_pct": 21.3203
+    },
+    {
+      "code": "D16",
+      "name": "Central Attacking Full-Back",
+      "player_count": 3,
+      "color": "#c7c7c7",
+      "center_x_pct": 49.6979,
+      "center_y_pct": 46.569
+    },
+    {
+      "code": "D17",
+      "name": "Left Overlapping Full-Back",
+      "player_count": 3,
+      "color": "#bcbd22",
+      "center_x_pct": 58.1874,
+      "center_y_pct": 80.9355
+    },
+    {
+      "code": "D18",
+      "name": "Ball-Carrying Centre-Back",
+      "player_count": 2,
+      "color": "#dbdb8d",
+      "center_x_pct": 41.8576,
+      "center_y_pct": 47.835
+    },
+    {
+      "code": "D19",
+      "name": "Left Inverted Attacking Full-Back",
+      "player_count": 2,
+      "color": "#17becf",
+      "center_x_pct": 47.8717,
+      "center_y_pct": 69.7272
+    },
+    {
+      "code": "D20",
+      "name": "Left Progressive Full-Back",
+      "player_count": 2,
+      "color": "#9edae5",
+      "center_x_pct": 44.7955,
+      "center_y_pct": 79.6208
+    },
+    {
+      "code": "D21",
+      "name": "Central Possession Full-Back",
+      "player_count": 1,
+      "color": "#393b79",
+      "center_x_pct": 36.1015,
+      "center_y_pct": 47.2427
+    },
+    {
+      "code": "D22",
+      "name": "Right Inverted Attacking Full-Back",
+      "player_count": 1,
+      "color": "#5254a3",
+      "center_x_pct": 34.0107,
+      "center_y_pct": 35.2994
+    }
+  ]
+}

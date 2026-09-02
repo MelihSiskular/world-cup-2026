@@ -1,63 +1,33 @@
 "use client";
 
-import {
-  useQuery,
-} from "@tanstack/react-query";
-import {
-  useLocale,
-  useTranslations,
-} from "next-intl";
-import {
-  type KeyboardEvent,
-  useState,
-} from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useLocale, useTranslations } from "next-intl";
+import { type KeyboardEvent, useState } from "react";
 
-import {
-  ApiErrorReference,
-} from "@/components/feedback/api-error-reference";
-import {
-  Link,
-} from "@/i18n/navigation";
-import {
-  PlayerImage,
-} from "@/components/players/player-image";
-import {
-  TransferAnalysisResultsSkeleton,
-} from "@/components/transfer-intelligence/transfer-analysis-results-skeleton";
-import {
-  TransferRecommendationCard,
-} from "@/components/transfer-intelligence/transfer-recommendation-card";
-import {
-  isBrowserApiError,
-} from "@/lib/api/browser-client";
+import { ApiErrorReference } from "@/components/feedback/api-error-reference";
+import { Link } from "@/i18n/navigation";
+import { CountryFlag } from "@/components/players/country-flag";
+import { PlayerImage } from "@/components/players/player-image";
+import { TransferAnalysisResultsSkeleton } from "@/components/transfer-intelligence/transfer-analysis-results-skeleton";
+import { TransferRecommendationCard } from "@/components/transfer-intelligence/transfer-recommendation-card";
+import { isBrowserApiError } from "@/lib/api/browser-client";
 import type {
   TransferModeName,
   TransferRecommendationResponse,
 } from "@/lib/api/types";
-import {
-  formatMarketValue,
-} from "@/lib/players/profile-format";
-import {
-  createAnalysisSearchParameters,
-} from "@/lib/transfer-intelligence/analysis-form";
-import type {
-  TransferAnalysisFormValues,
-} from "@/lib/transfer-intelligence/analysis-form";
-import {
-  createTransferAnalysisQueryOptions,
-} from "@/lib/transfer-intelligence/analysis-query";
-import {
-  TRANSFER_MODE_ORDER,
-} from "@/lib/transfer-intelligence/result-config";
+import { formatMarketValue } from "@/lib/players/profile-format";
+import { createAnalysisSearchParameters } from "@/lib/transfer-intelligence/analysis-form";
+import type { TransferAnalysisFormValues } from "@/lib/transfer-intelligence/analysis-form";
+import { createTransferAnalysisQueryOptions } from "@/lib/transfer-intelligence/analysis-query";
+import { TRANSFER_MODE_ORDER } from "@/lib/transfer-intelligence/result-config";
 
 const DEFAULT_VISIBLE_RECOMMENDATIONS = 8;
 
-type TransferAnalysisResultsProps =
-  Readonly<{
-    playerId: number;
-    values: TransferAnalysisFormValues;
-    initialMode: TransferModeName;
-  }>;
+type TransferAnalysisResultsProps = Readonly<{
+  playerId: number;
+  values: TransferAnalysisFormValues;
+  initialMode: TransferModeName;
+}>;
 
 export function TransferAnalysisResults({
   playerId,
@@ -66,115 +36,61 @@ export function TransferAnalysisResults({
 }: TransferAnalysisResultsProps) {
   const locale = useLocale();
 
-  const translations =
-    useTranslations(
-      "TransferAnalysisResults",
-    );
+  const translations = useTranslations("TransferAnalysisResults");
 
-  const numberFormatter =
-    new Intl.NumberFormat(
-      locale,
-      {
-        maximumFractionDigits: 1,
-      },
-    );
+  const numberFormatter = new Intl.NumberFormat(locale, {
+    maximumFractionDigits: 1,
+  });
 
   const modeTranslations = {
     immediate: {
-      label: translations(
-        "modes.immediate.label",
-      ),
-      shortLabel: translations(
-        "modes.immediate.shortLabel",
-      ),
-      description: translations(
-        "modes.immediate.description",
-      ),
+      label: translations("modes.immediate.label"),
+      shortLabel: translations("modes.immediate.shortLabel"),
+      description: translations("modes.immediate.description"),
     },
     development: {
-      label: translations(
-        "modes.development.label",
-      ),
-      shortLabel: translations(
-        "modes.development.shortLabel",
-      ),
-      description: translations(
-        "modes.development.description",
-      ),
+      label: translations("modes.development.label"),
+      shortLabel: translations("modes.development.shortLabel"),
+      description: translations("modes.development.description"),
     },
     value: {
-      label: translations(
-        "modes.value.label",
-      ),
-      shortLabel: translations(
-        "modes.value.shortLabel",
-      ),
-      description: translations(
-        "modes.value.description",
-      ),
+      label: translations("modes.value.label"),
+      shortLabel: translations("modes.value.shortLabel"),
+      description: translations("modes.value.description"),
     },
     short_term: {
-      label: translations(
-        "modes.shortTerm.label",
-      ),
-      shortLabel: translations(
-        "modes.shortTerm.shortLabel",
-      ),
-      description: translations(
-        "modes.shortTerm.description",
-      ),
+      label: translations("modes.shortTerm.label"),
+      shortLabel: translations("modes.shortTerm.shortLabel"),
+      description: translations("modes.shortTerm.description"),
     },
   } as const;
 
-  const [
-    activeMode,
-    setActiveMode,
-  ] = useState<TransferModeName>(
-    initialMode,
-  );
+  const [activeMode, setActiveMode] = useState<TransferModeName>(initialMode);
 
-  const [
-    showAllRecommendations,
-    setShowAllRecommendations,
-  ] = useState(false);
+  const [showAllRecommendations, setShowAllRecommendations] = useState(false);
 
-  function selectMode(
-    modeName: TransferModeName,
-  ): void {
-    setActiveMode(
-      modeName,
-    );
+  function selectMode(modeName: TransferModeName): void {
+    setActiveMode(modeName);
 
-    setShowAllRecommendations(
-      false,
-    );
+    setShowAllRecommendations(false);
   }
 
   function handleModeKeyDown(
     event: KeyboardEvent<HTMLButtonElement>,
     modeName: TransferModeName,
   ): void {
-    const currentIndex =
-      TRANSFER_MODE_ORDER.indexOf(
-        modeName,
-      );
+    const currentIndex = TRANSFER_MODE_ORDER.indexOf(modeName);
 
     let nextIndex: number;
 
     switch (event.key) {
       case "ArrowRight":
-        nextIndex =
-          (currentIndex + 1) %
-          TRANSFER_MODE_ORDER.length;
+        nextIndex = (currentIndex + 1) % TRANSFER_MODE_ORDER.length;
         break;
 
       case "ArrowLeft":
         nextIndex =
-          (
-            currentIndex -
-            1 +
-            TRANSFER_MODE_ORDER.length
-          ) %
+          (currentIndex - 1 + TRANSFER_MODE_ORDER.length) %
           TRANSFER_MODE_ORDER.length;
         break;
 
@@ -183,9 +99,7 @@ export function TransferAnalysisResults({
         break;
 
       case "End":
-        nextIndex =
-          TRANSFER_MODE_ORDER.length -
-          1;
+        nextIndex = TRANSFER_MODE_ORDER.length - 1;
         break;
 
       default:
@@ -194,58 +108,35 @@ export function TransferAnalysisResults({
 
     event.preventDefault();
 
-    const nextMode =
-      TRANSFER_MODE_ORDER[
-        nextIndex
-      ];
+    const nextMode = TRANSFER_MODE_ORDER[nextIndex];
 
     if (nextMode === undefined) {
       return;
     }
 
-    selectMode(
-      nextMode,
-    );
+    selectMode(nextMode);
 
-    const tabList =
-      event.currentTarget.closest(
-        '[role="tablist"]',
-      );
+    const tabList = event.currentTarget.closest('[role="tablist"]');
 
-    const tabs =
-      tabList?.querySelectorAll<HTMLButtonElement>(
-        '[role="tab"]',
-      );
+    const tabs = tabList?.querySelectorAll<HTMLButtonElement>('[role="tab"]');
 
     tabs?.[nextIndex]?.focus();
   }
 
-  const analysis =
-    useQuery(
-      createTransferAnalysisQueryOptions(
-        playerId,
-        values,
-      ),
-    );
+  const analysis = useQuery(
+    createTransferAnalysisQueryOptions(playerId, values),
+  );
 
   if (analysis.isPending) {
-    return (
-      <TransferAnalysisResultsSkeleton />
-    );
+    return <TransferAnalysisResultsSkeleton />;
   }
 
   if (analysis.isError) {
     const playerNotFound =
-      isBrowserApiError(
-        analysis.error,
-      ) &&
-      analysis.error.status === 404;
+      isBrowserApiError(analysis.error) && analysis.error.status === 404;
 
     const datasetUnavailable =
-      isBrowserApiError(
-        analysis.error,
-      ) &&
-      analysis.error.status === 503;
+      isBrowserApiError(analysis.error) && analysis.error.status === 503;
 
     return (
       <section
@@ -253,36 +144,24 @@ export function TransferAnalysisResults({
         className="rounded-2xl border border-error/25 bg-error/10 p-7"
       >
         <p className="text-sm font-semibold tracking-[0.14em] text-error uppercase">
-          {translations(
-            "analysisUnavailable",
-          )}
+          {translations("analysisUnavailable")}
         </p>
 
         <h2 className="mt-3 text-3xl font-bold tracking-[-0.035em]">
           {playerNotFound
-            ? translations(
-                "playerNotFound",
-              )
+            ? translations("playerNotFound")
             : datasetUnavailable
-              ? translations(
-                  "datasetsUnavailable",
-                )
-              : translations(
-                  "analysisFailed",
-                )}
+              ? translations("datasetsUnavailable")
+              : translations("analysisFailed")}
         </h2>
 
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          {translations(
-            "requestFailed",
-          )}
+          {translations("requestFailed")}
         </p>
 
         <ApiErrorReference
           error={analysis.error}
-          label={translations(
-            "requestId",
-          )}
+          label={translations("requestId")}
         />
 
         <div className="mt-7 flex flex-wrap gap-3">
@@ -294,9 +173,7 @@ export function TransferAnalysisResults({
               }}
               className="rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-white hover:bg-brand-dark"
             >
-              {translations(
-                "retryAnalysis",
-              )}
+              {translations("retryAnalysis")}
             </button>
           ) : null}
 
@@ -304,49 +181,32 @@ export function TransferAnalysisResults({
             href={`/analysis/${playerId}`}
             className="rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold hover:bg-surface-secondary"
           >
-            {translations(
-              "adjustParameters",
-            )}
+            {translations("adjustParameters")}
           </Link>
         </div>
       </section>
     );
   }
 
-  const {
-    target,
-    modes,
-  } = analysis.data;
+  const { target, modes } = analysis.data;
 
-  const activeRecommendations =
-    modes[activeMode]
-      .recommendations as readonly TransferRecommendationResponse[];
+  const activeRecommendations = modes[activeMode]
+    .recommendations as readonly TransferRecommendationResponse[];
 
-  const featuredRecommendation =
-    activeRecommendations[0] ??
-    null;
+  const featuredRecommendation = activeRecommendations[0] ?? null;
 
-  const remainingRecommendations =
-    activeRecommendations.slice(1);
+  const remainingRecommendations = activeRecommendations.slice(1);
 
-  const visibleRemainingRecommendations =
-    showAllRecommendations
-      ? remainingRecommendations
-      : remainingRecommendations.slice(
-          0,
-          Math.max(
-            DEFAULT_VISIBLE_RECOMMENDATIONS - 1,
-            0,
-          ),
-        );
+  const visibleRemainingRecommendations = showAllRecommendations
+    ? remainingRecommendations
+    : remainingRecommendations.slice(
+        0,
+        Math.max(DEFAULT_VISIBLE_RECOMMENDATIONS - 1, 0),
+      );
 
-  const queryString =
-    createAnalysisSearchParameters(
-      values,
-    ).toString();
+  const queryString = createAnalysisSearchParameters(values).toString();
 
-  const adjustParametersHref =
-    `/analysis/${playerId}?${queryString}`;
+  const adjustParametersHref = `/analysis/${playerId}?${queryString}`;
 
   return (
     <div className="space-y-10">
@@ -362,9 +222,7 @@ export function TransferAnalysisResults({
 
             <div className="min-w-0">
               <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-                {translations(
-                  "analysisTarget",
-                )}
+                {translations("analysisTarget")}
               </p>
 
               <h2 className="mt-2 break-words text-2xl font-bold tracking-[-0.035em]">
@@ -374,51 +232,36 @@ export function TransferAnalysisResults({
               <p className="mt-1 break-words text-sm font-semibold text-brand">
                 {target.final_role ??
                   target.archetype ??
-                  translations(
-                    "roleUnavailable",
-                  )}
+                  translations("roleUnavailable")}
               </p>
 
-              <p className="mt-1 text-sm text-muted">
-                {target.national_team_name ??
-                  target.country_name ??
-                  translations(
-                    "nationalTeamUnavailable",
-                  )}
-                {" · "}
-                {typeof target.appearances !==
-                "number"
-                  ? translations(
-                      "notReported",
-                    )
-                  : numberFormatter.format(
-                      target.appearances,
-                    )}{" "}
-                {translations(
-                  "appearances",
-                )}
-                {" · "}
-                {typeof target.minutes !==
-                "number"
-                  ? translations(
-                      "notReported",
-                    )
-                  : numberFormatter.format(
-                      target.minutes,
-                    )}{" "}
-                {translations(
-                  "minutes",
-                )}
-              </p>
+              <div className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-muted">
+                <CountryFlag
+                  countryName={target.country_name ?? target.national_team_name}
+                />
+                <span>
+                  {target.national_team_name ??
+                    target.country_name ??
+                    translations("nationalTeamUnavailable")}
+                  {" · "}
+                  {typeof target.appearances !== "number"
+                    ? translations("notReported")
+                    : numberFormatter.format(target.appearances)}{" "}
+                  {translations("appearances")}
+                  {" · "}
+                  {typeof target.minutes !== "number"
+                    ? translations("notReported")
+                    : numberFormatter.format(target.minutes)}{" "}
+                  {translations("minutes")}
+                </span>
+              </div>
             </div>
           </div>
 
           <div className="grid gap-2 sm:grid-cols-3 xl:min-w-[31rem]">
             <div className="rounded-xl border border-border bg-surface-secondary px-4 py-3">
               <p className="text-xs text-muted">
-                {translations(
-                  "marketValue",
-                )}
+                {translations("marketValue")}
               </p>
 
               <p className="mt-1 text-lg font-bold tracking-[-0.02em]">
@@ -431,39 +274,25 @@ export function TransferAnalysisResults({
 
             <div className="rounded-xl border border-border bg-surface-secondary px-4 py-3">
               <p className="text-xs text-muted">
-                {translations(
-                  "playerQuality",
-                )}
+                {translations("playerQuality")}
               </p>
 
               <p className="mt-1 text-lg font-bold tracking-[-0.02em]">
-                {typeof target.player_quality_score !==
-                "number"
-                  ? translations(
-                      "notReported",
-                    )
-                  : `${numberFormatter.format(
-                      target.player_quality_score,
-                    )}%`}
+                {typeof target.player_quality_score !== "number"
+                  ? translations("notReported")
+                  : `${numberFormatter.format(target.player_quality_score)}%`}
               </p>
             </div>
 
             <div className="rounded-xl border border-border bg-surface-secondary px-4 py-3">
               <p className="text-xs text-muted">
-                {translations(
-                  "roleConfidence",
-                )}
+                {translations("roleConfidence")}
               </p>
 
               <p className="mt-1 text-lg font-bold tracking-[-0.02em]">
-                {typeof target.role_confidence_pct !==
-                "number"
-                  ? translations(
-                      "notReported",
-                    )
-                  : `${numberFormatter.format(
-                      target.role_confidence_pct,
-                    )}%`}
+                {typeof target.role_confidence_pct !== "number"
+                  ? translations("notReported")
+                  : `${numberFormatter.format(target.role_confidence_pct)}%`}
               </p>
             </div>
           </div>
@@ -474,73 +303,47 @@ export function TransferAnalysisResults({
             href={adjustParametersHref}
             className="inline-flex rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-surface-secondary"
           >
-            {translations(
-              "adjustCriteria",
-            )}
+            {translations("adjustCriteria")}
           </Link>
         </div>
       </section>
 
-
-
-      <section
-        aria-labelledby="active-mode-heading"
-      >
+      <section aria-labelledby="active-mode-heading">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-              {translations(
-                "activeScenario",
-              )}
+              {translations("activeScenario")}
             </p>
 
             <h2
               id="active-mode-heading"
               className="mt-2 text-3xl font-bold tracking-[-0.035em]"
             >
-              {
-                modeTranslations[
-                  activeMode
-                ].label
-              }
+              {modeTranslations[activeMode].label}
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-muted">
-              {
-                modeTranslations[
-                  activeMode
-                ].description
-              }
+              {modeTranslations[activeMode].description}
             </p>
           </div>
 
           <div className="xl:text-right">
             <p className="mb-2 text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-              {translations(
-                "recruitmentStrategy",
-              )}
+              {translations("recruitmentStrategy")}
             </p>
 
             <div
               role="tablist"
-              aria-label={translations(
-                "modeTabsAriaLabel",
-              )}
+              aria-label={translations("modeTabsAriaLabel")}
               className="grid w-full max-w-2xl grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap xl:justify-end"
             >
-            {TRANSFER_MODE_ORDER.map(
-              (modeName) => {
-                const details =
-                  modeTranslations[
-                    modeName
-                  ];
+              {TRANSFER_MODE_ORDER.map((modeName) => {
+                const details = modeTranslations[modeName];
 
                 const recommendationCount =
-                  modes[modeName]
-                    .recommendations.length;
+                  modes[modeName].recommendations.length;
 
-                const active =
-                  activeMode === modeName;
+                const active = activeMode === modeName;
 
                 return (
                   <button
@@ -548,21 +351,12 @@ export function TransferAnalysisResults({
                     type="button"
                     role="tab"
                     aria-selected={active}
-                    tabIndex={
-                      active
-                        ? 0
-                        : -1
-                    }
+                    tabIndex={active ? 0 : -1}
                     onClick={() => {
-                      selectMode(
-                        modeName,
-                      );
+                      selectMode(modeName);
                     }}
                     onKeyDown={(event) => {
-                      handleModeKeyDown(
-                        event,
-                        modeName,
-                      );
+                      handleModeKeyDown(event, modeName);
                     }}
                     className={[
                       "inline-flex min-h-11 min-w-0 items-center justify-between gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition sm:justify-center sm:px-3.5",
@@ -571,9 +365,7 @@ export function TransferAnalysisResults({
                         : "border-border bg-surface text-foreground hover:border-brand/35 hover:bg-surface-secondary",
                     ].join(" ")}
                   >
-                    <span>
-                      {details.shortLabel}
-                    </span>
+                    <span>{details.shortLabel}</span>
 
                     <span
                       className={[
@@ -587,24 +379,17 @@ export function TransferAnalysisResults({
                     </span>
                   </button>
                 );
-              },
-            )}
+              })}
             </div>
           </div>
         </div>
 
         {featuredRecommendation === null ? (
           <div className="rounded-2xl border border-dashed border-border bg-surface p-8 text-center">
-            <p className="font-semibold">
-              {translations(
-                "noCandidates",
-              )}
-            </p>
+            <p className="font-semibold">{translations("noCandidates")}</p>
 
             <p className="mt-2 text-sm text-muted">
-              {translations(
-                "noCandidatesDescription",
-              )}
+              {translations("noCandidatesDescription")}
             </p>
           </div>
         ) : (
@@ -616,37 +401,28 @@ export function TransferAnalysisResults({
               <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-                    {translations(
-                      "leadingRecommendation",
-                    )}
+                    {translations("leadingRecommendation")}
                   </p>
 
                   <h3
                     id="leading-recommendation-heading"
                     className="mt-1 text-xl font-bold tracking-[-0.025em]"
                   >
-                    {translations(
-                      "leadingRecommendationTitle",
-                    )}
+                    {translations("leadingRecommendationTitle")}
                   </h3>
                 </div>
               </div>
 
               <TransferRecommendationCard
-                targetPlayerId={
-                  target.player_id
-                }
+                targetPlayerId={target.player_id}
                 mode={activeMode}
                 analysisValues={values}
-                recommendation={
-                  featuredRecommendation
-                }
+                recommendation={featuredRecommendation}
                 variant="featured"
               />
             </section>
 
-            {remainingRecommendations.length >
-            0 ? (
+            {remainingRecommendations.length > 0 ? (
               <section
                 aria-labelledby="other-candidates-heading"
                 className="mt-8"
@@ -654,51 +430,35 @@ export function TransferAnalysisResults({
                 <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
                   <div>
                     <p className="text-xs font-semibold tracking-[0.14em] text-brand uppercase">
-                      {translations(
-                        "otherCandidates",
-                      )}
+                      {translations("otherCandidates")}
                     </p>
 
                     <h3
                       id="other-candidates-heading"
                       className="mt-1 text-xl font-bold tracking-[-0.025em]"
                     >
-                      {translations(
-                        "otherCandidatesTitle",
-                      )}
+                      {translations("otherCandidatesTitle")}
                     </h3>
                   </div>
 
                   <p className="text-sm text-muted">
-                    {translations(
-                      "alternativeCount",
-                      {
-                        count:
-                          remainingRecommendations.length,
-                      },
-                    )}
+                    {translations("alternativeCount", {
+                      count: remainingRecommendations.length,
+                    })}
                   </p>
                 </div>
 
                 <div className="space-y-4">
-                  {visibleRemainingRecommendations.map(
-                    (recommendation) => (
-                      <TransferRecommendationCard
-                        key={
-                          recommendation.player_id
-                        }
-                        targetPlayerId={
-                          target.player_id
-                        }
-                        mode={activeMode}
-                        analysisValues={values}
-                        recommendation={
-                          recommendation
-                        }
-                        variant="compact"
-                      />
-                    ),
-                  )}
+                  {visibleRemainingRecommendations.map((recommendation) => (
+                    <TransferRecommendationCard
+                      key={recommendation.player_id}
+                      targetPlayerId={target.player_id}
+                      mode={activeMode}
+                      analysisValues={values}
+                      recommendation={recommendation}
+                      variant="compact"
+                    />
+                  ))}
                 </div>
 
                 {activeRecommendations.length >
@@ -707,24 +467,15 @@ export function TransferAnalysisResults({
                     <button
                       type="button"
                       onClick={() => {
-                        setShowAllRecommendations(
-                          (current) =>
-                            !current,
-                        );
+                        setShowAllRecommendations((current) => !current);
                       }}
                       className="rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold transition-colors hover:bg-surface-secondary"
                     >
                       {showAllRecommendations
-                        ? translations(
-                            "showTopRecommendations",
-                          )
-                        : translations(
-                            "showAllCandidates",
-                            {
-                              count:
-                                activeRecommendations.length,
-                            },
-                          )}
+                        ? translations("showTopRecommendations")
+                        : translations("showAllCandidates", {
+                            count: activeRecommendations.length,
+                          })}
                     </button>
                   </div>
                 ) : null}
@@ -735,5 +486,4 @@ export function TransferAnalysisResults({
       </section>
     </div>
   );
-
 }

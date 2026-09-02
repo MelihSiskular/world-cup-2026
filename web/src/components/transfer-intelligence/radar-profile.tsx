@@ -1,7 +1,4 @@
-import {
-  useLocale,
-  useTranslations,
-} from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export type RadarProfileDimension = Readonly<{
   key: string;
@@ -23,6 +20,19 @@ type RadarProfileProps = Readonly<{
   showHeader?: boolean;
 }>;
 
+export function useRadarDimensionLabel(): (
+  dimension: Pick<RadarProfileDimension, "key" | "label">,
+) => string {
+  const translations = useTranslations("RadarProfile");
+
+  const dimensionLabels = translations.raw("dimensions") as Readonly<
+    Record<string, string>
+  >;
+
+  return (dimension: Pick<RadarProfileDimension, "key" | "label">): string =>
+    dimensionLabels[dimension.key] ?? dimension.label;
+}
+
 const VIEWBOX_WIDTH = 560;
 const VIEWBOX_HEIGHT = 390;
 
@@ -32,21 +42,14 @@ const CENTER_Y = VIEWBOX_HEIGHT / 2;
 const RADAR_RADIUS = 108;
 const LABEL_RADIUS = 148;
 
-const RING_LEVELS = [
-  25,
-  50,
-  75,
-  100,
-] as const;
+const RING_LEVELS = [25, 50, 75, 100] as const;
 
 type Point = Readonly<{
   x: number;
   y: number;
 }>;
 
-function resolvePercentile(
-  value: number | null | undefined,
-): number | null {
+function resolvePercentile(value: number | null | undefined): number | null {
   if (
     typeof value !== "number" ||
     !Number.isFinite(value) ||
@@ -64,63 +67,38 @@ function pointForAxis(
   axisCount: number,
   radius: number,
 ): Point {
-  const angle =
-    -Math.PI / 2 +
-    (axisIndex / axisCount) *
-      Math.PI *
-      2;
+  const angle = -Math.PI / 2 + (axisIndex / axisCount) * Math.PI * 2;
 
   return {
-    x:
-      CENTER_X +
-      Math.cos(angle) * radius,
-    y:
-      CENTER_Y +
-      Math.sin(angle) * radius,
+    x: CENTER_X + Math.cos(angle) * radius,
+    y: CENTER_Y + Math.sin(angle) * radius,
   };
 }
 
-function polygonPoints(
-  axisCount: number,
-  radius: number,
-): string {
+function polygonPoints(axisCount: number, radius: number): string {
   return Array.from(
     {
       length: axisCount,
     },
     (_, index) => {
-      const point = pointForAxis(
-        index,
-        axisCount,
-        radius,
-      );
+      const point = pointForAxis(index, axisCount, radius);
 
       return `${point.x},${point.y}`;
     },
   ).join(" ");
 }
 
-function seriesPolygonPoints(
-  series: RadarProfileSeries,
-): string | null {
+function seriesPolygonPoints(series: RadarProfileSeries): string | null {
   const points: string[] = [];
 
-  for (
-    let index = 0;
-    index < series.dimensions.length;
-    index += 1
-  ) {
-    const dimension =
-      series.dimensions[index];
+  for (let index = 0; index < series.dimensions.length; index += 1) {
+    const dimension = series.dimensions[index];
 
     if (!dimension) {
       return null;
     }
 
-    const percentile =
-      resolvePercentile(
-        dimension.percentile,
-      );
+    const percentile = resolvePercentile(dimension.percentile);
 
     if (percentile === null) {
       return null;
@@ -129,80 +107,50 @@ function seriesPolygonPoints(
     const point = pointForAxis(
       index,
       series.dimensions.length,
-      RADAR_RADIUS *
-        (percentile / 100),
+      RADAR_RADIUS * (percentile / 100),
     );
 
-    points.push(
-      `${point.x},${point.y}`,
-    );
+    points.push(`${point.x},${point.y}`);
   }
 
   return points.join(" ");
 }
 
-function hasRenderableAxisContract(
-  series: RadarProfileSeries,
-): boolean {
-  if (
-    !series.available ||
-    series.dimensions.length < 3
-  ) {
+function hasRenderableAxisContract(series: RadarProfileSeries): boolean {
+  if (!series.available || series.dimensions.length < 3) {
     return false;
   }
 
-  const keys = series.dimensions.map(
-    (dimension) => dimension.key,
-  );
+  const keys = series.dimensions.map((dimension) => dimension.key);
 
-  return (
-    new Set(keys).size === keys.length
-  );
+  return new Set(keys).size === keys.length;
 }
 
 function hasMatchingAxes(
   primary: RadarProfileSeries,
   secondary: RadarProfileSeries,
 ): boolean {
-  if (
-    primary.dimensions.length !==
-    secondary.dimensions.length
-  ) {
+  if (primary.dimensions.length !== secondary.dimensions.length) {
     return false;
   }
 
   return primary.dimensions.every(
-    (dimension, index) =>
-      dimension.key ===
-      secondary.dimensions[index]?.key,
+    (dimension, index) => dimension.key === secondary.dimensions[index]?.key,
   );
 }
 
-function hasPartialEvidence(
-  series: RadarProfileSeries,
-): boolean {
+function hasPartialEvidence(series: RadarProfileSeries): boolean {
   return series.dimensions.some(
-    (dimension) =>
-      resolvePercentile(
-        dimension.percentile,
-      ) === null,
+    (dimension) => resolvePercentile(dimension.percentile) === null,
   );
 }
 
-function labelAnchor(
-  x: number,
-): "start" | "middle" | "end" {
-  if (
-    Math.abs(
-      x - CENTER_X,
-    ) < 15
-  ) {
+function labelAnchor(x: number): "start" | "middle" | "end" {
+  if (Math.abs(x - CENTER_X) < 15) {
     return "middle";
   }
 
-  return x > CENTER_X
-    ? "start"
-    : "end";
+  return x > CENTER_X ? "start" : "end";
 }
 
 function axisDescription(
@@ -210,26 +158,19 @@ function axisDescription(
   locale: string,
   unavailableLabel: string,
   percentileLabel: string,
+  formatDimensionLabel: (dimension: RadarProfileDimension) => string,
 ): string {
   return series.dimensions
     .map((dimension) => {
-      const percentile =
-        resolvePercentile(
-          dimension.percentile,
-        );
+      const percentile = resolvePercentile(dimension.percentile);
 
-      return `${dimension.label}: ${
+      return `${formatDimensionLabel(dimension)}: ${
         percentile === null
           ? unavailableLabel
-          : `${new Intl.NumberFormat(
-              locale,
-              {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1,
-              },
-            ).format(
-              percentile,
-            )} ${percentileLabel}`
+          : `${new Intl.NumberFormat(locale, {
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 1,
+            }).format(percentile)} ${percentileLabel}`
       }`;
     })
     .join("; ");
@@ -240,12 +181,9 @@ function RadarSeriesShape({
   variant,
 }: Readonly<{
   series: RadarProfileSeries;
-  variant:
-    | "primary"
-    | "secondary";
+  variant: "primary" | "secondary";
 }>) {
-  const completePolygon =
-    seriesPolygonPoints(series);
+  const completePolygon = seriesPolygonPoints(series);
 
   const pointClassName =
     variant === "primary"
@@ -258,69 +196,46 @@ function RadarSeriesShape({
       : "fill-brand-navy stroke-brand-navy";
 
   return (
-    <g
-      data-testid={`radar-series-${variant}`}
-      aria-hidden="true"
-    >
+    <g data-testid={`radar-series-${variant}`} aria-hidden="true">
       {completePolygon ? (
         <polygon
           data-testid={`radar-polygon-${variant}`}
           points={completePolygon}
           className={polygonClassName}
-          fillOpacity={
-            variant === "primary"
-              ? 0.14
-              : 0.09
-          }
+          fillOpacity={variant === "primary" ? 0.14 : 0.09}
           strokeWidth="2.5"
           strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
         />
       ) : null}
 
-      {series.dimensions.map(
-        (
-          dimension,
+      {series.dimensions.map((dimension, index) => {
+        const percentile = resolvePercentile(dimension.percentile);
+
+        if (percentile === null) {
+          return null;
+        }
+
+        const point = pointForAxis(
           index,
-        ) => {
-          const percentile =
-            resolvePercentile(
-              dimension.percentile,
-            );
+          series.dimensions.length,
+          RADAR_RADIUS * (percentile / 100),
+        );
 
-          if (
-            percentile === null
-          ) {
-            return null;
-          }
-
-          const point =
-            pointForAxis(
-              index,
-              series.dimensions.length,
-              RADAR_RADIUS *
-                (percentile / 100),
-            );
-
-          return (
-            <circle
-              key={dimension.key}
-              data-testid={`radar-point-${variant}-${dimension.key}`}
-              data-percentile={
-                percentile
-              }
-              cx={point.x}
-              cy={point.y}
-              r="4.25"
-              className={
-                pointClassName
-              }
-              strokeWidth="2"
-              vectorEffect="non-scaling-stroke"
-            />
-          );
-        },
-      )}
+        return (
+          <circle
+            key={dimension.key}
+            data-testid={`radar-point-${variant}-${dimension.key}`}
+            data-percentile={percentile}
+            cx={point.x}
+            cy={point.y}
+            r="4.25"
+            className={pointClassName}
+            strokeWidth="2"
+            vectorEffect="non-scaling-stroke"
+          />
+        );
+      })}
     </g>
   );
 }
@@ -332,54 +247,37 @@ export function RadarProfile({
   showHeader = true,
 }: RadarProfileProps) {
   const locale = useLocale();
-  const t = useTranslations(
-    "RadarProfile",
-  );
+  const t = useTranslations("RadarProfile");
 
-  if (
-    !hasRenderableAxisContract(
-      primary,
-    )
-  ) {
+  const formatDimensionLabel = useRadarDimensionLabel();
+
+  if (!hasRenderableAxisContract(primary)) {
     return (
       <div
         data-testid="radar-unavailable"
         className="flex min-h-72 items-center justify-center rounded-2xl border border-dashed border-border bg-page px-6 text-center text-sm leading-6 text-muted"
       >
         {t("unavailable", {
-          playerName:
-            primary.player_name,
+          playerName: primary.player_name,
         })}
       </div>
     );
   }
 
-  if (
-    secondary &&
-    !hasRenderableAxisContract(
-      secondary,
-    )
-  ) {
+  if (secondary && !hasRenderableAxisContract(secondary)) {
     return (
       <div
         data-testid="radar-unavailable"
         className="flex min-h-72 items-center justify-center rounded-2xl border border-dashed border-border bg-page px-6 text-center text-sm leading-6 text-muted"
       >
         {t("unavailable", {
-          playerName:
-            secondary.player_name,
+          playerName: secondary.player_name,
         })}
       </div>
     );
   }
 
-  if (
-    secondary &&
-    !hasMatchingAxes(
-      primary,
-      secondary,
-    )
-  ) {
+  if (secondary && !hasMatchingAxes(primary, secondary)) {
     return (
       <div
         data-testid="radar-incompatible"
@@ -394,25 +292,16 @@ export function RadarProfile({
     ariaLabel ??
     (secondary
       ? t("comparisonAriaLabel", {
-          primaryPlayer:
-            primary.player_name,
-          secondaryPlayer:
-            secondary.player_name,
+          primaryPlayer: primary.player_name,
+          secondaryPlayer: secondary.player_name,
         })
       : t("singleAriaLabel", {
-          playerName:
-            primary.player_name,
+          playerName: primary.player_name,
         }));
 
-  const primaryPartial =
-    hasPartialEvidence(primary);
+  const primaryPartial = hasPartialEvidence(primary);
 
-  const secondaryPartial =
-    secondary
-      ? hasPartialEvidence(
-          secondary,
-        )
-      : false;
+  const secondaryPartial = secondary ? hasPartialEvidence(secondary) : false;
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-2xl">
@@ -431,9 +320,7 @@ export function RadarProfile({
 
         <svg
           role="img"
-          aria-label={
-            resolvedAriaLabel
-          }
+          aria-label={resolvedAriaLabel}
           viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
           className="block h-auto w-full"
         >
@@ -443,185 +330,105 @@ export function RadarProfile({
               locale,
               t("axisUnavailable"),
               t("axisPercentile"),
+              formatDimensionLabel,
             )}
             {secondary
               ? `. ${axisDescription(
                   secondary,
                   locale,
-                  t(
-                    "axisUnavailable",
-                  ),
-                  t(
-                    "axisPercentile",
-                  ),
+                  t("axisUnavailable"),
+                  t("axisPercentile"),
+                  formatDimensionLabel,
                 )}`
               : ""}
           </desc>
 
-          <g
-            aria-hidden="true"
-            data-testid="radar-grid"
-          >
-            {RING_LEVELS.map(
-              (level) => {
-                const radius =
-                  RADAR_RADIUS *
-                  (level / 100);
+          <g aria-hidden="true" data-testid="radar-grid">
+            {RING_LEVELS.map((level) => {
+              const radius = RADAR_RADIUS * (level / 100);
 
-                return (
-                  <polygon
-                    key={level}
-                    data-testid={`radar-ring-${level}`}
-                    points={polygonPoints(
-                      primary
-                        .dimensions
-                        .length,
-                      radius,
-                    )}
-                    className="fill-none stroke-border"
-                    strokeWidth={
-                      level === 100
-                        ? 1.4
-                        : 0.8
-                    }
-                    vectorEffect="non-scaling-stroke"
-                  />
-                );
-              },
-            )}
-
-            {primary.dimensions.map(
-              (
-                dimension,
-                index,
-              ) => {
-                const outerPoint =
-                  pointForAxis(
-                    index,
-                    primary
-                      .dimensions
-                      .length,
-                    RADAR_RADIUS,
-                  );
-
-                return (
-                  <line
-                    key={
-                      dimension.key
-                    }
-                    data-testid={`radar-axis-${dimension.key}`}
-                    x1={CENTER_X}
-                    y1={CENTER_Y}
-                    x2={
-                      outerPoint.x
-                    }
-                    y2={
-                      outerPoint.y
-                    }
-                    className="stroke-border"
-                    strokeWidth="0.8"
-                    vectorEffect="non-scaling-stroke"
-                  />
-                );
-              },
-            )}
-
-            {RING_LEVELS.map(
-              (level) => (
-                <text
+              return (
+                <polygon
                   key={level}
-                  x={
-                    CENTER_X + 7
-                  }
-                  y={
-                    CENTER_Y -
-                    RADAR_RADIUS *
-                      (level /
-                        100) +
-                    4
-                  }
-                  className="fill-muted text-[9px]"
-                >
-                  {level}
-                </text>
-              ),
-            )}
+                  data-testid={`radar-ring-${level}`}
+                  points={polygonPoints(primary.dimensions.length, radius)}
+                  className="fill-none stroke-border"
+                  strokeWidth={level === 100 ? 1.4 : 0.8}
+                  vectorEffect="non-scaling-stroke"
+                />
+              );
+            })}
+
+            {primary.dimensions.map((dimension, index) => {
+              const outerPoint = pointForAxis(
+                index,
+                primary.dimensions.length,
+                RADAR_RADIUS,
+              );
+
+              return (
+                <line
+                  key={dimension.key}
+                  data-testid={`radar-axis-${dimension.key}`}
+                  x1={CENTER_X}
+                  y1={CENTER_Y}
+                  x2={outerPoint.x}
+                  y2={outerPoint.y}
+                  className="stroke-border"
+                  strokeWidth="0.8"
+                  vectorEffect="non-scaling-stroke"
+                />
+              );
+            })}
+
+            {RING_LEVELS.map((level) => (
+              <text
+                key={level}
+                x={CENTER_X + 7}
+                y={CENTER_Y - RADAR_RADIUS * (level / 100) + 4}
+                className="fill-muted text-[9px]"
+              >
+                {level}
+              </text>
+            ))}
           </g>
 
-          <RadarSeriesShape
-            series={primary}
-            variant="primary"
-          />
+          <RadarSeriesShape series={primary} variant="primary" />
 
           {secondary ? (
-            <RadarSeriesShape
-              series={secondary}
-              variant="secondary"
-            />
+            <RadarSeriesShape series={secondary} variant="secondary" />
           ) : null}
 
-          <g
-            aria-hidden="true"
-            data-testid="radar-labels"
-          >
-            {primary.dimensions.map(
-              (
-                dimension,
+          <g aria-hidden="true" data-testid="radar-labels">
+            {primary.dimensions.map((dimension, index) => {
+              const labelPoint = pointForAxis(
                 index,
-              ) => {
-                const labelPoint =
-                  pointForAxis(
-                    index,
-                    primary
-                      .dimensions
-                      .length,
-                    LABEL_RADIUS,
-                  );
+                primary.dimensions.length,
+                LABEL_RADIUS,
+              );
 
-                const words =
-                  dimension.label.split(
-                    " ",
-                  );
+              const words = formatDimensionLabel(dimension).split(" ");
 
-                return (
-                  <text
-                    key={
-                      dimension.key
-                    }
-                    x={labelPoint.x}
-                    y={
-                      labelPoint.y
-                    }
-                    textAnchor={labelAnchor(
-                      labelPoint.x,
-                    )}
-                    className="fill-foreground text-[11px] font-semibold"
-                  >
-                    {words.map(
-                      (
-                        word,
-                        wordIndex,
-                      ) => (
-                        <tspan
-                          key={`${dimension.key}-${word}`}
-                          x={
-                            labelPoint.x
-                          }
-                          dy={
-                            wordIndex ===
-                            0
-                              ? 0
-                              : 13
-                          }
-                        >
-                          {word}
-                        </tspan>
-                      ),
-                    )}
-                  </text>
-                );
-              },
-            )}
+              return (
+                <text
+                  key={dimension.key}
+                  x={labelPoint.x}
+                  y={labelPoint.y}
+                  textAnchor={labelAnchor(labelPoint.x)}
+                  className="fill-foreground text-[11px] font-semibold"
+                >
+                  {words.map((word, wordIndex) => (
+                    <tspan
+                      key={`${dimension.key}-${word}`}
+                      x={labelPoint.x}
+                      dy={wordIndex === 0 ? 0 : 13}
+                    >
+                      {word}
+                    </tspan>
+                  ))}
+                </text>
+              );
+            })}
           </g>
         </svg>
 
@@ -634,9 +441,7 @@ export function RadarProfile({
               aria-hidden="true"
               className="h-2.5 w-2.5 shrink-0 rounded-full bg-brand"
             />
-            <span className="truncate">
-              {primary.player_name}
-            </span>
+            <span className="truncate">{primary.player_name}</span>
           </span>
 
           {secondary ? (
@@ -645,17 +450,12 @@ export function RadarProfile({
                 aria-hidden="true"
                 className="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-navy"
               />
-              <span className="truncate">
-                {
-                  secondary.player_name
-                }
-              </span>
+              <span className="truncate">{secondary.player_name}</span>
             </span>
           ) : null}
         </div>
 
-        {primaryPartial ||
-        secondaryPartial ? (
+        {primaryPartial || secondaryPartial ? (
           <p
             data-testid="radar-partial-evidence"
             className="mt-4 rounded-xl border border-warning/20 bg-warning/10 px-4 py-3 text-xs leading-5 text-muted"

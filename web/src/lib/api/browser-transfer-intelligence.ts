@@ -1,9 +1,5 @@
-import {
-  requestBrowserJson,
-} from "@/lib/api/browser-client";
-import {
-  parseMultiComparisonIdentifiers,
-} from "@/lib/transfer-intelligence/multi-comparison-selection";
+import { requestBrowserJson } from "@/lib/api/browser-client";
+import { parseMultiComparisonIdentifiers } from "@/lib/transfer-intelligence/multi-comparison-selection";
 import type {
   HeatmapComparisonResponse,
   HeatmapPlayerResponse,
@@ -27,47 +23,38 @@ export function runTransferAnalysis(
   );
 }
 
-
 export function fetchMultiPlayerComparison(
   targetPlayerId: number,
-  candidatePlayerIds:
-    readonly number[],
+  candidatePlayerIds: readonly number[],
   signal?: AbortSignal,
+  roleMetricScope: "target" | "all_players" = "target",
 ): Promise<MultiPlayerComparisonResponse> {
-  const validation =
-    parseMultiComparisonIdentifiers(
-      targetPlayerId,
-      candidatePlayerIds.join(","),
-    );
+  const validation = parseMultiComparisonIdentifiers(
+    targetPlayerId,
+    candidatePlayerIds.join(","),
+  );
 
   if (!validation.success) {
-    return Promise.reject(
-      new TypeError(
-        validation.message,
-      ),
-    );
+    return Promise.reject(new TypeError(validation.message));
   }
 
-  const parameters =
-    new URLSearchParams({
-      candidates:
-        validation.values
-          .candidatePlayerIds
-          .join(","),
-    });
+  const parameters = new URLSearchParams({
+    candidates: validation.values.candidatePlayerIds.join(","),
+  });
+
+  if (roleMetricScope !== "target") {
+    parameters.set("role_metric_scope", roleMetricScope);
+  }
 
   return requestBrowserJson<MultiPlayerComparisonResponse>(
-    (
-      "/api/transfer-intelligence/"
-      + `multi-comparison/${validation.values.targetPlayerId}`
-      + `?${parameters.toString()}`
-    ),
+    "/api/transfer-intelligence/" +
+      `multi-comparison/${validation.values.targetPlayerId}` +
+      `?${parameters.toString()}`,
     {
       signal,
     },
   );
 }
-
 
 export function fetchPlayerHeatmap(
   playerId: number,
@@ -81,7 +68,6 @@ export function fetchPlayerHeatmap(
   );
 }
 
-
 export function fetchHeatmapComparison(
   targetPlayerId: number,
   candidatePlayerId: number,
@@ -94,8 +80,6 @@ export function fetchHeatmapComparison(
     },
   );
 }
-
-
 
 export function fetchRadarComparison(
   targetPlayerId: number,

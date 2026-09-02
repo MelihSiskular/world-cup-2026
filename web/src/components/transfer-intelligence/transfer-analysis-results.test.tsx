@@ -1,102 +1,53 @@
-import {
-  screen,
-} from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type {
-  ComponentProps,
-} from "react";
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import type { ComponentProps } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  TransferAnalysisResults,
-} from "@/components/transfer-intelligence/transfer-analysis-results";
-import {
-  BrowserApiError,
-} from "@/lib/api/browser-client";
-import {
-  runTransferAnalysis,
-} from "@/lib/api/browser-transfer-intelligence";
-import type {
-  TransferAnalysisResponse,
-} from "@/lib/api/types";
-import {
-  DEFAULT_TRANSFER_ANALYSIS_VALUES,
-} from "@/lib/transfer-intelligence/analysis-form";
-import {
-  renderWithQueryClient,
-} from "@/test/render-with-query-client";
+import { TransferAnalysisResults } from "@/components/transfer-intelligence/transfer-analysis-results";
+import { BrowserApiError } from "@/lib/api/browser-client";
+import { runTransferAnalysis } from "@/lib/api/browser-transfer-intelligence";
+import type { TransferAnalysisResponse } from "@/lib/api/types";
+import { DEFAULT_TRANSFER_ANALYSIS_VALUES } from "@/lib/transfer-intelligence/analysis-form";
+import { renderWithQueryClient } from "@/test/render-with-query-client";
 
-vi.mock(
-  "@/i18n/navigation",
-  () => ({
-    Link: (
-      props: ComponentProps<"a">,
-    ) => (
-      <a {...props} />
-    ),
-  }),
-);
+vi.mock("@/i18n/navigation", () => ({
+  Link: (props: ComponentProps<"a">) => <a {...props} />,
+}));
 
-vi.mock(
-  "@/lib/api/browser-transfer-intelligence",
-  () => ({
-    runTransferAnalysis:
-      vi.fn(),
-  }),
-);
+vi.mock("@/lib/api/browser-transfer-intelligence", () => ({
+  runTransferAnalysis: vi.fn(),
+}));
 
-const runTransferAnalysisMock =
-  vi.mocked(
-    runTransferAnalysis,
-  );
+const runTransferAnalysisMock = vi.mocked(runTransferAnalysis);
 
-function createAnalysisResponse():
-  TransferAnalysisResponse {
+function createAnalysisResponse(): TransferAnalysisResponse {
   return {
     target: {
       player_id: 978838,
-      player_name:
-        "Michael Olise",
-      national_team_name:
-        "France",
-      country_name:
-        "France",
+      player_name: "Michael Olise",
+      national_team_name: "France",
+      country_name: "France",
       position: "M",
       age: 24.6,
       appearances: 8,
       starts: 8,
       minutes: 650,
-      weighted_rating:
-        7.35,
-      market_value:
-        144_000_000,
-      market_value_currency:
-        "EUR",
-      archetype:
-        "Wide Creator",
-      final_role:
-        "Central Half-Space Creator",
-      role_confidence_pct:
-        87.2,
-      player_quality_score:
-        85.5,
+      weighted_rating: 7.35,
+      market_value: 144_000_000,
+      market_value_currency: "EUR",
+      archetype: "Wide Creator",
+      final_role: "Central Half-Space Creator",
+      role_confidence_pct: 87.2,
+      player_quality_score: 85.5,
     },
 
     modes: {
       immediate: {
-        mode:
-          "immediate",
+        mode: "immediate",
         recommendations: [],
       },
       development: {
-        mode:
-          "development",
+        mode: "development",
         recommendations: [],
       },
       value: {
@@ -104,283 +55,159 @@ function createAnalysisResponse():
         recommendations: [],
       },
       short_term: {
-        mode:
-          "short_term",
+        mode: "short_term",
         recommendations: [],
       },
     },
   } as unknown as TransferAnalysisResponse;
 }
 
-describe(
-  "TransferAnalysisResults",
-  () => {
-    beforeEach(() => {
-      runTransferAnalysisMock
-        .mockReset();
+describe("TransferAnalysisResults", () => {
+  beforeEach(() => {
+    runTransferAnalysisMock.mockReset();
+  });
+
+  it("shows an API request reference and recovers after retry", async () => {
+    runTransferAnalysisMock
+      .mockRejectedValueOnce(
+        new BrowserApiError({
+          status: 400,
+          code: "invalid_analysis",
+          message: "Analysis failed.",
+          requestId: "analysis-request-1",
+        }),
+      )
+      .mockResolvedValueOnce(createAnalysisResponse());
+
+    const user = userEvent.setup();
+
+    const rendered = renderWithQueryClient(
+      <TransferAnalysisResults
+        playerId={978838}
+        values={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+        initialMode="immediate"
+      />,
+    );
+
+    expect(
+      await screen.findByText("The transfer analysis could not be completed"),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("analysis-request-1")).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Retry analysis",
+      }),
+    );
+
+    expect(await screen.findByText("Michael Olise")).toBeInTheDocument();
+
+    expect(
+      rendered.container.querySelector('[data-country-code="FRA"]'),
+    ).not.toBeNull();
+
+    expect(screen.getByText("No eligible candidates")).toBeInTheDocument();
+  });
+
+  it("localizes scenario navigation and empty results in Turkish", async () => {
+    runTransferAnalysisMock.mockResolvedValue(createAnalysisResponse());
+
+    renderWithQueryClient(
+      <TransferAnalysisResults
+        playerId={978838}
+        values={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+        initialMode="immediate"
+      />,
+      "tr",
+    );
+
+    expect(
+      await screen.findByRole("tab", {
+        name: /^Anlık/,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("tab", {
+        name: /^Gelişim/,
+      }),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("Uygun aday bulunamadı")).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Oyuncu alım ölçütlerini düzenle"),
+    ).toBeInTheDocument();
+  });
+
+  it("supports arrow, Home and End navigation across recommendation modes", async () => {
+    runTransferAnalysisMock.mockResolvedValue(createAnalysisResponse());
+
+    const user = userEvent.setup();
+
+    renderWithQueryClient(
+      <TransferAnalysisResults
+        playerId={978838}
+        values={{
+          ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
+        }}
+        initialMode="immediate"
+      />,
+    );
+
+    const immediateTab = await screen.findByRole("tab", {
+      name: /^Immediate/,
     });
 
-    it(
-      "shows an API request reference and recovers after retry",
-      async () => {
-        runTransferAnalysisMock
-          .mockRejectedValueOnce(
-            new BrowserApiError({
-              status: 400,
-              code:
-                "invalid_analysis",
-              message:
-                "Analysis failed.",
-              requestId:
-                "analysis-request-1",
-            }),
-          )
-          .mockResolvedValueOnce(
-            createAnalysisResponse(),
-          );
+    const developmentTab = screen.getByRole("tab", {
+      name: /^Development/,
+    });
 
-        const user =
-          userEvent.setup();
+    const valueTab = screen.getByRole("tab", {
+      name: /^Value/,
+    });
 
-        renderWithQueryClient(
-          <TransferAnalysisResults
-            playerId={978838}
-            values={{
-              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
-            }}
-            initialMode="immediate"
-          />,
-        );
+    const shortTermTab = screen.getByRole("tab", {
+      name: /^Short term/,
+    });
 
-        expect(
-          await screen.findByText(
-            "The transfer analysis could not be completed",
-          ),
-        ).toBeInTheDocument();
+    expect(immediateTab).toHaveAttribute("tabindex", "0");
 
-        expect(
-          screen.getByText(
-            "analysis-request-1",
-          ),
-        ).toBeInTheDocument();
+    expect(developmentTab).toHaveAttribute("tabindex", "-1");
 
-        await user.click(
-          screen.getByRole(
-            "button",
-            {
-              name:
-                "Retry analysis",
-            },
-          ),
-        );
+    immediateTab.focus();
 
-        expect(
-          await screen.findByText(
-            "Michael Olise",
-          ),
-        ).toBeInTheDocument();
+    await user.keyboard("{ArrowRight}");
 
-        expect(
-          screen.getByText(
-            "No eligible candidates",
-          ),
-        ).toBeInTheDocument();
-      },
-    );
+    expect(developmentTab).toHaveFocus();
 
-    it(
-      "localizes scenario navigation and empty results in Turkish",
-      async () => {
-        runTransferAnalysisMock
-          .mockResolvedValue(
-            createAnalysisResponse(),
-          );
+    expect(developmentTab).toHaveAttribute("aria-selected", "true");
 
-        renderWithQueryClient(
-          <TransferAnalysisResults
-            playerId={978838}
-            values={{
-              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
-            }}
-            initialMode="immediate"
-          />,
-          "tr",
-        );
+    await user.keyboard("{End}");
 
-        expect(
-          await screen.findByRole(
-            "tab",
-            {
-              name:
-                /^Anlık/,
-            },
-          ),
-        ).toBeInTheDocument();
+    expect(shortTermTab).toHaveFocus();
 
-        expect(
-          screen.getByRole(
-            "tab",
-            {
-              name:
-                /^Gelişim/,
-            },
-          ),
-        ).toBeInTheDocument();
+    expect(shortTermTab).toHaveAttribute("aria-selected", "true");
 
-        expect(
-          screen.getByText(
-            "Uygun aday bulunamadı",
-          ),
-        ).toBeInTheDocument();
+    await user.keyboard("{ArrowRight}");
 
-        expect(
-          screen.getByText(
-            "Oyuncu alım ölçütlerini düzenle",
-          ),
-        ).toBeInTheDocument();
-      },
-    );
+    expect(immediateTab).toHaveFocus();
 
-    it(
-      "supports arrow, Home and End navigation across recommendation modes",
-      async () => {
-        runTransferAnalysisMock
-          .mockResolvedValue(
-            createAnalysisResponse(),
-          );
+    await user.keyboard("{ArrowLeft}");
 
-        const user =
-          userEvent.setup();
+    expect(shortTermTab).toHaveFocus();
 
-        renderWithQueryClient(
-          <TransferAnalysisResults
-            playerId={978838}
-            values={{
-              ...DEFAULT_TRANSFER_ANALYSIS_VALUES,
-            }}
-            initialMode="immediate"
-          />,
-        );
+    await user.keyboard("{Home}");
 
-        const immediateTab =
-          await screen.findByRole(
-            "tab",
-            {
-              name:
-                /^Immediate/,
-            },
-          );
+    expect(immediateTab).toHaveFocus();
 
-        const developmentTab =
-          screen.getByRole(
-            "tab",
-            {
-              name:
-                /^Development/,
-            },
-          );
+    expect(immediateTab).toHaveAttribute("aria-selected", "true");
 
-        const valueTab =
-          screen.getByRole(
-            "tab",
-            {
-              name: /^Value/,
-            },
-          );
-
-        const shortTermTab =
-          screen.getByRole(
-            "tab",
-            {
-              name:
-                /^Short term/,
-            },
-          );
-
-        expect(
-          immediateTab,
-        ).toHaveAttribute(
-          "tabindex",
-          "0",
-        );
-
-        expect(
-          developmentTab,
-        ).toHaveAttribute(
-          "tabindex",
-          "-1",
-        );
-
-        immediateTab.focus();
-
-        await user.keyboard(
-          "{ArrowRight}",
-        );
-
-        expect(
-          developmentTab,
-        ).toHaveFocus();
-
-        expect(
-          developmentTab,
-        ).toHaveAttribute(
-          "aria-selected",
-          "true",
-        );
-
-        await user.keyboard(
-          "{End}",
-        );
-
-        expect(
-          shortTermTab,
-        ).toHaveFocus();
-
-        expect(
-          shortTermTab,
-        ).toHaveAttribute(
-          "aria-selected",
-          "true",
-        );
-
-        await user.keyboard(
-          "{ArrowRight}",
-        );
-
-        expect(
-          immediateTab,
-        ).toHaveFocus();
-
-        await user.keyboard(
-          "{ArrowLeft}",
-        );
-
-        expect(
-          shortTermTab,
-        ).toHaveFocus();
-
-        await user.keyboard(
-          "{Home}",
-        );
-
-        expect(
-          immediateTab,
-        ).toHaveFocus();
-
-        expect(
-          immediateTab,
-        ).toHaveAttribute(
-          "aria-selected",
-          "true",
-        );
-
-        expect(
-          valueTab,
-        ).toHaveAttribute(
-          "tabindex",
-          "-1",
-        );
-      },
-    );
-  },
-);
+    expect(valueTab).toHaveAttribute("tabindex", "-1");
+  });
+});

@@ -629,7 +629,7 @@ test.describe(
             "table",
             {
               name:
-                "Target final-role metric comparison",
+                "All-player role metric comparison",
             },
           );
 

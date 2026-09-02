@@ -137,13 +137,13 @@ describe(
 
         expect(
           screen.getByText(
-            /98.8 performance percentile among 216 same-position peers/,
+            /98.8th percentile among 216 same-position players/,
           ),
         ).toBeInTheDocument();
 
         expect(
           screen.getByText(
-            /4.9 performance percentile among 216 same-position peers/,
+            /4.9th percentile among 216 same-position players/,
           ),
         ).toBeInTheDocument();
       },
@@ -206,7 +206,7 @@ describe(
     );
 
     it(
-      "localizes scouting context while preserving backend evidence",
+      "localizes API-provided scouting insights in Turkish",
       () => {
         render(
           <PlayerScoutingInsights
@@ -272,15 +272,33 @@ describe(
 
         expect(
           screen.getByText(
-            /98.8 performance percentile among 216 same-position peers/,
+            "216 aynı pozisyondaki oyuncu arasında 98,8. yüzdelik dilim.",
           ),
         ).toBeInTheDocument();
 
         expect(
           screen.getByText(
-            "Chance creation",
+            "Fırsat yaratma",
           ),
         ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Topa sahip olma",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(
+            "Top kaybı / 90",
+          ),
+        ).toBeInTheDocument();
+
+        expect(
+          screen.queryByText(
+            /performance percentile among/,
+          ),
+        ).not.toBeInTheDocument();
       },
     );
 

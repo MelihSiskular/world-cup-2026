@@ -1,0 +1,56 @@
+{
+  "position": "F",
+  "player_count": 75,
+  "role_count": 6,
+  "minimum_role_size": 1,
+  "roles": [
+    {
+      "code": "F01",
+      "name": "Poacher",
+      "player_count": 24,
+      "color": "#1f77b4",
+      "center_x_pct": 64.6781,
+      "center_y_pct": 50.7008
+    },
+    {
+      "code": "F02",
+      "name": "Link Forward",
+      "player_count": 18,
+      "color": "#aec7e8",
+      "center_x_pct": 63.403,
+      "center_y_pct": 55.5864
+    },
+    {
+      "code": "F03",
+      "name": "Deep Target Forward",
+      "player_count": 15,
+      "color": "#ff7f0e",
+      "center_x_pct": 56.9874,
+      "center_y_pct": 54.4223
+    },
+    {
+      "code": "F04",
+      "name": "Central Target Forward",
+      "player_count": 11,
+      "color": "#ffbb78",
+      "center_x_pct": 64.1269,
+      "center_y_pct": 52.2548
+    },
+    {
+      "code": "F05",
+      "name": "High-Volume Shooter",
+      "player_count": 5,
+      "color": "#2ca02c",
+      "center_x_pct": 68.7972,
+      "center_y_pct": 51.5945
+    },
+    {
+      "code": "F06",
+      "name": "Right Wide Target Forward",
+      "player_count": 2,
+      "color": "#98df8a",
+      "center_x_pct": 61.1978,
+      "center_y_pct": 20.2492
+    }
+  ]
+}

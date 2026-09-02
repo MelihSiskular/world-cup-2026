@@ -18,8 +18,7 @@
   },
   "Header": {
     "homeLabel": "WC26 Transfer Intelligence home",
-    "tagline": "Recruitment decision support",
-    "statusLabel": "Open system status page"
+    "tagline": "Recruitment decision support"
   },
   "Footer": {
     "description": "Football scouting and replacement analysis powered by World Cup 2026 tournament data.",
@@ -201,9 +200,6 @@
     "eyebrow": "Recruitment workspace",
     "title": "Shortlist workspace",
     "description": "Organize tournament players into focused recruitment lists. Saved data remains in this browser.",
-    "shortlistsStat": "Shortlists",
-    "uniquePlayersStat": "Unique players",
-    "savedSelectionsStat": "Saved selections",
     "createLabel": "Create a shortlist",
     "namePlaceholder": "Summer 2027 — LCB",
     "createButton": "Create shortlist",
@@ -317,6 +313,12 @@
     "primaryFormation": "Primary formation",
     "viewRoleEvidence": "View role assignment evidence",
     "roleEvidenceDescription": "Supporting model evidence used to interpret the player's tactical and spatial role.",
+    "roleEvidenceLabels": {
+      "statisticalArchetype": "Statistical archetype",
+      "spatialProfile": "Spatial profile",
+      "meanPosition": "Mean position",
+      "spatialSpread": "Spatial spread"
+    },
     "modelContextEyebrow": "Model context",
     "modelConfidenceTitle": "Confidence behind the profile",
     "modelConfidenceDescription": "Supporting quality and reliability signals used to interpret the tournament profile.",
@@ -354,7 +356,51 @@
     "noStrengths": "No standout strengths were surfaced by the current position-aware profile.",
     "noWatchOuts": "No watch-out signals were surfaced by the current position-aware profile.",
     "percentile": "percentile",
-    "percentileAriaLabel": "{metric} performance percentile"
+    "percentileAriaLabel": "{metric} performance percentile",
+    "evidence": "{percentile}th percentile among {count} same-position players.",
+    "groups": {
+      "creation": "Chance creation",
+      "progression": "Ball progression",
+      "possession": "Possession",
+      "defending": "Defensive contribution",
+      "scoring": "Scoring threat",
+      "physical": "Physical output",
+      "goalkeeping": "Goalkeeping"
+    },
+    "metrics": {
+      "expected_assists_per90": "xA / 90",
+      "key_passes_per90": "Key passes / 90",
+      "assists_per90": "Assists / 90",
+      "big_chances_created_per90": "Big chances / 90",
+      "total_progression_per90": "Progression / 90",
+      "progressive_carries_per90": "Prog. carries / 90",
+      "progressive_carry_distance_per90": "Prog. carry dist. / 90",
+      "ball_carries_per90": "Carries / 90",
+      "passes_per90": "Passes / 90",
+      "pass_accuracy": "Pass accuracy",
+      "touches_per90": "Touches / 90",
+      "possession_lost_per90": "Poss. lost / 90",
+      "ball_recoveries_per90": "Recoveries / 90",
+      "tackles_per90": "Tackles / 90",
+      "tackles_won_per90": "Tackles won / 90",
+      "interceptions_per90": "Interceptions / 90",
+      "clearances_per90": "Clearances / 90",
+      "duel_success": "Duel success",
+      "aerial_duel_success": "Aerial success",
+      "expected_goals_per90": "xG / 90",
+      "shots_per90": "Shots / 90",
+      "shots_on_target_per90": "SoT / 90",
+      "shot_on_target_percentage": "SoT %",
+      "goals_per90": "Goals / 90",
+      "distance_covered_per90": "Distance / 90",
+      "sprints_per90": "Sprints / 90",
+      "top_speed": "Top speed",
+      "saves_per90": "Saves / 90",
+      "goals_prevented_per90": "Goals prevented / 90",
+      "keeper_save_value_per90": "Save value / 90",
+      "keeper_sweeper_actions_per90": "Sweeper / 90",
+      "keeper_sweeper_accuracy": "Sweeper accuracy"
+    }
   },
   "PlayerPerformanceProfile": {
     "eyebrow": "Performance intelligence",
@@ -400,7 +446,7 @@
     "attackingDirection": "Attacking direction →",
     "comparisonAriaLabel": "Spatial position comparison for {target} and {candidate}",
     "meanPositionTitle": "{player}: mean position ({x}, {y})",
-    "dispersionDescription": "Ellipses show positional dispersion when available."
+    "dispersionDescription": "Markers show the average position; ellipses show the player's spread around that position."
   },
   "HeatmapPitch": {
     "unavailable": "Tournament heatmap data are not available for {player}.",
@@ -590,6 +636,85 @@
       "available": "Direct evidence",
       "fallback": "Fallback input",
       "missing": "Missing input"
+    },
+    "signals": {
+      "statistical_similarity_pct": {
+        "label": "Statistical similarity",
+        "description": "Similarity between the target and candidate across the statistical player profile."
+      },
+      "role_fit_pct": {
+        "label": "Role fit",
+        "description": "Alignment between the candidate and target across the tactical role model."
+      },
+      "spatial_similarity_pct": {
+        "label": "Spatial similarity",
+        "description": "Similarity in average position, spatial spread, thirds and lane occupation."
+      },
+      "effective_heatmap_score_pct": {
+        "label": "Heatmap evidence",
+        "description": "Heatmap occupation evidence used by the recruitment scoring model."
+      },
+      "player_quality_score": {
+        "label": "Player quality",
+        "description": "Quality signal derived from the candidate's tournament performance profile."
+      },
+      "data_reliability_score": {
+        "label": "Data reliability",
+        "description": "Reliability signal reflecting the strength of the available analytical sample."
+      },
+      "market_value_advantage_pct": {
+        "label": "Market advantage",
+        "description": "Financial-value advantage relative to the target player."
+      },
+      "age_suitability_pct": {
+        "label": "Age suitability",
+        "description": "Age-profile suitability for the selected recruitment scenario."
+      }
+    },
+    "bonusLabels": {
+      "same_final_role": "Same final role",
+      "same_archetype": "Same statistical archetype"
+    },
+    "notes": {
+      "heatmapFallback": "Direct heatmap evidence is unavailable; the configured neutral fallback is used for scoring.",
+      "heatmapMissing": "Heatmap scoring input is unavailable; the scorer contributes zero for this signal.",
+      "sourceMissing": "Source value is unavailable; the scorer contributes zero for this signal."
+    },
+    "reasons": {
+      "sameFinalRole": "same final role",
+      "sameArchetype": "same statistical archetype",
+      "statisticalSimilarity": {
+        "veryStrong": "very strong statistical similarity ({value})",
+        "good": "good statistical similarity ({value})"
+      },
+      "roleFit": {
+        "elite": "elite tactical fit ({value})",
+        "strong": "strong tactical fit ({value})"
+      },
+      "spatialSimilarity": "similar average-position profile ({value})",
+      "heatmapSimilarity": {
+        "elite": "elite heatmap occupation similarity ({value})",
+        "strong": "strong heatmap occupation similarity ({value})",
+        "useful": "useful heatmap occupation similarity ({value})"
+      },
+      "heatmapOverlap": "high shared-zone occupation ({value})",
+      "heatmapStructure": "closely matches both lateral and vertical usage",
+      "heatmapZone": {
+        "sameZones": "replicates the target's {lateral} and {vertical} occupation",
+        "sameLateral": "uses the same {lateral}, but operates more in the {vertical}",
+        "sameDepth": "matches the target's {vertical} depth with more {lateral} occupation",
+        "mainZones": "operates mainly in the {lateral} and {vertical}"
+      },
+      "marketAdvantage": {
+        "major": "major price advantage",
+        "useful": "useful price advantage"
+      },
+      "developmentAge": {
+        "elite": "elite age upside",
+        "strong": "strong development age"
+      },
+      "dataReliability": "reliable tournament sample",
+      "balancedProfile": "balanced profile across the decision criteria"
     }
   },
   "RoleCompatibilityPanel": {
@@ -618,6 +743,16 @@
     "axisUnavailable": "not available",
     "axisPercentile": "percentile",
     "legendAriaLabel": "Radar series legend",
+    "dimensions": {
+      "creativity": "Creativity",
+      "progression": "Progression",
+      "passing_volume": "Passing Volume",
+      "ball_security": "Ball Security",
+      "dribbling": "Dribbling",
+      "scoring_threat": "Scoring Threat",
+      "defensive_work": "Defensive Work",
+      "wide_creation": "Wide Creation"
+    },
     "partialEvidence": "At least one radar dimension has no measured percentile. Missing values are left unplotted rather than replaced with a neutral score.",
     "guidance": "Each axis shows how strongly the player expresses that playing-style dimension relative to players in the same position. Higher percentiles do not by themselves mean a better overall player."
   },
@@ -724,7 +859,6 @@
     "spatialDescription": "Compare weighted tournament positions and positional dispersion on the same pitch.",
     "lateralSimilarity": "Lateral similarity",
     "verticalSimilarity": "Vertical similarity",
-    "spatialGuidance": "Pitch markers represent weighted mean tournament position. Ellipses represent positional dispersion on each axis. Overall spatial similarity also considers pitch thirds and lane occupation, so it is not simply the distance between the two markers.",
     "target": "Target",
     "candidate": "Candidate",
     "radar": {
@@ -732,8 +866,6 @@
       "eyebrow": "Playing style",
       "title": "Position-relative radar profile",
       "description": "Compare how strongly each player expresses the statistical playing-style dimensions associated with their position.",
-      "sharedOverlay": "Shared position overlay",
-      "separateProfiles": "Separate position profiles",
       "loading": "Loading radar comparison",
       "unavailable": "Radar comparison unavailable",
       "unavailableDescription": "The main recruitment comparison remains available, but position-relative playing-style profiles could not be loaded.",
@@ -748,7 +880,6 @@
       "eyebrow": "Heatmap profile",
       "title": "Measured tournament occupation",
       "description": "Compare where both players actually occupied the pitch during the tournament using measured heatmap evidence.",
-      "measuredEvidence": "Measured pair evidence",
       "evidenceUnavailable": "Pair evidence unavailable",
       "loading": "Loading heatmap comparison",
       "unavailable": "Heatmap comparison unavailable",
@@ -756,21 +887,29 @@
       "retry": "Retry heatmap",
       "densityTitle": "Relative tournament occupation density",
       "densityDescription": "Both pitches use the same shared density scale. Visual intensity reflects observed tournament heatmap occupation, not positional probability.",
+      "sampleGuidance": "Points are the location observations used in the heatmap; more points mean a larger evidence sample, not better performance. Entropy shows spatial spread: higher values mean more dispersed occupation, while lower values mean more concentrated occupation.",
       "metricsLabel": "Heatmap evidence metrics",
       "metrics": {
         "measuredSimilarity": "Measured similarity",
-        "measuredSimilarityDescription": "Overall measured similarity between the two tournament heatmap profiles.",
+        "measuredSimilarityDescription": "Overall profile similarity; a higher value means more similar occupation.",
         "cosineSimilarity": "Cosine similarity",
-        "cosineSimilarityDescription": "Similarity in the full distribution of occupation density across grid cells.",
+        "cosineSimilarityDescription": "Grid-density similarity; a higher value means a more similar distribution.",
         "occupationOverlap": "Occupation overlap",
-        "occupationOverlapDescription": "How strongly the two players occupy the same areas of the pitch.",
+        "occupationOverlapDescription": "Shared occupation areas; a higher value means greater overlap.",
         "peakZoneSimilarity": "Peak-zone similarity",
-        "peakZoneSimilarityDescription": "Similarity between the players' strongest occupation zones.",
+        "peakZoneSimilarityDescription": "Strongest-zone similarity; a higher value means closer peak profiles.",
         "peakZoneDistance": "Peak-zone distance",
-        "peakZoneDistanceDescription": "Distance between the strongest-density locations on the normalized pitch.",
+        "peakZoneDistanceDescription": "Distance between peak locations; a lower value means closer positions.",
         "entropySimilarity": "Entropy similarity",
-        "entropySimilarityDescription": "Similarity in how concentrated or dispersed the two occupation profiles are."
+        "entropySimilarityDescription": "Spread-pattern similarity; a higher value means more similar dispersion."
       }
+    },
+    "roleMetrics": {
+      "loading": "Loading role metrics",
+      "unavailableEyebrow": "Role performance",
+      "unavailableTitle": "Role metric comparison unavailable",
+      "unavailableDescription": "Role metric evidence could not be loaded. The main player comparison remains available.",
+      "retry": "Retry role metrics"
     }
   },
   "MultiPlayerComparisonPage": {
@@ -939,6 +1078,26 @@
       "unsuccessfulTouch": "Unsuccessful touches",
       "bigChanceMissed": "Big chances missed",
       "touches": "Touches"
+    },
+    "allPlayers": {
+      "title": "Role-focused metric comparison",
+      "description": "Metrics are selected from the combined role duties of the target player and all candidates. Each value shows the tournament total followed by the per-90 rate.",
+      "unavailableDescription": "Comparable tournament metrics are unavailable for the combined player roles.",
+      "scrollRegionLabel": "Scrollable all-player role metric comparison",
+      "tableLabel": "All-player role metric comparison",
+      "guidance": "Shared metrics are not repeated, and missing tournament evidence is never replaced with zero."
+    },
+    "pair": {
+      "title": "Role-focused metric comparison",
+      "descriptionBeforeTargetRole": "Metrics are selected from the duties of",
+      "descriptionBetweenRoles": "and",
+      "descriptionAfterRoles": ". Each value shows the tournament total followed by the per-90 rate.",
+      "targetRoleFallback": "the target player's role",
+      "candidateRoleFallback": "the candidate player's role",
+      "unavailableDescription": "Comparable tournament metrics are unavailable for these two player roles.",
+      "scrollRegionLabel": "Scrollable pair role metric comparison",
+      "tableLabel": "Two-player role metric comparison",
+      "guidance": "Metrics are selected from the combined duties of the target and candidate roles. Shared metrics are not repeated, and missing tournament evidence is never replaced with zero."
     }
   },
   "MultiPlayerComparisonEvidence": {
@@ -1018,9 +1177,9 @@
     "allOperationalDescription": "Player search and transfer analysis are ready to use.",
     "playerDataAttention": "Player data requires attention",
     "playerDataAttentionDescription": "Core services are responding, but the player catalogue is not ready.",
-    "scoutingApi": "Scouting API",
+    "analysisService": "Analysis service",
     "operational": "Operational",
-    "scoutingApiDescription": "Core scouting requests are responding normally.",
+    "analysisServiceDescription": "Player search and transfer analysis requests are responding normally.",
     "playerData": "Player data",
     "ready": "Ready",
     "notReady": "Not ready",
@@ -1028,20 +1187,7 @@
     "loadTimeNotReported": "Load time not reported.",
     "lastChecked": "Last checked {timestamp}",
     "refresh": "Refresh status",
-    "technicalDetails": "Technical details",
-    "environment": "Environment",
-    "deployment": "Deployment",
-    "version": "Version",
-    "branch": "Branch",
-    "datasetFingerprint": "Dataset fingerprint",
-    "apiStarted": "API started",
     "notReported": "Not reported"
-  },
-  "ApiStatusBadge": {
-    "checking": "Checking API",
-    "ready": "API ready",
-    "notReady": "API not ready",
-    "unavailable": "API unavailable"
   },
   "ApiErrorReference": {
     "requestId": "Request ID"
@@ -1319,6 +1465,97 @@
         "marketContext": "Market values are contextual estimates rather than transfer fees. Contract length, wages, registration rules, injury history, personality and club strategy are outside the current scoring model.",
         "similarity": "Similarity is not superiority. A candidate can resemble the target while being less productive, less reliable or unsuitable for the intended recruitment timescale.",
         "decisionSupport": "The platform is a decision-support system. Final recruitment decisions should combine this evidence with video, live scouting, medical review and broader club context."
+      }
+    },
+    "archetypeMaps": {
+      "eyebrow": "Statistical archetypes",
+      "title": "How playing-style clusters are formed",
+      "description": "The maps show how players in each broad position group cluster according to their tournament performance profiles. Use the position controls or swipe horizontally to move between maps.",
+      "positionSelectorLabel": "Choose a position map",
+      "carouselLabel": "Player archetype maps",
+      "previous": "Previous",
+      "next": "Next",
+      "positionCount": "{current} / {total}",
+      "reading": {
+        "title": "How to read the map",
+        "description": "Each point represents one player. Colours show archetype membership and X markers show archetype centres. Nearby players have more similar statistical profiles."
+      },
+      "axes": {
+        "title": "What the axes mean",
+        "description": "PCA compresses many performance metrics into two dimensions for visualization. Neither axis is a quality score or a direct tactical direction."
+      },
+      "roleConnection": {
+        "title": "From archetype to final role",
+        "description": "The archetype describes statistical playing style, while the spatial profile describes where and how the player operates. The final role combines both evidence layers."
+      },
+      "positions": {
+        "goalkeeper": {
+          "label": "Goalkeepers",
+          "title": "Goalkeeper archetype map",
+          "alt": "Scatter plot of goalkeeper statistical archetypes and player clusters",
+          "description": "Distribution, command of the box and shot-stopping output separate the goalkeeper profiles."
+        },
+        "defender": {
+          "label": "Defenders",
+          "title": "Defender archetype map",
+          "alt": "Scatter plot of defender statistical archetypes and player clusters",
+          "description": "Aerial presence, possession security, progression and wide attacking contribution separate the defender profiles."
+        },
+        "midfielder": {
+          "label": "Midfielders",
+          "title": "Midfielder archetype map",
+          "alt": "Scatter plot of midfielder statistical archetypes and player clusters",
+          "description": "Goal threat, passing volume, possession security, defensive work and width separate the midfield profiles."
+        },
+        "forward": {
+          "label": "Forwards",
+          "title": "Forward archetype map",
+          "alt": "Scatter plot of forward statistical archetypes and player clusters",
+          "description": "Shot volume, penalty-area threat, link play and target play separate the forward profiles."
+        }
+      }
+    },
+    "finalRoleMaps": {
+      "eyebrow": "Final role model",
+      "title": "How final roles separate on the pitch",
+      "description": "These maps combine the model's final-role assignments with measured tournament locations for defenders, midfielders and forwards. Choose a position to inspect its complete role set.",
+      "positionSelectorLabel": "Choose a final-role position map",
+      "carouselLabel": "Final-role position maps",
+      "previous": "Previous",
+      "next": "Next",
+      "positionCount": "{current} / {total}",
+      "roleIndexTitle": "Role index",
+      "roleIndexDescription": "The codes on the pitch correspond to weighted role centres. Role names remain in the model's original vocabulary.",
+      "playerSummary": "{count, plural, one {# player} other {# players}}",
+      "roleSummary": "{count, plural, one {# role} other {# roles}}",
+      "rolePlayerCount": "{count, plural, one {# player} other {# players}}",
+      "reading": {
+        "title": "How to read the role map",
+        "description": "Each point represents one player's measured average tournament location. X markers show weighted centres for final roles, and their codes connect the pitch to the complete role index."
+      },
+      "interpretation": {
+        "title": "What the map does not rank",
+        "description": "Distance on the pitch describes positional context, not player quality or role superiority. Final roles also include the statistical archetype and supporting spatial evidence."
+      },
+      "positions": {
+        "defender": {
+          "label": "Defenders",
+          "title": "Defender final-role map",
+          "alt": "Pitch map showing defender final-role groups and their weighted centres",
+          "description": "Centre-back and full-back roles separate through lateral occupation, vertical location and statistical playing style."
+        },
+        "midfielder": {
+          "label": "Midfielders",
+          "title": "Midfielder final-role map",
+          "alt": "Pitch map showing midfielder final-role groups and their weighted centres",
+          "description": "Possession, creation, goal threat and half-space roles occupy distinct combinations of statistical and spatial evidence."
+        },
+        "forward": {
+          "label": "Forwards",
+          "title": "Forward final-role map",
+          "alt": "Pitch map showing forward final-role groups and their weighted centres",
+          "description": "Finishing volume, link play, target play and width distinguish the forward role families."
+        }
       }
     }
   }

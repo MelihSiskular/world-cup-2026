@@ -110,8 +110,8 @@ a {
 .comparison-percentile-grid {
   grid-template-columns:
     4.75rem
-    minmax(0, 1fr)
-    minmax(0, 1fr);
+    minmax(0, 0.9fr)
+    minmax(0, 1.1fr);
 }
 
 .heatmap-evidence-grid {
@@ -122,8 +122,8 @@ a {
   .comparison-percentile-grid {
     grid-template-columns:
       minmax(0, 1fr)
-      6rem
-      6rem;
+      5.5rem
+      6.5rem;
   }
 
   .heatmap-evidence-grid {
@@ -149,8 +149,8 @@ a {
   .comparison-percentile-grid {
     grid-template-columns:
       minmax(0, 1fr)
-      7rem
-      7rem;
+      6rem
+      8rem;
   }
 }
 
@@ -170,8 +170,7 @@ a {
  */
 
 .tactical-profile-row {
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .tactical-profile-row > :first-child {
@@ -201,5 +200,24 @@ a {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Final-role map balanced desktop layout */
+@media (min-width: 64rem) {
+  .final-role-map-content {
+    height: 36rem;
+  }
+
+  .final-role-map-visual,
+  .final-role-map-index {
+    height: 100%;
+  }
+
+  .final-role-map-index-list {
+    overscroll-behavior: contain;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    scrollbar-width: thin;
   }
 }

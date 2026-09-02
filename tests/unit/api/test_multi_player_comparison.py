@@ -152,6 +152,38 @@ def test_multi_player_comparison_route_is_in_openapi_schema() -> None:
     assert candidate_parameter["required"] is True
     assert candidate_parameter["schema"]["type"] == "array"
 
+    scope_parameter = parameters["role_metric_scope"]
+
+    assert scope_parameter["in"] == "query"
+    assert scope_parameter["required"] is False
+    scope_schema = scope_parameter["schema"]
+
+    assert scope_schema["default"] == "target"
+
+    scope_reference = scope_schema.get("$ref")
+
+    if scope_reference is None:
+        all_of = scope_schema.get(
+            "allOf",
+            [],
+        )
+
+        scope_reference = all_of[0].get("$ref") if all_of else None
+
+    assert isinstance(
+        scope_reference,
+        str,
+    )
+    assert scope_reference.endswith("/RoleMetricScope")
+
+    role_metric_scope_schema = schema["components"]["schemas"]["RoleMetricScope"]
+
+    assert role_metric_scope_schema["type"] == "string"
+    assert role_metric_scope_schema["enum"] == [
+        "target",
+        "all_players",
+    ]
+
     response_schema = schema["components"]["schemas"]["MultiPlayerComparisonResponse"]
 
     assert response_schema["properties"]["target"]["$ref"].endswith(

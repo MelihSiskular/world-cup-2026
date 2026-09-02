@@ -24,6 +24,7 @@ from wc26.analytics.transfer_intelligence.models import (
     HeatmapPlayerRequest,
     MultiPlayerComparisonRequest,
     RadarComparisonRequest,
+    RoleMetricScope,
     TransferAnalysisRequest,
 )
 from wc26.api.dependencies import (
@@ -101,6 +102,14 @@ def compare_multiple_players(
         MultiPlayerComparisonRunner,
         Depends(get_multi_player_comparison_runner),
     ],
+    role_metric_scope: Annotated[
+        RoleMetricScope,
+        Query(
+            description=(
+                "Select metrics from only the target role or from every selected player role."
+            ),
+        ),
+    ] = "target",
 ) -> MultiPlayerComparisonResponse:
     """Return generic evidence for one target and ordered candidates."""
 
@@ -112,6 +121,7 @@ def compare_multiple_players(
         heatmap_similarity=(dataset_paths.heatmap_similarity),
         heatmap_profiles=(dataset_paths.heatmap_profiles),
         player_tournament_summary=(dataset_paths.player_tournament_summary),
+        role_metric_scope=role_metric_scope,
     )
 
     try:

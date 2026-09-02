@@ -1,0 +1,136 @@
+{
+  "position": "M",
+  "player_count": 216,
+  "role_count": 16,
+  "minimum_role_size": 1,
+  "roles": [
+    {
+      "code": "M01",
+      "name": "Possession-Secure Midfielder - Defensive Work",
+      "player_count": 69,
+      "color": "#1f77b4",
+      "center_x_pct": 50.3843,
+      "center_y_pct": 43.0752
+    },
+    {
+      "code": "M02",
+      "name": "Possession-Secure Midfielder - Passing Volume",
+      "player_count": 62,
+      "color": "#aec7e8",
+      "center_x_pct": 48.4325,
+      "center_y_pct": 50.9747
+    },
+    {
+      "code": "M03",
+      "name": "Creative Central Midfielder",
+      "player_count": 11,
+      "color": "#ff7f0e",
+      "center_x_pct": 50.0849,
+      "center_y_pct": 50.4249
+    },
+    {
+      "code": "M04",
+      "name": "Right Half-Space Creator",
+      "player_count": 10,
+      "color": "#ffbb78",
+      "center_x_pct": 55.9727,
+      "center_y_pct": 30.4428
+    },
+    {
+      "code": "M05",
+      "name": "Central Half-Space Creator",
+      "player_count": 9,
+      "color": "#2ca02c",
+      "center_x_pct": 55.8927,
+      "center_y_pct": 46.7124
+    },
+    {
+      "code": "M06",
+      "name": "Left Half-Space Creator",
+      "player_count": 9,
+      "color": "#98df8a",
+      "center_x_pct": 57.9888,
+      "center_y_pct": 67.5207
+    },
+    {
+      "code": "M07",
+      "name": "Left Goal-Threat Number 8",
+      "player_count": 8,
+      "color": "#d62728",
+      "center_x_pct": 59.2081,
+      "center_y_pct": 67.2179
+    },
+    {
+      "code": "M08",
+      "name": "Advanced Central Playmaker",
+      "player_count": 7,
+      "color": "#ff9896",
+      "center_x_pct": 60.5835,
+      "center_y_pct": 52.5403
+    },
+    {
+      "code": "M09",
+      "name": "Central Goal-Threat Number 8",
+      "player_count": 6,
+      "color": "#9467bd",
+      "center_x_pct": 61.5932,
+      "center_y_pct": 50.7099
+    },
+    {
+      "code": "M10",
+      "name": "Right Goal-Threat Number 8",
+      "player_count": 6,
+      "color": "#c5b0d5",
+      "center_x_pct": 60.3146,
+      "center_y_pct": 32.8773
+    },
+    {
+      "code": "M11",
+      "name": "Left Touchline Creator",
+      "player_count": 5,
+      "color": "#8c564b",
+      "center_x_pct": 58.9028,
+      "center_y_pct": 81.8402
+    },
+    {
+      "code": "M12",
+      "name": "Left Goal-Threat Wide Midfielder",
+      "player_count": 4,
+      "color": "#c49c94",
+      "center_x_pct": 66.1362,
+      "center_y_pct": 81.1954
+    },
+    {
+      "code": "M13",
+      "name": "Right Touchline Creator",
+      "player_count": 4,
+      "color": "#e377c2",
+      "center_x_pct": 56.6275,
+      "center_y_pct": 18.7988
+    },
+    {
+      "code": "M14",
+      "name": "Right Goal-Threat Wide Midfielder",
+      "player_count": 3,
+      "color": "#f7b6d2",
+      "center_x_pct": 67.2869,
+      "center_y_pct": 19.8594
+    },
+    {
+      "code": "M15",
+      "name": "Advanced Goal-Threat Midfielder",
+      "player_count": 2,
+      "color": "#7f7f7f",
+      "center_x_pct": 64.5597,
+      "center_y_pct": 55.4864
+    },
+    {
+      "code": "M16",
+      "name": "Box-to-Box Goal-Threat Midfielder",
+      "player_count": 1,
+      "color": "#c7c7c7",
+      "center_x_pct": 55.8759,
+      "center_y_pct": 53.1248
+    }
+  ]
+}

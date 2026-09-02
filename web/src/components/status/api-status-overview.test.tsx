@@ -17,7 +17,6 @@ import {
 import {
   fetchApiHealth,
   fetchApiReadiness,
-  fetchDeploymentIdentity,
 } from "@/lib/api/browser-status";
 import {
   renderWithQueryClient,
@@ -28,7 +27,6 @@ vi.mock(
   () => ({
     fetchApiHealth: vi.fn(),
     fetchApiReadiness: vi.fn(),
-    fetchDeploymentIdentity: vi.fn(),
   }),
 );
 
@@ -52,18 +50,6 @@ const readiness = {
   version: "0.2.0",
 };
 
-const deployment = {
-  branch: null,
-  commit_sha: null,
-  dataset_bundle_sha256:
-    "4fc9f780253a1234567890",
-  deployment_id: null,
-  environment: "development",
-  provider: "local",
-  service: "wc26-api",
-  version: "0.2.0",
-};
-
 function mockSuccessfulStatus(): void {
   vi.mocked(
     fetchApiHealth,
@@ -72,10 +58,6 @@ function mockSuccessfulStatus(): void {
   vi.mocked(
     fetchApiReadiness,
   ).mockResolvedValue(readiness);
-
-  vi.mocked(
-    fetchDeploymentIdentity,
-  ).mockResolvedValue(deployment);
 }
 
 describe("ApiStatusOverview", () => {
@@ -100,7 +82,9 @@ describe("ApiStatusOverview", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("Scouting API"),
+      screen.getByText(
+        "Analysis service",
+      ),
     ).toBeInTheDocument();
 
     expect(
@@ -116,47 +100,21 @@ describe("ApiStatusOverview", () => {
     expect(
       screen.getByText(/Last checked/),
     ).toBeInTheDocument();
-  });
 
-  it("keeps deployment information behind a collapsed disclosure", async () => {
-    renderWithQueryClient(
-      <ApiStatusOverview />,
-    );
-
-    const summary =
-      await screen.findByText(
+    expect(
+      screen.queryByText(
         "Technical details",
-      );
-
-    const details =
-      summary.closest("details");
-
-    if (!details) {
-      throw new Error(
-        "Technical details disclosure not found.",
-      );
-    }
-
-    expect(details).not.toHaveAttribute(
-      "open",
-    );
+      ),
+    ).not.toBeInTheDocument();
 
     expect(
-      screen.getByText("Deployment"),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText(
+      screen.queryByText(
         "Dataset fingerprint",
       ),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText("4fc9f780253a"),
-    ).toBeInTheDocument();
+    ).not.toBeInTheDocument();
   });
 
-  it("refreshes all status sources together", async () => {
+  it("refreshes public status sources together", async () => {
     renderWithQueryClient(
       <ApiStatusOverview />,
     );
@@ -177,10 +135,6 @@ describe("ApiStatusOverview", () => {
 
       expect(
         fetchApiReadiness,
-      ).toHaveBeenCalledTimes(2);
-
-      expect(
-        fetchDeploymentIdentity,
       ).toHaveBeenCalledTimes(2);
     });
   });
@@ -237,7 +191,7 @@ describe("ApiStatusOverview", () => {
 
       expect(
         screen.getByText(
-          "Scouting API",
+          "Analiz servisi",
         ),
       ).toBeInTheDocument();
 
@@ -260,17 +214,10 @@ describe("ApiStatusOverview", () => {
       ).toBeInTheDocument();
 
       expect(
-        screen.getByText(
+        screen.queryByText(
           "Teknik ayrıntılar",
         ),
-      ).toBeInTheDocument();
-
-      expect(
-        screen.getByText(
-          "Veri kümesi parmak izi",
-        ),
-      ).toBeInTheDocument();
+      ).not.toBeInTheDocument();
     },
   );
-
 });

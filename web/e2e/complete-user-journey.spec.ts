@@ -367,17 +367,6 @@ test.describe(
         });
 
         await expect(
-          radarComparison.getByText(
-            "Shared position overlay",
-            {
-              exact: true,
-            },
-          ),
-        ).toBeVisible({
-          timeout: 30_000,
-        });
-
-        await expect(
           radarComparison.getByRole(
             "img",
             {
@@ -401,17 +390,6 @@ test.describe(
 
         await expect(
           heatmapComparison,
-        ).toBeVisible({
-          timeout: 30_000,
-        });
-
-        await expect(
-          heatmapComparison.getByText(
-            "Measured pair evidence",
-            {
-              exact: true,
-            },
-          ),
         ).toBeVisible({
           timeout: 30_000,
         });

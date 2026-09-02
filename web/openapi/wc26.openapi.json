@@ -615,6 +615,17 @@
               "title": "Candidate Player Ids"
             },
             "description": "Ordered candidate player IDs. Repeat the query parameter for each candidate."
+          },
+          {
+            "name": "role_metric_scope",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/RoleMetricScope",
+              "description": "Select metrics from only the target role or from every selected player role.",
+              "default": "target"
+            },
+            "description": "Select metrics from only the target role or from every selected player role."
           }
         ],
         "responses": {
@@ -4672,6 +4683,13 @@
         ],
         "title": "ReadinessResponse",
         "description": "Response returned by the service readiness endpoint."
+      },
+      "RoleMetricScope": {
+        "type": "string",
+        "enum": [
+          "target",
+          "all_players"
+        ]
       },
       "ShortTermTransferModeResponse": {
         "properties": {

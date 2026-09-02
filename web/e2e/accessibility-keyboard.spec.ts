@@ -283,7 +283,7 @@ test.describe(
     );
 
     test(
-      "toggles technical details with standard keyboard controls",
+      "refreshes system status with standard keyboard controls",
       async ({ page }) => {
         await page.goto("/status");
 
@@ -291,61 +291,55 @@ test.describe(
           page,
         );
 
+        const refreshButton =
+          page.getByRole(
+            "button",
+            {
+              name:
+                "Refresh status",
+            },
+          );
+
         await expect(
-          page.getByRole("button", {
-            name:
-              "Refresh status",
-          }),
+          refreshButton,
         ).toBeVisible({
           timeout: 30_000,
         });
 
-        const details = page
-          .locator("details")
-          .filter({
-            hasText:
-              "Technical details",
-          });
-
-        const summary =
-          details.locator(
-            "summary",
-          );
+        await refreshButton.focus();
 
         await expect(
-          details,
-        ).not.toHaveAttribute(
-          "open",
-          "",
-        );
-
-        await summary.focus();
-
-        await expect(
-          summary,
+          refreshButton,
         ).toBeFocused();
+
+        const refreshedHealth =
+          page.waitForResponse(
+            (response) =>
+              response
+                .url()
+                .endsWith(
+                  "/api/status/health",
+                )
+              && response
+                .request()
+                .method() === "GET",
+          );
 
         await page.keyboard.press(
           "Enter",
         );
 
-        await expect(
-          details,
-        ).toHaveAttribute(
-          "open",
-          "",
-        );
-
-        await page.keyboard.press(
-          "Space",
-        );
+        expect(
+          (
+            await refreshedHealth
+          ).ok(),
+        ).toBe(true);
 
         await expect(
-          details,
-        ).not.toHaveAttribute(
-          "open",
-          "",
-        );
+          refreshButton,
+        ).toBeVisible({
+          timeout: 30_000,
+        });
       },
     );
     test(
